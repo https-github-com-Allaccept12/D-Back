@@ -10,6 +10,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
@@ -22,11 +23,11 @@ import java.util.List;
 public class ArtWorks extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "artwork_id")
     private Long id;
 
-    @ColumnDefault("public")
+    @Column(nullable = false)
     private String scope;
 
     @Column(nullable = false)
@@ -39,6 +40,7 @@ public class ArtWorks extends BaseEntity {
     @Column(nullable = false)
     private String category;
 
+    @Column(columnDefinition = "BIGINT default 0")
     private int view;
 
     private Timestamp workStart;

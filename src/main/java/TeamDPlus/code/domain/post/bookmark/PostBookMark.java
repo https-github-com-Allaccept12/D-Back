@@ -17,7 +17,7 @@ import javax.persistence.*;
 public class PostBookMark {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "post_bookmark_id")
     private Long id;
 
