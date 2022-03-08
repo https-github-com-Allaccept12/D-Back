@@ -2,11 +2,12 @@ package TeamDPlus.code.domain.account;
 
 
 import TeamDPlus.code.domain.BaseEntity;
-import TeamDPlus.code.dto.request.ProfileUpdateRequestDto;
+import TeamDPlus.code.dto.AccountDto;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 
@@ -20,6 +21,7 @@ public class Account extends BaseEntity {
     @Column(name = "account_id")
     private Long id;
 
+    @Column(nullable = false)
     private String email;
 
     @Column(nullable = false)
@@ -29,31 +31,44 @@ public class Account extends BaseEntity {
     @Column(nullable = false)
     private String content;
 
+    @ColumnDefault("")
     private String profileImg;
 
+    @ColumnDefault("")
     private int career;
 
+    @ColumnDefault("")
     private String phoneNumber;
 
+    @ColumnDefault("")
     private String workTime;
 
+    @ColumnDefault("")
     private String workEmail;
 
     @Column(nullable = false)
     private String tendency;
 
+    @ColumnDefault("0")
     private Long exp;
 
     @Column(nullable = false)
     private String refreshToken;
 
+    @ColumnDefault("")
     private String linkedIn;
 
+    @ColumnDefault("")
     private String brunch;
 
+    @ColumnDefault("")
     private String instagram;
 
+    @ColumnDefault("")
     private String webPage;
+
+    @Embedded
+    private Specialty specialty;
 
     @Builder
     public Account(String email, String nickname, String content, String profileImg, int career, String phoneNumber, String workTime,
@@ -75,10 +90,6 @@ public class Account extends BaseEntity {
         this.webPage = webPage;
     }
 
-    public void initNickname(String requestNickname) {
-        this.nickname = requestNickname;
-    }
-
     public void initTendency(String requestTendency) {
         this.tendency = requestTendency;
     }
@@ -87,7 +98,11 @@ public class Account extends BaseEntity {
         this.exp = (long) score;
     }
 
-    public void updateProfile(ProfileUpdateRequestDto dto) {
+    public void updateSpecialty(AccountDto.SpecialtyUpdate dto) {
+        this.specialty = dto.getSpecialty();
+    }
+
+    public void updateProfile(AccountDto.ProfileUpdate dto) {
         this.nickname = dto.getNickname();
         this.content = dto.getIntro_content();
         this.workEmail = dto.getWork_email();
