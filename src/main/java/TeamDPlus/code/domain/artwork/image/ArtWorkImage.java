@@ -1,4 +1,4 @@
-package TeamDPlus.code.domain.account;
+package TeamDPlus.code.domain.artwork.image;
 
 
 import TeamDPlus.code.domain.artwork.ArtWorks;
@@ -12,27 +12,35 @@ import javax.persistence.*;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class CareerFeed {
+public class ArtWorkImage {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "career_feed_id")
+    @Column(name = "artwork_img_id")
     private Long id;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "account_id")
-    private Account account;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "artwork_id")
     private ArtWorks artWorks;
 
+    private String artwork_img;
+
     @Builder
-    public CareerFeed(Account account, ArtWorks artWorks) {
-        this.account = account;
+    public ArtWorkImage(ArtWorks artWorks, String artwork_img) {
         this.artWorks = artWorks;
+        this.artwork_img = artwork_img;
+        artWorks.getArtWorkImage().add(this);
     }
 
+    public void deleteArtWorkImage() {
+        artWorks.getArtWorkImage().remove(this);
+    }
+
+
 }
+
+
+
+
 
 

@@ -1,44 +1,29 @@
-package TeamDPlus.code.domain.artwork;
+package TeamDPlus.code.domain.account.follow;
 
 
 import TeamDPlus.code.domain.account.Account;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import javax.persistence.*;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ArtWorkLikes {
+public class Follow {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "artwork_likes_id")
+    @Column(name = "follow_id")
     private Long id;
+
+    private Long followerId;
+
+    private Long followingId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id")
     private Account account;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "artwork_id")
-    private ArtWorks artWorks;
-
-    @Builder
-    public ArtWorkLikes(Account account, ArtWorks artWorks) {
-        this.account = account;
-        this.artWorks = artWorks;
-    }
 }
-
-
-
-
-
-
-
-
-

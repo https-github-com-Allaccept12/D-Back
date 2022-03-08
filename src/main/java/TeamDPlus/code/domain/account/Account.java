@@ -7,6 +7,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 
@@ -20,39 +21,50 @@ public class Account extends BaseEntity {
     @Column(name = "account_id")
     private Long id;
 
+    @Column(nullable = false)
     private String email;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String nickname;
 
     @Lob
     @Column(nullable = false)
     private String content;
 
+    @ColumnDefault("")
     private String profileImg;
 
+    @ColumnDefault("")
     private int career;
 
+    @ColumnDefault("")
     private String phoneNumber;
 
+    @ColumnDefault("")
     private String workTime;
 
+    @ColumnDefault("")
     private String workEmail;
 
     @Column(nullable = false)
     private String tendency;
 
+    @ColumnDefault("0")
     private Long exp;
 
     @Column(nullable = false)
     private String refreshToken;
 
+    @ColumnDefault("")
     private String linkedIn;
 
+    @ColumnDefault("")
     private String brunch;
 
+    @ColumnDefault("")
     private String instagram;
 
+    @ColumnDefault("")
     private String webPage;
 
     @Embedded
@@ -76,10 +88,6 @@ public class Account extends BaseEntity {
         this.brunch = brunch;
         this.instagram = instagram;
         this.webPage = webPage;
-    }
-
-    public void initNickname(String requestNickname) {
-        this.nickname = requestNickname;
     }
 
     public void initTendency(String requestTendency) {

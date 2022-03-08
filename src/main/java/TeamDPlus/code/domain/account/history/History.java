@@ -1,6 +1,7 @@
-package TeamDPlus.code.domain.account;
+package TeamDPlus.code.domain.account.history;
 
 
+import TeamDPlus.code.domain.account.Account;
 import TeamDPlus.code.dto.HistoryDto;
 import lombok.AccessLevel;
 import lombok.Builder;

@@ -3,7 +3,7 @@ package TeamDPlus.code.domain.artwork;
 
 import TeamDPlus.code.domain.BaseEntity;
 import TeamDPlus.code.domain.account.Account;
-import TeamDPlus.code.dto.AccountDto;
+import TeamDPlus.code.domain.artwork.image.ArtWorkImage;
 import TeamDPlus.code.dto.ArtWorkDto;
 import lombok.AccessLevel;
 import lombok.Builder;
