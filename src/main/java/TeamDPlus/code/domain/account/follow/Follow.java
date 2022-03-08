@@ -15,12 +15,14 @@ import javax.persistence.*;
 public class Follow {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "follow_id")
     private Long id;
 
+    @Column(nullable = false)
     private Long followerId;
 
+    @Column(nullable = false)
     private Long followingId;
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -15,7 +15,7 @@ import javax.persistence.*;
 public class ArtWorkImage {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "artwork_img_id")
     private Long id;
 
@@ -23,6 +23,7 @@ public class ArtWorkImage {
     @JoinColumn(name = "artwork_id")
     private ArtWorks artWorks;
 
+    @Column(nullable = false)
     private String artwork_img;
 
     @Builder

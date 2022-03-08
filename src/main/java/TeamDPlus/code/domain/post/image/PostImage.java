@@ -14,10 +14,11 @@ import javax.persistence.*;
 public class PostImage {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "post_image_id")
     private Long id;
 
+    @Column(nullable = false)
     private String postImg;
 
     @ManyToOne(fetch = FetchType.LAZY)
