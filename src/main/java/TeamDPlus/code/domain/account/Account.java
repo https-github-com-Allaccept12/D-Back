@@ -17,7 +17,7 @@ import javax.persistence.*;
 public class Account extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO) // h2는 auto, mysql는 IDENTITY
+    @GeneratedValue(strategy = GenerationType.SEQUENCE) // h2는 auto, mysql는 IDENTITY
     @Column(name = "account_id")
     private Long id;
 
@@ -31,40 +31,40 @@ public class Account extends BaseEntity {
     @Column(nullable = false)
     private String content;
 
-    @ColumnDefault("")
+    @Column(columnDefinition = "VARCHAR(255) default ''")
     private String profileImg;
 
-    @ColumnDefault("")
+    @Column(nullable = false)
     private int career;
 
-    @ColumnDefault("")
+    @Column(columnDefinition = "VARCHAR(50) default ''")
     private String phoneNumber;
 
-    @ColumnDefault("")
+    @Column(columnDefinition = "VARCHAR(255) default ''")
     private String workTime;
 
-    @ColumnDefault("")
+    @Column(columnDefinition = "VARCHAR(255) default ''")
     private String workEmail;
 
     @Column(nullable = false)
     private String tendency;
 
-    @ColumnDefault("0")
+    @Column(columnDefinition = "BIGINT default 0")
     private Long exp;
 
     @Column(nullable = false)
     private String refreshToken;
 
-    @ColumnDefault("")
+    @Column(columnDefinition = "VARCHAR(255) default ''")
     private String linkedIn;
 
-    @ColumnDefault("")
+    @Column(columnDefinition = "VARCHAR(255) default ''")
     private String brunch;
 
-    @ColumnDefault("")
+    @Column(columnDefinition = "VARCHAR(255) default ''")
     private String instagram;
 
-    @ColumnDefault("")
+    @Column(columnDefinition = "VARCHAR(255) default ''")
     private String webPage;
 
     @Embedded

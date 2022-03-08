@@ -16,7 +16,7 @@ import javax.persistence.*;
 public class CareerFeed {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "career_feed_id")
     private Long id;
 
