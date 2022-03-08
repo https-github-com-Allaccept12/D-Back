@@ -3,7 +3,8 @@ package TeamDPlus.code.domain.artwork;
 
 import TeamDPlus.code.domain.BaseEntity;
 import TeamDPlus.code.domain.account.Account;
-import TeamDPlus.code.dto.request.ArtWorkUpdateRequestDto;
+import TeamDPlus.code.dto.AccountDto;
+import TeamDPlus.code.dto.ArtWorkDto;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -64,7 +65,7 @@ public class ArtWorks extends BaseEntity {
         this.account = account;
     }
 
-    public void updateArtWork(ArtWorkUpdateRequestDto dto) {
+    public void updateArtWork(ArtWorkDto.ArtWorkUpdate dto) {
         this.scope = dto.getScope();
         this.title = dto.getTitle();
         this.content = dto.getContent();

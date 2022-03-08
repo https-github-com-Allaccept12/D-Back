@@ -2,7 +2,7 @@ package TeamDPlus.code.domain.account;
 
 
 import TeamDPlus.code.domain.BaseEntity;
-import TeamDPlus.code.dto.request.ProfileUpdateRequestDto;
+import TeamDPlus.code.dto.AccountDto;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -22,7 +22,7 @@ public class Account extends BaseEntity {
 
     private String email;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String nickname;
 
     @Lob
@@ -54,6 +54,9 @@ public class Account extends BaseEntity {
     private String instagram;
 
     private String webPage;
+
+    @Embedded
+    private Specialty specialty;
 
     @Builder
     public Account(String email, String nickname, String content, String profileImg, int career, String phoneNumber, String workTime,
@@ -87,7 +90,11 @@ public class Account extends BaseEntity {
         this.exp = (long) score;
     }
 
-    public void updateProfile(ProfileUpdateRequestDto dto) {
+    public void updateSpecialty(AccountDto.SpecialtyUpdate dto) {
+        this.specialty = dto.getSpecialty();
+    }
+
+    public void updateProfile(AccountDto.ProfileUpdate dto) {
         this.nickname = dto.getNickname();
         this.content = dto.getIntro_content();
         this.workEmail = dto.getWork_email();
