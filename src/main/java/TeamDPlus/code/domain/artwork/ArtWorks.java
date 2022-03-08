@@ -4,13 +4,11 @@ package TeamDPlus.code.domain.artwork;
 import TeamDPlus.code.domain.BaseEntity;
 import TeamDPlus.code.domain.account.Account;
 import TeamDPlus.code.domain.artwork.image.ArtWorkImage;
-import TeamDPlus.code.dto.ArtWorkDto;
+import TeamDPlus.code.dto.request.ArtWorkRequestDto;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
@@ -54,9 +52,9 @@ public class ArtWorks extends BaseEntity {
     @OneToMany(mappedBy = "artWorks",cascade = CascadeType.REMOVE)
     private final List<ArtWorkImage> artWorkImage = new ArrayList<>();
 
-
     @Builder
-    public ArtWorks(String scope, String title, String content, String category, int view, Timestamp workStart, Timestamp workEnd,Account account) {
+    public ArtWorks(final String scope,final String title,final String content,final String category,
+                    final int view,final Timestamp workStart,final Timestamp workEnd,final Account account) {
         this.scope = scope;
         this.title = title;
         this.content = content;
@@ -67,7 +65,7 @@ public class ArtWorks extends BaseEntity {
         this.account = account;
     }
 
-    public void updateArtWork(ArtWorkDto.ArtWorkUpdate dto) {
+    public void updateArtWork(ArtWorkRequestDto.ArtWorkUpdate dto) {
         this.scope = dto.getScope();
         this.title = dto.getTitle();
         this.content = dto.getContent();

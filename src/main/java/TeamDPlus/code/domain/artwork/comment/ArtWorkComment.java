@@ -33,13 +33,13 @@ public class ArtWorkComment extends BaseEntity {
     private ArtWorks artWorks;
 
     @Builder
-    public ArtWorkComment(String content, Account account, ArtWorks artWorks) {
+    public ArtWorkComment(final String content,final Account account,final ArtWorks artWorks) {
         this.content = content;
         this.account = account;
         this.artWorks = artWorks;
     }
 
-    public void updateComment(String content) {
+    public void updateComment(final String content) {
         this.content = content;
     }
 

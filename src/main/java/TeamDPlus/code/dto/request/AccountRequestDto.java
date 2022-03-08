@@ -1,10 +1,10 @@
-package TeamDPlus.code.dto;
+package TeamDPlus.code.dto.request;
 
 import TeamDPlus.code.domain.account.Specialty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-public class AccountDto {
+public class AccountRequestDto {
 
     @Getter
     @NoArgsConstructor

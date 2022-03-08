@@ -3,7 +3,7 @@ package TeamDPlus.code.domain.post;
 
 import TeamDPlus.code.domain.BaseEntity;
 import TeamDPlus.code.domain.account.Account;
-import TeamDPlus.code.dto.PostDto;
+import TeamDPlus.code.dto.request.PostRequestDto;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -36,14 +36,14 @@ public class Post extends BaseEntity {
     private Account account;
 
     @Builder
-    public Post(String title, String content, String category, Account account) {
+    public Post(final String title,final String content,final String category,final Account account) {
         this.title = title;
         this.content = content;
         this.category = category;
         this.account = account;
     }
 
-    public void updatePost(PostDto.PostUpdate dto) {
+    public void updatePost(PostRequestDto.PostUpdate dto) {
         this.title = dto.getTitle();
         this.category = dto.getCategory();
         this.content = dto.getContent();

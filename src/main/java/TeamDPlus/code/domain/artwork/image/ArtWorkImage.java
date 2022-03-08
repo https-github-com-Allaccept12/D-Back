@@ -27,7 +27,7 @@ public class ArtWorkImage {
     private String artwork_img;
 
     @Builder
-    public ArtWorkImage(ArtWorks artWorks, String artwork_img) {
+    public ArtWorkImage(final ArtWorks artWorks,final String artwork_img) {
         this.artWorks = artWorks;
         this.artwork_img = artwork_img;
         artWorks.getArtWorkImage().add(this);
