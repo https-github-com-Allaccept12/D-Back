@@ -33,13 +33,13 @@ public class PostComment extends BaseEntity {
     private Post post;
 
     @Builder
-    public PostComment(String content, Account account, Post post) {
+    public PostComment(final String content,final Account account,final Post post) {
         this.content = content;
         this.account = account;
         this.post = post;
     }
 
-    public void updateComment(String content) {
+    public void updateComment(final String content) {
         this.content = content;
     }
 }

@@ -29,7 +29,7 @@ public class CareerFeed {
     private ArtWorks artWorks;
 
     @Builder
-    public CareerFeed(Account account, ArtWorks artWorks) {
+    public CareerFeed(final Account account,final ArtWorks artWorks) {
         this.account = account;
         this.artWorks = artWorks;
     }

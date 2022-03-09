@@ -30,7 +30,7 @@ public class PostBookMark {
     private Account account;
 
     @Builder
-    public PostBookMark(Post post, Account account) {
+    public PostBookMark(final Post post, final Account account) {
         this.post = post;
         this.account = account;
     }

@@ -29,7 +29,7 @@ public class ArtWorkBookMark {
     private Account account;
 
     @Builder
-    public ArtWorkBookMark(ArtWorks artWorks, Account account) {
+    public ArtWorkBookMark(final ArtWorks artWorks,final Account account) {
         this.artWorks = artWorks;
         this.account = account;
     }
