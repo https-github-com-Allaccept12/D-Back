@@ -29,7 +29,6 @@ public class PostResponseDto {
         private LocalDateTime modify_time;
 
         @Builder
-
         public PostPageMain(Long post_id, Long account_id, String title, String img,
                             String content, Long view_count, Boolean is_like,
                             Boolean is_bookmark, Long like_count, String category,
