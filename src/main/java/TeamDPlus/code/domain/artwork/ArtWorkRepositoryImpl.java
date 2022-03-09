@@ -17,8 +17,8 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom{
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Optional<List<ArtWorkResponseDto.ArtWorkFeed>> findByArtWorkImageAndAccountId(Long accountId) {
-        return Optional.ofNullable(queryFactory
+    public List<ArtWorkResponseDto.ArtWorkFeed> findByArtWorkImageAndAccountId(Long accountId) {
+        return queryFactory
                 .select(Projections.constructor(
                         ArtWorkResponseDto.ArtWorkFeed.class,
                         artWorks.id,
@@ -32,6 +32,7 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom{
                 .from(artWorks)
                 .leftJoin(artWorkImage).on(artWorkImage.artWorks.eq(artWorks))
                 .where(artWorks.isMaster.isTrue().and(artWorks.account.id.eq(accountId)))
-                .fetch());
+                .orderBy(artWorks.created.desc())
+                .fetch();
     }
 }
