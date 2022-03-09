@@ -87,17 +87,7 @@ public class AccountResponseDto {
                                     .history_title(h.getHistoryTitle())
                                     .build())
                             .collect(Collectors.toList()))
-                    .artwork_feed(artwork_feed.stream()
-                            .map(a -> ArtWorkResponseDto.ArtWorkFeed.builder()
-                                    .artwork_id(a.getArtwork_id())
-                                    .scope(a.getScope())
-                                    .title(a.getTitle())
-                                    .img(a.getImg())
-                                    .view_count(a.getView_count())
-                                    .create_time(a.getCreate_time())
-                                    .modify_time(a.getModify_time())
-                                    .build())
-                            .collect(Collectors.toList()))
+                    .artwork_feed(artwork_feed)
                     .specialty(new SpecialtyResponseDto.specialty(account.getSpecialty()))
                     .build();
         }

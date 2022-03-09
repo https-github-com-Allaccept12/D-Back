@@ -1,7 +1,6 @@
 package TeamDPlus.code.dto.response;
 
-import TeamDPlus.code.dto.ArtWorkCommentDto;
-import TeamDPlus.code.dto.ImageUrlDto;
+import TeamDPlus.code.dto.common.CommonDto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -55,23 +54,23 @@ public class PostResponseDto {
         private Long post_id;
         private Long account_id;
         private String title;
-        private List<ImageUrlDto> img;
+        private List<CommonDto.ImgUrlDto> img;
         private String content;
         private Long view_count;
         private Boolean is_like;
         private Boolean is_bookmark;
         private Long like_count;
         private String category;
-        private List<ArtWorkCommentDto> comment;
+        private List<CommonDto.CommentDto> comment;
         private LocalDateTime create_time;
         private LocalDateTime modify_time;
 
         @Builder
 
         public PostDetailPage(Long post_id, Long account_id, String title,
-                              List<ImageUrlDto> img, String content, Long view_count,
+                              List<CommonDto.ImgUrlDto> img, String content, Long view_count,
                               Boolean is_like, Boolean is_bookmark, Long like_count,
-                              String category, List<ArtWorkCommentDto> comment,
+                              String category, List<CommonDto.CommentDto> comment,
                               LocalDateTime create_time, LocalDateTime modify_time) {
             this.post_id = post_id;
             this.account_id = account_id;

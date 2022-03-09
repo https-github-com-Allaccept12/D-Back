@@ -1,6 +1,5 @@
 package TeamDPlus.code.dto.request;
 
-import TeamDPlus.code.dto.ImageUrlDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
