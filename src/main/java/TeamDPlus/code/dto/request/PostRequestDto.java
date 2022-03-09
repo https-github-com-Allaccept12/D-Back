@@ -21,5 +21,18 @@ public class PostRequestDto {
 
         private List<ImageUrlDto> img;
     }
+
+    @Getter
+    @NoArgsConstructor
+    public static class PostCreate {
+
+        private String title;
+
+        private String category;
+
+        private String content;
+
+        private List<ImageUrlDto> img;
+    }
 }
 
