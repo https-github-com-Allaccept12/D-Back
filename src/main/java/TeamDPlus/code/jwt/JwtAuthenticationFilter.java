@@ -1,4 +1,4 @@
-package TeamDPlus.code.security;
+package TeamDPlus.code.jwt;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;

@@ -1,31 +1,35 @@
-package TeamDPlus.code.security;
+package TeamDPlus.code.jwt;
 
+import TeamDPlus.code.domain.account.Account;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
-import java.util.Collections;
 
 public class UserDetailsImpl implements UserDetails {
+    private final Account account;
 
-    private final User user;
-
-    public UserDetailsImpl(User user) {
-        this.user = user;
+    public UserDetailsImpl(Account user) {
+        this.account = user;
     }
 
-    public User getUser() {
-        return user;
+    public Account getUser() {
+        return account;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return null;
     }
 
     @Override
     public String getPassword() {
-        return user.getPassword();
+        return null;
     }
 
     @Override
     public String getUsername() {
-        return user.getUsername();
+        return null;
     }
 
     @Override
@@ -46,10 +50,5 @@ public class UserDetailsImpl implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
-    }
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.emptyList();
     }
 }
