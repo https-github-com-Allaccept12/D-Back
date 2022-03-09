@@ -2,7 +2,7 @@ package TeamDPlus.code.domain.account;
 
 
 import TeamDPlus.code.domain.BaseEntity;
-import TeamDPlus.code.dto.request.ProfileUpdateRequestDto;
+import TeamDPlus.code.dto.request.AccountRequestDto;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,7 +16,7 @@ import javax.persistence.*;
 public class Account extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO) // h2는 auto, mysql는 IDENTITY
+    @GeneratedValue(strategy = GenerationType.SEQUENCE) // h2는 auto, mysql는 IDENTITY
     @Column(name = "account_id")
     private Long id;
 
@@ -29,33 +29,48 @@ public class Account extends BaseEntity {
     @Lob
     private String content;
 
+    @Column(columnDefinition = "VARCHAR(255) default ''")
     private String profileImg;
 
+    @Column(nullable = false)
     private int career;
 
+    @Column(columnDefinition = "VARCHAR(50) default ''")
     private String phoneNumber;
 
+    @Column(columnDefinition = "VARCHAR(255) default ''")
     private String workTime;
 
+    @Column(columnDefinition = "VARCHAR(255) default ''")
     private String workEmail;
 
     private String tendency;
 
+    @Column(columnDefinition = "BIGINT default 0")
     private Long exp;
 
     private String refreshToken;
 
+    @Column(columnDefinition = "VARCHAR(255) default ''")
     private String linkedIn;
 
+    @Column(columnDefinition = "VARCHAR(255) default ''")
     private String brunch;
 
+    @Column(columnDefinition = "VARCHAR(255) default ''")
     private String instagram;
 
+    @Column(columnDefinition = "VARCHAR(255) default ''")
     private String webPage;
 
+    @Embedded
+    private Specialty specialty;
+
     @Builder
-    public Account(String email, String nickname, String content, String profileImg, int career, String phoneNumber, String workTime,
-                   String workEmail, String tendency, Long exp, String refreshToken, String linkedIn, String brunch, String instagram, String webPage) {
+    public Account(final String email, final String nickname, final String content, final String profileImg,
+                   final int career, final String phoneNumber, final String workTime,
+                   final String workEmail, final String tendency, final Long exp, final String refreshToken,
+                   final String linkedIn, final String brunch, final String instagram, final String webPage)  {
         this.email = email;
         this.nickname = nickname;
         this.content = content;
@@ -73,19 +88,19 @@ public class Account extends BaseEntity {
         this.webPage = webPage;
     }
 
-    public void initNickname(String requestNickname) {
-        this.nickname = requestNickname;
-    }
-
-    public void initTendency(String requestTendency) {
+    public void initTendency(final String requestTendency) {
         this.tendency = requestTendency;
     }
 
-    public void updateExp(int score) {
+    public void updateExp(final int score) {
         this.exp = (long) score;
     }
 
-    public void updateProfile(ProfileUpdateRequestDto dto) {
+    public void updateSpecialty(final AccountRequestDto.SpecialtyUpdate dto) {
+        this.specialty = dto.getSpecialty();
+    }
+
+    public void updateProfile(final AccountRequestDto.ProfileUpdate dto) {
         this.nickname = dto.getNickname();
         this.content = dto.getIntro_content();
         this.workEmail = dto.getWork_email();

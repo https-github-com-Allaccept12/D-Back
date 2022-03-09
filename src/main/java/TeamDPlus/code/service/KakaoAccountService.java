@@ -3,6 +3,7 @@ package TeamDPlus.code.service;
 import TeamDPlus.code.domain.account.Account;
 import TeamDPlus.code.domain.account.AccountRepository;
 import TeamDPlus.code.dto.KakaoUserInfoDto;
+import TeamDPlus.code.dto.response.LoginResponseDto;
 import TeamDPlus.code.jwt.JwtTokenProvider;
 import TeamDPlus.code.jwt.UserDetailsImpl;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -31,7 +32,7 @@ public class KakaoAccountService {
     private final AccountRepository accountRepository;
     private final JwtTokenProvider jwtTokenProvider;
 
-    public void kakaoLogin(String code) throws JsonProcessingException {
+    public LoginResponseDto kakaoLogin(String code) throws JsonProcessingException {
         // 1. "인가 코드"로 "액세스 토큰" 요청
         String accessToken = getAccessToken(code);
 
@@ -42,7 +43,7 @@ public class KakaoAccountService {
         Account kakaoUser = registerKakaoUserIfNeeded(kakaoUserInfo);
 
         // 4. 강제 로그인 처리
-        forceLogin(kakaoUser);
+        return forceLogin(kakaoUser);
     }
 
     private String getAccessToken(String code) throws JsonProcessingException {
@@ -54,7 +55,7 @@ public class KakaoAccountService {
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("grant_type", "authorization_code");
         body.add("client_id", "5c2af632e5eb943eadbf20d0c4006bdb");
-        body.add("redirect_uri", "http://localhost:8081/oauth2/authorization/kakao");
+        body.add("redirect_uri", "http://localhost:8081/user/kakao/callback");
         body.add("code", code);
 
         // HTTP 요청 보내기
@@ -124,11 +125,17 @@ public class KakaoAccountService {
         return kakaoUser;
     }
 
-    private void forceLogin(Account kakaoUser) {
+    private LoginResponseDto forceLogin(Account kakaoUser) {
         UserDetails userDetails = new UserDetailsImpl(kakaoUser);
         Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String token = jwtTokenProvider.createToken(Long.toString(kakaoUser.getId()), kakaoUser.getEmail());
+        LoginResponseDto responseDto = LoginResponseDto.builder()
+                .account_id(kakaoUser.getId())
+                .profile_img(kakaoUser.getProfileImg())
+                .token(token)
+                .build();
+        return responseDto;
     }
 
 }
