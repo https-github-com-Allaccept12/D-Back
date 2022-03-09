@@ -14,5 +14,7 @@ public interface AccountMyPageService {
 
     List<ArtWorkResponseDto.ArtWorkFeed> showAccountArtWork(Long visitAccountId, Long accountId);
 
+    List<ArtWorkResponseDto.ArtWorkBookMark> showAccountArtWorkBookMark(Long accountId);
+
 
 }

@@ -111,4 +111,23 @@ public class ArtWorkResponseDto {
             this.modify_time = modify_time;
         }
     }
+
+    @Getter
+    @NoArgsConstructor
+    public static class ArtWorkBookMark {
+        private Long artwork_id;
+        private String account_nickname;
+        private String img;
+        private Long view;
+
+        @Builder
+        public ArtWorkBookMark(Long artwork_id, String account_nickname, String img, Long view) {
+            this.artwork_id = artwork_id;
+            this.account_nickname = account_nickname;
+            this.img = img;
+            this.view = view;
+        }
+    }
+
+
 }

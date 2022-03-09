@@ -1,6 +1,7 @@
 package TeamDPlus.code.dto.request;
 
 
+import TeamDPlus.code.dto.common.CommonDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -18,7 +19,7 @@ public class PostRequestDto {
 
         private String content;
 
-        private List<ImageUrlDto> img;
+        private List<CommonDto.ImgUrlDto> img;
     }
 
     @Getter
@@ -31,7 +32,7 @@ public class PostRequestDto {
 
         private String content;
 
-        private List<ImageUrlDto> img;
+        private List<CommonDto.ImgUrlDto> img;
     }
 }
 

@@ -41,11 +41,16 @@ public class AccountMyPageServiceImpl implements AccountMyPageService{
         return AccountResponseDto.AccountMyPageMain.from(findAccount,history,artwork_feed,follower,following);
     }
     //마이페이지/유저작품
-    @Override
+    @Transactional(readOnly = true)
     public List<ArtWorkResponseDto.ArtWorkFeed> showAccountArtWork(Long visitAccountId, Long accountId) {
         return artWorkRepository.findByArtWorkImageAndAccountId(visitAccountId,accountId,false);
     }
-    
+
+    //마이페이지 / 북마크
+    @Transactional(readOnly = true)
+    public List<ArtWorkResponseDto.ArtWorkBookMark> showAccountArtWorkBookMark(Long accountId) {
+        return artWorkRepository.findArtWorkByBookMart(accountId);
+    }
 
 
 }
