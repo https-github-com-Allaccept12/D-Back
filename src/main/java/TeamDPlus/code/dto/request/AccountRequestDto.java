@@ -11,7 +11,9 @@ public class AccountRequestDto {
     public static class ProfileUpdate {
         private String nickname;
 
-        private String intro_content;
+        private String title_content;
+
+        private String sub_content ;
 
         private String work_email;
 

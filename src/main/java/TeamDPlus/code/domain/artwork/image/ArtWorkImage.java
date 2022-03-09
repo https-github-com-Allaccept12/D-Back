@@ -24,18 +24,18 @@ public class ArtWorkImage {
     private ArtWorks artWorks;
 
     @Column(nullable = false)
-    private String artwork_img;
+    private String artworkImg;
 
     @Builder
-    public ArtWorkImage(final ArtWorks artWorks,final String artwork_img) {
+    public ArtWorkImage(final ArtWorks artWorks,final String artworkImg) {
         this.artWorks = artWorks;
-        this.artwork_img = artwork_img;
-        artWorks.getArtWorkImage().add(this);
+        this.artworkImg = artworkImg;
+        //artWorks.getArtWorkImage().add(this);
     }
 
-    public void deleteArtWorkImage() {
-        artWorks.getArtWorkImage().remove(this);
-    }
+//    public void deleteArtWorkImage() {
+//        artWorks.getArtWorkImage().remove(this);
+//    }
 
 
 }
