@@ -32,6 +32,7 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom{
                         artWorks.title,
                         artWorkImage.artworkImg,
                         artWorks.view,
+                        artWorks.isMaster,
                         artWorks.created,
                         artWorks.modified
                 ))

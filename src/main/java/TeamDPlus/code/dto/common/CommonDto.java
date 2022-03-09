@@ -1,5 +1,6 @@
 package TeamDPlus.code.dto.common;
 
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 public class CommonDto {
@@ -9,7 +10,7 @@ public class CommonDto {
         private Long account_id;
         private Long comment_id;
         private String content;
-        private LocalDateTime modify_time;
+        private Timestamp modify_time;
     }
 
     public static class ImgUrlDto {

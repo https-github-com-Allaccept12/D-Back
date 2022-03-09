@@ -37,10 +37,12 @@ public class AccountResponseDto {
         private SpecialtyResponseDto.specialty specialty;
 
         @Builder
-        public AccountMyPageMain(Long account_id, String nickname, String profile_img, Long exp, int career, String tendency, String title_content,String sub_content,
-                                 String linked_in, String brunch, String insta, String work_email,
-                                 String work_time,Long follower_count, Long following_count,
-                                 List<HistoryResponseDto.History> history, List<ArtWorkResponseDto.ArtWorkFeed> artwork_feed, SpecialtyResponseDto.specialty specialty) {
+        public AccountMyPageMain(final Long account_id,final String nickname,final String profile_img,final Long exp,
+                                 final int career,final String tendency,final String title_content,final String sub_content,
+                                 final String linked_in,final String brunch,final String insta, String work_email,
+                                 final String work_time,final Long follower_count,final Long following_count,
+                                 final List<HistoryResponseDto.History> history,final List<ArtWorkResponseDto.ArtWorkFeed> artwork_feed,
+                                 final SpecialtyResponseDto.specialty specialty) {
             this.account_id = account_id;
             this.nickname = nickname;
             this.profile_img = profile_img;

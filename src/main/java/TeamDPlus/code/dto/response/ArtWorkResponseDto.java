@@ -30,9 +30,9 @@ public class ArtWorkResponseDto {
         private Timestamp modify_time;
 
         @Builder
-        public ArtworkPageMain(Long artwork_id, Long account_id, String scope, String title, String img,
-                               String content, Long view_count, Boolean is_like, Boolean is_bookmark, Long like_count,
-                               String category, Timestamp create_time, Timestamp modify_time) {
+        public ArtworkPageMain(final Long artwork_id,final Long account_id,final String scope,final String title,final String img,
+                               final String content,final Long view_count,final Boolean is_like,final Boolean is_bookmark,final Long like_count,
+                               final String category,final Timestamp create_time,final Timestamp modify_time) {
             this.artwork_id = artwork_id;
             this.account_id = account_id;
             this.scope = scope;
@@ -69,11 +69,11 @@ public class ArtWorkResponseDto {
         private Timestamp modify_time;
 
         @Builder
-        public ArtWorkDetailPage(Long artwork_id, Long account_id, String scope, String title,
-                                 List<CommonDto.ImgUrlDto> img, String content, Long view_count, Boolean is_like,
-                                 Boolean is_bookmark, Long like_count, String category,
-                                 List<CommonDto.CommentDto> comment, Timestamp create_time,
-                                 Timestamp modify_time) {
+        public ArtWorkDetailPage(final Long artwork_id,final Long account_id,final String scope,final String title,
+                                 final List<CommonDto.ImgUrlDto> img,final String content,final Long view_count,final Boolean is_like,
+                                 final Boolean is_bookmark,final Long like_count,final String category,
+                                 final List<CommonDto.CommentDto> comment,final Timestamp create_time,
+                                 final Timestamp modify_time) {
             this.artwork_id = artwork_id;
             this.account_id = account_id;
             this.scope = scope;
@@ -98,15 +98,18 @@ public class ArtWorkResponseDto {
         private String scope;
         private String img;
         private Long view_count;
+        private boolean is_master;
         private Timestamp create_time;
         private Timestamp modify_time;
 
         @Builder
-        public ArtWorkFeed(Long artwork_id, String scope, String img, Long view_count, Timestamp create_time, Timestamp modify_time) {
+        public ArtWorkFeed(final Long artwork_id,final String scope,final String img,final Long view_count,
+                           final boolean is_master,final Timestamp create_time,final Timestamp modify_time) {
             this.artwork_id = artwork_id;
             this.scope = scope;
             this.img = img;
             this.view_count = view_count;
+            this.is_master = is_master;
             this.create_time = create_time;
             this.modify_time = modify_time;
         }
@@ -121,7 +124,7 @@ public class ArtWorkResponseDto {
         private Long view;
 
         @Builder
-        public ArtWorkBookMark(Long artwork_id, String account_nickname, String img, Long view) {
+        public ArtWorkBookMark(final Long artwork_id,final String account_nickname,final String img,final Long view) {
             this.artwork_id = artwork_id;
             this.account_nickname = account_nickname;
             this.img = img;
