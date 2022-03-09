@@ -1,26 +1,19 @@
 package TeamDPlus.code.dto.response;
 
-<<<<<<< HEAD
 import TeamDPlus.code.dto.ArtWorkCommentDto;
 import TeamDPlus.code.dto.ImageUrlDto;
-=======
->>>>>>> e9df2b9549c95b7db25568373c3bb253cb2feb36
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-<<<<<<< HEAD
 import java.time.LocalDateTime;
 import java.util.List;
-=======
 import java.sql.Timestamp;
->>>>>>> e9df2b9549c95b7db25568373c3bb253cb2feb36
 
 public class ArtWorkResponseDto {
 
     @Getter
     @NoArgsConstructor
-<<<<<<< HEAD
     public static class ArtworkPageMain {
 
         private Long artwork_id;
@@ -77,7 +70,6 @@ public class ArtWorkResponseDto {
         private LocalDateTime modify_time;
 
         @Builder
-
         public ArtWorkDetailPage(Long artwork_id, Long account_id, String scope, String title,
                                  List<ImageUrlDto> img, String content, Long view_count, Boolean is_like,
                                  Boolean is_bookmark, Long like_count, String category,
@@ -95,7 +87,11 @@ public class ArtWorkResponseDto {
             this.like_count = like_count;
             this.category = category;
             this.comment = comment;
-=======
+
+        }
+    }
+    @Getter
+    @NoArgsConstructor
     public static class ArtWorkFeed {
 
         private Long artwork_id;
@@ -107,13 +103,12 @@ public class ArtWorkResponseDto {
         private Timestamp modify_time;
 
         @Builder
-        public ArtWorkFeed(Long artwork_id, String scope, String title,String img, Long view_count, Timestamp create_time, Timestamp modify_time) {
+        public ArtWorkFeed(Long artwork_id, String scope, String title, String img, Long view_count, Timestamp create_time, Timestamp modify_time) {
             this.artwork_id = artwork_id;
             this.scope = scope;
             this.title = title;
             this.img = img;
             this.view_count = view_count;
->>>>>>> e9df2b9549c95b7db25568373c3bb253cb2feb36
             this.create_time = create_time;
             this.modify_time = modify_time;
         }
