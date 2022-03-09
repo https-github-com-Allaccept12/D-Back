@@ -1,18 +1,17 @@
-package TeamDPlus.code.dto;
+package TeamDPlus.code.dto.response;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-public class HistoryDto {
+public class HistoryResponseDto {
 
     @Getter
     @NoArgsConstructor
-    public static class HistoryUpdate {
+    public static class History {
 
+        private Long history_id;
         private String history_name;
-
         private String history_title;
-
         private String history_content;
     }
 

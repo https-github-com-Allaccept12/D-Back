@@ -31,7 +31,7 @@ public class PostLikes{
     private Post post;
 
     @Builder
-    public PostLikes(Account account, Post post) {
+    public PostLikes(final Account account,final Post post) {
         this.account = account;
         this.post = post;
     }

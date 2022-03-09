@@ -25,7 +25,7 @@ public class PostImage {
     @JoinColumn(name = "post_id")
     private Post post;
 
-    public PostImage(String postImg, Post post) {
+    public PostImage(final String postImg,final Post post) {
         this.postImg = postImg;
         this.post = post;
     }

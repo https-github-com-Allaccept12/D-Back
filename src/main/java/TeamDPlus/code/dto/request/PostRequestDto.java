@@ -1,29 +1,25 @@
-package TeamDPlus.code.dto;
+package TeamDPlus.code.dto.request;
+
 
 import TeamDPlus.code.dto.ImageUrlDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.sql.Timestamp;
 import java.util.List;
 
-public class ArtWorkDto {
+public class PostRequestDto {
 
     @Getter
     @NoArgsConstructor
-    public static class ArtWorkUpdate {
-        private String scope;
+    public static class PostUpdate {
 
         private String title;
+
+        private String category;
 
         private String content;
 
         private List<ImageUrlDto> img;
-
-        private Timestamp work_start;
-
-        private Timestamp work_end;
     }
-
-
 }
+
