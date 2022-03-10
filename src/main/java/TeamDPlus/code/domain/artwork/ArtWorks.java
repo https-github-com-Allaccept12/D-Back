@@ -46,7 +46,7 @@ public class ArtWorks extends BaseEntity {
 
     private Timestamp workEnd;
 
-    private Boolean isMaster = false;
+    private Boolean isMaster;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id")
@@ -57,7 +57,7 @@ public class ArtWorks extends BaseEntity {
 
     @Builder
     public ArtWorks(final String scope,final String title,final String content,final String category,
-                    final Long view,final Timestamp workStart,final Timestamp workEnd,final Account account) {
+                    final Long view,final Timestamp workStart,final Timestamp workEnd,final Account account, final boolean isMaster) {
         this.scope = scope;
         this.title = title;
         this.content = content;
@@ -66,6 +66,7 @@ public class ArtWorks extends BaseEntity {
         this.workStart = workStart;
         this.workEnd = workEnd;
         this.account = account;
+        this.isMaster = isMaster;
     }
 
     public void updateArtWork(ArtWorkRequestDto.ArtWorkUpdate dto) {
@@ -79,7 +80,18 @@ public class ArtWorks extends BaseEntity {
         this.isMaster = !isMaster; //false 면 트루 , 트루면 false
     }
 
-
+    public static ArtWorks of(Account account, ArtWorkRequestDto.ArtWorkCreate dto) {
+        return ArtWorks.builder()
+                .account(account)
+                .category(dto.getCategory())
+                .content(dto.getContent())
+                .scope(dto.getScope())
+                .title(dto.getTitle())
+                .workStart(dto.getWork_start())
+                .workEnd(dto.getWork_end())
+                .isMaster(dto.is_master())
+                .build();
+    }
 
 
 

@@ -23,51 +23,32 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ArtworkMainPageServiceImpl implements ArtworkMainPageService {
 
-    private AccountResponseDto accountResponseDto;
-    private ArtWorkRepository artWorkRepository;
-    private ArtWorkLikesRepository artWorkLikesRepository;
+    private final ArtWorkRepository artWorkRepository;
+    private final ArtWorkImageRepository artWorkImageRepository;
+    private final ArtWorkLikesRepository artWorkLikesRepository;
 
     @Transactional(readOnly = true)
-    public List<ArtWorkResponseDto.ArtworkPageMain> showArtworkMain(String accountId){
-//        List<ArtWorkResponseDto.ArtworkPageMain> artworkPageMains = new ArrayList<>();
-//        List<ArtWorks> artworks = artWorkRepository.findAll();
-//        List<ArtWorkLikes> artWorkLikes = artWorkLikesRepository.findLikesListsByArtWorkId()
-//        if (account_id != null){
-//            // 좋아요
-//
-//
-//        } else {
-//            // 그냥 전체 게시물
-//
-//        }
-//
-        return
+    public List<ArtWorkResponseDto.ArtworkPageMain> showArtworkMain(Long accountId){
+
+
+        return null;
     }
 
     @Override
     @Transactional
     public Long createArtwork(Account account, ArtWorkRequestDto.ArtWorkCreate dto) {
 
-        ArtWorkImage artWorkImage = ArtWorkImageRepository.save(artwork)
-
-        ArtWorks artWorks = ArtWorks.builder()
-                .account(account)
-                .category(dto.getCategory())
-                .content(dto.getContent())
-                .scope(dto.getScope())
-                .title(dto.getTitle())
-                .workStart(dto.getWork_start())
-                .workEnd(dto.getWork_end())
-                .build();
-
-
-//        Long createdArtwork = ArtWorkRepository.save(ArtWorkRequestDto.toEntity(dto, account)).getId();
-
-        return createdArtwork;
+        ArtWorks artWorks = ArtWorks.of(account,dto);
+        ArtWorks saveArtWork = artWorkRepository.save(artWorks);
+        dto.getImg().forEach((img) -> {
+            ArtWorkImage artWorkImage = ArtWorkImage.builder().artWorks(saveArtWork).artworkImg(img.getImg_url()).build();
+            artWorkImageRepository.save(artWorkImage);
+        });
+        return saveArtWork.getId();
     }
 
     @Override
-    public String updateArtwork(Long accountId, Long artworkId, ArtWorkRequestDto.ArtWorkUpdate artWorkUpdate) {
+    public Long updateArtwork(Long accountId, Long artworkId, ArtWorkRequestDto.ArtWorkUpdate artWorkUpdate) {
         return null;
     }
 
@@ -78,7 +59,7 @@ public class ArtworkMainPageServiceImpl implements ArtworkMainPageService {
         artWorkRepository.delete(artworkValidation(accountId, artworkId));
     }
 
-    private ArtWorks artworkValidation (Long accountId, Long artworkId){
+    private ArtWorks artworkValidation(Long accountId, Long artworkId){
         ArtWorks artWorks = artWorkRepository.findById(artworkId).orElseThrow(() -> new ApiRequestException("해당 게시글은 존재하지 않습니다."));
         if(!artWorks.getAccount().getId().equals(accountId)){
             throw new ApiRequestException("권한이 없습니다.");
