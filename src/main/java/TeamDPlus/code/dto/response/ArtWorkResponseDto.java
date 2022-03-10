@@ -1,11 +1,6 @@
 package TeamDPlus.code.dto.response;
-
-import TeamDPlus.code.domain.account.Account;
 import TeamDPlus.code.domain.artwork.ArtWorks;
-import TeamDPlus.code.domain.artwork.image.ArtWorkImage;
-import TeamDPlus.code.domain.artwork.like.ArtWorkLikes;
-import TeamDPlus.code.dto.ArtWorkCommentDto;
-import TeamDPlus.code.dto.ImageUrlDto;
+import TeamDPlus.code.dto.common.CommonDto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,9 +24,9 @@ public class ArtWorkResponseDto {
         private Timestamp modify_time;
 
         @Builder
-        public ArtworkPageMain(Long artwork_id, Long account_id, String img,
-                               Long view_count, Long like_count,
-                               String category, Timestamp create_time, Timestamp modify_time) {
+        public ArtworkPageMain(final Long artwork_id,final Long account_id,final String scope,final String title,final String img,
+                               final String content,final Long view_count,final Boolean is_like,final Boolean is_bookmark,final Long like_count,
+                               final String category,final Timestamp create_time,final Timestamp modify_time) {
             this.artwork_id = artwork_id;
             this.account_id = account_id;
             this.img = img;
@@ -67,23 +62,23 @@ public class ArtWorkResponseDto {
         private Long account_id;
         private String scope;
         private String title;
-        private List<ImageUrlDto> img;
+        private List<CommonDto.ImgUrlDto> img;
         private String content;
         private Long view_count;
         private Boolean is_like;
         private Boolean is_bookmark;
         private Long like_count;
         private String category;
-        private List<ArtWorkCommentDto> comment;
+        private List<CommonDto.CommentDto> comment;
         private Timestamp create_time;
         private Timestamp modify_time;
 
         @Builder
-        public ArtWorkDetailPage(Long artwork_id, Long account_id, String scope, String title,
-                                 List<ImageUrlDto> img, String content, Long view_count, Boolean is_like,
-                                 Boolean is_bookmark, Long like_count, String category,
-                                 List<ArtWorkCommentDto> comment, Timestamp create_time,
-                                 Timestamp modify_time) {
+        public ArtWorkDetailPage(final Long artwork_id,final Long account_id,final String scope,final String title,
+                                 final List<CommonDto.ImgUrlDto> img,final String content,final Long view_count,final Boolean is_like,
+                                 final Boolean is_bookmark,final Long like_count,final String category,
+                                 final List<CommonDto.CommentDto> comment,final Timestamp create_time,
+                                 final Timestamp modify_time) {
             this.artwork_id = artwork_id;
             this.account_id = account_id;
             this.scope = scope;
@@ -98,7 +93,6 @@ public class ArtWorkResponseDto {
             this.comment = comment;
             this.create_time = create_time;
             this.modify_time = modify_time;
-
         }
     }
     @Getter
@@ -107,21 +101,41 @@ public class ArtWorkResponseDto {
 
         private Long artwork_id;
         private String scope;
-        private String title;
         private String img;
         private Long view_count;
+        private boolean is_master;
         private Timestamp create_time;
         private Timestamp modify_time;
 
         @Builder
-        public ArtWorkFeed(Long artwork_id, String scope, String title, String img, Long view_count, Timestamp create_time, Timestamp modify_time) {
+        public ArtWorkFeed(final Long artwork_id,final String scope,final String img,final Long view_count,
+                           final boolean is_master,final Timestamp create_time,final Timestamp modify_time) {
             this.artwork_id = artwork_id;
             this.scope = scope;
-            this.title = title;
             this.img = img;
             this.view_count = view_count;
+            this.is_master = is_master;
             this.create_time = create_time;
             this.modify_time = modify_time;
         }
     }
+
+    @Getter
+    @NoArgsConstructor
+    public static class ArtWorkBookMark {
+        private Long artwork_id;
+        private String account_nickname;
+        private String img;
+        private Long view;
+
+        @Builder
+        public ArtWorkBookMark(final Long artwork_id,final String account_nickname,final String img,final Long view) {
+            this.artwork_id = artwork_id;
+            this.account_nickname = account_nickname;
+            this.img = img;
+            this.view = view;
+        }
+    }
+
+
 }

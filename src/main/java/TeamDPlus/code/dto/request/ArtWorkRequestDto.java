@@ -1,9 +1,5 @@
 package TeamDPlus.code.dto.request;
-
-import TeamDPlus.code.domain.account.Account;
-import TeamDPlus.code.domain.artwork.ArtWorks;
-import TeamDPlus.code.dto.ImageUrlDto;
-import TeamDPlus.code.dto.response.ArtWorkResponseDto;
+import TeamDPlus.code.dto.common.CommonDto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,7 +18,7 @@ public class ArtWorkRequestDto {
 
         private String content;
 
-        private List<ImageUrlDto> img;
+        private List<CommonDto.ImgUrlDto> img;
 
         private Timestamp work_start;
 
@@ -38,7 +34,7 @@ public class ArtWorkRequestDto {
 
         private String content;
 
-        private List<ImageUrlDto> img;
+        private List<CommonDto.ImgUrlDto> img;
 
         private String category;
 

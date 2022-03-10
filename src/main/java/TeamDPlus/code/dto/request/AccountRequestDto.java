@@ -39,5 +39,13 @@ public class AccountRequestDto {
         private Specialty specialty;
     }
 
+    @Getter
+    @NoArgsConstructor
+    public static class Follow {
+
+        private Long follower_id;
+    }
+
+
 
 }
