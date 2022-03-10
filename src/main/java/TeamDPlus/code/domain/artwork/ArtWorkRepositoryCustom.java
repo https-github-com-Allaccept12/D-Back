@@ -14,5 +14,4 @@ public interface ArtWorkRepositoryCustom {
 
     List<ArtWorkResponseDto.ArtWorkBookMark> findArtWorkByBookMart(Long accountId);
 
-
 }

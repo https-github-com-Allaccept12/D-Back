@@ -54,7 +54,6 @@ class ArtWorkRepositoryTest {
     EntityManager em;
 
 
-
     @Test
     @Commit
     public void artwork_feed_query_test() throws Exception {
@@ -193,5 +192,4 @@ class ArtWorkRepositoryTest {
         em.clear();
         return save;
     }
-
 }

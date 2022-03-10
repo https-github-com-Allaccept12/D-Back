@@ -36,8 +36,6 @@ public class ArtWorkImage {
 //    public void deleteArtWorkImage() {
 //        artWorks.getArtWorkImage().remove(this);
 //    }
-
-
 }
 
 

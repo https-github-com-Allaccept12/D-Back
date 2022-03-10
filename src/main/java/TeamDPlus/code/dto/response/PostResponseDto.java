@@ -21,8 +21,6 @@ public class PostResponseDto {
         private String img;
         private String content;
         private Long view_count;
-        private Boolean is_like;
-        private Boolean is_bookmark;
         private Long like_count;
         private String category;
         private Timestamp create_time;
@@ -39,8 +37,6 @@ public class PostResponseDto {
             this.img = img;
             this.content = content;
             this.view_count = view_count;
-            this.is_like = is_like;
-            this.is_bookmark = is_bookmark;
             this.like_count = like_count;
             this.category = category;
             this.create_time = create_time;
