@@ -46,11 +46,15 @@ public class AccountMyPageServiceImpl implements AccountMyPageService{
         return artWorkRepository.findByArtWorkImageAndAccountId(visitAccountId,accountId,false);
     }
 
-    //마이페이지 / 북마크
+    //마이페이지/스크랩
     @Transactional(readOnly = true)
     public List<ArtWorkResponseDto.ArtWorkBookMark> showAccountArtWorkBookMark(final Long accountId) {
         return artWorkRepository.findArtWorkByBookMart(accountId);
     }
+
+
+
+
 
 
 }
