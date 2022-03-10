@@ -1,8 +1,13 @@
 package TeamDPlus.code.dto.response;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
 public class FollowResponseDto {
 
 
+    @Getter
+    @NoArgsConstructor
     public static class FollowList {
         private Long account_id;
         private String account_img;
