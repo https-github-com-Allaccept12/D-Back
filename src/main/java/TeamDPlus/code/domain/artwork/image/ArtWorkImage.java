@@ -37,7 +37,10 @@ public class ArtWorkImage {
 
     public void updateThumbnail() {
         this.thumbnail = !this.thumbnail;
+    }
 
+    public void updateImage(String img) {
+        this.artworkImg = img;
     }
 
 }

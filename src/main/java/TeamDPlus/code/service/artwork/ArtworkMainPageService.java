@@ -9,10 +9,10 @@ import java.util.List;
 
 public interface ArtworkMainPageService {
 
-    Page<ArtWorkResponseDto.ArtworkPageMain> showArtworkMain(Long accountId);
+    Page<ArtWorkResponseDto.ArtworkPageMain> showArtworkMain(Long accountId,Long artworkId);
     Long createArtwork(Account account,ArtWorkRequestDto.ArtWorkCreate artWorkCreate);
 
-    Long updateArtwork(Long accountId, Long artworkId, ArtWorkRequestDto.ArtWorkUpdate artWorkUpdate);
+    Long updateArtwork(Account account, Long artworkId, ArtWorkRequestDto.ArtWorkUpdate artWorkUpdate);
     void deleteArtwork(Long accountId, Long artworkId);
 
 
