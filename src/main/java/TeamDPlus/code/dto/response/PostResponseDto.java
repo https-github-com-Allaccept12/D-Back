@@ -21,8 +21,6 @@ public class PostResponseDto {
         private String img;
         private String content;
         private Long view_count;
-        private Boolean is_like;
-        private Boolean is_bookmark;
         private Long like_count;
         private String category;
         private LocalDateTime create_time;
@@ -30,8 +28,7 @@ public class PostResponseDto {
 
         @Builder
         public PostPageMain(Long post_id, Long account_id, String title, String img,
-                            String content, Long view_count, Boolean is_like,
-                            Boolean is_bookmark, Long like_count, String category,
+                            String content, Long view_count, Long like_count, String category,
                             LocalDateTime create_time, LocalDateTime modify_time) {
             this.post_id = post_id;
             this.account_id = account_id;
@@ -39,8 +36,6 @@ public class PostResponseDto {
             this.img = img;
             this.content = content;
             this.view_count = view_count;
-            this.is_like = is_like;
-            this.is_bookmark = is_bookmark;
             this.like_count = like_count;
             this.category = category;
             this.create_time = create_time;

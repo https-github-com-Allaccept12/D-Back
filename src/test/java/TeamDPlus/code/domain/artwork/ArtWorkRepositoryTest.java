@@ -46,7 +46,6 @@ class ArtWorkRepositoryTest {
     EntityManager em;
 
 
-
     @Test
     @Commit
     public void careerFeed_query_test() throws Exception {
@@ -100,5 +99,4 @@ class ArtWorkRepositoryTest {
         Assertions.assertThat(fetch.get(0).getArtwork_id()).isEqualTo(testArtWorks.getId());
         Assertions.assertThat(fetch.get(0).getImg()).isEqualTo(testArtWorkImage.getArtworkImg());
     }
-
 }

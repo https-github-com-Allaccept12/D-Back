@@ -8,4 +8,6 @@ import java.util.Optional;
 public interface ArtWorkRepositoryCustom {
 
     List<ArtWorkResponseDto.ArtWorkFeed> findByArtWorkImageAndAccountId(Long accountId);
+
+    List<ArtWorkResponseDto.ArtworkPageMain> findByArtWorkOrderByCreatedDesc();
 }
