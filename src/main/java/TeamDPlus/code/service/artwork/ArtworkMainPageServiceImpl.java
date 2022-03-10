@@ -13,6 +13,9 @@ import TeamDPlus.code.dto.request.ArtWorkRequestDto;
 import TeamDPlus.code.dto.response.AccountResponseDto;
 import TeamDPlus.code.dto.response.ArtWorkResponseDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,13 +31,11 @@ public class ArtworkMainPageServiceImpl implements ArtworkMainPageService {
     private final ArtWorkLikesRepository artWorkLikesRepository;
 
     @Transactional(readOnly = true)
-    public List<ArtWorkResponseDto.ArtworkPageMain> showArtworkMain(Long accountId){
-
-
-        return null;
+    public Page<ArtWorkResponseDto.ArtworkPageMain> showArtworkMain(Long lastArtWorkId){
+        Pageable pageable = PageRequest.of(0,10);
+        return artWorkRepository.findAllArtWork(lastArtWorkId, pageable);
     }
 
-    @Override
     @Transactional
     public Long createArtwork(Account account, ArtWorkRequestDto.ArtWorkCreate dto) {
 
@@ -47,16 +48,14 @@ public class ArtworkMainPageServiceImpl implements ArtworkMainPageService {
         return saveArtWork.getId();
     }
 
-    @Override
     public Long updateArtwork(Long accountId, Long artworkId, ArtWorkRequestDto.ArtWorkUpdate artWorkUpdate) {
         return null;
     }
 
-    @Override
     public void deleteArtwork(Long accountId, Long artworkId) {
-        List<ArtWorkLikes> likesList = artWorkLikesRepository.findLikesListsByArtWorkId(artworkId);
-        artWorkLikesRepository.deleteAll(likesList);
-        artWorkRepository.delete(artworkValidation(accountId, artworkId));
+//        List<ArtWorkLikes> likesList = artWorkLikesRepository.findLikesListsByArtWorkId(artworkId);
+//        artWorkLikesRepository.deleteAll(likesList);
+//        artWorkRepository.delete(artworkValidation(accountId, artworkId));
     }
 
     private ArtWorks artworkValidation(Long accountId, Long artworkId){

@@ -26,16 +26,20 @@ public class ArtWorkImage {
     @Column(nullable = false)
     private String artworkImg;
 
+    private boolean thumbnail;
+
     @Builder
-    public ArtWorkImage(final ArtWorks artWorks,final String artworkImg) {
+    public ArtWorkImage(final ArtWorks artWorks,final String artworkImg,final boolean thumbnail) {
         this.artWorks = artWorks;
         this.artworkImg = artworkImg;
-        //artWorks.getArtWorkImage().add(this);
+        this.thumbnail = thumbnail;
     }
 
-//    public void deleteArtWorkImage() {
-//        artWorks.getArtWorkImage().remove(this);
-//    }
+    public void updateThumbnail() {
+        this.thumbnail = !this.thumbnail;
+
+    }
+
 }
 
 
