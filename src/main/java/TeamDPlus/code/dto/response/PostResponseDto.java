@@ -1,11 +1,11 @@
 package TeamDPlus.code.dto.response;
 
-import TeamDPlus.code.dto.ArtWorkCommentDto;
-import TeamDPlus.code.dto.ImageUrlDto;
+import TeamDPlus.code.dto.common.CommonDto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -25,14 +25,14 @@ public class PostResponseDto {
         private Boolean is_bookmark;
         private Long like_count;
         private String category;
-        private LocalDateTime create_time;
-        private LocalDateTime modify_time;
+        private Timestamp create_time;
+        private Timestamp modify_time;
 
         @Builder
-        public PostPageMain(Long post_id, Long account_id, String title, String img,
-                            String content, Long view_count, Boolean is_like,
-                            Boolean is_bookmark, Long like_count, String category,
-                            LocalDateTime create_time, LocalDateTime modify_time) {
+        public PostPageMain(final Long post_id, final Long account_id, final String title, final String img,
+                            final String content, final Long view_count, final Boolean is_like,
+                            final Boolean is_bookmark, final Long like_count, final String category,
+                            final Timestamp create_time, final Timestamp modify_time) {
             this.post_id = post_id;
             this.account_id = account_id;
             this.title = title;
@@ -55,24 +55,24 @@ public class PostResponseDto {
         private Long post_id;
         private Long account_id;
         private String title;
-        private List<ImageUrlDto> img;
+        private List<CommonDto.ImgUrlDto> img;
         private String content;
         private Long view_count;
         private Boolean is_like;
         private Boolean is_bookmark;
         private Long like_count;
         private String category;
-        private List<ArtWorkCommentDto> comment;
-        private LocalDateTime create_time;
-        private LocalDateTime modify_time;
+        private List<CommonDto.CommentDto> comment;
+        private Timestamp create_time;
+        private Timestamp modify_time;
 
         @Builder
 
-        public PostDetailPage(Long post_id, Long account_id, String title,
-                              List<ImageUrlDto> img, String content, Long view_count,
-                              Boolean is_like, Boolean is_bookmark, Long like_count,
-                              String category, List<ArtWorkCommentDto> comment,
-                              LocalDateTime create_time, LocalDateTime modify_time) {
+        public PostDetailPage(final Long post_id,final Long account_id,final String title,
+                              final List<CommonDto.ImgUrlDto> img,final String content,final Long view_count,
+                              final Boolean is_like,final Boolean is_bookmark,final Long like_count,
+                              final String category,final List<CommonDto.CommentDto> comment,
+                              final Timestamp create_time,final Timestamp modify_time) {
             this.post_id = post_id;
             this.account_id = account_id;
             this.title = title;
@@ -102,14 +102,14 @@ public class PostResponseDto {
         private Boolean is_bookmark;
         private Long like_count;
         private String category;
-        private LocalDateTime create_time;
-        private LocalDateTime modify_time;
+        private Timestamp create_time;
+        private Timestamp modify_time;
 
         @Builder
 
-        public PostBookmarkPage(Long post_id, Long account_id, String title, String img, String content,
-                                Long view_count, Boolean is_like, Boolean is_bookmark, Long like_count,
-                                String category, LocalDateTime create_time, LocalDateTime modify_time) {
+        public PostBookmarkPage(final Long post_id,final Long account_id,final String title,final String img,final String content,
+                                final Long view_count,final Boolean is_like,final Boolean is_bookmark,final Long like_count,
+                                final String category,final Timestamp create_time,final Timestamp modify_time) {
             this.post_id = post_id;
             this.account_id = account_id;
             this.title = title;

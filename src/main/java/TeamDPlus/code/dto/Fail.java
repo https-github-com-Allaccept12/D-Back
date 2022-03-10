@@ -10,7 +10,7 @@ public class Fail {
     private String result = "fail";
     private String msg;
 
-    public Fail(String msg) {
+    public Fail(final String msg) {
         this.msg = msg;
     }
 }

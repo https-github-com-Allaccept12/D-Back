@@ -12,7 +12,7 @@ public class Success<T> {
     private String msg;
     private T data;
 
-    public Success( String msg, T data) {
+    public Success(final String msg,final T data) {
         this.result = "success";
         this.msg = msg;
         this.data = data;

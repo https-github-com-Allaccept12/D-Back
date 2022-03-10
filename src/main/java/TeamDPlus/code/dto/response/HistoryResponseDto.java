@@ -16,7 +16,7 @@ public class HistoryResponseDto {
         private String history_content;
 
         @Builder
-        public History(Long history_id, String history_name, String history_title, String history_content) {
+        public History(final Long history_id,final String history_name,final String history_title,final String history_content) {
             this.history_id = history_id;
             this.history_name = history_name;
             this.history_title = history_title;
