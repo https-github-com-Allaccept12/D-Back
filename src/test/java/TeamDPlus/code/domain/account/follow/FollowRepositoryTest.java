@@ -48,9 +48,7 @@ class FollowRepositoryTest {
         followSet(account1.getId(), account3.getId());
         //when
         List<FollowResponseDto.FollowList> findId = followRepository.findAllByFollowingId(account3.getId());
-        for (FollowResponseDto.FollowList followList : findId) {
-            System.out.println("followList = " + followList.getAccount_id());
-        }
+
         //then
         assertThat(follow1.getFollowerId()).isEqualTo(account1.getId());
         assertThat(follow2.getFollowerId()).isEqualTo(account2.getId());
@@ -64,7 +62,7 @@ class FollowRepositoryTest {
     @Test
     public void 팔로워_리스트_쿼리() throws Exception {
         //given
-        //account3을 1,2가 팔로우
+        //account1이 2,3을 팔로우
         Account account1 = testAccountSet("회원 1");
         Account account2 = testAccountSet("회원 2");
         Account account3 = testAccountSet("회원 3");
@@ -73,9 +71,7 @@ class FollowRepositoryTest {
         followSet(account1.getId(), account3.getId());
         //when
         List<FollowResponseDto.FollowList> findId = followRepository.findAllByFollowerId(account1.getId());
-        for (FollowResponseDto.FollowList followList : findId) {
-            System.out.println("followList = " + followList.getAccount_id());
-        }
+
         //then
         assertThat(follow1.getFollowerId()).isEqualTo(account1.getId());
         assertThat(follow2.getFollowerId()).isEqualTo(account1.getId());

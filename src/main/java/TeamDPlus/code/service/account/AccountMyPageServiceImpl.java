@@ -52,7 +52,7 @@ public class AccountMyPageServiceImpl implements AccountMyPageService{
         return artWorkRepository.findArtWorkByBookMart(accountId);
     }
 
-    //마이페이지/
+
 
 
 

@@ -5,17 +5,17 @@ import TeamDPlus.code.domain.account.AccountRepository;
 import TeamDPlus.code.domain.account.follow.Follow;
 import TeamDPlus.code.domain.account.follow.FollowRepository;
 import TeamDPlus.code.dto.request.AccountRequestDto;
+import TeamDPlus.code.dto.response.FollowResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class FollowService {
 
-
     private final FollowRepository followRepository;
-
-    private final AccountRepository accountRepository;
 
     public void follow(Long following_id, Long account_id) {
         if (followRepository.existsByFollowerIdAndAndFollowingId(account_id,following_id)) {
@@ -30,6 +30,16 @@ public class FollowService {
           throw new IllegalArgumentException("이미 언팔로우한 사람 입니다.");
         }
         followRepository.deleteByFollowerIdAndFollowingId(account_id,unFollowing_id);
+    }
+
+    //accountId를 팔로잉 하고있는 사람들의 리스트
+    public List<FollowResponseDto.FollowList> findFollowingList(Long accountId) {
+        return followRepository.findAllByFollowingId(accountId);
+    }
+
+    //accountId가 팔로잉 하고있는 사람들의 리스트
+    public List<FollowResponseDto.FollowList> findFollowerList(Long accountId) {
+        return followRepository.findAllByFollowerId(accountId);
     }
 
 }
