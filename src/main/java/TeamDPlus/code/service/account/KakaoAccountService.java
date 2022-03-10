@@ -1,4 +1,4 @@
-package TeamDPlus.code.service;
+package TeamDPlus.code.service.account;
 
 import TeamDPlus.code.domain.account.Account;
 import TeamDPlus.code.domain.account.AccountRepository;
@@ -17,9 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;

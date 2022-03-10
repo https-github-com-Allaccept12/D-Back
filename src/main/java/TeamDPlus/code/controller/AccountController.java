@@ -1,7 +1,7 @@
 package TeamDPlus.code.controller;
 
 import TeamDPlus.code.dto.Success;
-import TeamDPlus.code.service.KakaoAccountService;
+import TeamDPlus.code.service.account.KakaoAccountService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
