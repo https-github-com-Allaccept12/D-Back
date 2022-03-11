@@ -18,41 +18,41 @@ import TeamDPlus.code.domain.post.QPost;
 import java.util.List;
 
 import static TeamDPlus.code.domain.account.QAccount.account;
+import static TeamDPlus.code.domain.artwork.QArtWorks.artWorks;
 import static TeamDPlus.code.domain.post.QPost.post;
+import static TeamDPlus.code.domain.post.bookmark.QPostBookMark.postBookMark;
+import static TeamDPlus.code.domain.post.comment.QPostComment.postComment;
 import static TeamDPlus.code.domain.post.image.QPostImage.postImage;
+import static TeamDPlus.code.domain.post.like.QPostLikes.postLikes;
 
 @RequiredArgsConstructor
 public class PostRepositoryImpl implements PostRepositoryCustom{
 
-    private final JPAQueryFactory jpaQueryFactory;
+    private final JPAQueryFactory queryFactory;
 
     // 전체 페이지
     @Override
     public Page<PostResponseDto.PostPageMain> findAllPost(Long lastPostId, Pageable pageable) {
-        List<PostResponseDto.PostPageMain> result = jpaQueryFactory
+        List<PostResponseDto.PostPageMain> fetch = queryFactory
                 .select(Projections.constructor(PostResponseDto.PostPageMain.class,
                         post.id,
                         account.id,
                         account.nickname,
+                        account.profileImg,
                         post.title,
-                        postImage.postImg,
                         post.category,
-                        post.view,
                         post.content,
-                        post.created,
-                        post.modified
+                        post.created
                 ))
                 .from(post)
+                .join(account).on(account.id.eq(post.account.id))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
-                .orderBy(post.created.desc())
+                .where(post.id.lt(12))
                 .fetch();
-
-        int count = result.size();
-
-        return new PageImpl<>(result, pageable, count);
+        int count = fetch.size();
+        return new PageImpl<>(fetch, pageable, count);
     }
-
     public BooleanExpression isLastPost(Long lastPostId){
         return lastPostId != 0 ? post.id.lt(lastPostId) : null;
     }

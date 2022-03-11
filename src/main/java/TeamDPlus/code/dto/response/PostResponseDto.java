@@ -19,26 +19,30 @@ public class PostResponseDto {
         private Long account_id;
 
         private String account_nickname;
+        private String account_profile;
         private String title;
-        private String img;
         private String content;
-        private Long view_count;
+        private Long bookmark_count;
         private Long like_count;
+        private Long comment_count;
         private String category;
         private Timestamp create_time;
 
+        // 태그 탭 상의할 것
         @Builder
-        public PostPageMain(final Long post_id, final Long account_id, final String account_nickname,
-                            final String title, final String img, final String content, final Long view_count,
-                            final Long like_count,final String category, final Timestamp create_time) {
+        public PostPageMain(final Long post_id, final Long account_id, final String account_nickname, final String account_profile,
+                            final String title, final String content, final String category, final Timestamp create_time
+        // final Long bookmark_count, final Long comment_count, final Long like_count,
+        ) {
             this.post_id = post_id;
             this.account_id = account_id;
             this.account_nickname = account_nickname;
+            this.account_profile = account_profile;
             this.title = title;
-            this.img = img;
             this.content = content;
-            this.view_count = view_count;
-            this.like_count = like_count;
+//            this.bookmark_count = bookmark_count;
+//            this.like_count = like_count;
+//            this.comment_count = comment_count;
             this.category = category;
             this.create_time = create_time;
         }

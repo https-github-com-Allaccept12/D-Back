@@ -3,6 +3,7 @@ package TeamDPlus.code.domain.post.image;
 
 import TeamDPlus.code.domain.post.Post;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -25,6 +26,7 @@ public class PostImage {
     @JoinColumn(name = "post_id")
     private Post post;
 
+    @Builder
     public PostImage(final String postImg,final Post post) {
         this.postImg = postImg;
         this.post = post;

@@ -144,8 +144,8 @@ class ArtWorkRepositoryTest {
                 .where(artWorkBookMark.account.id.eq(account1.getId()).and(artWorks.scope.eq("public")))
                 .fetch();
         //then
-        log.info(bookMarkList.get(0).toString());
-        log.info(bookMarkList.get(1).toString());
+        //log.info(bookMarkList.get(0).toString());
+        //log.info(bookMarkList.get(1).toString());
 
         assertThat(bookMarkList.get(0).getImg()).isEqualTo(artWorkImage1.getArtworkImg());
         assertThat(bookMarkList.get(0).getAccount_nickname()).isEqualTo(account1.getNickname());
