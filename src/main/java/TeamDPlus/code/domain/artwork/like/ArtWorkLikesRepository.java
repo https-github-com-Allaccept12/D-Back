@@ -4,6 +4,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface ArtWorkLikesRepository extends JpaRepository<ArtWorkLikes, Long> {
-    List<ArtWorkLikes> findLikesListsByArtWorkId(Long artworkId);
+public interface ArtWorkLikesRepository extends JpaRepository<ArtWorkLikes, Long>,ArtWorkLikesRepositoryCustom {
+
+    List<Long> findArtWorkLikesIdByArtWorksId(Long artwWorkId);
+
+
+
 }

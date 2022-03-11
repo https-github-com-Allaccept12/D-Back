@@ -1,5 +1,8 @@
 package TeamDPlus.code.dto.response;
+import TeamDPlus.code.domain.account.Account;
 import TeamDPlus.code.domain.artwork.ArtWorks;
+import TeamDPlus.code.domain.artwork.image.ArtWorkImage;
+import TeamDPlus.code.domain.artwork.like.ArtWorkLikes;
 import TeamDPlus.code.dto.common.CommonDto;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,41 +19,30 @@ public class ArtWorkResponseDto {
 
         private Long artwork_id;
         private Long account_id;
+        private String account_nickname;
+        private String account_profile;
+        private String category;
         private String img;
         private Long view_count;
         private Long like_count;
-        private String category;
+        private boolean is_like;
         private Timestamp create_time;
-        private Timestamp modify_time;
 
         @Builder
-        public ArtworkPageMain(final Long artwork_id,final Long account_id,final String scope,final String title,final String img,
-                               final String content,final Long view_count,final Boolean is_like,final Boolean is_bookmark,final Long like_count,
-                               final String category,final Timestamp create_time,final Timestamp modify_time) {
+        public ArtworkPageMain(final Long artwork_id,final Long account_id,final String account_nickname,final String account_profile,
+                               final String img,final Long view_count,final String category,final Timestamp create_time) {
             this.artwork_id = artwork_id;
             this.account_id = account_id;
             this.img = img;
+            this.account_profile = account_profile;
             this.view_count = view_count;
-            this.like_count = like_count;
-            this.category = category;
             this.create_time = create_time;
-            this.modify_time = modify_time;
+            this.category = category;
+            this.account_nickname = account_nickname;
         }
-
-        public static ArtworkPageMain from(final ArtWorks artwork, final Account account,
-                                           final ArtWorkImage artWorkImage,
-                                           final ArtWorkLikes artWorkLikes,
-                                           final Long like_count){
-            return ArtworkPageMain.builder()
-                    .artwork_id(artwork.getId())
-                    .account_id(account.getId())
-                    .img(artWorkImage.getArtworkImg())
-                    .view_count(artwork.getView())
-                    .like_count(like_count)
-                    .category(artwork.getCategory())
-                    .create_time(artwork.getCreated())
-                    .modify_time(artwork.getModified())
-            .build();
+        public void setLikeCountAndIsLike(Long likeCount,boolean is_like) {
+            this.is_like = is_like;
+            this.like_count = likeCount;
         }
     }
 

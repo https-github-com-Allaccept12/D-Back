@@ -17,6 +17,9 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.annotation.Commit;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +27,7 @@ import javax.persistence.EntityManager;
 
 import java.util.List;
 
+import static TeamDPlus.code.domain.account.QAccount.account;
 import static TeamDPlus.code.domain.artwork.QArtWorks.artWorks;
 import static TeamDPlus.code.domain.artwork.bookmark.QArtWorkBookMark.artWorkBookMark;
 import static TeamDPlus.code.domain.artwork.image.QArtWorkImage.artWorkImage;
@@ -116,8 +120,8 @@ class ArtWorkRepositoryTest {
         Account account1 = testAccountSet();
         ArtWorks artWorks1 = testArtWorksSet(account1);
         ArtWorks artWorks2 = testArtWorksSet(account1);
-        ArtWorkImage artWorkImage1 = testArtWorkImageSet(artWorks1,"test1.img");
-        ArtWorkImage artWorkImage2 = testArtWorkImageSet(artWorks2,"test2.img");
+        ArtWorkImage artWorkImage1 = testArtWorkImageSet(artWorks1,"test1.img",true);
+        ArtWorkImage artWorkImage2 = testArtWorkImageSet(artWorks2,"test2.img",true);
 
         ArtWorkBookMark testArtWorkBookMark = ArtWorkBookMark.builder().artWorks(artWorks1).account(account1).build();
         artWorkBookMarkRepository.save(testArtWorkBookMark);
@@ -149,6 +153,45 @@ class ArtWorkRepositoryTest {
         assertThat(bookMarkList.get(1).getAccount_nickname()).isEqualTo(account1.getNickname());
     }
 
+    @Test
+    public void 작품_전체_불러오기() throws Exception {
+        //given
+        Account account1 = testAccountSet();
+        ArtWorks artWorks1 = testArtWorksSet(account1);
+        ArtWorks artWorks2 = testArtWorksSet(account1);
+        ArtWorkImage artWorkImage1 = testArtWorkImageSet(artWorks1,"test1.img",false);
+        ArtWorkImage artWorkImage2 = testArtWorkImageSet(artWorks1,"test2.img",true);
+        ArtWorkImage artWorkImage3 = testArtWorkImageSet(artWorks2, "test3.img", true);
+        ArtWorkImage artWorkImage4 = testArtWorkImageSet(artWorks2, "test4.img", false);
+        Pageable paging = PageRequest.of(0,4);
+        //when
+        List<ArtWorkResponseDto.ArtworkPageMain> result = queryFactory
+                .select(Projections.constructor(ArtWorkResponseDto.ArtworkPageMain.class,
+                        artWorks.id,
+                        account.id,
+                        account.nickname,
+                        account.profileImg,
+                        QArtWorkImage.artWorkImage.artworkImg,
+                        artWorks.view,
+                        artWorks.category,
+                        artWorks.created
+                ))
+                .from(artWorks)
+                .join(account).on(account.id.eq(artWorks.account.id))
+                .join(QArtWorkImage.artWorkImage).on(QArtWorkImage.artWorkImage.artWorks.eq(artWorks).and(QArtWorkImage.artWorkImage.thumbnail.isTrue()))
+                .offset(paging.getOffset())
+                .limit(paging.getPageSize())
+                .where(artWorks.id.lt(10))
+                .fetch();
+        //then
+        assertThat(result.size()).isEqualTo(2);
+        assertThat(result.get(0).getImg()).isEqualTo(artWorkImage2.getArtworkImg());
+        assertThat(result.get(0).getAccount_id()).isEqualTo(account1.getId());
+        assertThat(result.get(1).getImg()).isEqualTo(artWorkImage3.getArtworkImg());
+        assertThat(result.get(1).getAccount_id()).isEqualTo(account1.getId());
+
+
+    }
 
 
     private Account testAccountSet() {
@@ -182,12 +225,14 @@ class ArtWorkRepositoryTest {
         return saveArtWork;
     }
 
-    private ArtWorkImage testArtWorkImageSet(ArtWorks artWorks,String test) {
+    private ArtWorkImage testArtWorkImageSet(ArtWorks artWorks,String test,boolean thumb) {
         ArtWorkImage testArtWorkImage = ArtWorkImage.builder()
                 .artWorks(artWorks)
                 .artworkImg(test)
+                .thumbnail(thumb)
                 .build();
         ArtWorkImage save = artWorkImageRepository.save(testArtWorkImage);
+
         em.flush();
         em.clear();
         return save;
