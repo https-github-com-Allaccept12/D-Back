@@ -20,4 +20,8 @@ public interface ArtWorkRepositoryCustom {
 
     Page<ArtWorkResponseDto.ArtworkMain> findAllArtWork(Long lastArtWorkId,Pageable pageable);
 
+    void updateAllArtWorkIsMasterToFalse(Long accountId);
+
+    void updateAllArtWorkIsMasterToTrue(List<Long> artWorkId);
+
 }

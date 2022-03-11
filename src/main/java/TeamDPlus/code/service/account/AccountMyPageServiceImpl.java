@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -52,14 +53,30 @@ public class AccountMyPageServiceImpl implements AccountMyPageService{
     @Transactional
     public Long updateAccountPortfolio(final AccountRequestDto.PortfolioUpdate dto, Long accountId) {
         Account account = accountRepository.findById(accountId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+        //프로필 기본 설정 update
         account.updateProfile(dto);
+        //히스토리 전체 삭제 벌크
         historyRepository.deleteAllByAccountId(accountId);
+
         dto.getHistory().forEach((history) -> {
-            historyRepository.save()
+            historyRepository.save(History.builder()
+                            .companyName(history.getCompany_name())
+                            .companyDepartment(history.getCompany_department())
+                            .companyPosition(history.getCompany_position())
+                            .achievements(history.getAchievements())
+                            .workStart(history.getAchievements())
+                            .workEnd(history.getWork_end())
+                            .account(account)
+                            .build());
         });
-
-
-
+        List<Long> artworkId = dto.getArtWork_feed().stream()
+                .map(ArtWorkRequestDto.ArtWorkPortFolioUpdate::getArtwork_id)
+                .collect(Collectors.toList());
+        //전체 해당 유저의 작품들의 Is_Master를 False로 벌크
+        artWorkRepository.updateAllArtWorkIsMasterToFalse(accountId);
+        //유저가 원하는 작품들 Is_Master를 True로 벌크
+        artWorkRepository.updateAllArtWorkIsMasterToTrue(artworkId);
+        return accountId;
     }
 
     //마이페이지/유저작품

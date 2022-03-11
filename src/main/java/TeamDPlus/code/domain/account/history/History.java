@@ -30,7 +30,7 @@ public class History  {
 
     private String workEnd;
     @Lob
-    private String Achievements;
+    private String achievements;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id")
@@ -38,13 +38,13 @@ public class History  {
 
     @Builder
     public History(String companyName, String companyDepartment, String companyPosition,
-                   String workStart, String workEnd, String Achievements, Account account) {
+                   String workStart, String workEnd, String achievements, Account account) {
         this.companyName = companyName;
         this.companyDepartment = companyDepartment;
         this.companyPosition = companyPosition;
         this.workStart = workStart;
         this.workEnd = workEnd;
-        this.Achievements = Achievements;
+        this.achievements = achievements;
         this.account = account;
     }
 
@@ -54,7 +54,7 @@ public class History  {
         this.companyPosition = dto.getCompany_position();
         this.workStart = dto.getWork_start();
         this.workEnd = dto.getWork_end();
-        this.Achievements = dto.getAchievements();
+        this.achievements = dto.getAchievements();
     }
 
 }

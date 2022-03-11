@@ -116,6 +116,7 @@ public class Account extends BaseEntity {
         this.instagram = dto.getInsta();
         this.career = dto.getCareer();
         this.phoneNumber = dto.getPhone_number();
+        this.specialty = dto.getSpecialty();
     }
 
 

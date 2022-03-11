@@ -101,6 +101,26 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom{
                 .fetch();
         return new PageImpl<>(result,paging,result.size());
     }
+
+    @Override
+    public void updateAllArtWorkIsMasterToFalse(Long accountId) {
+        queryFactory
+                .update(artWorks)
+                .set(artWorks.isMaster, false)
+                .where(artWorks.account.id.eq(accountId))
+                .execute();
+    }
+
+    //in절을 통한 List 벌크
+    @Override
+    public void updateAllArtWorkIsMasterToTrue(List<Long> accountIdList) {
+        queryFactory
+                .update(artWorks)
+                .set(artWorks.isMaster, true)
+                .where(artWorks.account.id.in(accountIdList))
+                .execute();
+    }
+
     public BooleanExpression isLastArtworkId(Long lastArtWorkId) {
         return lastArtWorkId != 0 ? artWorks.id.lt(lastArtWorkId) : null;
     }
