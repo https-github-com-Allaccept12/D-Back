@@ -92,6 +92,10 @@ public class Account extends BaseEntity {
         this.webPage = webPage;
     }
 
+    public void refreshToken(final String refreshToken) {
+        this.refreshToken = refreshToken;
+    }
+
     public void initTendency(final String requestTendency) {
         this.tendency = requestTendency;
     }

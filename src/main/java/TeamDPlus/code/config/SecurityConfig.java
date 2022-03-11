@@ -51,11 +51,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .antMatchers("/oauth2/**").permitAll()
                     .antMatchers("/user/**").permitAll()
                     .antMatchers("/").permitAll()
-                    .anyRequest().authenticated(); // 그외 나머지 요청은 사용권한 체크
+                    .anyRequest().authenticated() // 그외 나머지 요청은 사용권한 체크
+                .and()
+                    .apply(new JwtSecurityConfig(jwtTokenProvider));
         http.addFilterBefore(corsFilter,
                 SecurityContextPersistenceFilter.class);
-        http.addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),
-                UsernamePasswordAuthenticationFilter.class);
     }
 
     @Bean

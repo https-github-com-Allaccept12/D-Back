@@ -23,6 +23,9 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import javax.transaction.Transactional;
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 public class GoogleAccountService {
@@ -30,6 +33,7 @@ public class GoogleAccountService {
     private final AccountRepository accountRepository;
     private final JwtTokenProvider jwtTokenProvider;
 
+    @Transactional
     public LoginResponseDto googleLogin(String code) throws JsonProcessingException {
         // 1. "인가 코드"로 "액세스 토큰" 요청
         String accessToken = getAccessToken(code);
@@ -126,6 +130,9 @@ public class GoogleAccountService {
         Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String token = jwtTokenProvider.createToken(Long.toString(googleUser.getId()), googleUser.getEmail());
+        String refreshTokenValue = UUID.randomUUID().toString().replace("-", "");
+        String refreshToken = jwtTokenProvider.createRefreshToken(refreshTokenValue);
+        googleUser.refreshToken(refreshToken);
         LoginResponseDto responseDto = LoginResponseDto.builder()
                 .account_id(googleUser.getId())
                 .profile_img(googleUser.getProfileImg())

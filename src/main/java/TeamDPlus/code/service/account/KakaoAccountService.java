@@ -23,6 +23,9 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import javax.transaction.Transactional;
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 public class KakaoAccountService {
@@ -30,6 +33,7 @@ public class KakaoAccountService {
     private final AccountRepository accountRepository;
     private final JwtTokenProvider jwtTokenProvider;
 
+    @Transactional
     public LoginResponseDto kakaoLogin(String code) throws JsonProcessingException {
         // 1. "인가 코드"로 "액세스 토큰" 요청
         String accessToken = getAccessToken(code);
@@ -128,6 +132,9 @@ public class KakaoAccountService {
         Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String token = jwtTokenProvider.createToken(Long.toString(kakaoUser.getId()), kakaoUser.getEmail());
+        String refreshTokenValue = UUID.randomUUID().toString().replace("-", "");
+        String refreshToken = jwtTokenProvider.createRefreshToken(refreshTokenValue);
+        kakaoUser.refreshToken(refreshToken);
         LoginResponseDto responseDto = LoginResponseDto.builder()
                 .account_id(kakaoUser.getId())
                 .profile_img(kakaoUser.getProfileImg())
