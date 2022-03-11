@@ -1,7 +1,9 @@
 package TeamDPlus.code.domain.artwork;
 
 import TeamDPlus.code.dto.response.ArtWorkResponseDto;
+import org.springframework.data.domain.Page;
 
+import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.Optional;
 
@@ -12,6 +14,10 @@ public interface ArtWorkRepositoryCustom {
     // visitAccountId 게시글 등록자가 내 마이페이지에 방문했을때 게시글 표시 public, private 구분
     List<ArtWorkResponseDto.ArtWorkFeed> findByArtWorkImageAndAccountId(Long visitAccountId,Long accountId,boolean isPortfolio);
 
-    List<ArtWorkResponseDto.ArtWorkBookMark> findArtWorkByBookMart(Long accountId);
+    List<ArtWorkResponseDto.ArtWorkBookMark> findArtWorkByBookMark(Long accountId);
+
+    List<ArtWorkResponseDto.ArtWorkFeed> findArtWorkByMostViewAndMostLike();
+
+    Page<ArtWorkResponseDto.ArtworkPageMain> findAllArtWork(Long lastArtWorkId,Pageable pageable);
 
 }

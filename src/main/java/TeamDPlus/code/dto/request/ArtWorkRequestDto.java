@@ -1,5 +1,6 @@
 package TeamDPlus.code.dto.request;
 import TeamDPlus.code.dto.common.CommonDto;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,15 +14,11 @@ public class ArtWorkRequestDto {
     @NoArgsConstructor
     public static class ArtWorkUpdate {
         private String scope;
-
         private String title;
-
         private String content;
-
         private List<CommonDto.ImgUrlDto> img;
-
+        private String category;
         private Timestamp work_start;
-
         private Timestamp work_end;
     }
 
@@ -44,24 +41,6 @@ public class ArtWorkRequestDto {
 
         private boolean is_master;
 
-        @Builder
-        public ArtWorkCreate(final String scope,final  String title,final  String content,
-                             final List<CommonDto.ImgUrlDto> img,final  String category,
-                             final Timestamp work_start,final Timestamp work_end, final boolean is_master) {
-            this.scope = scope;
-            this.title = title;
-            this.content = content;
-            this.img = img;
-            this.category = category;
-            this.work_start = work_start;
-            this.work_end = work_end;
-            this.is_master = is_master;
-        }
-
-
-
     }
-
-
 
 }

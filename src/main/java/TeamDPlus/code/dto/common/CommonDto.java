@@ -22,5 +22,6 @@ public class CommonDto {
     @NoArgsConstructor
     public static class ImgUrlDto {
         private String img_url;
+        private boolean thumbnail;
     }
 }

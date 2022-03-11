@@ -52,9 +52,6 @@ public class ArtWorks extends BaseEntity {
     @JoinColumn(name = "account_id")
     private Account account;
 
-//    @OneToMany(mappedBy = "artWorks",cascade = CascadeType.REMOVE)
-//    private final List<ArtWorkImage> artWorkImage = new ArrayList<>();
-
     @Builder
     public ArtWorks(final String scope,final String title,final String content,final String category,
                     final Long view,final Timestamp workStart,final Timestamp workEnd,final Account account, final boolean isMaster) {
@@ -69,10 +66,15 @@ public class ArtWorks extends BaseEntity {
         this.isMaster = isMaster;
     }
 
+    public void addViewCount() {
+        this.view += 1;
+    }
+
     public void updateArtWork(ArtWorkRequestDto.ArtWorkUpdate dto) {
         this.scope = dto.getScope();
         this.title = dto.getTitle();
         this.content = dto.getContent();
+        this.category = dto.getCategory();
         this.workStart = dto.getWork_start();
         this.workEnd = dto.getWork_end();
     }
@@ -97,3 +99,11 @@ public class ArtWorks extends BaseEntity {
 
 
 }
+
+
+
+
+
+
+
+
