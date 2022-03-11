@@ -26,8 +26,11 @@ public class Account extends BaseEntity {
     @Column(nullable = false)
     private String nickname;
 
-    @Lob
-    private String content;
+    @Column(columnDefinition = "varchar(255) default ''")
+    private String titleContent;
+
+    @Column(columnDefinition = "varchar(255) default ''")
+    private String subContent;
 
     @Column(columnDefinition = "VARCHAR(255) default ''")
     private String profileImg;
@@ -67,13 +70,14 @@ public class Account extends BaseEntity {
     private Specialty specialty;
 
     @Builder
-    public Account(final String email, final String nickname, final String content, final String profileImg,
+    public Account(final String email, final String nickname, final String subContent,final String titleContent, final String profileImg,
                    final int career, final String phoneNumber, final String workTime,
                    final String workEmail, final String tendency, final Long exp, final String refreshToken,
                    final String linkedIn, final String brunch, final String instagram, final String webPage)  {
         this.email = email;
         this.nickname = nickname;
-        this.content = content;
+        this.titleContent = titleContent;
+        this.subContent = subContent;
         this.profileImg = profileImg;
         this.career = career;
         this.phoneNumber = phoneNumber;
@@ -102,7 +106,8 @@ public class Account extends BaseEntity {
 
     public void updateProfile(final AccountRequestDto.ProfileUpdate dto) {
         this.nickname = dto.getNickname();
-        this.content = dto.getIntro_content();
+        this.titleContent = dto.getTitle_content();
+        this.subContent = dto.getSub_content();
         this.workEmail = dto.getWork_email();
         this.workTime = dto.getWork_time();
         this.linkedIn = dto.getLinked_in();

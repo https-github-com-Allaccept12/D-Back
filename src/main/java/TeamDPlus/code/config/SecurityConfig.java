@@ -2,7 +2,6 @@ package TeamDPlus.code.config;
 
 import TeamDPlus.code.jwt.JwtAuthenticationFilter;
 import TeamDPlus.code.jwt.JwtTokenProvider;
-import TeamDPlus.code.service.account.OAuth2DetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,7 +26,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final CorsFilter corsFilter;
-    private final OAuth2DetailsService oAuth2DetailsService;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -53,11 +51,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .antMatchers("/oauth2/**").permitAll()
                     .antMatchers("/user/**").permitAll()
                     .antMatchers("/").permitAll()
-                    .anyRequest().authenticated() // 그외 나머지 요청은 사용권한 체크
-                .and()
-                    .oauth2Login()
-                    .userInfoEndpoint()
-                    .userService(oAuth2DetailsService);
+                    .anyRequest().authenticated(); // 그외 나머지 요청은 사용권한 체크
         http.addFilterBefore(corsFilter,
                 SecurityContextPersistenceFilter.class);
         http.addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),

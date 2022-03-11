@@ -3,22 +3,16 @@ package TeamDPlus.code.jwt;
 import TeamDPlus.code.domain.account.Account;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import java.util.Collection;
 import java.util.Map;
 
-public class UserDetailsImpl implements UserDetails, OAuth2User {
+public class UserDetailsImpl implements UserDetails {
+
     private final Account account;
-    private Map<String, Object> attributes;
 
     public UserDetailsImpl(Account user) {
         this.account = user;
-    }
-
-    public UserDetailsImpl(Account user, Map<String, Object> attributes) {
-        this.account = user;
-        this.attributes = attributes;
     }
 
     public Account getUser() {
@@ -60,13 +54,4 @@ public class UserDetailsImpl implements UserDetails, OAuth2User {
         return true;
     }
 
-    @Override
-    public String getName() {
-        return null;
-    }
-
-    @Override
-    public Map<String, Object> getAttributes() {
-        return attributes;
-    }
 }

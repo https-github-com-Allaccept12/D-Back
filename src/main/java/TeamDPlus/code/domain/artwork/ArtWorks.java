@@ -11,6 +11,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,22 +40,24 @@ public class ArtWorks extends BaseEntity {
     private String category;
 
     @Column(columnDefinition = "BIGINT default 0")
-    private int view;
+    private Long view;
 
     private Timestamp workStart;
 
     private Timestamp workEnd;
 
+    private Boolean isMaster = false;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id")
     private Account account;
 
-    @OneToMany(mappedBy = "artWorks",cascade = CascadeType.REMOVE)
-    private final List<ArtWorkImage> artWorkImage = new ArrayList<>();
+//    @OneToMany(mappedBy = "artWorks",cascade = CascadeType.REMOVE)
+//    private final List<ArtWorkImage> artWorkImage = new ArrayList<>();
 
     @Builder
     public ArtWorks(final String scope,final String title,final String content,final String category,
-                    final int view,final Timestamp workStart,final Timestamp workEnd,final Account account) {
+                    final Long view,final Timestamp workStart,final Timestamp workEnd,final Account account) {
         this.scope = scope;
         this.title = title;
         this.content = content;
@@ -71,6 +74,9 @@ public class ArtWorks extends BaseEntity {
         this.content = dto.getContent();
         this.workStart = dto.getWork_start();
         this.workEnd = dto.getWork_end();
+    }
+    public void updateArtWorkIsMaster() {
+        this.isMaster = !isMaster; //false 면 트루 , 트루면 false
     }
 
 

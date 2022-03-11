@@ -29,17 +29,6 @@ spring:
     #hs256 알고리즘 32비트 이상의 시크릿키
     secret: #시크릿값 git ignore 필수
 
-  security:
-    oauth2:
-      client:
-        registration:
-          google: # /oauth2/authorization/google 이 주소를 동작하게 한다.
-            client-id: 519093450264-n3cm4m0h2d95gpipnigtt2erhotp7l58.apps.googleusercontent.com
-            client-secret: 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
-            scope:
-              - email
-              - profile
-
 logging.level:
   org.hibernate.SQL: debug
 
