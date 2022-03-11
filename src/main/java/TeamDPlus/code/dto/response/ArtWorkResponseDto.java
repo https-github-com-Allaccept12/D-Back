@@ -1,8 +1,7 @@
 package TeamDPlus.code.dto.response;
-import TeamDPlus.code.domain.account.Account;
 import TeamDPlus.code.domain.artwork.ArtWorks;
+import TeamDPlus.code.domain.artwork.comment.ArtWorkComment;
 import TeamDPlus.code.domain.artwork.image.ArtWorkImage;
-import TeamDPlus.code.domain.artwork.like.ArtWorkLikes;
 import TeamDPlus.code.dto.common.CommonDto;
 import lombok.Builder;
 import lombok.Getter;
@@ -10,12 +9,13 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 import java.sql.Timestamp;
+import java.util.stream.Collectors;
 
 public class ArtWorkResponseDto {
 
     @Getter
     @NoArgsConstructor
-    public static class ArtworkPageMain {
+    public static class ArtworkMain {
 
         private Long artwork_id;
         private Long account_id;
@@ -29,7 +29,7 @@ public class ArtWorkResponseDto {
         private Timestamp create_time;
 
         @Builder
-        public ArtworkPageMain(final Long artwork_id,final Long account_id,final String account_nickname,final String account_profile,
+        public ArtworkMain(final Long artwork_id,final Long account_id,final String account_nickname,final String account_profile,
                                final String img,final Long view_count,final String category,final Timestamp create_time) {
             this.artwork_id = artwork_id;
             this.account_id = account_id;
@@ -48,7 +48,7 @@ public class ArtWorkResponseDto {
 
     @Getter
     @NoArgsConstructor
-    public static class ArtWorkDetailPage {
+    public static class ArtWorkDetail {
 
         private Long artwork_id;
         private Long account_id;
@@ -61,16 +61,15 @@ public class ArtWorkResponseDto {
         private Boolean is_bookmark;
         private Long like_count;
         private String category;
-        private List<CommonDto.CommentDto> comment;
+        private List<ArtWorkComment> comment;
         private Timestamp create_time;
         private Timestamp modify_time;
 
         @Builder
-        public ArtWorkDetailPage(final Long artwork_id,final Long account_id,final String scope,final String title,
+        public ArtWorkDetail(final Long artwork_id,final Long account_id,final String scope,final String title,
                                  final List<CommonDto.ImgUrlDto> img,final String content,final Long view_count,final Boolean is_like,
                                  final Boolean is_bookmark,final Long like_count,final String category,
-                                 final List<CommonDto.CommentDto> comment,final Timestamp create_time,
-                                 final Timestamp modify_time) {
+                                 final List<ArtWorkComment> comment,final Timestamp create_time, final Timestamp modify_time) {
             this.artwork_id = artwork_id;
             this.account_id = account_id;
             this.scope = scope;
@@ -85,6 +84,28 @@ public class ArtWorkResponseDto {
             this.comment = comment;
             this.create_time = create_time;
             this.modify_time = modify_time;
+        }
+
+        public static ArtWorkDetail from(final List<ArtWorkImage> imgList, final List<ArtWorkComment> commentList,
+                                         final ArtWorks artWorks,final boolean is_like, final boolean is_bookmark,Long like_count) {
+            return ArtWorkDetail.builder()
+                    .artwork_id(artWorks.getId())
+                    .account_id(artWorks.getAccount().getId())
+                    .scope(artWorks.getScope())
+                    .title(artWorks.getTitle())
+                    .img(imgList.stream()
+                            .map(i -> new CommonDto.ImgUrlDto(i.getArtworkImg())).collect(Collectors.toList()))
+                    .content(artWorks.getContent())
+                    .view_count(artWorks.getView())
+                    .category(artWorks.getCategory())
+                    .comment(commentList)
+                    .is_like(is_like)
+                    .is_bookmark(is_bookmark)
+                    .like_count(like_count)
+                    .create_time(artWorks.getCreated())
+                    .modify_time(artWorks.getModified())
+                    .build();
+
         }
     }
     @Getter
@@ -128,6 +149,24 @@ public class ArtWorkResponseDto {
             this.view = view;
         }
     }
+
+    @Getter
+    @NoArgsConstructor
+    public static class ArtWorkComment {
+        private Long account_id;
+        private Long comment_id;
+        private String content;
+        private Timestamp modify_time;
+
+        @Builder
+        public ArtWorkComment(final Long account_id, final Long comment_id, final String content, final Timestamp modify_time) {
+            this.account_id = account_id;
+            this.comment_id = comment_id;
+            this.content = content;
+            this.modify_time = modify_time;
+        }
+    }
+
 
 
 }

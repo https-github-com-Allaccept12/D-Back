@@ -165,20 +165,20 @@ class ArtWorkRepositoryTest {
         ArtWorkImage artWorkImage4 = testArtWorkImageSet(artWorks2, "test4.img", false);
         Pageable paging = PageRequest.of(0,4);
         //when
-        List<ArtWorkResponseDto.ArtworkPageMain> result = queryFactory
-                .select(Projections.constructor(ArtWorkResponseDto.ArtworkPageMain.class,
+        List<ArtWorkResponseDto.ArtworkMain> result = queryFactory
+                .select(Projections.constructor(ArtWorkResponseDto.ArtworkMain.class,
                         artWorks.id,
                         account.id,
                         account.nickname,
                         account.profileImg,
-                        QArtWorkImage.artWorkImage.artworkImg,
+                        artWorkImage.artworkImg,
                         artWorks.view,
                         artWorks.category,
                         artWorks.created
                 ))
                 .from(artWorks)
                 .join(account).on(account.id.eq(artWorks.account.id))
-                .join(QArtWorkImage.artWorkImage).on(QArtWorkImage.artWorkImage.artWorks.eq(artWorks).and(QArtWorkImage.artWorkImage.thumbnail.isTrue()))
+                .join(artWorkImage).on(artWorkImage.artWorks.eq(artWorks).and(artWorkImage.thumbnail.isTrue()))
                 .offset(paging.getOffset())
                 .limit(paging.getPageSize())
                 .where(artWorks.id.lt(10))

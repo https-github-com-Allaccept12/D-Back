@@ -49,7 +49,7 @@ public class AccountMyPageServiceImpl implements AccountMyPageService{
     //마이페이지/스크랩
     @Transactional(readOnly = true)
     public List<ArtWorkResponseDto.ArtWorkBookMark> showAccountArtWorkBookMark(final Long accountId) {
-        return artWorkRepository.findArtWorkByBookMark(accountId);
+        return artWorkRepository.findArtWorkBookMarkByAccountId(accountId);
     }
 
 

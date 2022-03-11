@@ -51,7 +51,7 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom{
     }
 
     @Override
-    public List<ArtWorkResponseDto.ArtWorkBookMark> findArtWorkByBookMark(Long accountId) {
+    public List<ArtWorkResponseDto.ArtWorkBookMark> findArtWorkBookMarkByAccountId(Long accountId) {
         return queryFactory
                 .select(Projections.constructor(ArtWorkResponseDto.ArtWorkBookMark.class,
                         artWorks.id,
@@ -71,10 +71,10 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom{
     }
 
     @Override
-    public Page<ArtWorkResponseDto.ArtworkPageMain> findAllArtWork(Long lastArtworkId, Pageable paging) {
+    public Page<ArtWorkResponseDto.ArtworkMain> findAllArtWork(Long lastArtworkId, Pageable paging) {
 
-        List<ArtWorkResponseDto.ArtworkPageMain> result = queryFactory
-                .select(Projections.constructor(ArtWorkResponseDto.ArtworkPageMain.class,
+        List<ArtWorkResponseDto.ArtworkMain> result = queryFactory
+                .select(Projections.constructor(ArtWorkResponseDto.ArtworkMain.class,
                         artWorks.id,
                         account.id,
                         account.nickname,
@@ -106,4 +106,5 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom{
     public BooleanExpression isPortfolio(boolean isPortfolio) {
         return isPortfolio ? artWorks.isMaster.isTrue() : null;
     }
+
 }
