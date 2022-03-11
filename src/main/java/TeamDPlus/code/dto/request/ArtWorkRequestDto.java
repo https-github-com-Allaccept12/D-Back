@@ -42,10 +42,12 @@ public class ArtWorkRequestDto {
 
         private Timestamp work_end;
 
+        private boolean is_master;
+
         @Builder
-        public ArtWorkCreate(String scope, String title, String content,
-                             List<ImageUrlDto> img, String category,
-                             Timestamp work_start, Timestamp work_end) {
+        public ArtWorkCreate(final String scope,final  String title,final  String content,
+                             final List<CommonDto.ImgUrlDto> img,final  String category,
+                             final Timestamp work_start,final Timestamp work_end, final boolean is_master) {
             this.scope = scope;
             this.title = title;
             this.content = content;
@@ -53,6 +55,7 @@ public class ArtWorkRequestDto {
             this.category = category;
             this.work_start = work_start;
             this.work_end = work_end;
+            this.is_master = is_master;
         }
 
 

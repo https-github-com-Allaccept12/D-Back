@@ -1,5 +1,8 @@
 package TeamDPlus.code.dto.response;
+import TeamDPlus.code.domain.account.Account;
 import TeamDPlus.code.domain.artwork.ArtWorks;
+import TeamDPlus.code.domain.artwork.image.ArtWorkImage;
+import TeamDPlus.code.domain.artwork.like.ArtWorkLikes;
 import TeamDPlus.code.dto.common.CommonDto;
 import lombok.Builder;
 import lombok.Getter;

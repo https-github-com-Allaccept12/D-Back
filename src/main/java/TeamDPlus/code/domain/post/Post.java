@@ -35,12 +35,17 @@ public class Post extends BaseEntity {
     @JoinColumn(name = "account_id")
     private Account account;
 
+    @Column(columnDefinition = "BIGINT default 0")
+    private Long view;
+
     @Builder
-    public Post(final String title,final String content,final String category,final Account account) {
+    public Post(final String title,final String content,final String category,
+                final Account account, final Long view) {
         this.title = title;
         this.content = content;
         this.category = category;
         this.account = account;
+        this.view = view;
     }
 
     public void updatePost(PostRequestDto.PostUpdate dto) {
