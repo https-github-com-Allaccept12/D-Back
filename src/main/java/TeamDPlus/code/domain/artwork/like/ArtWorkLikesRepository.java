@@ -6,8 +6,10 @@ import java.util.List;
 
 public interface ArtWorkLikesRepository extends JpaRepository<ArtWorkLikes, Long>,ArtWorkLikesRepositoryCustom {
 
-    List<Long> findArtWorkLikesIdByArtWorksId(Long artwWorkId);
+    List<Long> findArtWorkLikesIdByArtWorksId(Long artWorkId);
 
+    void deleteAllByArtWorksId(Long artWorkId);
 
+    void deleteByArtWorksIdAndAccountId(Long artWorkId,Long accountId);
 
 }

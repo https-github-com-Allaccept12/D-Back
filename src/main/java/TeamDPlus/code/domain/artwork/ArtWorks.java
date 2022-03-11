@@ -70,7 +70,7 @@ public class ArtWorks extends BaseEntity {
         this.view += 1;
     }
 
-    public void updateArtWork(ArtWorkRequestDto.ArtWorkUpdate dto) {
+    public void updateArtWork(ArtWorkRequestDto.ArtWorkCreateAndUpdate dto) {
         this.scope = dto.getScope();
         this.title = dto.getTitle();
         this.content = dto.getContent();
@@ -82,7 +82,7 @@ public class ArtWorks extends BaseEntity {
         this.isMaster = !isMaster; //false 면 트루 , 트루면 false
     }
 
-    public static ArtWorks of(Account account, ArtWorkRequestDto.ArtWorkCreate dto) {
+    public static ArtWorks of(Account account, ArtWorkRequestDto.ArtWorkCreateAndUpdate dto) {
         return ArtWorks.builder()
                 .account(account)
                 .category(dto.getCategory())

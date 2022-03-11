@@ -10,21 +10,10 @@ import java.util.List;
 
 public class ArtWorkRequestDto {
 
-    @Getter
-    @NoArgsConstructor
-    public static class ArtWorkUpdate {
-        private String scope;
-        private String title;
-        private String content;
-        private List<CommonDto.ImgUrlDto> img;
-        private String category;
-        private Timestamp work_start;
-        private Timestamp work_end;
-    }
 
     @Getter
     @NoArgsConstructor
-    public static class ArtWorkCreate {
+    public static class ArtWorkCreateAndUpdate {
         private String scope;
 
         private String title;
@@ -42,5 +31,14 @@ public class ArtWorkRequestDto {
         private boolean is_master;
 
     }
+
+    @Getter
+    @NoArgsConstructor
+    public static class ArtWorkComment {
+
+        private String content;
+
+    }
+
 
 }
