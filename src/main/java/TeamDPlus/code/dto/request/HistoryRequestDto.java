@@ -9,11 +9,17 @@ public class HistoryRequestDto {
     @NoArgsConstructor
     public static class HistoryUpdate {
 
-        private String history_name;
+        private String company_name;
 
-        private String history_title;
+        private String company_department;
 
-        private String history_content;
+        private String company_position;
+
+        private String work_start;
+
+        private String work_end;
+
+        private String Achievements;
     }
 
 }

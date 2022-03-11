@@ -3,6 +3,7 @@ package TeamDPlus.code.domain.artwork;
 
 import TeamDPlus.code.domain.BaseEntity;
 import TeamDPlus.code.domain.account.Account;
+import TeamDPlus.code.domain.account.Specialty;
 import TeamDPlus.code.domain.artwork.image.ArtWorkImage;
 import TeamDPlus.code.dto.request.ArtWorkRequestDto;
 import lombok.AccessLevel;
@@ -52,9 +53,13 @@ public class ArtWorks extends BaseEntity {
     @JoinColumn(name = "account_id")
     private Account account;
 
+    @Embedded
+    private Specialty specialty;
+
     @Builder
     public ArtWorks(final String scope,final String title,final String content,final String category,
-                    final Long view,final Timestamp workStart,final Timestamp workEnd,final Account account, final boolean isMaster) {
+                    final Long view,final Timestamp workStart,final Timestamp workEnd,final Account account,
+                    final boolean isMaster, final Specialty specialty) {
         this.scope = scope;
         this.title = title;
         this.content = content;
@@ -64,6 +69,7 @@ public class ArtWorks extends BaseEntity {
         this.workEnd = workEnd;
         this.account = account;
         this.isMaster = isMaster;
+        this.specialty = specialty;
     }
 
     public void addViewCount() {
@@ -92,6 +98,7 @@ public class ArtWorks extends BaseEntity {
                 .workStart(dto.getWork_start())
                 .workEnd(dto.getWork_end())
                 .isMaster(dto.is_master())
+                .specialty(dto.getSpecialty())
                 .build();
     }
 
