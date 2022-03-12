@@ -1,4 +1,4 @@
-package TeamDPlus.code.service.account.mypage;
+package TeamDPlus.code.service.account;
 
 import TeamDPlus.code.domain.account.Account;
 import TeamDPlus.code.domain.account.AccountRepository;
@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class AccountMyPageServiceImpl implements AccountMyPageService{
+public class AccountMyPageServiceImpl implements AccountMyPageService {
 
     private final AccountRepository accountRepository;
     private final HistoryRepository historyRepository;
@@ -66,14 +66,14 @@ public class AccountMyPageServiceImpl implements AccountMyPageService{
         account.updateInfo(dto);
     }
     //포트폴리오 - 기본 소개 수정
-    @Override
+    @Transactional
     public void updateAccountIntro(AccountRequestDto.UpdateAccountIntro dto, Long accountId) {
         Account account = getAccount(accountId);
         account.updateIntro(dto);
     }
 
     //포트폴리오 - 스킬셋 수정
-    @Override
+    @Transactional
     public void updateAccountSpecialty(AccountRequestDto.UpdateSpecialty dto, Long accountId) {
         Account account = getAccount(accountId);
         account.updateSpecialty(dto);
@@ -91,21 +91,24 @@ public class AccountMyPageServiceImpl implements AccountMyPageService{
         historyRepository.saveAll(collect);
     }
 
-    //포트폴리오에 올라오는거
+    //포트폴리오에서 올리기 한방에 다건
     @Transactional
     public void updateAccountCareerFeed(ArtWorkRequestDto.ArtWorkPortFolioUpdate dto, Long accountId) {
         //유저가 원하는 작품들 Is_Master를 True로 벌크
         artWorkRepository.updateAllArtWorkIsMasterToTrue(dto.getArtwork_feed());
     }
 
+    //내작품탭에서 내리기/올리기 단건
     @Transactional
     public void deleteAccountCareerFeed(Long artWorkId) {
-        artWorkRepository.updateArtWorkIdMasterToFalse(artWorkId);
+        ArtWorks artWorks = getArtWorks(artWorkId);
+        artWorks.updateArtWorkIsMaster();
     }
 
-    //scope조정
+    //작품 숨김/보이기
+    @Transactional
     public void updateArtWorkScope(Long artWorkId, Long accountId) {
-        ArtWorks artWorks = artWorkRepository.findById(artWorkId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글입니다."));
+        ArtWorks artWorks = getArtWorks(artWorkId);
         artWorks.updateArtWorkIsScope();
     }
 
@@ -127,6 +130,9 @@ public class AccountMyPageServiceImpl implements AccountMyPageService{
         return accountRepository.findById(accountId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
     }
 
+    private ArtWorks getArtWorks(Long artWorkId) {
+        return artWorkRepository.findById(artWorkId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글입니다."));
+    }
 
 
 

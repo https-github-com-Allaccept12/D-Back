@@ -8,6 +8,8 @@ import TeamDPlus.code.dto.common.CommonDto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 
 import java.util.List;
 import java.sql.Timestamp;
@@ -68,13 +70,14 @@ public class ArtWorkResponseDto {
         private Timestamp create_time;
         private Timestamp modify_time;
         private Specialty specialty;
+        private Page<ArtWorkSimilarWork> similar_Work;
 
         @Builder
         public ArtWorkDetail(final Long artwork_id,final Long account_id,final boolean scope,final String title,
                                  final List<CommonDto.ImgUrlDto> img,final String content,final Long view_count,final Boolean is_like,
                                  final Boolean is_bookmark,final Long like_count,final String category,
                                  final List<ArtWorkComment> comment,final Timestamp create_time, final Timestamp modify_time,
-                             boolean is_follow,final Specialty specialty) {
+                             boolean is_follow,final Specialty specialty, final Page<ArtWorkSimilarWork> similar_Work) {
             this.artwork_id = artwork_id;
             this.account_id = account_id;
             this.scope = scope;
@@ -91,11 +94,12 @@ public class ArtWorkResponseDto {
             this.create_time = create_time;
             this.modify_time = modify_time;
             this.specialty = specialty;
+            this.similar_Work = similar_Work;
         }
 
         public static ArtWorkDetail from(final List<ArtWorkImage> imgList, final List<ArtWorkComment> commentList,
-                                         final ArtWorks artWorks,final boolean is_like, final boolean is_bookmark,
-                                         final Long like_count,final boolean is_follow) {
+                                         final ArtWorks artWorks, final boolean is_like, final boolean is_bookmark,
+                                         final Long like_count, final boolean is_follow, final Page<ArtWorkSimilarWork> similarList) {
             return ArtWorkDetail.builder()
                     .artwork_id(artWorks.getId())
                     .account_id(artWorks.getAccount().getId())
@@ -114,6 +118,7 @@ public class ArtWorkResponseDto {
                     .specialty(artWorks.getSpecialty())
                     .create_time(artWorks.getCreated())
                     .modify_time(artWorks.getModified())
+                    .similar_Work(similarList)
                     .build();
 
         }
@@ -123,7 +128,7 @@ public class ArtWorkResponseDto {
     public static class ArtWorkFeed {
 
         private Long artwork_id;
-        private String scope;
+        private boolean scope;
         private String img;
         private Long view_count;
         private boolean is_master;
@@ -131,7 +136,7 @@ public class ArtWorkResponseDto {
         private Timestamp modify_time;
 
         @Builder
-        public ArtWorkFeed(final Long artwork_id,final String scope,final String img,final Long view_count,
+        public ArtWorkFeed(final Long artwork_id,final boolean scope,final String img,final Long view_count,
                            final boolean is_master,final Timestamp create_time,final Timestamp modify_time) {
             this.artwork_id = artwork_id;
             this.scope = scope;
@@ -142,6 +147,14 @@ public class ArtWorkResponseDto {
             this.modify_time = modify_time;
         }
     }
+
+    @Getter
+    @NoArgsConstructor
+    public static class ArtWorkSimilarWork {
+        private Long artwork_id;
+        private String img;
+    }
+
 
     @Getter
     @NoArgsConstructor

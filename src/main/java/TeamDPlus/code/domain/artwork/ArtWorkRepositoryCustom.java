@@ -20,7 +20,10 @@ public interface ArtWorkRepositoryCustom {
 
     Page<ArtWorkResponseDto.ArtworkMain> findAllArtWork(Long lastArtWorkId,Pageable pageable);
 
-    void updateAllArtWorkIsMasterToFalse(Long accountId);
+    Page<ArtWorkResponseDto.ArtWorkSimilarWork> findSimilarArtWork(Long accountId, Pageable pageable);
+
+    Page<ArtWorkResponseDto.ArtworkMain> findBySearchKeyWord(String keyword,Long lastArtWorkId,Pageable pageable);
+
 
     void updateArtWorkIdMasterToFalse(Long artWorkId);
 
