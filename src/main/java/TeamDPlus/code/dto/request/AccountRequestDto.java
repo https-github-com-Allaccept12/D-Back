@@ -61,6 +61,13 @@ public class AccountRequestDto {
         private String tendency;
     }
 
+    @Getter
+    @NoArgsConstructor
+    public static class InitInterestSetting {
+        private String interest;
+    }
+
+
 
 
 

@@ -31,7 +31,6 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
     private final ArtWorkLikesRepository artWorkLikesRepository;
     private final ArtWorkCommentRepository artWorkCommentRepository;
     private final ArtWorkBookMarkRepository artWorkBookMarkRepository;
-
     private final FollowRepository followRepository;
 
     @Transactional(readOnly = true)
@@ -44,14 +43,16 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
 
     @Transactional(readOnly = true)
     public ArtWorkResponseDto.ArtWorkDetail detailArtWork(Long accountId, Long artWorkId) {
-        final ArtWorks artWorks = artWorkRepository.findById(artWorkId).orElseThrow(() -> new IllegalArgumentException("존재하지않는 게시글 입니다."));
-        final List<ArtWorkImage> imgList = artWorkImageRepository.findByArtWorksId(artWorks.getId());
-        final List<ArtWorkResponseDto.ArtWorkComment> commentList = artWorkCommentRepository.findArtWorkCommentByArtWorksId(artWorks.getId());
-        final boolean isLike = artWorkLikesRepository.existByAccountIdAndArtWorkId(accountId, artWorkId);
-        final boolean isBookmark = artWorkBookMarkRepository.existByAccountIdAndArtWorkId(accountId, artWorkId);
-        final int likeCount = artWorkLikesRepository.findArtWorkLikesIdByArtWorksId(artWorkId).size();
-        final boolean isFollow = followRepository.existsByFollowerIdAndAndFollowingId(accountId, artWorks.getAccount().getId());
-        return ArtWorkResponseDto.ArtWorkDetail.from(imgList,commentList,artWorks,isLike,isBookmark,(long)likeCount,isFollow);
+        ArtWorks artWorks = artWorkRepository.findById(artWorkId).orElseThrow(() -> new IllegalArgumentException("존재하지않는 게시글 입니다."));
+        List<ArtWorkImage> imgList = artWorkImageRepository.findByArtWorksId(artWorks.getId());
+        List<ArtWorkResponseDto.ArtWorkComment> commentList = artWorkCommentRepository.findArtWorkCommentByArtWorksId(artWorks.getId());
+        final Pageable pageable = PageRequest.of(0, 5);
+        Page<ArtWorkResponseDto.ArtWorkSimilarWork> similarList = artWorkRepository.findSimilarArtWork(accountId,pageable);
+        boolean isLike = artWorkLikesRepository.existByAccountIdAndArtWorkId(accountId, artWorkId);
+        boolean isBookmark = artWorkBookMarkRepository.existByAccountIdAndArtWorkId(accountId, artWorkId);
+        int likeCount = artWorkLikesRepository.findArtWorkLikesIdByArtWorksId(artWorkId).size();
+        boolean isFollow = followRepository.existsByFollowerIdAndAndFollowingId(accountId, artWorks.getAccount().getId());
+        return ArtWorkResponseDto.ArtWorkDetail.from(imgList,commentList,artWorks,isLike,isBookmark,(long)likeCount,isFollow,similarList);
     }
 
 
@@ -93,7 +94,6 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
             artWorkImageRepository.save(artWorkImage);
         });
     }
-
 
     private ArtWorks artworkValidation(Long accountId, Long artworkId){
         ArtWorks artWorks = artWorkRepository.findById(artworkId).orElseThrow(() -> new ApiRequestException("해당 게시글은 존재하지 않습니다."));

@@ -2,29 +2,22 @@ package TeamDPlus.code.domain.artwork;
 
 import TeamDPlus.code.domain.account.Account;
 import TeamDPlus.code.domain.account.AccountRepository;
-import TeamDPlus.code.domain.artwork.ArtWorks;
-import TeamDPlus.code.domain.artwork.ArtWorkRepository;
 import TeamDPlus.code.domain.artwork.bookmark.ArtWorkBookMark;
 import TeamDPlus.code.domain.artwork.bookmark.ArtWorkBookMarkRepository;
 import TeamDPlus.code.domain.artwork.image.ArtWorkImage;
 import TeamDPlus.code.domain.artwork.image.ArtWorkImageRepository;
-import TeamDPlus.code.domain.artwork.image.QArtWorkImage;
 import TeamDPlus.code.dto.response.ArtWorkResponseDto;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.extern.slf4j.Slf4j;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.test.annotation.Commit;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
-
 import java.util.List;
 
 import static TeamDPlus.code.domain.account.QAccount.account;
@@ -71,7 +64,7 @@ class ArtWorkRepositoryTest {
                 .build();
         Account saveAccount = accountRepository.save(testAccount);
         ArtWorks testArtWorks = ArtWorks.builder()
-                .scope("public")
+                .scope(true)
                 .title("test")
                 .content("test")
                 .view(1L)
@@ -140,11 +133,9 @@ class ArtWorkRepositoryTest {
                 .from(artWorks)
                 .join(artWorkBookMark).on(artWorkBookMark.artWorks.eq(artWorks))
                 .join(artWorkImage).on(artWorkImage.artWorks.eq(artWorks))
-                .where(artWorkBookMark.account.id.eq(account1.getId()).and(artWorks.scope.eq("public")))
+                .where(artWorkBookMark.account.id.eq(account1.getId()).and(artWorks.scope.isTrue()))
                 .fetch();
         //then
-        //log.info(bookMarkList.get(0).toString());
-        //log.info(bookMarkList.get(1).toString());
 
         assertThat(bookMarkList.get(0).getImg()).isEqualTo(artWorkImage1.getArtworkImg());
         assertThat(bookMarkList.get(0).getAccount_nickname()).isEqualTo(account1.getNickname());
@@ -210,7 +201,7 @@ class ArtWorkRepositoryTest {
 
     private ArtWorks testArtWorksSet(Account account) {
         ArtWorks testArtWorks = ArtWorks.builder()
-                .scope("public")
+                .scope(true)
                 .title("test")
                 .content("test")
                 .view(1L)
