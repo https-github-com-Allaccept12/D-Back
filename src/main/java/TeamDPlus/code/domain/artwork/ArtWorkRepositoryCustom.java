@@ -22,6 +22,8 @@ public interface ArtWorkRepositoryCustom {
 
     void updateAllArtWorkIsMasterToFalse(Long accountId);
 
+    void updateArtWorkIdMasterToFalse(Long artWorkId);
+
     void updateAllArtWorkIsMasterToTrue(List<Long> artWorkId);
 
 }

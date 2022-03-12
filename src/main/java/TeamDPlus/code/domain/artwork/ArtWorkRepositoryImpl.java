@@ -1,27 +1,20 @@
 package TeamDPlus.code.domain.artwork;
 
-import TeamDPlus.code.domain.account.QAccount;
-import TeamDPlus.code.domain.artwork.bookmark.QArtWorkBookMark;
-import TeamDPlus.code.domain.artwork.like.QArtWorkLikes;
 import TeamDPlus.code.dto.response.ArtWorkResponseDto;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 
 import static TeamDPlus.code.domain.account.QAccount.account;
 import static TeamDPlus.code.domain.artwork.QArtWorks.artWorks;
 import static TeamDPlus.code.domain.artwork.bookmark.QArtWorkBookMark.artWorkBookMark;
 import static TeamDPlus.code.domain.artwork.image.QArtWorkImage.artWorkImage;
-import static TeamDPlus.code.domain.artwork.like.QArtWorkLikes.artWorkLikes;
 
 @RequiredArgsConstructor
 public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom{
@@ -67,7 +60,7 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom{
                 .join(artWorkImage).on(artWorkImage.artWorks.eq(artWorks))
                 .offset(paging.getOffset())
                 .limit(paging.getPageSize())
-                .where(artWorkBookMark.account.id.eq(accountId).and(artWorks.scope.eq("public")),
+                .where(artWorkBookMark.account.id.eq(accountId).and(artWorks.scope.isTrue()),
                         isLastArtworkId(lastArtWorkId))
                 .fetch();
         return new PageImpl<>(result,paging,result.size());
@@ -111,6 +104,16 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom{
                 .execute();
     }
 
+    @Override
+    public void updateArtWorkIdMasterToFalse(Long artWorkId) {
+        queryFactory
+                .update(artWorks)
+                .set(artWorks.isMaster, false)
+                .where(artWorks.id.eq(artWorkId))
+                .execute();
+
+    }
+
     //in절을 통한 List 벌크
     @Override
     public void updateAllArtWorkIsMasterToTrue(List<Long> accountIdList) {
@@ -127,7 +130,7 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom{
 
     //방문자가 로그인을 안했거나, 로그인은 했지만 다른사람 마이페이지에 온사람 이면 scope가 public인 작품만 보여줘라
     public BooleanExpression isVisitor(Long visitAccountId, Long accountId) {
-        return visitAccountId.equals(accountId) ? null : artWorks.scope.eq("public");
+        return visitAccountId.equals(accountId) ? null : artWorks.scope.isTrue();
     }
 
     public BooleanExpression isPortfolio(boolean isPortfolio) {

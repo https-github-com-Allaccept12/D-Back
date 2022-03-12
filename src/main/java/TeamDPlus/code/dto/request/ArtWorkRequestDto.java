@@ -16,7 +16,7 @@ public class ArtWorkRequestDto {
     @Getter
     @NoArgsConstructor
     public static class ArtWorkCreateAndUpdate {
-        private String scope;
+        private boolean scope;
 
         private String title;
 
@@ -48,14 +48,7 @@ public class ArtWorkRequestDto {
     @Getter
     @NoArgsConstructor
     public static class ArtWorkPortFolioUpdate {
-
-        private Long artwork_id;
-        private String scope;
-        private String img;
-        private String content;
-        private String category;
-        private Timestamp create_time;
-        private Timestamp modify_time;
+        private List<Long> artwork_feed;
     }
 
 

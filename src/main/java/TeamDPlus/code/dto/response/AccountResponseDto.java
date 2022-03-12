@@ -14,16 +14,15 @@ public class AccountResponseDto {
 
     @Getter
     @NoArgsConstructor
-    public static class AccountMyPageMain {
+    public static class AccountInfo {
 
         private Long account_id;
         private String nickname;
         private String profile_img;
         private Long exp;
-        private int career;
-        private String tendency;
         private String title_content;
         private String sub_content;
+        private String tendency;
         private String linked_in;
         private String brunch;
         private String insta;
@@ -32,23 +31,19 @@ public class AccountResponseDto {
         private Long follower_count;
         private Long following_count;
         private boolean is_follow;
-        private List<HistoryResponseDto.History> history;
-        private List<ArtWorkResponseDto.ArtWorkFeed> artwork_feed;
-        private SpecialtyResponseDto.specialty specialty;
+        private SpecialtyResponseDto specialty;
         private boolean is_mypage;
 
         @Builder
-        public AccountMyPageMain(final Long account_id,final String nickname,final String profile_img,final Long exp,
-                                 final int career,final String tendency,final String title_content,final String sub_content,
+        public AccountInfo(final Long account_id,final String nickname,final String profile_img,final Long exp,
+                                 final String tendency,final String title_content,final String sub_content,
                                  final String linked_in,final String brunch,final String insta, String work_email,
                                  final String work_time,final Long follower_count,final Long following_count,final boolean is_follow,
-                                 final List<HistoryResponseDto.History> history,final List<ArtWorkResponseDto.ArtWorkFeed> artwork_feed,
-                                 final SpecialtyResponseDto.specialty specialty, final boolean is_mypage) {
+                                 final SpecialtyResponseDto specialty, final boolean is_mypage) {
             this.account_id = account_id;
             this.nickname = nickname;
             this.profile_img = profile_img;
             this.exp = exp;
-            this.career = career;
             this.tendency = tendency;
             this.title_content = title_content;
             this.sub_content = sub_content;
@@ -60,20 +55,16 @@ public class AccountResponseDto {
             this.follower_count = follower_count;
             this.following_count = following_count;
             this.is_follow = is_follow;
-            this.history = history;
-            this.artwork_feed = artwork_feed;
             this.specialty = specialty;
             this.is_mypage = is_mypage;
         }
-        public static AccountMyPageMain from(final Account account, final List<History> history,
-                                             final List<ArtWorkResponseDto.ArtWorkFeed> artwork_feed,
-                                             final Long follower, final Long following, final boolean is_follow,final boolean is_mypage) {
-            return AccountMyPageMain.builder()
+        public static AccountInfo from(final Account account, final Long follower, final Long following,
+                                       final boolean is_follow,final boolean is_mypage) {
+            return AccountInfo.builder()
                     .account_id(account.getId())
                     .nickname(account.getNickname())
                     .profile_img(account.getProfileImg())
                     .exp(account.getExp())
-                    .career(account.getCareer())
                     .tendency(account.getTendency())
                     .title_content(account.getTitleContent())
                     .sub_content(account.getSubContent())
@@ -85,23 +76,12 @@ public class AccountResponseDto {
                     .follower_count(follower)
                     .following_count(following)
                     .is_follow(is_follow)
-                    .history(history.stream()
-                            .map(h -> HistoryResponseDto.History.builder()
-                                    .company_name(h.getCompanyName())
-                                    .company_department(h.getCompanyDepartment())
-                                    .company_position(h.getCompanyPosition())
-                                    .achievements(h.getAchievements())
-                                    .work_start(h.getWorkStart())
-                                    .work_end(h.getWorkEnd())
-                                    .history_id(h.getId())
-                                    .build())
-                            .collect(Collectors.toList()))
-                    .artwork_feed(artwork_feed)
-                    .specialty(new SpecialtyResponseDto.specialty(account.getSpecialty()))
+                    .specialty(new SpecialtyResponseDto(account.getSpecialty()))
                     .is_mypage(is_mypage)
                     .build();
         }
     }
+
 }
 
 
