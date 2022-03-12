@@ -34,7 +34,6 @@ public class PostMainPageServiceImpl implements PostMainPageService{
     private final PostCommentRepository postCommentRepository;
     private final PostImageRepository postImageRepository;
     private final PostBookMarkRepository postBookMarkRepository;
-
     private final PostTagRepository postTagRepository;
 
     // 전체 페이지
@@ -55,10 +54,13 @@ public class PostMainPageServiceImpl implements PostMainPageService{
         setImgUrl(dto.getImg(), savedPost);
         return post.getId();
     }
+
     // 게시글 검색
-//    public Page<PostResponseDto.PostPageMain> SearchKeyWord()
-
-
+    @Transactional(readOnly = true)
+    public Page<PostResponseDto.PostPageMain> findBySearchKeyWord(String keyword, Long lastArtWorkId) {
+        Pageable pageable = PageRequest.of(0,5);
+        return postRepository.findPostBySearchKeyWord(keyword,lastArtWorkId,pageable);
+    }
     private void setCountList(Long accountId, Page<PostResponseDto.PostPageMain> postList){
         postList.forEach((post) -> {
             Long bookmark_count = postBookMarkRepository.countByPostId(post.getPost_id());

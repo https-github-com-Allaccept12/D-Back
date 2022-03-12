@@ -2,6 +2,7 @@ package TeamDPlus.code.service.artwork;
 
 import TeamDPlus.code.advice.ApiRequestException;
 import TeamDPlus.code.domain.account.Account;
+import TeamDPlus.code.domain.account.AccountRepository;
 import TeamDPlus.code.domain.account.follow.FollowRepository;
 import TeamDPlus.code.domain.artwork.ArtWorkRepository;
 import TeamDPlus.code.domain.artwork.ArtWorks;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +34,7 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
     private final ArtWorkCommentRepository artWorkCommentRepository;
     private final ArtWorkBookMarkRepository artWorkBookMarkRepository;
     private final FollowRepository followRepository;
+    private final AccountRepository accountRepository;
 
     @Transactional(readOnly = true)
     public Page<ArtWorkResponseDto.ArtworkMain> showArtworkMain(Long accountId,Long lastArtWorkId){
@@ -50,11 +53,10 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
         Page<ArtWorkResponseDto.ArtWorkSimilarWork> similarList = artWorkRepository.findSimilarArtWork(accountId,pageable);
         boolean isLike = artWorkLikesRepository.existByAccountIdAndArtWorkId(accountId, artWorkId);
         boolean isBookmark = artWorkBookMarkRepository.existByAccountIdAndArtWorkId(accountId, artWorkId);
-        int likeCount = artWorkLikesRepository.findArtWorkLikesIdByArtWorksId(artWorkId).size();
+        Long likeCount = artWorkLikesRepository.countArtWorkLikesByArtWorksId(artWorkId);
         boolean isFollow = followRepository.existsByFollowerIdAndAndFollowingId(accountId, artWorks.getAccount().getId());
-        return ArtWorkResponseDto.ArtWorkDetail.from(imgList,commentList,artWorks,isLike,isBookmark,(long)likeCount,isFollow,similarList);
+        return ArtWorkResponseDto.ArtWorkDetail.from(imgList,commentList,artWorks,isLike,isBookmark,likeCount,isFollow,similarList);
     }
-
 
     @Transactional
     public Long createArtwork(Account account, ArtWorkRequestDto.ArtWorkCreateAndUpdate dto) {
@@ -82,6 +84,23 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
         artWorkRepository.delete(artworkValidation(accountId, artworkId));
     }
 
+    //비회원 일경우 모든 작품 카테고리에서 탑10
+    //회원 일경우 관심사카테고리중에서 탑10
+    @Transactional(readOnly = true)
+    public Page<ArtWorkResponseDto.ArtworkMain> mostPopularArtWork(Long accountId) {
+        Optional<Account> account = accountRepository.findById(accountId);
+        Pageable pageable = PageRequest.of(0,10);
+        Page<ArtWorkResponseDto.ArtworkMain> artWorkList = artWorkRepository.findArtWorkByMostViewAndMostLike(account.get().getInterest(),pageable);
+        setLikeCountAndIsLike(accountId, artWorkList);
+        return null;
+    }
+    //작품 검색
+    @Transactional(readOnly = true)
+    public Page<ArtWorkResponseDto.ArtworkMain> findBySearchKeyWord(String keyword, Long lastArtWorkId) {
+        Pageable pageable = PageRequest.of(0,10);
+        return artWorkRepository.findBySearchKeyWord(keyword, lastArtWorkId, pageable);
+    }
+
 
     private void setImgUrl(List<CommonDto.ImgUrlDto> dto, ArtWorks artWork) {
         dto.forEach((img) -> {
@@ -104,10 +123,10 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
 
     private void setLikeCountAndIsLike(Long accountId, Page<ArtWorkResponseDto.ArtworkMain> artWorkList) {
         artWorkList.forEach((artWork) -> {
-            List<Long> likeCount = artWorkLikesRepository.findArtWorkLikesIdByArtWorksId(artWork.getArtwork_id());
-            artWork.setLikeCountAndIsLike((long) likeCount.size(),false);
+            Long likeCount = artWorkLikesRepository.countArtWorkLikesByArtWorksId(artWork.getArtwork_id());
+            artWork.setLikeCountAndIsLike(likeCount,false);
             if(artWorkLikesRepository.existByAccountIdAndArtWorkId(accountId,artWork.getArtwork_id())) {
-                artWork.setLikeCountAndIsLike((long) likeCount.size(),true);
+                artWork.setLikeCountAndIsLike(likeCount,true);
             }
         });
     }

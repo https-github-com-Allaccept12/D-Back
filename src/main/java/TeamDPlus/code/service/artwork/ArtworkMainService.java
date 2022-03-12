@@ -4,6 +4,7 @@ import TeamDPlus.code.domain.account.Account;
 import TeamDPlus.code.dto.request.ArtWorkRequestDto;
 import TeamDPlus.code.dto.response.ArtWorkResponseDto;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface ArtworkMainService {
 
@@ -12,6 +13,12 @@ public interface ArtworkMainService {
 
     Long updateArtwork(Account account, Long artworkId, ArtWorkRequestDto.ArtWorkCreateAndUpdate artWorkUpdate);
     void deleteArtwork(Long accountId, Long artworkId);
+
+    ArtWorkResponseDto.ArtWorkDetail detailArtWork(Long accountId, Long artWorkId);
+
+    Page<ArtWorkResponseDto.ArtworkMain> mostPopularArtWork(Long accountId);
+
+    Page<ArtWorkResponseDto.ArtworkMain> findBySearchKeyWord(String keyword, Long lastArtWorkId);
 
 
 

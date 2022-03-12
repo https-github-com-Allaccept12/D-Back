@@ -8,4 +8,5 @@ import org.springframework.data.domain.Page;
 public interface PostMainPageService {
     Page<PostResponseDto.PostPageMain> showPostMain(Long accountId, Long postId);
     Long createPost(Account account, PostRequestDto.PostCreateAndUpdate dto);
+    Page<PostResponseDto.PostPageMain> findBySearchKeyWord(String keyword, Long lastArtWorkId);
 }
