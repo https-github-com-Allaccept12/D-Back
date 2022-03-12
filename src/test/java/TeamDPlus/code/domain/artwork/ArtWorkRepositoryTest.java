@@ -137,7 +137,6 @@ class ArtWorkRepositoryTest {
                 .fetch();
         //then
 
-
         assertThat(bookMarkList.get(0).getImg()).isEqualTo(artWorkImage1.getArtworkImg());
         assertThat(bookMarkList.get(0).getAccount_nickname()).isEqualTo(account1.getNickname());
         assertThat(bookMarkList.get(1).getImg()).isEqualTo(artWorkImage2.getArtworkImg());

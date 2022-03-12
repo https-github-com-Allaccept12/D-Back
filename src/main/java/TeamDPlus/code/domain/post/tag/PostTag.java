@@ -1,7 +1,8 @@
-package TeamDPlus.code.domain.post.image;
+package TeamDPlus.code.domain.post.tag;
 
-
+import TeamDPlus.code.domain.account.Account;
 import TeamDPlus.code.domain.post.Post;
+import TeamDPlus.code.dto.request.PostRequestDto;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,23 +13,22 @@ import javax.persistence.*;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class PostImage {
+public class PostTag {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    @Column(name = "post_image_id")
+    @Column(name = "post_tag_id")
     private Long id;
-
-    @Column(nullable = false)
-    private String postImg;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")
     private Post post;
 
+    private String hashTag;
+
     @Builder
-    public PostImage(final String postImg,final Post post) {
-        this.postImg = postImg;
+    public PostTag(Post post, String hashTag) {
         this.post = post;
+        this.hashTag = hashTag;
     }
 }
