@@ -1,5 +1,6 @@
 package TeamDPlus.code.dto.response;
 
+import TeamDPlus.code.domain.account.history.History;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,15 +25,14 @@ public class HistoryResponseDto {
         private String achievements;
 
         @Builder
-        public History(Long history_id, String company_name, String company_department,
-                       String company_position, String work_start, String work_end, String achievements) {
-            this.history_id = history_id;
-            this.company_name = company_name;
-            this.company_department = company_department;
-            this.company_position = company_position;
-            this.work_start = work_start;
-            this.work_end = work_end;
-            this.achievements = achievements;
+        public History(TeamDPlus.code.domain.account.history.History historyEntity) {
+            this.history_id = historyEntity.getId();
+            this.company_name = historyEntity.getCompanyName();
+            this.company_department = historyEntity.getCompanyDepartment();
+            this.company_position = historyEntity.getCompanyPosition();
+            this.work_start = historyEntity.getWorkStart();
+            this.work_end = historyEntity.getWorkEnd();
+            this.achievements = historyEntity.getAchievements();
         }
     }
 

@@ -23,7 +23,7 @@ public class HistoryRequestDto {
 
         private String work_end;
 
-        private String Achievements;
+        private String achievements;
 
         @Builder
         public HistoryUpdate(String company_name, String company_department, String company_position, String work_start, String work_end, String achievements) {
@@ -32,7 +32,7 @@ public class HistoryRequestDto {
             this.company_position = company_position;
             this.work_start = work_start;
             this.work_end = work_end;
-            Achievements = achievements;
+            this.achievements = achievements;
         }
 
         public static History toEntity(HistoryRequestDto.HistoryUpdate dto, Account account) {

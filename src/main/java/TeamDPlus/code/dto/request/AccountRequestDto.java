@@ -10,12 +10,8 @@ public class AccountRequestDto {
 
     @Getter
     @NoArgsConstructor
-    public static class PortfolioUpdate {
+    public static class UpdateAccountInfo {
         private String nickname;
-
-        private String title_content;
-
-        private String sub_content;
 
         private String work_email;
 
@@ -27,31 +23,44 @@ public class AccountRequestDto {
 
         private String insta;
 
-        private List<HistoryRequestDto.HistoryUpdate> history;
-
-        private List<ArtWorkRequestDto.ArtWorkPortFolioUpdate> artWork_feed;
-
-        private Specialty specialty;
-
-        private int career;
-
         private String phone_number;
 
     }
 
     @Getter
     @NoArgsConstructor
-    public static class SpecialtyUpdate {
+    public static class UpdateAccountIntro {
+        private String title_content;
+        private String sub_content;
+    }
 
+    @Getter
+    @NoArgsConstructor
+    public static class UpdateSpecialty {
         private Specialty specialty;
     }
 
     @Getter
     @NoArgsConstructor
-    public static class Follow {
+    public static class InitProfileSetting {
 
-        private Long follower_id;
+        private String nickname;
+        private String profile_img;
+        private String intro_content;
+        private String work_email;
+        private String work_time;
+        private String linked_in;
+        private String brunch;
+        private String insta;
+        private String phone_number;
     }
+
+    @Getter
+    @NoArgsConstructor
+    public static class InitTendencySetting {
+        private String tendency;
+    }
+
 
 
 

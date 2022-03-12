@@ -54,7 +54,7 @@ public class ArtWorkResponseDto {
 
         private Long artwork_id;
         private Long account_id;
-        private String scope;
+        private boolean scope;
         private String title;
         private List<CommonDto.ImgUrlDto> img;
         private String content;
@@ -70,10 +70,11 @@ public class ArtWorkResponseDto {
         private Specialty specialty;
 
         @Builder
-        public ArtWorkDetail(final Long artwork_id,final Long account_id,final String scope,final String title,
+        public ArtWorkDetail(final Long artwork_id,final Long account_id,final boolean scope,final String title,
                                  final List<CommonDto.ImgUrlDto> img,final String content,final Long view_count,final Boolean is_like,
                                  final Boolean is_bookmark,final Long like_count,final String category,
-                                 final List<ArtWorkComment> comment,final Timestamp create_time, final Timestamp modify_time, boolean is_follow,final Specialty specialty) {
+                                 final List<ArtWorkComment> comment,final Timestamp create_time, final Timestamp modify_time,
+                             boolean is_follow,final Specialty specialty) {
             this.artwork_id = artwork_id;
             this.account_id = account_id;
             this.scope = scope;
@@ -98,7 +99,7 @@ public class ArtWorkResponseDto {
             return ArtWorkDetail.builder()
                     .artwork_id(artWorks.getId())
                     .account_id(artWorks.getAccount().getId())
-                    .scope(artWorks.getScope())
+                    .scope(artWorks.isScope())
                     .title(artWorks.getTitle())
                     .img(imgList.stream()
                             .map(i -> new CommonDto.ImgUrlDto(i.getArtworkImg())).collect(Collectors.toList()))
