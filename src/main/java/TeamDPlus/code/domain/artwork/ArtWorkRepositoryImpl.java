@@ -67,11 +67,6 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom{
     }
 
     @Override
-    public List<ArtWorkResponseDto.ArtWorkFeed> findArtWorkByMostViewAndMostLike() {
-        return null;
-    }
-
-    @Override
     public Page<ArtWorkResponseDto.ArtworkMain> findAllArtWork(Long lastArtworkId, Pageable paging) {
 
         List<ArtWorkResponseDto.ArtworkMain> result = queryFactory
@@ -96,13 +91,51 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom{
     }
 
     @Override
-    public void updateAllArtWorkIsMasterToFalse(Long accountId) {
-        queryFactory
-                .update(artWorks)
-                .set(artWorks.isMaster, false)
-                .where(artWorks.account.id.eq(accountId))
-                .execute();
+    public List<ArtWorkResponseDto.ArtWorkFeed> findArtWorkByMostViewAndMostLike() {
+        return null;
     }
+
+
+    @Override
+    public Page<ArtWorkResponseDto.ArtWorkSimilarWork> findSimilarArtWork(Long accountId, Pageable pageable) {
+        List<ArtWorkResponseDto.ArtWorkSimilarWork> result = queryFactory
+                .select(Projections.constructor(ArtWorkResponseDto.ArtWorkSimilarWork.class,
+                        artWorks.id,
+                        artWorkImage.artworkImg))
+                .from(artWorks)
+                .join(artWorkImage).on(artWorkImage.artWorks.eq(artWorks))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .where(artWorks.account.id.eq(accountId).and(artWorkImage.thumbnail.isTrue()))
+                .fetch();
+        return new PageImpl<>(result,pageable,result.size());
+
+    }
+
+    @Override
+    public Page<ArtWorkResponseDto.ArtworkMain> findBySearchKeyWord(String keyword,Long lastArtWorkId, Pageable pageable) {
+        List<ArtWorkResponseDto.ArtworkMain> result = queryFactory
+                .select(Projections.constructor(ArtWorkResponseDto.ArtworkMain.class,
+                        artWorks.id,
+                        account.id,
+                        account.nickname,
+                        account.profileImg,
+                        artWorkImage.artworkImg,
+                        artWorks.view,
+                        artWorks.category,
+                        artWorks.created))
+                .from(artWorks)
+                .join(account).on(account.id.eq(artWorks.account.id))
+                .join(artWorkImage).on(artWorkImage.artWorks.eq(artWorks).and(artWorkImage.thumbnail.isTrue()))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .where(isLastArtworkId(lastArtWorkId),
+                        artWorks.title.contains(keyword),
+                        artWorks.account.nickname.eq(keyword))
+                .fetch();
+        return new PageImpl<>(result,pageable,result.size());
+    }
+
 
     @Override
     public void updateArtWorkIdMasterToFalse(Long artWorkId) {
@@ -111,7 +144,6 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom{
                 .set(artWorks.isMaster, false)
                 .where(artWorks.id.eq(artWorkId))
                 .execute();
-
     }
 
     //in절을 통한 List 벌크

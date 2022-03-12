@@ -1,4 +1,4 @@
-package TeamDPlus.code.service.account;
+package TeamDPlus.code.service.account.init;
 
 
 import TeamDPlus.code.domain.account.Account;
@@ -25,6 +25,13 @@ public class AccountInitialService {
     public void setInitTendecy(AccountRequestDto.InitTendencySetting dto, Long accountId) {
         Account account = getAccount(accountId);
         account.initTendency(dto.getTendency());
+    }
+
+    @Transactional
+    public void setInitInterest(AccountRequestDto.InitInterestSetting dto, Long accountId) {
+        Account account = getAccount(accountId);
+        account.updateInterest(dto.getInterest());
+
     }
 
     private Account getAccount(Long accountId) {
