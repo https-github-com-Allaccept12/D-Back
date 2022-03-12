@@ -114,7 +114,7 @@ public class PostMainPageServiceImplTest {
         //then
         assertThat(result.size()).isEqualTo(2);
         assertThat(result.get(0).getAccount_id()).isEqualTo(post2.getAccount().getId());
-        assertThat(result.get(0).getContent()).isEqualTo("test");
+        assertThat(result.get(0).getContent()).isEqualTo(post1.getContent());
 
     }
     

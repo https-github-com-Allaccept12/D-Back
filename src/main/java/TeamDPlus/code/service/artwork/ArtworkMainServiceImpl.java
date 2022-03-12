@@ -70,7 +70,6 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
         artWorkImageRepository.deleteAllByArtWorksId(artworkId);
         setImgUrl(dto.getImg(), findArtWork);
         findArtWork.updateArtWork(dto);
-
         return findArtWork.getId();
     }
 
