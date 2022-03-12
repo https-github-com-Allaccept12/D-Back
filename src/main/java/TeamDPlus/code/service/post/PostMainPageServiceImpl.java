@@ -34,26 +34,15 @@ public class PostMainPageServiceImpl implements PostMainPageService{
     private final PostCommentRepository postCommentRepository;
     private final PostImageRepository postImageRepository;
     private final PostBookMarkRepository postBookMarkRepository;
-
     private final PostTagRepository postTagRepository;
 
     // 전체 페이지
-    @Override
     @Transactional(readOnly = true)
     public Page<PostResponseDto.PostPageMain> showPostMain(Long accountId, Long lastPostId) {
         Pageable pageable = PageRequest.of(0,12);
         Page<PostResponseDto.PostPageMain> postList = postRepository.findAllPost(lastPostId, pageable);
         setCountList(accountId, postList);
         return postList;
-    }
-
-    private void setCountList(Long accountId, Page<PostResponseDto.PostPageMain> postList){
-        postList.forEach((post) -> {
-            Long bookmark_count = postBookMarkRepository.countByPostId(post.getPost_id());
-            Long comment_count = postCommentRepository.countByPostId(post.getPost_id());
-            Long like_count = postLikesRepository.countByPostId(post.getPost_id());
-            post.setCountList(bookmark_count, comment_count, like_count);
-        });
     }
 
     // 게시글 작성
@@ -64,6 +53,21 @@ public class PostMainPageServiceImpl implements PostMainPageService{
         setPostTag(dto.getHashTag(), savedPost);
         setImgUrl(dto.getImg(), savedPost);
         return post.getId();
+    }
+
+    // 게시글 검색
+    @Transactional(readOnly = true)
+    public Page<PostResponseDto.PostPageMain> findBySearchKeyWord(String keyword, Long lastArtWorkId) {
+        Pageable pageable = PageRequest.of(0,5);
+        return postRepository.findPostBySearchKeyWord(keyword,lastArtWorkId,pageable);
+    }
+    private void setCountList(Long accountId, Page<PostResponseDto.PostPageMain> postList){
+        postList.forEach((post) -> {
+            Long bookmark_count = postBookMarkRepository.countByPostId(post.getPost_id());
+            Long comment_count = postCommentRepository.countByPostId(post.getPost_id());
+            Long like_count = postLikesRepository.countByPostId(post.getPost_id());
+            post.setCountList(bookmark_count, comment_count, like_count);
+        });
     }
 
     private void setImgUrl(List<CommonDto.ImgUrlDto> dto, Post post) {

@@ -16,7 +16,7 @@ public interface ArtWorkRepositoryCustom {
 
     Page<ArtWorkResponseDto.ArtWorkBookMark> findArtWorkBookMarkByAccountId(Long lastArtWorkId,Pageable pageable,Long accountId);
 
-    List<ArtWorkResponseDto.ArtWorkFeed> findArtWorkByMostViewAndMostLike();
+    Page<ArtWorkResponseDto.ArtworkMain> findArtWorkByMostViewAndMostLike(String interest,Pageable pageable);
 
     Page<ArtWorkResponseDto.ArtworkMain> findAllArtWork(Long lastArtWorkId,Pageable pageable);
 
