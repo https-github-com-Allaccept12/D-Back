@@ -15,6 +15,7 @@ import static TeamDPlus.code.domain.account.QAccount.account;
 import static TeamDPlus.code.domain.artwork.QArtWorks.artWorks;
 import static TeamDPlus.code.domain.artwork.bookmark.QArtWorkBookMark.artWorkBookMark;
 import static TeamDPlus.code.domain.artwork.image.QArtWorkImage.artWorkImage;
+import static TeamDPlus.code.domain.post.QPost.post;
 
 @RequiredArgsConstructor
 public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom{
@@ -130,12 +131,12 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom{
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .where(isLastArtworkId(lastArtWorkId),
-                        artWorks.title.contains(keyword),
-                        artWorks.account.nickname.eq(keyword))
+                        artWorks.title.contains(keyword)
+                                .or(artWorks.title.contains(keyword))
+                                .or(artWorks.account.nickname.eq(keyword)))
                 .fetch();
         return new PageImpl<>(result,pageable,result.size());
     }
-
 
     @Override
     public void updateArtWorkIdMasterToFalse(Long artWorkId) {

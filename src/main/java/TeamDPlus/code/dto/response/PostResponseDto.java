@@ -21,7 +21,6 @@ public class PostResponseDto {
 
         private Long post_id;
         private Long account_id;
-
         private String account_nickname;
         private String account_profile;
         private String title;
@@ -35,18 +34,13 @@ public class PostResponseDto {
         // 태그 탭 상의할 것
         @Builder
         public PostPageMain(final Long post_id, final Long account_id, final String account_nickname, final String account_profile,
-                            final String title, final String content, final String category, final Timestamp create_time
-        // final Long bookmark_count, final Long comment_count, final Long like_count,
-        ) {
+                            final String title, final String content, final String category, final Timestamp create_time) {
             this.post_id = post_id;
             this.account_id = account_id;
             this.account_nickname = account_nickname;
             this.account_profile = account_profile;
             this.title = title;
             this.content = content;
-//            this.bookmark_count = bookmark_count;
-//            this.like_count = like_count;
-//            this.comment_count = comment_count;
             this.category = category;
             this.create_time = create_time;
         }

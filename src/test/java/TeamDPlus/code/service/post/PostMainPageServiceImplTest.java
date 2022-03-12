@@ -2,8 +2,10 @@ package TeamDPlus.code.service.post;
 
 import TeamDPlus.code.domain.account.Account;
 import TeamDPlus.code.domain.account.AccountRepository;
+import TeamDPlus.code.domain.account.QAccount;
 import TeamDPlus.code.domain.post.Post;
 import TeamDPlus.code.domain.post.PostRepository;
+import TeamDPlus.code.domain.post.QPost;
 import TeamDPlus.code.domain.post.bookmark.PostBookMark;
 import TeamDPlus.code.domain.post.bookmark.PostBookMarkRepository;
 import TeamDPlus.code.domain.post.comment.PostComment;
@@ -12,8 +14,12 @@ import TeamDPlus.code.domain.post.image.PostImage;
 import TeamDPlus.code.domain.post.image.PostImageRepository;
 import TeamDPlus.code.domain.post.like.PostLikes;
 import TeamDPlus.code.domain.post.like.PostLikesRepository;
+import TeamDPlus.code.dto.response.ArtWorkResponseDto;
+import TeamDPlus.code.dto.response.PostResponseDto;
+import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.extern.slf4j.Slf4j;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -23,6 +29,12 @@ import org.springframework.test.annotation.Commit;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import java.util.List;
+
+import static TeamDPlus.code.domain.account.QAccount.account;
+import static TeamDPlus.code.domain.post.QPost.post;
+import static org.assertj.core.api.Assertions.as;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @Transactional
@@ -56,8 +68,8 @@ public class PostMainPageServiceImplTest {
     @Commit
     public void 전체포스트_목록_서비스() throws Exception {
         Account testAccount = testAccountSet();
-        Post post1 = testPostSet(testAccount);
-        Post post2 = testPostSet(testAccount);
+        Post post1 = testPostSet(testAccount,"테스트입니다.1","테스트내용1");
+        Post post2 = testPostSet(testAccount,"테스트입니다.1","테스트내용1");
         PostLikes postLikes1 = testPostLikes(post1, testAccount);
         PostLikes postLikes2 = testPostLikes(post2, testAccount);
         PostBookMark postBookMark1 = testPostBookMark(post1, testAccount);
@@ -69,6 +81,43 @@ public class PostMainPageServiceImplTest {
         Pageable pageable = PageRequest.of(0,3);
 
     }
+
+    @Test
+    public void 게시글_검색() throws Exception {
+        //given
+        Account account1 = testAccountSet();
+        Post post1 = testPostSet(account1,"테스트입니다.1","테스트 내용1");
+        Post post2 = testPostSet(account1,"123123test312321","테스트내용1231231");
+        Pageable pageable = PageRequest.of(0,5);
+        String keyword = "테스트";
+        //when
+        List<PostResponseDto.PostPageMain> result = queryFactory
+                .select(Projections.constructor(PostResponseDto.PostPageMain.class,
+                        post.id,
+                        account.id,
+                        account.nickname,
+                        account.profileImg,
+                        post.title,
+                        post.content,
+                        post.category,
+                        post.created
+                ))
+                .from(post)
+                .join(account).on(account.id.eq(post.account.id))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .where(post.id.lt(10L),
+                        post.title.contains(keyword)
+                                .or(post.content.contains(keyword))
+                                .or(post.account.nickname.contains(keyword)))
+                .fetch();
+        //then
+        assertThat(result.size()).isEqualTo(2);
+        assertThat(result.get(0).getAccount_id()).isEqualTo(post2.getAccount().getId());
+        assertThat(result.get(0).getContent()).isEqualTo("test");
+
+    }
+    
 
     private Account testAccountSet() {
         Account testAccount = Account.builder()
@@ -85,11 +134,11 @@ public class PostMainPageServiceImplTest {
         return save;
     }
 
-    private Post testPostSet(Account account) {
+    private Post testPostSet(Account account , String title, String content) {
         Post post = Post.builder()
-                .title("test")
+                .title(title)
                 .category("test")
-                .content("test")
+                .content(content)
                 .account(account)
                 .build();
         Post postSaved = postRepository.save(post);
