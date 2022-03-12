@@ -6,7 +6,6 @@ import TeamDPlus.code.domain.artwork.ArtWorkRepository;
 import TeamDPlus.code.domain.artwork.ArtWorks;
 import TeamDPlus.code.domain.artwork.bookmark.ArtWorkBookMark;
 import TeamDPlus.code.domain.artwork.bookmark.ArtWorkBookMarkRepository;
-import TeamDPlus.code.domain.artwork.like.ArtWorkLikes;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

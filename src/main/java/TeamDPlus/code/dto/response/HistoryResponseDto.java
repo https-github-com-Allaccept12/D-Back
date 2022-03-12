@@ -11,16 +11,28 @@ public class HistoryResponseDto {
     public static class History {
 
         private Long history_id;
-        private String history_name;
-        private String history_title;
-        private String history_content;
+        private String company_name;
+
+        private String company_department;
+
+        private String company_position;
+
+        private String work_start;
+
+        private String work_end;
+
+        private String achievements;
 
         @Builder
-        public History(final Long history_id,final String history_name,final String history_title,final String history_content) {
+        public History(Long history_id, String company_name, String company_department,
+                       String company_position, String work_start, String work_end, String achievements) {
             this.history_id = history_id;
-            this.history_name = history_name;
-            this.history_title = history_title;
-            this.history_content = history_content;
+            this.company_name = company_name;
+            this.company_department = company_department;
+            this.company_position = company_position;
+            this.work_start = work_start;
+            this.work_end = work_end;
+            this.achievements = achievements;
         }
     }
 

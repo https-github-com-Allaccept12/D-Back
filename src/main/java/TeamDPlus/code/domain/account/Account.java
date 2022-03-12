@@ -105,7 +105,7 @@ public class Account extends BaseEntity {
         this.specialty = dto.getSpecialty();
     }
 
-    public void updateProfile(final AccountRequestDto.ProfileUpdate dto) {
+    public void updateProfile(final AccountRequestDto.PortfolioUpdate dto) {
         this.nickname = dto.getNickname();
         this.titleContent = dto.getTitle_content();
         this.subContent = dto.getSub_content();
@@ -114,9 +114,9 @@ public class Account extends BaseEntity {
         this.linkedIn = dto.getLinked_in();
         this.brunch = dto.getBrunch();
         this.instagram = dto.getInsta();
-        this.webPage = dto.getWeb_page();
         this.career = dto.getCareer();
         this.phoneNumber = dto.getPhone_number();
+        this.specialty = dto.getSpecialty();
     }
 
 

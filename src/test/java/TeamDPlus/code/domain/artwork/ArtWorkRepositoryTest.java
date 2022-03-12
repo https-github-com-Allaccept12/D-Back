@@ -59,7 +59,6 @@ class ArtWorkRepositoryTest {
 
 
     @Test
-    @Commit
     public void artwork_feed_query_test() throws Exception {
         //given account,artwork,
         Account testAccount = Account.builder()
@@ -77,7 +76,7 @@ class ArtWorkRepositoryTest {
                 .content("test")
                 .view(1L)
                 .category("test")
-                .account(testAccount)
+                .account(saveAccount)
                 .build();
         testArtWorks.updateArtWorkIsMaster();
         ArtWorks saveArtWork = artWorkRepository.save(testArtWorks);
@@ -98,9 +97,9 @@ class ArtWorkRepositoryTest {
                         ArtWorkResponseDto.ArtWorkFeed.class,
                         artWorks.id,
                         artWorks.scope,
-                        artWorks.title,
                         artWorkImage.artworkImg,
                         artWorks.view,
+                        artWorks.isMaster,
                         artWorks.created,
                         artWorks.modified
                 ))

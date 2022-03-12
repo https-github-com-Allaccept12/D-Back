@@ -2,10 +2,10 @@ package TeamDPlus.code.service.artwork;
 
 import TeamDPlus.code.advice.ApiRequestException;
 import TeamDPlus.code.domain.account.Account;
+import TeamDPlus.code.domain.account.follow.FollowRepository;
 import TeamDPlus.code.domain.artwork.ArtWorkRepository;
 import TeamDPlus.code.domain.artwork.ArtWorks;
 import TeamDPlus.code.domain.artwork.bookmark.ArtWorkBookMarkRepository;
-import TeamDPlus.code.domain.artwork.comment.ArtWorkComment;
 import TeamDPlus.code.domain.artwork.comment.ArtWorkCommentRepository;
 import TeamDPlus.code.domain.artwork.image.ArtWorkImage;
 import TeamDPlus.code.domain.artwork.image.ArtWorkImageRepository;
@@ -32,6 +32,8 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
     private final ArtWorkCommentRepository artWorkCommentRepository;
     private final ArtWorkBookMarkRepository artWorkBookMarkRepository;
 
+    private final FollowRepository followRepository;
+
     @Transactional(readOnly = true)
     public Page<ArtWorkResponseDto.ArtworkMain> showArtworkMain(Long accountId,Long lastArtWorkId){
         Pageable pageable = PageRequest.of(0,10);
@@ -48,7 +50,8 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
         final boolean isLike = artWorkLikesRepository.existByAccountIdAndArtWorkId(accountId, artWorkId);
         final boolean isBookmark = artWorkBookMarkRepository.existByAccountIdAndArtWorkId(accountId, artWorkId);
         final int likeCount = artWorkLikesRepository.findArtWorkLikesIdByArtWorksId(artWorkId).size();
-        return ArtWorkResponseDto.ArtWorkDetail.from(imgList,commentList,artWorks,isLike,isBookmark,(long)likeCount);
+        final boolean isFollow = followRepository.existsByFollowerIdAndAndFollowingId(accountId, artWorks.getAccount().getId());
+        return ArtWorkResponseDto.ArtWorkDetail.from(imgList,commentList,artWorks,isLike,isBookmark,(long)likeCount,isFollow);
     }
 
 

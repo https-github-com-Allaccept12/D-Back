@@ -20,32 +20,41 @@ public class History  {
     @Column(name = "history_id")
     private Long id;
 
-    @Column(nullable = false)
-    private String historyName;
+    private String companyName;
 
-    @Column(nullable = false)
-    private String historyTitle;
+    private String companyDepartment;
 
+    private String companyPosition;
+
+    private String workStart;
+
+    private String workEnd;
     @Lob
-    @Column(nullable = false)
-    private String historyContent;
+    private String achievements;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id")
     private Account account;
 
     @Builder
-    public History(final String historyName,final String historyTitle,final String historyContent,final Account account) {
-        this.historyName = historyName;
-        this.historyTitle = historyTitle;
-        this.historyContent = historyContent;
+    public History(String companyName, String companyDepartment, String companyPosition,
+                   String workStart, String workEnd, String achievements, Account account) {
+        this.companyName = companyName;
+        this.companyDepartment = companyDepartment;
+        this.companyPosition = companyPosition;
+        this.workStart = workStart;
+        this.workEnd = workEnd;
+        this.achievements = achievements;
         this.account = account;
     }
 
     public void updateHistory(final HistoryRequestDto.HistoryUpdate dto) {
-        this.historyContent = dto.getHistory_content();
-        this.historyName = dto.getHistory_name();
-        this.historyTitle = dto.getHistory_title();
+        this.companyName = dto.getCompany_name();
+        this.companyDepartment = dto.getCompany_department();
+        this.companyPosition = dto.getCompany_position();
+        this.workStart = dto.getWork_start();
+        this.workEnd = dto.getWork_end();
+        this.achievements = dto.getAchievements();
     }
 
 }
