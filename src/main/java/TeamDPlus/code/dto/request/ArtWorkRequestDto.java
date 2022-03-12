@@ -1,10 +1,12 @@
 package TeamDPlus.code.dto.request;
+import TeamDPlus.code.domain.account.Specialty;
 import TeamDPlus.code.dto.common.CommonDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.List;
 
@@ -14,7 +16,7 @@ public class ArtWorkRequestDto {
     @Getter
     @NoArgsConstructor
     public static class ArtWorkCreateAndUpdate {
-        private String scope;
+        private boolean scope;
 
         private String title;
 
@@ -30,6 +32,9 @@ public class ArtWorkRequestDto {
 
         private boolean is_master;
 
+        private Specialty specialty;
+
+
     }
 
     @Getter
@@ -39,6 +44,13 @@ public class ArtWorkRequestDto {
         private String content;
 
     }
+
+    @Getter
+    @NoArgsConstructor
+    public static class ArtWorkPortFolioUpdate {
+        private List<Long> artwork_feed;
+    }
+
 
 
 }

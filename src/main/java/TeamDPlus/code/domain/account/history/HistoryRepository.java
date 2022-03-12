@@ -9,4 +9,6 @@ public interface HistoryRepository extends JpaRepository<History,Long> {
 
     List<History> findAllByAccountId(Long accountId);
 
+    void deleteAllByAccountId(Long accountId);
+
 }

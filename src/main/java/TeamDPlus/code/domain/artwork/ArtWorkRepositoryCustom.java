@@ -12,12 +12,18 @@ public interface ArtWorkRepositoryCustom {
     // isPortfolio 포트폴리오탭 검색시 true = isMaster조건 추가
     // isPortfolio 내가 등록한 작품 검색시 false = isMaster조건 없애기
     // visitAccountId 게시글 등록자가 내 마이페이지에 방문했을때 게시글 표시 public, private 구분
-    List<ArtWorkResponseDto.ArtWorkFeed> findByArtWorkImageAndAccountId(Long visitAccountId,Long accountId,boolean isPortfolio);
+    List<ArtWorkResponseDto.ArtWorkFeed> findByArtWorkImageAndAccountId(Long lastArtWorkId,Pageable pageable,Long visitAccountId,Long accountId,boolean isPortfolio);
 
-    List<ArtWorkResponseDto.ArtWorkBookMark> findArtWorkBookMarkByAccountId(Long accountId);
+    Page<ArtWorkResponseDto.ArtWorkBookMark> findArtWorkBookMarkByAccountId(Long lastArtWorkId,Pageable pageable,Long accountId);
 
     List<ArtWorkResponseDto.ArtWorkFeed> findArtWorkByMostViewAndMostLike();
 
     Page<ArtWorkResponseDto.ArtworkMain> findAllArtWork(Long lastArtWorkId,Pageable pageable);
+
+    void updateAllArtWorkIsMasterToFalse(Long accountId);
+
+    void updateArtWorkIdMasterToFalse(Long artWorkId);
+
+    void updateAllArtWorkIsMasterToTrue(List<Long> artWorkId);
 
 }

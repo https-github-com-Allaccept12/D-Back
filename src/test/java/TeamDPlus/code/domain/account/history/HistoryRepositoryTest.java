@@ -47,8 +47,8 @@ class HistoryRepositoryTest {
         Account saveAccount = accountRepository.save(testAccount);
         em.flush();
         em.clear();
-        History testHistory1 = History.builder().historyName("test1").historyTitle("test1").historyContent("test2").account(saveAccount).build();
-        History testHistory2 = History.builder().historyName("test2").historyTitle("test2").historyContent("test2").account(saveAccount).build();
+        History testHistory1 = History.builder().account(saveAccount).build();
+        History testHistory2 = History.builder().account(saveAccount).build();
         historyRepository.save(testHistory1);
         historyRepository.save(testHistory2);
         em.flush();

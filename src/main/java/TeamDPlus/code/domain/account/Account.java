@@ -100,23 +100,33 @@ public class Account extends BaseEntity {
     public void updateExp(final int score) {
         this.exp = (long) score;
     }
-
-    public void updateSpecialty(final AccountRequestDto.SpecialtyUpdate dto) {
-        this.specialty = dto.getSpecialty();
-    }
-
-    public void updateProfile(final AccountRequestDto.ProfileUpdate dto) {
+    public void setInitProfile(final AccountRequestDto.InitProfileSetting dto) {
         this.nickname = dto.getNickname();
-        this.titleContent = dto.getTitle_content();
-        this.subContent = dto.getSub_content();
+        this.profileImg = dto.getProfile_img();
+        this.titleContent = dto.getIntro_content();
         this.workEmail = dto.getWork_email();
         this.workTime = dto.getWork_time();
         this.linkedIn = dto.getLinked_in();
         this.brunch = dto.getBrunch();
         this.instagram = dto.getInsta();
-        this.webPage = dto.getWeb_page();
-        this.career = dto.getCareer();
+        this.phoneNumber =dto.getPhone_number();
+    }
+
+    public void updateInfo(final AccountRequestDto.UpdateAccountInfo dto) {
+        this.nickname = dto.getNickname();
+        this.workEmail = dto.getWork_email();
+        this.workTime = dto.getWork_time();
+        this.linkedIn = dto.getLinked_in();
+        this.brunch = dto.getBrunch();
+        this.instagram = dto.getInsta();
         this.phoneNumber = dto.getPhone_number();
+    }
+    public void updateIntro(final AccountRequestDto.UpdateAccountIntro dto) {
+        this.titleContent = dto.getTitle_content();
+        this.subContent = dto.getSub_content();
+    }
+    public void updateSpecialty(final AccountRequestDto.UpdateSpecialty dto) {
+        this.specialty = dto.getSpecialty();
     }
 
 
