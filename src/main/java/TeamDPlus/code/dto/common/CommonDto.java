@@ -24,6 +24,8 @@ public class CommonDto {
             this.content = content;
             this.modify_time = modify_time;
         }
+
+
     }
 
     @Getter
@@ -34,6 +36,18 @@ public class CommonDto {
 
         public ImgUrlDto(String img_url) {
             this.img_url = img_url;
+        }
+
+
+    }
+
+    @Getter
+    @NoArgsConstructor
+    public static class PostTagDto {
+        private String hashTag;
+
+        public PostTagDto(String hashTag) {
+            this.hashTag = hashTag;
         }
 
 
