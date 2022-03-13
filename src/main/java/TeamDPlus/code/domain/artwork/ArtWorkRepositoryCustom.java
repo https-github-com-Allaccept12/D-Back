@@ -24,6 +24,8 @@ public interface ArtWorkRepositoryCustom {
 
     Page<ArtWorkResponseDto.ArtworkMain> findBySearchKeyWord(String keyword,Long lastArtWorkId,Pageable pageable);
 
+    ArtWorkResponseDto.ArtWorkSubDetail findByArtWorkSubDetail(Long accountId, Long artworkId);
+
 
     void updateArtWorkIdMasterToFalse(Long artWorkId);
 

@@ -1,18 +1,9 @@
 spring:
-  datasource:
-    #h2 setting
-    driver-class-name: org.h2.Driver
-    url: jdbc:h2:tcp://localhost/~/testdb
-    username: sa
-    password:
-    #mysql setting
-#    driver-class-name: com.mysql.cj.jdbc.Driver
-#    # DB Source
-#    url:
-#    # DB username
-#    username:
-#    # DB password
-#    password:
+  profiles:
+    include:
+      - aws
+      - credentials
+      - db
 
 
   jpa:
@@ -22,13 +13,6 @@ spring:
       hibernate:
         format_sql: true
         default_batch_fetch_size: 1000
-
-
-  jwt:
-    header: Authorization
-    #hs256 알고리즘 32비트 이상의 시크릿키
-    secret: #시크릿값 git ignore 필수
-
 
 logging.level:
   org.hibernate.SQL: debug

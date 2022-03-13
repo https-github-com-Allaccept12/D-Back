@@ -1,5 +1,6 @@
 package TeamDPlus.code.domain.artwork;
 
+import TeamDPlus.code.domain.artwork.comment.QArtWorkComment;
 import TeamDPlus.code.domain.artwork.like.QArtWorkLikes;
 import TeamDPlus.code.dto.response.ArtWorkResponseDto;
 import com.querydsl.core.types.Projections;
@@ -16,6 +17,7 @@ import java.util.List;
 import static TeamDPlus.code.domain.account.QAccount.account;
 import static TeamDPlus.code.domain.artwork.QArtWorks.artWorks;
 import static TeamDPlus.code.domain.artwork.bookmark.QArtWorkBookMark.artWorkBookMark;
+import static TeamDPlus.code.domain.artwork.comment.QArtWorkComment.artWorkComment;
 import static TeamDPlus.code.domain.artwork.image.QArtWorkImage.artWorkImage;
 import static TeamDPlus.code.domain.artwork.like.QArtWorkLikes.artWorkLikes;
 import static TeamDPlus.code.domain.post.QPost.post;
@@ -95,28 +97,50 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom{
     }
 
     @Override
-    public Page<ArtWorkResponseDto.ArtworkMain> findArtWorkByMostViewAndMostLike(String interest,Pageable pageable) {
-        queryFactory
-                .select(Projections.constructor(ArtWorkResponseDto.ArtworkMain.class,
+    public ArtWorkResponseDto.ArtWorkSubDetail findByArtWorkSubDetail(Long accountId, Long artworkId) {
+        return queryFactory
+                .select(Projections.constructor(
+                        ArtWorkResponseDto.ArtWorkSubDetail.class,
                         artWorks.id,
                         account.id,
-                        account.nickname,
-                        account.profileImg,
-                        artWorkImage.artworkImg,
+                        artWorks.title,
+                        artWorks.content,
                         artWorks.view,
+                        artWorkComment.count(),
+                        artWorkLikes.count(),
                         artWorks.category,
-                        artWorks.created))
-                .from(artWorks)
-                .join(account).on(account.id.eq(artWorks.account.id))
-                .join(artWorkImage).on(artWorkImage.artWorks.eq(artWorks).and(artWorkImage.thumbnail.isTrue()))
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .where(artWorks.id.eq(
-                        JPAExpressions.select(artWorks.id)
-                                .from(artWorkLikes)
-                                .join(artWorks).on(artWorkLikes.artWorks.eq(artWorks))
-                                .where(artWorkLikes.)
+                        artWorks.created,
+                        artWorks.modified,
+                        artWorks.specialty
                 ))
+                .from(artWorks)
+                .innerJoin(artWorks.account,account)
+                .leftJoin(artWorkComment)
+                .leftJoin(artWorkLikes)
+                .where(artWorks.id.eq(artworkId))
+                .groupBy(artWorks.id)
+                .fetchOne();
+    }
+
+    @Override
+    public Page<ArtWorkResponseDto.ArtworkMain> findArtWorkByMostViewAndMostLike(String interest,Pageable pageable) {
+//        queryFactory
+//                .select(Projections.constructor(ArtWorkResponseDto.ArtworkMain.class,
+//                        artWorks.id,
+//                        account.id,
+//                        account.nickname,
+//                        account.profileImg,
+//                        artWorkImage.artworkImg,
+//                        artWorks.view,
+//                        artWorks.category,
+//                        artWorks.created))
+//                .from(artWorks)
+//                .join(account).on(account.id.eq(artWorks.account.id))
+//                .join(artWorkImage).on(artWorkImage.artWorks.eq(artWorks).and(artWorkImage.thumbnail.isTrue()))
+//                .offset(pageable.getOffset())
+//                .limit(pageable.getPageSize())
+//                .where()
+//                ))
         return null;
     }
 
@@ -160,6 +184,8 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom{
                 .fetch();
         return new PageImpl<>(result,pageable,result.size());
     }
+
+
 
     @Override
     public void updateArtWorkIdMasterToFalse(Long artWorkId) {

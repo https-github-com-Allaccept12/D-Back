@@ -98,7 +98,8 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                 .where(isLastPostId(lastPostId),
                         post.title.contains(keyword)
                                 .or(post.content.contains(keyword))
-                                .or(post.account.nickname.contains(keyword)))
+                                .or(post.account.nickname.contains(keyword))
+                                .or(post.content.contains(keyword)))
                 .fetch();
         return new PageImpl<>(result,pageable,result.size());
     }

@@ -4,17 +4,25 @@ import TeamDPlus.code.domain.account.Account;
 import TeamDPlus.code.domain.account.AccountRepository;
 import TeamDPlus.code.domain.artwork.bookmark.ArtWorkBookMark;
 import TeamDPlus.code.domain.artwork.bookmark.ArtWorkBookMarkRepository;
+import TeamDPlus.code.domain.artwork.comment.ArtWorkComment;
+import TeamDPlus.code.domain.artwork.comment.ArtWorkCommentRepository;
+import TeamDPlus.code.domain.artwork.comment.QArtWorkComment;
 import TeamDPlus.code.domain.artwork.image.ArtWorkImage;
 import TeamDPlus.code.domain.artwork.image.ArtWorkImageRepository;
+import TeamDPlus.code.domain.artwork.like.ArtWorkLikes;
+import TeamDPlus.code.domain.artwork.like.ArtWorkLikesRepository;
+import TeamDPlus.code.domain.artwork.like.QArtWorkLikes;
 import TeamDPlus.code.dto.response.ArtWorkResponseDto;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.extern.slf4j.Slf4j;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.test.annotation.Commit;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
@@ -23,7 +31,9 @@ import java.util.List;
 import static TeamDPlus.code.domain.account.QAccount.account;
 import static TeamDPlus.code.domain.artwork.QArtWorks.artWorks;
 import static TeamDPlus.code.domain.artwork.bookmark.QArtWorkBookMark.artWorkBookMark;
+import static TeamDPlus.code.domain.artwork.comment.QArtWorkComment.artWorkComment;
 import static TeamDPlus.code.domain.artwork.image.QArtWorkImage.artWorkImage;
+import static TeamDPlus.code.domain.artwork.like.QArtWorkLikes.artWorkLikes;
 import static org.assertj.core.api.Assertions.assertThat;
 
 
@@ -46,6 +56,12 @@ class ArtWorkRepositoryTest {
 
     @Autowired
     ArtWorkBookMarkRepository artWorkBookMarkRepository;
+
+    @Autowired
+    ArtWorkCommentRepository artWorkCommentRepository;
+
+    @Autowired
+    ArtWorkLikesRepository artWorkLikesRepository;
 
     @Autowired
     EntityManager em;
@@ -179,8 +195,68 @@ class ArtWorkRepositoryTest {
         assertThat(result.get(0).getAccount_id()).isEqualTo(account1.getId());
         assertThat(result.get(1).getImg()).isEqualTo(artWorkImage3.getArtworkImg());
         assertThat(result.get(1).getAccount_id()).isEqualTo(account1.getId());
+    }
 
+    @Test
+    @Commit
+    public void 게시글_sub_상세_() throws Exception {
+        //given
+        Account account1 = testAccountSet();
+        ArtWorks artWorks1 = testArtWorksSet(account1);
 
+        testCommentSet(artWorks1, account1);
+//        testCommentSet(artWorks1, account1);
+//        testCommentSet(artWorks1, account1);
+        testLikeSet(artWorks1, account1);
+        testLikeSet(artWorks1, account1);
+//        testLikeSet(artWorks1, account1);
+        //when
+        ArtWorkResponseDto.ArtWorkSubDetail fetch = queryFactory
+                .select(Projections.constructor(
+                        ArtWorkResponseDto.ArtWorkSubDetail.class,
+                        artWorks.id,
+                        account.id,
+                        artWorks.title,
+                        artWorks.content,
+                        artWorks.view,
+                        artWorkComment.id.count(),
+                        artWorkLikes.id,
+                        artWorks.category,
+                        artWorks.created,
+                        artWorks.modified,
+                        artWorks.specialty,
+                        account.nickname,
+                        account.profileImg
+                ))
+                .from(artWorks)
+                .innerJoin(artWorks.account, account)
+                .leftJoin(artWorkComment).on(artWorkComment.artWorks.eq(artWorks))
+                .leftJoin(artWorkLikes).on(artWorkLikes.artWorks.eq(artWorks))
+                .where(artWorks.id.eq(artWorks1.getId()))
+                .groupBy(artWorks.id)
+                .fetchOne();
+        //then
+        assert fetch != null;
+
+        assertThat(fetch.getComment_count()).isEqualTo(1);
+        assertThat(fetch.getLike_count()).isEqualTo(2);
+
+    }
+
+    private ArtWorkLikes testLikeSet(ArtWorks artWorks, Account account) {
+        ArtWorkLikes likes = ArtWorkLikes.builder().artWorks(artWorks).account(account).build();
+        artWorkLikesRepository.save(likes);
+        em.flush();
+        em.clear();
+        return likes;
+    }
+
+    private ArtWorkComment testCommentSet(ArtWorks artWorks , Account account) {
+        ArtWorkComment comment = ArtWorkComment.builder().artWorks(artWorks).account(account).content("test").build();
+        artWorkCommentRepository.save(comment);
+        em.flush();
+        em.clear();
+        return comment;
     }
 
 
