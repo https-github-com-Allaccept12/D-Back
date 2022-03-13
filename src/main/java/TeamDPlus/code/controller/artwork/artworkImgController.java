@@ -13,6 +13,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @Slf4j
@@ -23,20 +25,24 @@ public class artworkImgController {
     private final ArtWorkRepository artWorkRepository;
 
     @PostMapping("/artwork/image")
-    public void testUpload(@RequestParam("imageFile") MultipartFile imageFile) {
-        String s = test.uploadImage(imageFile);
+    public void testUpload(@RequestParam("imageFile") List<MultipartFile> imageFile) {
+        imageFile.forEach((img) -> {
+            String s = test.uploadImage(img);
+            ArtWorks build = ArtWorks.builder().scope(true).title("test").content("test1").category("testca").build();
+            ArtWorks save = artWorkRepository.save(build);
+            ArtWorkImage build1 = ArtWorkImage.builder().artWorks(save).artworkImg(s).build();
+            artWorkImageRepository.save(build1);
+        });
 
-        ArtWorks build = ArtWorks.builder().scope(true).title("test").content("test1").category("testca").build();
-        ArtWorks save = artWorkRepository.save(build);
-        ArtWorkImage build1 = ArtWorkImage.builder().artWorks(save).artworkImg(s).build();
-        artWorkImageRepository.save(build1);
+
 
     }
 
     @DeleteMapping("/artwork/image")
     public void deleteImage(@RequestBody CommonDto.ImgUrlDto url) {
-        log.info(url.getImg_url());
-        test.deleteImage(url.getImg_url());
+        int separator = url.getImg_url().lastIndexOf("/") + 1;
+        String substring = url.getImg_url().substring(separator);
+        test.deleteImage(substring);
     }
 }
 

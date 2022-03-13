@@ -18,7 +18,6 @@ public class FileProcessService {
 
     private final FileService amazonS3Service;
 
-
     public String uploadImage(MultipartFile file) {
         String fileName = createFileName(file.getOriginalFilename());
         ObjectMetadata objectMetadata = new ObjectMetadata();
