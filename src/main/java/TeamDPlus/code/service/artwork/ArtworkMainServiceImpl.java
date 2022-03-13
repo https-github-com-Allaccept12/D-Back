@@ -14,6 +14,7 @@ import TeamDPlus.code.domain.artwork.like.ArtWorkLikesRepository;
 import TeamDPlus.code.dto.common.CommonDto;
 import TeamDPlus.code.dto.request.ArtWorkRequestDto;
 import TeamDPlus.code.dto.response.ArtWorkResponseDto;
+import TeamDPlus.code.service.file.FileProcessService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -35,6 +36,8 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
     private final ArtWorkBookMarkRepository artWorkBookMarkRepository;
     private final FollowRepository followRepository;
     private final AccountRepository accountRepository;
+
+    private final FileProcessService fileProcessService;
 
     @Transactional(readOnly = true)
     public Page<ArtWorkResponseDto.ArtworkMain> showArtworkMain(Long accountId,Long lastArtWorkId){
