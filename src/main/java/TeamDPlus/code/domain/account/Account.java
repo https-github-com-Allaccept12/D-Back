@@ -64,7 +64,7 @@ public class Account extends BaseEntity {
     private String instagram;
 
     @Column(columnDefinition = "VARCHAR(255) default ''")
-    private String webPage;
+    private String interest;
 
     @Embedded
     private Specialty specialty;
@@ -73,7 +73,7 @@ public class Account extends BaseEntity {
     public Account(final String email, final String nickname, final String subContent,final String titleContent, final String profileImg,
                    final int career, final String phoneNumber, final String workTime,
                    final String workEmail, final String tendency, final Long exp, final String refreshToken,
-                   final String linkedIn, final String brunch, final String instagram, final String webPage)  {
+                   final String linkedIn, final String brunch, final String instagram, final String interest)  {
         this.email = email;
         this.nickname = nickname;
         this.titleContent = titleContent;
@@ -89,7 +89,7 @@ public class Account extends BaseEntity {
         this.linkedIn = linkedIn;
         this.brunch = brunch;
         this.instagram = instagram;
-        this.webPage = webPage;
+        this.interest = interest;
     }
 
     public void refreshToken(final String refreshToken) {
@@ -104,22 +104,37 @@ public class Account extends BaseEntity {
         this.exp = (long) score;
     }
 
-    public void updateSpecialty(final AccountRequestDto.SpecialtyUpdate dto) {
-        this.specialty = dto.getSpecialty();
+    public void updateInterest(final String interest) {
+        this.interest = interest;
     }
 
-    public void updateProfile(final AccountRequestDto.ProfileUpdate dto) {
+    public void setInitProfile(final AccountRequestDto.InitProfileSetting dto) {
         this.nickname = dto.getNickname();
-        this.titleContent = dto.getTitle_content();
-        this.subContent = dto.getSub_content();
+        this.profileImg = dto.getProfile_img();
+        this.titleContent = dto.getIntro_content();
         this.workEmail = dto.getWork_email();
         this.workTime = dto.getWork_time();
         this.linkedIn = dto.getLinked_in();
         this.brunch = dto.getBrunch();
         this.instagram = dto.getInsta();
-        this.webPage = dto.getWeb_page();
-        this.career = dto.getCareer();
+        this.phoneNumber =dto.getPhone_number();
+    }
+
+    public void updateInfo(final AccountRequestDto.UpdateAccountInfo dto) {
+        this.nickname = dto.getNickname();
+        this.workEmail = dto.getWork_email();
+        this.workTime = dto.getWork_time();
+        this.linkedIn = dto.getLinked_in();
+        this.brunch = dto.getBrunch();
+        this.instagram = dto.getInsta();
         this.phoneNumber = dto.getPhone_number();
+    }
+    public void updateIntro(final AccountRequestDto.UpdateAccountIntro dto) {
+        this.titleContent = dto.getTitle_content();
+        this.subContent = dto.getSub_content();
+    }
+    public void updateSpecialty(final AccountRequestDto.UpdateSpecialty dto) {
+        this.specialty = dto.getSpecialty();
     }
 
 

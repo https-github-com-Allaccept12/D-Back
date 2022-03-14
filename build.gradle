@@ -39,8 +39,9 @@ dependencies {
 	implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
 	implementation 'org.projectlombok:lombok:1.18.22'
 	implementation('com.h2database:h2')
+    implementation 'org.springframework.boot:spring-boot-starter-test'
 
-	annotationProcessor "com.querydsl:querydsl-apt:${queryDslVersion}"
+    annotationProcessor "com.querydsl:querydsl-apt:${queryDslVersion}"
 
 	compileOnly 'org.projectlombok:lombok'
 

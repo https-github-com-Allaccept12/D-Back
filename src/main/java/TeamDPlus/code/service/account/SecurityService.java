@@ -8,8 +8,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.Optional;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -19,29 +17,25 @@ public class SecurityService {
     private final JwtTokenProvider jwtTokenProvider;
 
     @Transactional
-    public TokenResponseDto reissue(String accessToken, String refreshToken) {
+    public TokenResponseDto refresh(String refreshToken) {
         // 리프레시 토큰 기간 만료 에러
         if (!jwtTokenProvider.validateToken(refreshToken)) {
             throw new IllegalStateException("리프레시 토큰 기간 만료");
         }
-        System.out.println("in");
-        Optional<Account> account = accountRepository.findByRefreshToken(refreshToken);
-        System.out.println("in");
-        String getRefreshToken;
-        if (account.isPresent()) {
-            getRefreshToken = account.get().getRefreshToken();
-        } else {
-            throw new IllegalStateException("존재하지 않는 회원입니다.");
-        }
+
+        Long userPk = Long.parseLong(jwtTokenProvider.getUserPk(refreshToken));
+        Account account = accountRepository.findById(userPk)
+                .orElseThrow(() -> new IllegalStateException("존재하지 않는 회원입니다."));
+
+        String getRefreshToken = account.getRefreshToken();
         
         if (!refreshToken.equals(getRefreshToken)) {
             throw new IllegalStateException("리프레시 토큰이 일치하지 않습니다.");
         }
 
-        String updateToken = jwtTokenProvider.createToken(Long.toString(account.get().getId()), account.get().getEmail());
-        String refreshTokenValue = UUID.randomUUID().toString().replace("-", "");
-        String updateRefreshToken = jwtTokenProvider.createRefreshToken(refreshTokenValue);
-        account.get().refreshToken(updateRefreshToken);
+        String updateToken = jwtTokenProvider.createToken(Long.toString(account.getId()), account.getEmail());
+        String updateRefreshToken = jwtTokenProvider.createRefreshToken(Long.toString(account.getId()));
+        account.refreshToken(updateRefreshToken);
 
         TokenResponseDto responseDto = TokenResponseDto.builder()
                 .accessToken(updateToken)

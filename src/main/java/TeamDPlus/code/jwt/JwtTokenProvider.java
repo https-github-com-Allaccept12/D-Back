@@ -31,7 +31,7 @@ public class JwtTokenProvider {
     private Key secretKey;
 
     // 토큰 유효시간 60분
-    private long tokenValidTime = 10 * 1000L;
+    private long tokenValidTime = 60 * 60 * 1000L;
 
     // 리프레시 토큰 2주
     private long refreshValidTime = 14 * 24 * 60 * 60 * 1000L;
@@ -60,9 +60,8 @@ public class JwtTokenProvider {
     }
 
     // 리프레시 토큰 생성
-    public String createRefreshToken(String value) {
-        Claims claims = Jwts.claims(); // JWT payload 에 저장되는 정보단위
-        claims.put("value", value); // 정보는 key / value 쌍으로 저장된다.
+    public String createRefreshToken(String userPk) {
+        Claims claims = Jwts.claims().setSubject(userPk); // JWT payload 에 저장되는 정보단위
         Date now = new Date();
         return Jwts.builder()
                 .setClaims(claims) // 정보 저장

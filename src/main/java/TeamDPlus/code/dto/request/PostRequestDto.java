@@ -1,6 +1,7 @@
 package TeamDPlus.code.dto.request;
 
 
+import TeamDPlus.code.domain.post.tag.PostTag;
 import TeamDPlus.code.dto.common.CommonDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,7 +12,7 @@ public class PostRequestDto {
 
     @Getter
     @NoArgsConstructor
-    public static class PostUpdate {
+    public static class PostCreateAndUpdate {
 
         private String title;
 
@@ -20,19 +21,9 @@ public class PostRequestDto {
         private String content;
 
         private List<CommonDto.ImgUrlDto> img;
-    }
 
-    @Getter
-    @NoArgsConstructor
-    public static class PostCreate {
+        private List<CommonDto.PostTagDto> hashTag;
 
-        private String title;
-
-        private String category;
-
-        private String content;
-
-        private List<CommonDto.ImgUrlDto> img;
     }
 }
 
