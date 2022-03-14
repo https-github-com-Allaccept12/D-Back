@@ -6,17 +6,14 @@ import TeamDPlus.code.domain.artwork.bookmark.ArtWorkBookMark;
 import TeamDPlus.code.domain.artwork.bookmark.ArtWorkBookMarkRepository;
 import TeamDPlus.code.domain.artwork.comment.ArtWorkComment;
 import TeamDPlus.code.domain.artwork.comment.ArtWorkCommentRepository;
-import TeamDPlus.code.domain.artwork.comment.QArtWorkComment;
 import TeamDPlus.code.domain.artwork.image.ArtWorkImage;
 import TeamDPlus.code.domain.artwork.image.ArtWorkImageRepository;
 import TeamDPlus.code.domain.artwork.like.ArtWorkLikes;
 import TeamDPlus.code.domain.artwork.like.ArtWorkLikesRepository;
-import TeamDPlus.code.domain.artwork.like.QArtWorkLikes;
 import TeamDPlus.code.dto.response.ArtWorkResponseDto;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.extern.slf4j.Slf4j;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -205,8 +202,10 @@ class ArtWorkRepositoryTest {
         ArtWorks artWorks1 = testArtWorksSet(account1);
 
         testCommentSet(artWorks1, account1);
+        testCommentSet(artWorks1, account1);
 //        testCommentSet(artWorks1, account1);
 //        testCommentSet(artWorks1, account1);
+        testLikeSet(artWorks1, account1);
         testLikeSet(artWorks1, account1);
         testLikeSet(artWorks1, account1);
 //        testLikeSet(artWorks1, account1);
@@ -220,7 +219,7 @@ class ArtWorkRepositoryTest {
                         artWorks.content,
                         artWorks.view,
                         artWorkComment.id.count(),
-                        artWorkLikes.id,
+                        artWorkLikes.id.count(),
                         artWorks.category,
                         artWorks.created,
                         artWorks.modified,
@@ -229,11 +228,11 @@ class ArtWorkRepositoryTest {
                         account.profileImg
                 ))
                 .from(artWorks)
+                .groupBy(artWorks.id)
                 .innerJoin(artWorks.account, account)
-                .leftJoin(artWorkComment).on(artWorkComment.artWorks.eq(artWorks))
+                .leftJoin().on(artWorkComment.artWorks.eq(artWorks))
                 .leftJoin(artWorkLikes).on(artWorkLikes.artWorks.eq(artWorks))
                 .where(artWorks.id.eq(artWorks1.getId()))
-                .groupBy(artWorks.id)
                 .fetchOne();
         //then
         assert fetch != null;

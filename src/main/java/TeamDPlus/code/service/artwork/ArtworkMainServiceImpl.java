@@ -36,7 +36,6 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
     private final ArtWorkBookMarkRepository artWorkBookMarkRepository;
     private final FollowRepository followRepository;
     private final AccountRepository accountRepository;
-
     private final FileProcessService fileProcessService;
 
     @Transactional(readOnly = true)
@@ -54,7 +53,6 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
 
         List<ArtWorkImage> imgList = artWorkImageRepository.findByArtWorksId(artWorks.getId());
         List<ArtWorkResponseDto.ArtWorkComment> commentList = artWorkCommentRepository.findArtWorkCommentByArtWorksId(artWorks.getId());
-
         final Pageable pageable = PageRequest.of(0, 5);
         Page<ArtWorkResponseDto.ArtWorkSimilarWork> similarList = artWorkRepository.findSimilarArtWork(accountId,pageable);
 
@@ -74,16 +72,18 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
         return saveArtWork.getId();
     }
 
+
     @Transactional
     public Long updateArtwork(Account account, Long artworkId, ArtWorkRequestDto.ArtWorkCreateAndUpdate dto) {
         ArtWorks findArtWork = artWorkRepository.findById(artworkId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글입니다."));
         artWorkImageRepository.deleteAllByArtWorksId(artworkId);
+        //s3에서도 삭제
         setImgUrl(dto.getImg(), findArtWork);
         findArtWork.updateArtWork(dto);
         return findArtWork.getId();
     }
 
-    // 작품을 ManyToOne하고 있는 모든 엔티티 삭제
+    // 작품을 ManyToOne하고 있는 모든 엔티티 삭제 - s3에서도 삭제
     @Transactional
     public void deleteArtwork(Long accountId, Long artworkId) {
         artWorkLikesRepository.deleteAllByArtWorksId(artworkId);
@@ -102,6 +102,7 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
         setLikeCountAndIsLike(accountId, artWorkList);
         return null;
     }
+
     //작품 검색
     @Transactional(readOnly = true)
     public Page<ArtWorkResponseDto.ArtworkMain> findBySearchKeyWord(String keyword, Long lastArtWorkId) {
@@ -109,7 +110,7 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
         return artWorkRepository.findBySearchKeyWord(keyword, lastArtWorkId, pageable);
     }
 
-
+    //이미지 s3에서도 업로드
     private void setImgUrl(List<CommonDto.ImgUrlDto> dto, ArtWorks artWork) {
         dto.forEach((img) -> {
             ArtWorkImage artWorkImage = ArtWorkImage.builder()
