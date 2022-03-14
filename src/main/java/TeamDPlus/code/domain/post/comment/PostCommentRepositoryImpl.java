@@ -23,7 +23,7 @@ public class PostCommentRepositoryImpl implements PostCommentRepositoryCustom{
                         postComment.id,
                         postComment.content,
                         postComment.modified,
-                        postComment.is_selected
+                        postComment.isSelected
                 ))
                 .from(postComment)
                 .join(post).on(post.id.eq(postId))

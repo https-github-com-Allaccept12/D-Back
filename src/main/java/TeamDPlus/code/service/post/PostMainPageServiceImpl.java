@@ -56,6 +56,8 @@ public class PostMainPageServiceImpl implements PostMainPageService{
         return post.getId();
     }
 
+    // 게시글 삭제
+
     // 게시글 검색
     @Transactional(readOnly = true)
     public Page<PostResponseDto.PostPageMain> findBySearchKeyWord(String keyword, Long lastArtWorkId) {
@@ -101,5 +103,7 @@ public class PostMainPageServiceImpl implements PostMainPageService{
         }
         return post;
     }
+
+    // 로그인한 사용자의 좋아요 표시
 
 }
