@@ -2,6 +2,7 @@ package TeamDPlus.code.domain.artwork;
 
 import TeamDPlus.code.domain.account.Account;
 import TeamDPlus.code.domain.account.AccountRepository;
+import TeamDPlus.code.domain.account.QAccount;
 import TeamDPlus.code.domain.artwork.bookmark.ArtWorkBookMark;
 import TeamDPlus.code.domain.artwork.bookmark.ArtWorkBookMarkRepository;
 import TeamDPlus.code.domain.artwork.comment.ArtWorkComment;
@@ -12,6 +13,7 @@ import TeamDPlus.code.domain.artwork.like.ArtWorkLikes;
 import TeamDPlus.code.domain.artwork.like.ArtWorkLikesRepository;
 import TeamDPlus.code.dto.response.ArtWorkResponseDto;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -104,10 +106,8 @@ class ArtWorkRepositoryTest {
                         artWorks.id,
                         artWorks.scope,
                         artWorkImage.artworkImg,
-                        artWorks.view,
-                        artWorks.isMaster,
-                        artWorks.created,
-                        artWorks.modified
+                        artWorks.isMaster
+
                 ))
                 .from(artWorks)
                 .leftJoin(artWorkImage).on(artWorkImage.artWorks.eq(artWorks))
@@ -142,11 +142,15 @@ class ArtWorkRepositoryTest {
                         artWorks.id,
                         artWorks.account.nickname,
                         artWorkImage.artworkImg,
-                        artWorks.view))
+                        artWorks.view,
+                        artWorkLikes.count()
+                ))
                 .from(artWorks)
                 .join(artWorkBookMark).on(artWorkBookMark.artWorks.eq(artWorks))
                 .join(artWorkImage).on(artWorkImage.artWorks.eq(artWorks))
+                .leftJoin(artWorkLikes).on(artWorkLikes.artWorks.eq(artWorks))
                 .where(artWorkBookMark.account.id.eq(account1.getId()).and(artWorks.scope.isTrue()))
+                .groupBy(artWorks.id)
                 .fetch();
         //then
 
@@ -162,10 +166,13 @@ class ArtWorkRepositoryTest {
         Account account1 = testAccountSet();
         ArtWorks artWorks1 = testArtWorksSet(account1);
         ArtWorks artWorks2 = testArtWorksSet(account1);
-        ArtWorkImage artWorkImage1 = testArtWorkImageSet(artWorks1,"test1.img",false);
+        testArtWorkImageSet(artWorks1,"test1.img",false);
         ArtWorkImage artWorkImage2 = testArtWorkImageSet(artWorks1,"test2.img",true);
         ArtWorkImage artWorkImage3 = testArtWorkImageSet(artWorks2, "test3.img", true);
-        ArtWorkImage artWorkImage4 = testArtWorkImageSet(artWorks2, "test4.img", false);
+        testArtWorkImageSet(artWorks2, "test4.img", false);
+        testLikeSet(artWorks1,account1);
+        testLikeSet(artWorks1,account1);
+        testLikeSet(artWorks1,account1);
         Pageable paging = PageRequest.of(0,4);
         //when
         List<ArtWorkResponseDto.ArtworkMain> result = queryFactory
@@ -176,18 +183,23 @@ class ArtWorkRepositoryTest {
                         account.profileImg,
                         artWorkImage.artworkImg,
                         artWorks.view,
+                        artWorkLikes.count(),
                         artWorks.category,
                         artWorks.created
                 ))
                 .from(artWorks)
                 .join(account).on(account.id.eq(artWorks.account.id))
                 .join(artWorkImage).on(artWorkImage.artWorks.eq(artWorks).and(artWorkImage.thumbnail.isTrue()))
+                .leftJoin(artWorkLikes).on(artWorkLikes.artWorks.eq(artWorks))
                 .offset(paging.getOffset())
                 .limit(paging.getPageSize())
                 .where(artWorks.id.lt(10))
+                .groupBy(artWorks.id)
                 .fetch();
         //then
         assertThat(result.size()).isEqualTo(2);
+        assertThat(result.get(0).getLike_count()).isEqualTo(3);
+        assertThat(result.get(1).getLike_count()).isEqualTo(0);
         assertThat(result.get(0).getImg()).isEqualTo(artWorkImage2.getArtworkImg());
         assertThat(result.get(0).getAccount_id()).isEqualTo(account1.getId());
         assertThat(result.get(1).getImg()).isEqualTo(artWorkImage3.getArtworkImg());
@@ -195,7 +207,6 @@ class ArtWorkRepositoryTest {
     }
 
     @Test
-    @Commit
     public void 게시글_sub_상세_() throws Exception {
         //given
         Account account1 = testAccountSet();
@@ -235,8 +246,64 @@ class ArtWorkRepositoryTest {
         //then
         assert fetch != null;
 
-        assertThat(fetch.getLike_count()).isEqualTo(2);
+        assertThat(fetch.getLike_count()).isEqualTo(3);
 
+    }
+
+    @Test
+    public void 가장_좋아요가_많고_조회수가_많은_작품() throws Exception {
+        //given
+        Account account1 = testAccountSet();
+        ArtWorks artWorks1 = testArtWorksSet(account1);
+        ArtWorks artWorks2 = testArtWorksSet(account1);
+        ArtWorks artWorks3 = testArtWorksSet(account1);
+        ArtWorks artWorks4 = testArtWorksSet(account1);
+        testLikeSet(artWorks1,account1); //2
+        testLikeSet(artWorks2,account1); //2
+        testLikeSet(artWorks2,account1); //2
+        testLikeSet(artWorks2,account1);
+        testLikeSet(artWorks2,account1); // 0
+        testLikeSet(artWorks3,account1);
+        testLikeSet(artWorks3,account1);
+        testLikeSet(artWorks4,account1); //1
+        testLikeSet(artWorks4,account1);
+        testLikeSet(artWorks4,account1);
+        Pageable pageable = PageRequest.of(0,10);
+        //만약 10개 이하라면
+        //when
+        List<ArtWorkResponseDto.ArtworkMain> result = queryFactory
+                .select(
+                        Projections.constructor(ArtWorkResponseDto.ArtworkMain.class,
+                                artWorks.id,
+                                account.id,
+                                account.nickname,
+                                account.profileImg,
+                                artWorkImage.artworkImg,
+                                artWorks.view,
+                                artWorkLikes.id.count(),
+                                artWorks.category,
+                                artWorks.created
+                        ))
+                .from(artWorks)
+                .join(artWorks.account, account)
+                .leftJoin(artWorkLikes).on(artWorkLikes.artWorks.eq(artWorks))
+                .leftJoin(artWorkImage).on(artWorkImage.artWorks.eq(artWorks).and(artWorkImage.thumbnail.isTrue()))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .groupBy(artWorks.id)
+                .orderBy(artWorkLikes.count().desc())
+                .where(isInterest(account1.getInterest()))
+                .fetch();
+        //then
+        assertThat(result.get(0).getArtwork_id()).isEqualTo(artWorks2.getId());
+        assertThat(result.get(1).getArtwork_id()).isEqualTo(artWorks4.getId());
+        assertThat(result.get(2).getArtwork_id()).isEqualTo(artWorks3.getId());
+        assertThat(result.get(3).getArtwork_id()).isEqualTo(artWorks1.getId());
+    }
+
+
+    public BooleanExpression isInterest(String interest) {
+        return interest != null ? artWorks.category.eq(interest) : null;
     }
 
     private ArtWorkLikes testLikeSet(ArtWorks artWorks, Account account) {
@@ -264,6 +331,7 @@ class ArtWorkRepositoryTest {
                 .subContent("test")
                 .career(1)
                 .tendency("무슨무슨형")
+                .interest("test1")
                 .build();
         Account save = accountRepository.save(testAccount);
         em.flush();

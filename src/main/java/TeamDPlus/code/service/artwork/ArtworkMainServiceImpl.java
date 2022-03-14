@@ -42,12 +42,16 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
     public Page<ArtWorkResponseDto.ArtworkMain> showArtworkMain(Long accountId,Long lastArtWorkId){
         Pageable pageable = PageRequest.of(0,10);
         Page<ArtWorkResponseDto.ArtworkMain> artWorkList = artWorkRepository.findAllArtWork(lastArtWorkId, pageable);
-        setLikeCountAndIsLike(accountId, artWorkList);
+        setIsLike(accountId, artWorkList);
         return artWorkList;
     }
 
     @Transactional(readOnly = true)
     public ArtWorkResponseDto.ArtWorkDetail detailArtWork(Long accountId, Long artWorkId) {
+        //작품 게시글 존재여부
+        ArtWorks artWorks = artworkValidation(accountId, artWorkId);
+        //조회수
+        artWorks.addViewCount();
         //작품 좋아요개수와 작품 기본정보 가져오기
         ArtWorkResponseDto.ArtWorkSubDetail artWorksSub = artWorkRepository.findByArtWorkSubDetail(accountId, artWorkId);
         //작품 이미지들 가져오기
@@ -64,7 +68,6 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
         boolean isBookmark = artWorkBookMarkRepository.existByAccountIdAndArtWorkId(accountId, artWorkId);
         //지금 상세페이지를 보고있는사람이 팔로우를 했는지
         boolean isFollow = followRepository.existsByFollowerIdAndAndFollowingId(accountId, artWorksSub.getAccount_id());
-
         //상세페이지의 코멘트 개수
         artWorksSub.setComment_count((long) commentList.size());
         return ArtWorkResponseDto.ArtWorkDetail.from(imgList,commentList,similarList,artWorksSub,isLike,isBookmark,isFollow);
@@ -98,15 +101,18 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
         artWorkRepository.delete(artworkValidation(accountId, artworkId));
     }
 
-    //비회원 일경우 모든 작품 카테고리에서 탑10
-    //회원 일경우 관심사카테고리중에서 탑10
+    //비회원 일경우 모든작품 카테고리에서 탑10
+    //회원 일경우 관심사 카테고리중에서 탑10
     @Transactional(readOnly = true)
     public Page<ArtWorkResponseDto.ArtworkMain> mostPopularArtWork(Long accountId) {
-        Optional<Account> account = accountRepository.findById(accountId);
-        Pageable pageable = PageRequest.of(0,10);
-        Page<ArtWorkResponseDto.ArtworkMain> artWorkList = artWorkRepository.findArtWorkByMostViewAndMostLike(account.get().getInterest(),pageable);
-        setLikeCountAndIsLike(accountId, artWorkList);
-        return null;
+        //회원인지 비회원인지
+        if (accountId != null) {
+            Account account = accountRepository.findById(accountId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+            Page<ArtWorkResponseDto.ArtworkMain> artWorkList = getArtworkList(account.getInterest());
+            setIsLike(accountId, artWorkList);
+            return artWorkList;
+        }
+        return getArtworkList(null);
     }
 
     //작품 검색
@@ -114,6 +120,11 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
     public Page<ArtWorkResponseDto.ArtworkMain> findBySearchKeyWord(String keyword, Long lastArtWorkId) {
         Pageable pageable = PageRequest.of(0,10);
         return artWorkRepository.findBySearchKeyWord(keyword, lastArtWorkId, pageable);
+    }
+
+    private Page<ArtWorkResponseDto.ArtworkMain> getArtworkList(String interest) {
+        Pageable pageable = PageRequest.of(0, 10);
+        return artWorkRepository.findArtWorkByMostViewAndMostLike(interest,pageable);
     }
 
     //이미지 s3에서도 업로드
@@ -136,12 +147,11 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
         return artWorks;
     }
 
-    private void setLikeCountAndIsLike(Long accountId, Page<ArtWorkResponseDto.ArtworkMain> artWorkList) {
+    private void setIsLike(Long accountId, Page<ArtWorkResponseDto.ArtworkMain> artWorkList) {
         artWorkList.forEach((artWork) -> {
-            Long likeCount = artWorkLikesRepository.countArtWorkLikesByArtWorksId(artWork.getArtwork_id());
-            artWork.setLikeCountAndIsLike(likeCount,false);
+            artWork.setLikeCountAndIsLike(false);
             if(artWorkLikesRepository.existByAccountIdAndArtWorkId(accountId,artWork.getArtwork_id())) {
-                artWork.setLikeCountAndIsLike(likeCount,true);
+                artWork.setLikeCountAndIsLike(true);
             }
         });
     }

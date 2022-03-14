@@ -35,19 +35,19 @@ public class ArtWorkResponseDto {
 
         @Builder
         public ArtworkMain(final Long artwork_id,final Long account_id,final String account_nickname,final String account_profile,
-                               final String img,final Long view_count,final String category,final Timestamp create_time) {
+                               final String img,final Long view_count,final Long like_count,final String category,final Timestamp create_time) {
             this.artwork_id = artwork_id;
             this.account_id = account_id;
             this.img = img;
             this.account_profile = account_profile;
             this.view_count = view_count;
+            this.like_count = like_count;
             this.create_time = create_time;
             this.category = category;
             this.account_nickname = account_nickname;
         }
-        public void setLikeCountAndIsLike(Long likeCount,boolean is_like) {
+        public void setLikeCountAndIsLike(boolean is_like) {
             this.is_like = is_like;
-            this.like_count = likeCount;
         }
     }
 
@@ -113,9 +113,9 @@ public class ArtWorkResponseDto {
         private Specialty specialty;
 
         @Builder
-        public ArtWorkSubDetail(Long artwork_id, Long account_id, String title, String content, Long view_count,
-                                Long like_count, String category, Timestamp create_time,
-                                Timestamp modify_time, Specialty specialty, String account_nickname, String account_profile_img) {
+        public ArtWorkSubDetail(final Long artwork_id,final Long account_id,final String title,final String content,final Long view_count,
+                                final Long like_count,final String category,final Timestamp create_time,
+                                final Timestamp modify_time,final Specialty specialty,final String account_nickname,final String account_profile_img) {
             this.artwork_id = artwork_id;
             this.account_id = account_id;
             this.title = title;
@@ -135,6 +135,7 @@ public class ArtWorkResponseDto {
 
 
     }
+
     @Getter
     @NoArgsConstructor
     public static class ArtWorkFeed {
@@ -142,21 +143,14 @@ public class ArtWorkResponseDto {
         private Long artwork_id;
         private boolean scope;
         private String img;
-        private Long view_count;
         private boolean is_master;
-        private Timestamp create_time;
-        private Timestamp modify_time;
 
         @Builder
-        public ArtWorkFeed(final Long artwork_id,final boolean scope,final String img,final Long view_count,
-                           final boolean is_master,final Timestamp create_time,final Timestamp modify_time) {
+        public ArtWorkFeed(final Long artwork_id,final boolean scope,final String img, final boolean is_master) {
             this.artwork_id = artwork_id;
             this.scope = scope;
             this.img = img;
-            this.view_count = view_count;
             this.is_master = is_master;
-            this.create_time = create_time;
-            this.modify_time = modify_time;
         }
     }
 
@@ -177,13 +171,15 @@ public class ArtWorkResponseDto {
         private String account_nickname;
         private String img;
         private Long view;
+        private Long like_count;
 
         @Builder
-        public ArtWorkBookMark(final Long artwork_id,final String account_nickname,final String img,final Long view) {
+        public ArtWorkBookMark(final Long artwork_id,final String account_nickname,final String img,final Long view,final Long like_count) {
             this.artwork_id = artwork_id;
             this.account_nickname = account_nickname;
             this.img = img;
             this.view = view;
+            this.like_count = like_count;
         }
     }
 
