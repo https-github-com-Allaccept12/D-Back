@@ -33,15 +33,11 @@ public class PostComment extends BaseEntity {
     @JoinColumn(name = "post_id")
     private Post post;
 
-    @Column(name = "is_selected", columnDefinition = "TINYINT default 0")
-    private int isSelected;
-
     @Builder
-    public PostComment(final String content,final Account account,final Post post, int is_selected) {
+    public PostComment(final String content,final Account account,final Post post) {
         this.content = content;
         this.account = account;
         this.post = post;
-        this.isSelected = is_selected;
     }
 
     public void updateComment(final String content) {

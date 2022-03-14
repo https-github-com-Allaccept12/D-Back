@@ -9,8 +9,13 @@ import java.util.List;
 
 public interface PostRepositoryCustom {
 
-    // 포스트 메인페이지 출력
-    Page<PostResponseDto.PostPageMain> findAllPost(Long lastPostId, Pageable pageable);
+    // 포스트 메인페이지 출력 (최신순)
+    Page<PostResponseDto.PostPageMain> findAllPostOrderByCreatedDesc(Long lastPostId, Pageable pageable);
+
+    // 포스트 메인페이지 출력 (좋아요)
+    Page<PostResponseDto.PostPageMain> findAllPostOrderByPostLikes(Long lastPostId, Pageable pageable);
+
+
     // 글 상세 페이지
     PostResponseDto.PostDetailPage findDetailPost(Long postId);
 

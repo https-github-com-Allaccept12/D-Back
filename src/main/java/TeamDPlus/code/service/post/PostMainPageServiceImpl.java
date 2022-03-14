@@ -38,11 +38,11 @@ public class PostMainPageServiceImpl implements PostMainPageService{
     private final PostBookMarkRepository postBookMarkRepository;
     private final PostTagRepository postTagRepository;
 
-    // 전체 페이지
+    // 전체 페이지 (최신순)
     @Transactional(readOnly = true)
     public Page<PostResponseDto.PostPageMain> showPostMain(Long accountId, Long lastPostId) {
         Pageable pageable = PageRequest.of(0,12);
-        Page<PostResponseDto.PostPageMain> postList = postRepository.findAllPost(lastPostId, pageable);
+        Page<PostResponseDto.PostPageMain> postList = postRepository.findAllPostOrderByCreatedDesc(lastPostId, pageable);
         setCountList(accountId, postList);
         return postList;
     }

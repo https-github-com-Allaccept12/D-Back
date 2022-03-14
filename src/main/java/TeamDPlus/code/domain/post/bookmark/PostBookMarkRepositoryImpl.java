@@ -10,6 +10,7 @@ public class PostBookMarkRepositoryImpl implements PostBookMarkRepositoryCustom{
 
     private final JPAQueryFactory jpaQueryFactory;
 
+    // 북마크 눌렀는지 체크
     @Override
     public boolean existByAccountIdAndPostId(Long accountId, Long postId) {
         Integer fetchOne = jpaQueryFactory

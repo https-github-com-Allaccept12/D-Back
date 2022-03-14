@@ -20,10 +20,11 @@ public class PostCommentRepositoryImpl implements PostCommentRepositoryCustom{
         return jpaQueryFactory
                 .select(Projections.constructor(PostResponseDto.PostComment.class,
                         postComment.account.id,
+                        postComment.account.nickname,
+                        postComment.account.profileImg,
                         postComment.id,
                         postComment.content,
-                        postComment.modified,
-                        postComment.isSelected
+                        postComment.modified
                 ))
                 .from(postComment)
                 .join(post).on(post.id.eq(postId))

@@ -10,6 +10,7 @@ public class PostLikesRepositoryImpl implements PostLikesRepositoryCustom {
 
     private final JPAQueryFactory jpaQueryFactory;
 
+    // 좋아요 눌렀는지 체크
     @Override
     public boolean existByAccountIdAndPostId(Long accountId, Long postId) {
         Integer fetchOne = jpaQueryFactory

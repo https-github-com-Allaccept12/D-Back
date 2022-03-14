@@ -22,7 +22,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
 
     // 전체 페이지
     @Override
-    public Page<PostResponseDto.PostPageMain> findAllPost(Long lastPostId, Pageable pageable) {
+    public Page<PostResponseDto.PostPageMain> findAllPostOrderByCreatedDesc(Long lastPostId, Pageable pageable) {
         List<PostResponseDto.PostPageMain> fetch = queryFactory
                 .select(Projections.constructor(PostResponseDto.PostPageMain.class,
                         post.id,
@@ -38,44 +38,58 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                 .join(account).on(account.id.eq(post.account.id))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
-                .where(post.id.lt(12))
+                .where(isLastPostId(lastPostId))
+                .orderBy(post.created.desc())
                 .fetch();
 
-        int count = fetch.size();
-        return new PageImpl<>(fetch, pageable, count);
+        return new PageImpl<>(fetch, pageable, fetch.size());
+    }
+
+    // 전체 페이지 (좋아요 순)
+    @Override
+    public Page<PostResponseDto.PostPageMain> findAllPostOrderByPostLikes(Long lastPostId, Pageable pageable) {
+        List<PostResponseDto.PostPageMain> fetch = queryFactory
+                .select(Projections.constructor(PostResponseDto.PostPageMain.class,
+                        post.id,
+                        account.id,
+                        account.nickname,
+                        account.profileImg,
+                        post.title,
+                        post.category,
+                        post.content,
+                        post.created
+                ))
+                .from(post)
+                .join(account).on(account.id.eq(post.account.id))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .where(isLastPostId(lastPostId))
+                .orderBy(post.created.desc())
+                .fetch();
+
+        return new PageImpl<>(fetch, pageable, fetch.size());
     }
 
     // 글 상세 페이지
     @Override
     public PostResponseDto.PostDetailPage findDetailPost(Long postId){
-//        return queryFactory
-//                .select(Projections.constructor(PostResponseDto.PostDetailPage.class,
-//                        post.id, //
-//                        post.content,//
-//                        post.created,//
-//                        post.title,//
-//                        post.category,//
-//                        post.created,//
-//                        post.modified, //
-//                        postImage.postImg,//
-//                        account.id,//
-//                        account.nickname,//
-//                        account.profileImg,//
-//                        postLikes.post,//
-//                        post.view,//
-//                        postComment.post.id,//
-//                        postComment.account.nickname,//
-//                        postComment.content,//
-//                        postComment.created,//
-//                        postComment.modified,//
-//                        postComment.is_selected//
-//                        ))
-//                .from(post)
-//                .join(account).on(account.id.eq(post.account.id))
-//                .leftJoin(postImage).on(postImage.post.id.eq(post.id))
-//                .leftJoin(postComment).on(postComment.post.id.eq(post.id))
-//                .fetchOne();
-        return null;
+        return queryFactory
+                .select(Projections.constructor(PostResponseDto.PostDetailPage.class,
+                        post.id,
+                        post.content,
+                        post.created,
+                        post.title,
+                        post.category,
+                        post.created,
+                        post.modified,
+                        account.id,
+                        account.nickname,
+                        account.profileImg,
+                        post.view
+                        ))
+                .from(post)
+                .join(account).on(account.id.eq(post.account.id))
+                .fetchOne();
     }
 
     @Override
