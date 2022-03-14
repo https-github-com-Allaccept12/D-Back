@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -56,7 +57,28 @@ public class PostMainPageServiceImpl implements PostMainPageService{
         return post.getId();
     }
 
+    // 게시물 수정
+    @Transactional
+    public Long updatePost(Account account, Long postId, PostRequestDto.PostCreateAndUpdate dto){
+        Post post = postValidation(account.getId(), postId);
+        post.createAndupdate(dto);
+        postImageRepository.deleteAllByPostId(postId);
+        setImgUrl(dto.getImg(), post);
+        postTagRepository.deleteAllByPostId(postId);
+        setPostTag(dto.getHashTag(), post);
+        return post.getId();
+    }
+
     // 게시글 삭제
+    @Transactional
+    public void deletePost(Long accountId, Long postId){
+        Post post = postValidation(accountId, postId);
+        postLikesRepository.deleteAllByPostId(postId);
+        postTagRepository.deleteAllByPostId(postId);
+        postImageRepository.deleteAllByPostId(postId);
+        postBookMarkRepository.deleteAllByPostId(postId);
+        postRepository.delete(post);
+    }
 
     // 게시글 검색
     @Transactional(readOnly = true)
