@@ -128,17 +128,15 @@ public class KakaoAccountService {
     }
 
     private LoginResponseDto forceLogin(Account kakaoUser) {
-        UserDetails userDetails = new UserDetailsImpl(kakaoUser);
-        Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        String token = jwtTokenProvider.createToken(Long.toString(kakaoUser.getId()), kakaoUser.getEmail());
+        String accessToken = jwtTokenProvider.createToken(Long.toString(kakaoUser.getId()), kakaoUser.getEmail());
         String refreshTokenValue = UUID.randomUUID().toString().replace("-", "");
         String refreshToken = jwtTokenProvider.createRefreshToken(refreshTokenValue);
         kakaoUser.refreshToken(refreshToken);
         LoginResponseDto responseDto = LoginResponseDto.builder()
                 .account_id(kakaoUser.getId())
                 .profile_img(kakaoUser.getProfileImg())
-                .token(token)
+                .access_token(accessToken)
+                .refresh_token(refreshToken)
                 .build();
         return responseDto;
     }

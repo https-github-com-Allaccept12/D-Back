@@ -126,17 +126,15 @@ public class GoogleAccountService {
     }
 
     private LoginResponseDto forceLogin(Account googleUser) {
-        UserDetails userDetails = new UserDetailsImpl(googleUser);
-        Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        String token = jwtTokenProvider.createToken(Long.toString(googleUser.getId()), googleUser.getEmail());
+        String accessToken = jwtTokenProvider.createToken(Long.toString(googleUser.getId()), googleUser.getEmail());
         String refreshTokenValue = UUID.randomUUID().toString().replace("-", "");
         String refreshToken = jwtTokenProvider.createRefreshToken(refreshTokenValue);
         googleUser.refreshToken(refreshToken);
         LoginResponseDto responseDto = LoginResponseDto.builder()
                 .account_id(googleUser.getId())
                 .profile_img(googleUser.getProfileImg())
-                .token(token)
+                .access_token(accessToken)
+                .refresh_token(refreshToken)
                 .build();
         return responseDto;
     }
