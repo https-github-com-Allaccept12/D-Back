@@ -96,27 +96,27 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom{
 
     @Override
     public Page<ArtWorkResponseDto.ArtworkMain> findArtWorkByMostViewAndMostLike(String interest,Pageable pageable) {
-        queryFactory
-                .select(Projections.constructor(ArtWorkResponseDto.ArtworkMain.class,
-                        artWorks.id,
-                        account.id,
-                        account.nickname,
-                        account.profileImg,
-                        artWorkImage.artworkImg,
-                        artWorks.view,
-                        artWorks.category,
-                        artWorks.created))
-                .from(artWorks)
-                .join(account).on(account.id.eq(artWorks.account.id))
-                .join(artWorkImage).on(artWorkImage.artWorks.eq(artWorks).and(artWorkImage.thumbnail.isTrue()))
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .where(artWorks.id.eq(
-                        JPAExpressions.select(artWorks.id)
-                                .from(artWorkLikes)
-                                .join(artWorks).on(artWorkLikes.artWorks.eq(artWorks))
-                                .where(artWorkLikes.)
-                ))
+//        queryFactory
+//                .select(Projections.constructor(ArtWorkResponseDto.ArtworkMain.class,
+//                        artWorks.id,
+//                        account.id,
+//                        account.nickname,
+//                        account.profileImg,
+//                        artWorkImage.artworkImg,
+//                        artWorks.view,
+//                        artWorks.category,
+//                        artWorks.created))
+//                .from(artWorks)
+//                .join(account).on(account.id.eq(artWorks.account.id))
+//                .join(artWorkImage).on(artWorkImage.artWorks.eq(artWorks).and(artWorkImage.thumbnail.isTrue()))
+//                .offset(pageable.getOffset())
+//                .limit(pageable.getPageSize())
+//                .where(artWorks.id.eq(
+//                        JPAExpressions.select(artWorks.id)
+//                                .from(artWorkLikes)
+//                                .join(artWorks).on(artWorkLikes.artWorks.eq(artWorks))
+//                                .where(artWorkLikes.)
+//                ))
         return null;
     }
 
