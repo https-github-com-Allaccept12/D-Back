@@ -11,14 +11,14 @@ import javax.persistence.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Specialty {
 
-    private Boolean figma = false;
-    private Boolean framer = false;
-    private Boolean afterEffect = false;
-    private Boolean illustration = false;
-    private Boolean sketch = false;
-    private Boolean protopie = false;
-    private Boolean jira = false;
-    private Boolean hotjar = false;
-    private Boolean mixpanel = false;
-    private Boolean miro = false;
+    private boolean figma = false;
+    private boolean framer = false;
+    private boolean afterEffect = false;
+    private boolean illustration = false;
+    private boolean sketch = false;
+    private boolean protopie = false;
+    private boolean jira = false;
+    private boolean hotjar = false;
+    private boolean mixpanel = false;
+    private boolean miro = false;
 }

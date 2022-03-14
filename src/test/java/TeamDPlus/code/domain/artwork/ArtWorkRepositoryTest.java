@@ -3,6 +3,8 @@ package TeamDPlus.code.domain.artwork;
 import TeamDPlus.code.domain.account.Account;
 import TeamDPlus.code.domain.account.AccountRepository;
 import TeamDPlus.code.domain.account.QAccount;
+import TeamDPlus.code.domain.account.rank.Rank;
+import TeamDPlus.code.domain.account.rank.RankRepository;
 import TeamDPlus.code.domain.artwork.bookmark.ArtWorkBookMark;
 import TeamDPlus.code.domain.artwork.bookmark.ArtWorkBookMarkRepository;
 import TeamDPlus.code.domain.artwork.comment.ArtWorkComment;
@@ -65,10 +67,13 @@ class ArtWorkRepositoryTest {
     @Autowired
     EntityManager em;
 
-
+    @Autowired
+    RankRepository rankRepository;
     @Test
     public void artwork_feed_query_test() throws Exception {
         //given account,artwork,
+        Rank rank = Rank.builder().rankScore(0L).build();
+        Rank saveRank = rankRepository.save(rank);
         Account testAccount = Account.builder()
                 .email("test")
                 .nickname("test")
@@ -76,6 +81,7 @@ class ArtWorkRepositoryTest {
                 .subContent("test")
                 .career(1)
                 .tendency("무슨무슨형")
+                .rank(saveRank)
                 .build();
         Account saveAccount = accountRepository.save(testAccount);
         ArtWorks testArtWorks = ArtWorks.builder()
@@ -251,6 +257,7 @@ class ArtWorkRepositoryTest {
     }
 
     @Test
+    @Commit
     public void 가장_좋아요가_많고_조회수가_많은_작품() throws Exception {
         //given
         Account account1 = testAccountSet();
@@ -287,14 +294,15 @@ class ArtWorkRepositoryTest {
                 .from(artWorks)
                 .join(artWorks.account, account)
                 .leftJoin(artWorkLikes).on(artWorkLikes.artWorks.eq(artWorks))
-                .leftJoin(artWorkImage).on(artWorkImage.artWorks.eq(artWorks).and(artWorkImage.thumbnail.isTrue()))
+                .leftJoin(artWorkImage).on(artWorkImage.artWorks.eq(artWorks))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .groupBy(artWorks.id)
-                .orderBy(artWorkLikes.count().desc())
+                .orderBy(artWorkLikes.count().desc(),artWorks.view.desc())
                 .where(isInterest(account1.getInterest()))
                 .fetch();
         //then
+        assert result != null;
         assertThat(result.get(0).getArtwork_id()).isEqualTo(artWorks2.getId());
         assertThat(result.get(1).getArtwork_id()).isEqualTo(artWorks4.getId());
         assertThat(result.get(2).getArtwork_id()).isEqualTo(artWorks3.getId());
@@ -324,6 +332,8 @@ class ArtWorkRepositoryTest {
 
 
     private Account testAccountSet() {
+        Rank rank = Rank.builder().rankScore(0L).build();
+        Rank saveRank = rankRepository.save(rank);
         Account testAccount = Account.builder()
                 .email("test")
                 .nickname("test")
@@ -331,7 +341,8 @@ class ArtWorkRepositoryTest {
                 .subContent("test")
                 .career(1)
                 .tendency("무슨무슨형")
-                .interest("test1")
+                .interest("test")
+                .rank(saveRank)
                 .build();
         Account save = accountRepository.save(testAccount);
         em.flush();

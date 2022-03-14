@@ -3,6 +3,7 @@ package TeamDPlus.code.service.artwork;
 import TeamDPlus.code.advice.ApiRequestException;
 import TeamDPlus.code.domain.account.Account;
 import TeamDPlus.code.domain.account.AccountRepository;
+import TeamDPlus.code.domain.account.AccountRepositoryCustom;
 import TeamDPlus.code.domain.account.follow.FollowRepository;
 import TeamDPlus.code.domain.artwork.ArtWorkRepository;
 import TeamDPlus.code.domain.artwork.ArtWorks;
@@ -13,8 +14,11 @@ import TeamDPlus.code.domain.artwork.image.ArtWorkImageRepository;
 import TeamDPlus.code.domain.artwork.like.ArtWorkLikesRepository;
 import TeamDPlus.code.dto.common.CommonDto;
 import TeamDPlus.code.dto.request.ArtWorkRequestDto;
+import TeamDPlus.code.dto.response.AccountResponseDto;
 import TeamDPlus.code.dto.response.ArtWorkResponseDto;
+import TeamDPlus.code.dto.response.MainResponseDto;
 import TeamDPlus.code.service.file.FileProcessService;
+import jdk.jfr.internal.tool.Main;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -23,7 +27,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -37,6 +40,29 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
     private final FollowRepository followRepository;
     private final AccountRepository accountRepository;
     private final FileProcessService fileProcessService;
+
+    //비회원 일경우 모든작품 카테고리에서 탑10
+    //회원 일경우 관심사 카테고리중에서 탑10
+    @Transactional(readOnly = true)
+    public MainResponseDto mostPopularArtWork(Long accountId) {
+        //회원인지 비회원인지
+        if (accountId != null) {
+            Account account = accountRepository.findById(accountId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+            Page<ArtWorkResponseDto.ArtworkMain> artWorkList = getArtworkList(account.getInterest());
+            List<AccountResponseDto.TopArtist> topArtist = getTopArtist();
+            setIsLike(accountId, artWorkList);
+            return MainResponseDto.builder().artwork(artWorkList).top_artist(topArtist).build();
+
+        }
+        Page<ArtWorkResponseDto.ArtworkMain> artworkList = getArtworkList(null);
+        List<AccountResponseDto.TopArtist> topArtist = getTopArtist();
+        return MainResponseDto.builder().artwork(artworkList).top_artist(topArtist).build();
+
+    }
+
+    private List<AccountResponseDto.TopArtist> getTopArtist() {
+        return accountRepository.findTopArtist();
+    }
 
     @Transactional(readOnly = true)
     public Page<ArtWorkResponseDto.ArtworkMain> showArtworkMain(Long accountId,Long lastArtWorkId){
@@ -101,19 +127,6 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
         artWorkRepository.delete(artworkValidation(accountId, artworkId));
     }
 
-    //비회원 일경우 모든작품 카테고리에서 탑10
-    //회원 일경우 관심사 카테고리중에서 탑10
-    @Transactional(readOnly = true)
-    public Page<ArtWorkResponseDto.ArtworkMain> mostPopularArtWork(Long accountId) {
-        //회원인지 비회원인지
-        if (accountId != null) {
-            Account account = accountRepository.findById(accountId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
-            Page<ArtWorkResponseDto.ArtworkMain> artWorkList = getArtworkList(account.getInterest());
-            setIsLike(accountId, artWorkList);
-            return artWorkList;
-        }
-        return getArtworkList(null);
-    }
 
     //작품 검색
     @Transactional(readOnly = true)
@@ -123,7 +136,7 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
     }
 
     private Page<ArtWorkResponseDto.ArtworkMain> getArtworkList(String interest) {
-        Pageable pageable = PageRequest.of(0, 10);
+        Pageable pageable = PageRequest.of(0,10);
         return artWorkRepository.findArtWorkByMostViewAndMostLike(interest,pageable);
     }
 

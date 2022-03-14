@@ -7,7 +7,6 @@ import TeamDPlus.code.domain.artwork.image.ArtWorkImage;
 import TeamDPlus.code.domain.artwork.image.ArtWorkImageRepository;
 import TeamDPlus.code.dto.common.CommonDto;
 import TeamDPlus.code.service.file.FileProcessService;
-import TeamDPlus.code.service.file.FileService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
