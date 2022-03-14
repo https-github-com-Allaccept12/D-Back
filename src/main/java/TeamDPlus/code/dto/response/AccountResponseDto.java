@@ -82,6 +82,30 @@ public class AccountResponseDto {
         }
     }
 
+
+
+    public static class TopArtist {
+        private Long account_id;
+        private String account_nickname;
+        private String account_profile;
+        private String account_job;
+        private boolean is_follow;
+
+        @Builder
+        public TopArtist(Long account_id, String account_nickname, String account_profile,
+                         String account_job) {
+            this.account_id = account_id;
+            this.account_nickname = account_nickname;
+            this.account_profile = account_profile;
+            this.account_job = account_job;
+
+        }
+        public void setIsFollow() {
+            this.is_follow = true;
+        }
+    }
+
+
 }
 
 

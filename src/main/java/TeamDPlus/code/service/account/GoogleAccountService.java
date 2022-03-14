@@ -2,6 +2,8 @@ package TeamDPlus.code.service.account;
 
 import TeamDPlus.code.domain.account.Account;
 import TeamDPlus.code.domain.account.AccountRepository;
+import TeamDPlus.code.domain.account.rank.Rank;
+import TeamDPlus.code.domain.account.rank.RankRepository;
 import TeamDPlus.code.dto.GoogleUserInfoDto;
 import TeamDPlus.code.dto.response.LoginResponseDto;
 import TeamDPlus.code.jwt.JwtTokenProvider;
@@ -25,6 +27,7 @@ import javax.transaction.Transactional;
 public class GoogleAccountService {
 
     private final AccountRepository accountRepository;
+    private final RankRepository rankRepository;
     private final JwtTokenProvider jwtTokenProvider;
 
     @Transactional
@@ -110,10 +113,10 @@ public class GoogleAccountService {
         if (googleUser == null) {
             // 회원가입
             String name = googleUserInfo.getName();
-
             String profileImg = googleUserInfo.getProfile_img();
-
-            googleUser = Account.builder().nickname(name).profileImg(profileImg).email(email).build();
+            Rank rank = Rank.builder().rankScore(0L).build();
+            Rank saveRank = rankRepository.save(rank);
+            googleUser = Account.builder().nickname(name).profileImg(profileImg).email(email).rank(saveRank).build();
             accountRepository.save(googleUser);
         }
         return googleUser;
@@ -123,13 +126,12 @@ public class GoogleAccountService {
         String accessToken = jwtTokenProvider.createToken(Long.toString(googleUser.getId()), googleUser.getEmail());
         String refreshToken = jwtTokenProvider.createRefreshToken(Long.toString(googleUser.getId()));
         googleUser.refreshToken(refreshToken);
-        LoginResponseDto responseDto = LoginResponseDto.builder()
+        return LoginResponseDto.builder()
                 .account_id(googleUser.getId())
                 .profile_img(googleUser.getProfileImg())
                 .access_token(accessToken)
                 .refresh_token(refreshToken)
                 .build();
-        return responseDto;
     }
 
 }

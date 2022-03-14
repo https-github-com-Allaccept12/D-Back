@@ -2,6 +2,7 @@ package TeamDPlus.code.domain.account;
 
 
 import TeamDPlus.code.domain.BaseEntity;
+import TeamDPlus.code.domain.account.rank.Rank;
 import TeamDPlus.code.dto.request.AccountRequestDto;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -26,25 +27,19 @@ public class Account extends BaseEntity {
     @Column(nullable = false)
     private String nickname;
 
-    @Column(columnDefinition = "varchar(255) default ''")
     private String titleContent;
 
-    @Column(columnDefinition = "varchar(255) default ''")
     private String subContent;
 
-    @Column(columnDefinition = "VARCHAR(255) default ''")
     private String profileImg;
 
     @Column(nullable = false)
     private int career;
 
-    @Column(columnDefinition = "VARCHAR(50) default ''")
     private String phoneNumber;
 
-    @Column(columnDefinition = "VARCHAR(255) default ''")
     private String workTime;
 
-    @Column(columnDefinition = "VARCHAR(255) default ''")
     private String workEmail;
 
     private String tendency;
@@ -54,26 +49,28 @@ public class Account extends BaseEntity {
 
     private String refreshToken;
 
-    @Column(columnDefinition = "VARCHAR(255) default ''")
     private String linkedIn;
 
-    @Column(columnDefinition = "VARCHAR(255) default ''")
     private String brunch;
 
-    @Column(columnDefinition = "VARCHAR(255) default ''")
     private String instagram;
 
-    @Column(columnDefinition = "VARCHAR(255) default ''")
     private String interest;
+
+    private String job;
 
     @Embedded
     private Specialty specialty;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "rank_id",nullable = false)
+    private Rank rank;
 
     @Builder
     public Account(final String email, final String nickname, final String subContent,final String titleContent, final String profileImg,
                    final int career, final String phoneNumber, final String workTime,
                    final String workEmail, final String tendency, final Long exp, final String refreshToken,
-                   final String linkedIn, final String brunch, final String instagram, final String interest)  {
+                   final String linkedIn, final String brunch, final String instagram, final String interest,final Rank rank,final String job)  {
         this.email = email;
         this.nickname = nickname;
         this.titleContent = titleContent;
@@ -90,6 +87,8 @@ public class Account extends BaseEntity {
         this.brunch = brunch;
         this.instagram = instagram;
         this.interest = interest;
+        this.rank = rank;
+        this.job = job;
     }
 
     public void refreshToken(final String refreshToken) {
@@ -110,6 +109,7 @@ public class Account extends BaseEntity {
 
     public void setInitProfile(final AccountRequestDto.InitProfileSetting dto) {
         this.nickname = dto.getNickname();
+        this.job = dto.getJob();
         this.profileImg = dto.getProfile_img();
         this.titleContent = dto.getIntro_content();
         this.workEmail = dto.getWork_email();
@@ -122,6 +122,7 @@ public class Account extends BaseEntity {
 
     public void updateInfo(final AccountRequestDto.UpdateAccountInfo dto) {
         this.nickname = dto.getNickname();
+        this.job = dto.getJob();
         this.workEmail = dto.getWork_email();
         this.workTime = dto.getWork_time();
         this.linkedIn = dto.getLinked_in();
