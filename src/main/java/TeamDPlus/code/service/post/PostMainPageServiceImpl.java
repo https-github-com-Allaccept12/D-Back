@@ -1,5 +1,6 @@
 package TeamDPlus.code.service.post;
 
+import TeamDPlus.code.advice.ApiRequestException;
 import TeamDPlus.code.domain.account.Account;
 import TeamDPlus.code.domain.artwork.ArtWorks;
 import TeamDPlus.code.domain.artwork.image.ArtWorkImage;
@@ -61,6 +62,7 @@ public class PostMainPageServiceImpl implements PostMainPageService{
         Pageable pageable = PageRequest.of(0,5);
         return postRepository.findPostBySearchKeyWord(keyword,lastArtWorkId,pageable);
     }
+
     private void setCountList(Long accountId, Page<PostResponseDto.PostPageMain> postList){
         postList.forEach((post) -> {
             Long bookmark_count = postBookMarkRepository.countByPostId(post.getPost_id());
@@ -89,7 +91,15 @@ public class PostMainPageServiceImpl implements PostMainPageService{
                     .build();
             postTagRepository.save(postTag);
         });
+    }
 
+    // post 수정, 삭제 권한 확인
+    private Post postValidation(Long accountId, Long postId){
+        Post post = postRepository.findById(postId).orElseThrow(() -> new ApiRequestException("해당 게시글은 존재하지 않습니다."));
+        if(!post.getAccount().getId().equals(accountId)){
+            throw new ApiRequestException("권한이 없습니다.");
+        }
+        return post;
     }
 
 }

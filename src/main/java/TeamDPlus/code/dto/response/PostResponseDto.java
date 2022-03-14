@@ -3,6 +3,7 @@ package TeamDPlus.code.dto.response;
 import TeamDPlus.code.domain.post.Post;
 import TeamDPlus.code.domain.post.comment.PostComment;
 import TeamDPlus.code.domain.post.image.PostImage;
+import TeamDPlus.code.domain.post.tag.PostTag;
 import TeamDPlus.code.dto.common.CommonDto;
 import lombok.Builder;
 import lombok.Getter;
@@ -55,29 +56,30 @@ public class PostResponseDto {
     @NoArgsConstructor
     public static class PostDetailPage {
 
-        private Long post_id;//
-        private Long account_id;//
-        private Long account_nickname;//
-        private String account_profile;//
-        private String title; //
-        private List<CommonDto.ImgUrlDto> img;//
+        private Long post_id;
+        private Long account_id;
+        private Long account_nickname;
+        private String account_profile;
+        private String title;
+        private List<CommonDto.ImgUrlDto> img;
         private List<CommonDto.PostTagDto> hashTag;
-        private String content; //
-        private Long view_count;//
+        private String content;
+        private Long view_count;
         private Boolean is_like;
         private Boolean is_bookmark;
         private Long like_count;
-        private String category;//
-        private List<PostResponseDto.PostComment> comment;//
-        private Timestamp create_time;//
-        private Timestamp modify_time;//
+        private String category;
+        private List<PostResponseDto.PostComment> comment;
+        private Timestamp create_time;
+        private Timestamp modify_time;
 
         @Builder
         public PostDetailPage(final Long post_id,final Long account_id, final Long account_nickname, final String title,
                               final List<CommonDto.ImgUrlDto> img,final String content,final Long view_count,
                               final Boolean is_like,final Boolean is_bookmark,final Long like_count,
                               final String category,final List<PostResponseDto.PostComment> comment,
-                              final Timestamp create_time,final Timestamp modify_time, final String account_profile) {
+                              final Timestamp create_time,final Timestamp modify_time, final String account_profile,
+                              final List<CommonDto.PostTagDto> hashTag) {
             this.post_id = post_id;
             this.account_id = account_id;
             this.account_nickname = account_nickname;
@@ -93,9 +95,11 @@ public class PostResponseDto {
             this.create_time = create_time;
             this.modify_time = modify_time;
             this.account_profile = account_profile;
+            this.hashTag = hashTag;
         }
 
         public static PostDetailPage from(final List<PostImage> postImageList, final List<PostComment> commentList,
+                                          final List<PostTag> postTagsList,
                                           final Post post, final boolean is_like, final boolean is_bookmark, Long like_count
                                           ){
             return PostDetailPage.builder()
@@ -113,6 +117,8 @@ public class PostResponseDto {
                     .category(post.getCategory())
                     .create_time(post.getCreated())
                     .modify_time(post.getModified())
+                    .hashTag(postTagsList.stream()
+                            .map(i -> new CommonDto.PostTagDto(i.getHashTag())).collect(Collectors.toList()))
                     .build();
         }
 
@@ -156,22 +162,22 @@ public class PostResponseDto {
     @Getter
     @NoArgsConstructor
     public static class PostComment{
-        private Long post_id;
         private Long account_id;
         private Long comment_id;
         private String content;
         private Timestamp modify_time;
-        private Boolean is_selected;
+        private int is_selected;
+        private Long like_count;
 
         @Builder
-        public PostComment(final Long post_id, final Long account_id, final Long comment_id,
-                           final String content, final Timestamp modify_time, final Boolean is_selected) {
-            this.post_id = post_id;
+        public PostComment(final Long account_id, final Long comment_id,
+                           final String content, final Timestamp modify_time, final int is_selected, final Long like_count) {
             this.account_id = account_id;
             this.comment_id = comment_id;
             this.content = content;
             this.modify_time = modify_time;
             this.is_selected = is_selected;
+            this.like_count = like_count;
         }
     }
 }

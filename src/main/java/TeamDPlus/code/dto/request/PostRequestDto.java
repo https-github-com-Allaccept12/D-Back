@@ -25,5 +25,13 @@ public class PostRequestDto {
         private List<CommonDto.PostTagDto> hashTag;
 
     }
+
+    @Getter
+    @NoArgsConstructor
+    public static class PostComment {
+
+        private String content;
+
+    }
 }
 
