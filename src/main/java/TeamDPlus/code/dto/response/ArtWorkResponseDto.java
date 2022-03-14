@@ -114,14 +114,13 @@ public class ArtWorkResponseDto {
 
         @Builder
         public ArtWorkSubDetail(Long artwork_id, Long account_id, String title, String content, Long view_count,
-                                Long comment_count, Long like_count, String category, Timestamp create_time,
+                                Long like_count, String category, Timestamp create_time,
                                 Timestamp modify_time, Specialty specialty, String account_nickname, String account_profile_img) {
             this.artwork_id = artwork_id;
             this.account_id = account_id;
             this.title = title;
             this.content = content;
             this.view_count = view_count;
-            this.comment_count = comment_count;
             this.like_count = like_count;
             this.category = category;
             this.create_time = create_time;
@@ -130,6 +129,10 @@ public class ArtWorkResponseDto {
             this.account_nickname = account_nickname;
             this.account_profile_img = account_profile_img;
         }
+        public void setComment_count(Long comment_count) {
+            this.comment_count =comment_count;
+        }
+
 
     }
     @Getter

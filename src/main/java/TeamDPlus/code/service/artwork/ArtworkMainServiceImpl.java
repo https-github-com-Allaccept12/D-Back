@@ -48,20 +48,26 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
 
     @Transactional(readOnly = true)
     public ArtWorkResponseDto.ArtWorkDetail detailArtWork(Long accountId, Long artWorkId) {
-        ArtWorks artWorks = artWorkRepository.findById(artWorkId).orElseThrow(() -> new IllegalArgumentException("존재하지않는 게시글 입니다."));
-        Long likeCount = artWorkLikesRepository.countArtWorkLikesByArtWorksId(artWorkId);
-
-        List<ArtWorkImage> imgList = artWorkImageRepository.findByArtWorksId(artWorks.getId());
-        List<ArtWorkResponseDto.ArtWorkComment> commentList = artWorkCommentRepository.findArtWorkCommentByArtWorksId(artWorks.getId());
-        final Pageable pageable = PageRequest.of(0, 5);
+        //작품 좋아요개수와 작품 기본정보 가져오기
+        ArtWorkResponseDto.ArtWorkSubDetail artWorksSub = artWorkRepository.findByArtWorkSubDetail(accountId, artWorkId);
+        //작품 이미지들 가져오기
+        List<ArtWorkImage> imgList = artWorkImageRepository.findByArtWorksId(artWorksSub.getArtwork_id());
+        //작품 코멘트 가져오기
+        List<ArtWorkResponseDto.ArtWorkComment> commentList = artWorkCommentRepository.findArtWorkCommentByArtWorksId(artWorksSub.getArtwork_id());
+        //해당 유저의 다른 작품들 가져오기
+        Pageable pageable = PageRequest.of(0, 5);
         Page<ArtWorkResponseDto.ArtWorkSimilarWork> similarList = artWorkRepository.findSimilarArtWork(accountId,pageable);
 
+        //지금 상세페이지를 보고있는사람이 좋아요를 했는지
         boolean isLike = artWorkLikesRepository.existByAccountIdAndArtWorkId(accountId, artWorkId);
+        //지금 상세페이지를 보고있는사람이 북마크를 했는지
         boolean isBookmark = artWorkBookMarkRepository.existByAccountIdAndArtWorkId(accountId, artWorkId);
-        boolean isFollow = followRepository.existsByFollowerIdAndAndFollowingId(accountId, artWorks.getAccount().getId());
+        //지금 상세페이지를 보고있는사람이 팔로우를 했는지
+        boolean isFollow = followRepository.existsByFollowerIdAndAndFollowingId(accountId, artWorksSub.getAccount_id());
 
-        //return ArtWorkResponseDto.ArtWorkDetail.from(imgList,commentList,artWorks,isLike,isBookmark,likeCount,isFollow,similarList);
-        return null;
+        //상세페이지의 코멘트 개수
+        artWorksSub.setComment_count((long) commentList.size());
+        return ArtWorkResponseDto.ArtWorkDetail.from(imgList,commentList,similarList,artWorksSub,isLike,isBookmark,isFollow);
     }
 
     @Transactional

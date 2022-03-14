@@ -1,30 +1,10 @@
 spring:
-<<<<<<< HEAD
   profiles:
     include:
       - aws
       - credentials
       - db
-=======
-  datasource:
-    #h2 setting
-    driver-class-name: org.h2.Driver
-#    driver-class-name: com.mysql.cj.jdbc.Driver
-#    url: jdbc:h2:tcp://localhost/~/testdb
-    url: jdbc:h2:mem:testdb
-#    url: jdbc:mysql://magazine-db.c5hxzzygkuri.ap-northeast-2.rds.amazonaws.com:3306/magazine?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul
-    username: sa
-    password:
-    #mysql setting
-#    driver-class-name: com.mysql.cj.jdbc.Driver
-#    # DB Source
-#    url:
-#    # DB username
-#    username:
-#    # DB password
-#    password:
->>>>>>> 4ebb4bae782951b2ceb95ea68a6be112593e2956
-
+      - secret
 
   jpa:
     hibernate:
@@ -34,15 +14,7 @@ spring:
         format_sql: true
         default_batch_fetch_size: 1000
 
-<<<<<<< HEAD
-=======
 
-  jwt:
-    header: Authorization
-    #hs256 알고리즘 32비트 이상의 시크릿키
-    secret: c2lsdmVybmluZS10ZWNoLXNwcmluZy1ib290LWp3dC10dXRvcmlhbC1zZWNyZXQtc2lsdmVybmluZS10ZWNoLXNwcmluZy1ib290LWp3dC10dXRvcmlhbC1zZWNyZXQK
-
->>>>>>> 4ebb4bae782951b2ceb95ea68a6be112593e2956
 logging.level:
   org.hibernate.SQL: debug
 
