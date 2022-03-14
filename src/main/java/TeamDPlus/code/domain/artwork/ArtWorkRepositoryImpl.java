@@ -97,6 +97,7 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom{
     }
 
     @Override
+<<<<<<< HEAD
     public ArtWorkResponseDto.ArtWorkSubDetail findByArtWorkSubDetail(Long accountId, Long artworkId) {
         return queryFactory
                 .select(Projections.constructor(
@@ -123,6 +124,8 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom{
     }
 
     @Override
+=======
+>>>>>>> 4ebb4bae782951b2ceb95ea68a6be112593e2956
     public Page<ArtWorkResponseDto.ArtworkMain> findArtWorkByMostViewAndMostLike(String interest,Pageable pageable) {
 //        queryFactory
 //                .select(Projections.constructor(ArtWorkResponseDto.ArtworkMain.class,
@@ -139,7 +142,15 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom{
 //                .join(artWorkImage).on(artWorkImage.artWorks.eq(artWorks).and(artWorkImage.thumbnail.isTrue()))
 //                .offset(pageable.getOffset())
 //                .limit(pageable.getPageSize())
+<<<<<<< HEAD
 //                .where()
+=======
+//                .where(artWorks.id.eq(
+//                        JPAExpressions.select(artWorks.id)
+//                                .from(artWorkLikes)
+//                                .join(artWorks).on(artWorkLikes.artWorks.eq(artWorks))
+//                                .where(artWorkLikes.)
+>>>>>>> 4ebb4bae782951b2ceb95ea68a6be112593e2956
 //                ))
         return null;
     }

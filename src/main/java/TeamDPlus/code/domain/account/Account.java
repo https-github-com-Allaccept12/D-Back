@@ -47,7 +47,6 @@ public class Account extends BaseEntity {
     @Column(columnDefinition = "VARCHAR(255) default ''")
     private String workEmail;
 
-    @Column(nullable = false)
     private String tendency;
 
     @Column(columnDefinition = "BIGINT default 0")
@@ -91,6 +90,10 @@ public class Account extends BaseEntity {
         this.brunch = brunch;
         this.instagram = instagram;
         this.interest = interest;
+    }
+
+    public void refreshToken(final String refreshToken) {
+        this.refreshToken = refreshToken;
     }
 
     public void initTendency(final String requestTendency) {
