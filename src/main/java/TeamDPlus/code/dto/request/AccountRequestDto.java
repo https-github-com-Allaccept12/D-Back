@@ -8,6 +8,13 @@ import java.util.List;
 
 public class AccountRequestDto {
 
+
+    @Getter
+    @NoArgsConstructor
+    public static class AccountIsMyPage {
+        private Long account_id;
+    }
+
     @Getter
     @NoArgsConstructor
     public static class UpdateAccountInfo {

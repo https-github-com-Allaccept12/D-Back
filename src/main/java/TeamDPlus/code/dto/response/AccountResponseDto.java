@@ -1,6 +1,7 @@
 package TeamDPlus.code.dto.response;
 
 import TeamDPlus.code.domain.account.Account;
+import TeamDPlus.code.domain.account.Specialty;
 import TeamDPlus.code.domain.account.history.History;
 import lombok.Builder;
 import lombok.Getter;
@@ -31,7 +32,7 @@ public class AccountResponseDto {
         private Long follower_count;
         private Long following_count;
         private boolean is_follow;
-        private SpecialtyResponseDto specialty;
+        private Specialty specialty;
         private boolean is_mypage;
 
         @Builder
@@ -39,7 +40,7 @@ public class AccountResponseDto {
                                  final String tendency,final String title_content,final String sub_content,
                                  final String linked_in,final String brunch,final String insta, String work_email,
                                  final String work_time,final Long follower_count,final Long following_count,final boolean is_follow,
-                                 final SpecialtyResponseDto specialty, final boolean is_mypage) {
+                                 final Specialty specialty, final boolean is_mypage) {
             this.account_id = account_id;
             this.nickname = nickname;
             this.profile_img = profile_img;
@@ -76,7 +77,7 @@ public class AccountResponseDto {
                     .follower_count(follower)
                     .following_count(following)
                     .is_follow(is_follow)
-                    .specialty(new SpecialtyResponseDto(account.getSpecialty()))
+                    .specialty(account.getSpecialty())
                     .is_mypage(is_mypage)
                     .build();
         }

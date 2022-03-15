@@ -41,7 +41,7 @@ public class PostMainPageServiceImpl implements PostMainPageService{
     public Page<PostResponseDto.PostPageMain> showPostMain(Long accountId, Long lastPostId) {
         Pageable pageable = PageRequest.of(0,12);
         Page<PostResponseDto.PostPageMain> postList = postRepository.findAllPost(lastPostId, pageable);
-        setCountList(accountId, postList);
+        setCountList(postList);
         return postList;
     }
 
@@ -61,7 +61,7 @@ public class PostMainPageServiceImpl implements PostMainPageService{
         Pageable pageable = PageRequest.of(0,5);
         return postRepository.findPostBySearchKeyWord(keyword,lastArtWorkId,pageable);
     }
-    private void setCountList(Long accountId, Page<PostResponseDto.PostPageMain> postList){
+    private void setCountList(Page<PostResponseDto.PostPageMain> postList){
         postList.forEach((post) -> {
             Long bookmark_count = postBookMarkRepository.countByPostId(post.getPost_id());
             Long comment_count = postCommentRepository.countByPostId(post.getPost_id());

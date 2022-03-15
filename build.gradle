@@ -40,8 +40,9 @@ dependencies {
 	implementation 'org.projectlombok:lombok:1.18.22'
 	implementation('com.h2database:h2')
     implementation 'org.springframework.boot:spring-boot-starter-test'
-
 	implementation 'io.awspring.cloud:spring-cloud-starter-aws:2.4.0'
+	implementation 'io.springfox:springfox-boot-starter:3.0.0'
+
 
     annotationProcessor "com.querydsl:querydsl-apt:${queryDslVersion}"
 

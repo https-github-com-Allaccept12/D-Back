@@ -1,4 +1,8 @@
 spring:
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+
   profiles:
     include:
       - aws
@@ -13,6 +17,7 @@ spring:
       hibernate:
         format_sql: true
         default_batch_fetch_size: 1000
+    open-in-view: false
 
 
 logging.level:

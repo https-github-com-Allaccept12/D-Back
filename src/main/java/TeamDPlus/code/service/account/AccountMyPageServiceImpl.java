@@ -36,8 +36,8 @@ public class AccountMyPageServiceImpl implements AccountMyPageService {
 
     //마이페이지
     @Transactional(readOnly = true)
-    public AccountResponseDto.AccountInfo showAccountInfo(final Long visitAccountId, final Long accountId, final Long lastArtWorkId) {
-        final Account findAccount = accountRepository.findById(accountId).orElseThrow(() -> new IllegalStateException("존재 하지않는 사용자 입니다."));
+    public AccountResponseDto.AccountInfo showAccountInfo(final Long visitAccountId, final Long accountId) {
+        final Account findAccount = accountRepository.findById(visitAccountId).orElseThrow(() -> new IllegalStateException("존재 하지않는 사용자 입니다."));
         final Long follower = followRepository.countByFollowerId(findAccount.getId());
         final Long following = followRepository.countByFollowingId(findAccount.getId());
         final boolean isFollow= followRepository.existsByFollowerIdAndAndFollowingId(visitAccountId,accountId);
@@ -53,7 +53,7 @@ public class AccountMyPageServiceImpl implements AccountMyPageService {
     }
     //작업물 - 포트폴리오
     @Transactional(readOnly = true)
-    public List<ArtWorkResponseDto.ArtWorkFeed> showAccountCareerFeed(Long lastArtWorkId, Long visitAccountId, Long accountId, boolean isPortfolio) {
+    public List<ArtWorkResponseDto.ArtWorkFeed> showAccountCareerFeed(Long lastArtWorkId, Long visitAccountId, Long accountId) {
         final Pageable pageable = PageRequest.of(0,5);
         return artWorkRepository.findByArtWorkImageAndAccountId(lastArtWorkId,pageable,visitAccountId,accountId,true);
     }
@@ -93,22 +93,25 @@ public class AccountMyPageServiceImpl implements AccountMyPageService {
 
     //포트폴리오에서 올리기 한방에 다건
     @Transactional
-    public void updateAccountCareerFeed(ArtWorkRequestDto.ArtWorkPortFolioUpdate dto, Long accountId) {
+    public void updateAccountCareerFeedList(ArtWorkRequestDto.ArtWorkPortFolioUpdate dto, Account account) {
         //유저가 원하는 작품들 Is_Master를 True로 벌크
+
         artWorkRepository.updateAllArtWorkIsMasterToTrue(dto.getArtwork_feed());
     }
 
-    //내작품탭에서 내리기/올리기 단건
+    //내 작품탭에서 내리기/올리기 단건
     @Transactional
-    public void deleteAccountCareerFeed(Long artWorkId) {
+    public void updateAccountCareerFeed(Long artWorkId,Account account) {
         ArtWorks artWorks = getArtWorks(artWorkId);
+        createrValid(account, artWorks);
         artWorks.updateArtWorkIsMaster();
     }
 
     //작품 숨김/보이기
     @Transactional
-    public void updateArtWorkScope(Long artWorkId, Long accountId) {
+    public void updateArtWorkScope(Long artWorkId, Account account) {
         ArtWorks artWorks = getArtWorks(artWorkId);
+        createrValid(account,artWorks);
         artWorks.updateArtWorkIsScope();
     }
 
@@ -132,6 +135,11 @@ public class AccountMyPageServiceImpl implements AccountMyPageService {
 
     private ArtWorks getArtWorks(Long artWorkId) {
         return artWorkRepository.findById(artWorkId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글입니다."));
+    }
+    private void createrValid(Account account, ArtWorks artWorks) {
+        if(account.getId().equals(artWorks.getId())){
+            throw new IllegalStateException("게시글 작성자가 아닙니다.");
+        }
     }
 
 

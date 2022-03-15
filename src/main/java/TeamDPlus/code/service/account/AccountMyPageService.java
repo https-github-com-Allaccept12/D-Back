@@ -1,6 +1,7 @@
 package TeamDPlus.code.service.account;
 
 
+import TeamDPlus.code.domain.account.Account;
 import TeamDPlus.code.dto.request.AccountRequestDto;
 import TeamDPlus.code.dto.request.ArtWorkRequestDto;
 import TeamDPlus.code.dto.request.HistoryRequestDto;
@@ -14,29 +15,29 @@ import java.util.List;
 
 public interface AccountMyPageService {
 
-    AccountResponseDto.AccountInfo showAccountInfo(Long visitAccountId, Long accountId, final Long lastArtWorkId);
+    AccountResponseDto.AccountInfo showAccountInfo(Long visitAccountId, Long accountId);
 
     List<HistoryResponseDto.History> showAccountHistory(Long accountId);
 
-    List<ArtWorkResponseDto.ArtWorkFeed> showAccountCareerFeed(Long lastArtWorkId, Long visitAccountId, Long accountId, boolean isPortfolio);
+    List<ArtWorkResponseDto.ArtWorkFeed> showAccountCareerFeed(Long lastArtWorkId, Long visitAccountId, Long accountId);
 
     void updateAccountInfo(final AccountRequestDto.UpdateAccountInfo dto, final Long accountId);
 
-    void updateAccountHistory(List<HistoryRequestDto.HistoryUpdate> dto, final Long accountId);
+    void updateAccountHistory(final List<HistoryRequestDto.HistoryUpdate> dto, final Long accountId);
 
-    void updateAccountCareerFeed(ArtWorkRequestDto.ArtWorkPortFolioUpdate dto, final Long accountId);
+    void updateAccountCareerFeedList(ArtWorkRequestDto.ArtWorkPortFolioUpdate dto, final Account accountId);
 
     void updateAccountIntro(final AccountRequestDto.UpdateAccountIntro dto, final Long accountId);
 
     void updateAccountSpecialty(final AccountRequestDto.UpdateSpecialty dto, final Long accountId);
 
-    void deleteAccountCareerFeed(Long artWorkId);
+    void updateAccountCareerFeed(final Long artWorkId,final Account account);
 
-    void updateArtWorkScope(Long artWorkId, Long accountId);
+    void updateArtWorkScope(final Long artWorkId,final Account accountId);
 
-    List<ArtWorkResponseDto.ArtWorkFeed> showAccountArtWork(Long lastArtWorkId,Long visitAccountId, Long accountId);
+    List<ArtWorkResponseDto.ArtWorkFeed> showAccountArtWork(final Long lastArtWorkId,final Long visitAccountId,final Long accountId);
 
-    Page<ArtWorkResponseDto.ArtWorkBookMark> showAccountArtWorkBookMark(Long lastArtWorkId, Long accountId);
+    Page<ArtWorkResponseDto.ArtWorkBookMark> showAccountArtWorkBookMark(final Long lastArtWorkId,final Long accountId);
 
 
 

@@ -1,4 +1,4 @@
-package TeamDPlus.code.controller;
+package TeamDPlus.code.controller.account;
 
 import TeamDPlus.code.dto.Success;
 import TeamDPlus.code.jwt.UserDetailsImpl;
@@ -33,14 +33,9 @@ public class AccountController {
     }
 
     @PostMapping("/user/refresh")
-    public ResponseEntity<Success> refresh(@RequestHeader(value = "Refresh_Authorization") String refreshToken) {
+    public ResponseEntity<Success> refresh(@RequestHeader(value = "Authorization") String refreshToken) {
         return new ResponseEntity<>(new Success<>(
                 "토큰 재발급 성공", securityService.refresh(refreshToken)), HttpStatus.OK);
-    }
-
-    @GetMapping("/loginTest")
-    public void test(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        System.out.println(userDetails.getUser().getId());
     }
 
 }

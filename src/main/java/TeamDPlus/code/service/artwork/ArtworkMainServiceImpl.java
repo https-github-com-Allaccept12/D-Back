@@ -60,10 +60,6 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
 
     }
 
-    private List<AccountResponseDto.TopArtist> getTopArtist() {
-        return accountRepository.findTopArtist();
-    }
-
     @Transactional(readOnly = true)
     public Page<ArtWorkResponseDto.ArtworkMain> showArtworkMain(Long accountId,Long lastArtWorkId){
         Pageable pageable = PageRequest.of(0,10);
@@ -133,6 +129,10 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
     public Page<ArtWorkResponseDto.ArtworkMain> findBySearchKeyWord(String keyword, Long lastArtWorkId) {
         Pageable pageable = PageRequest.of(0,10);
         return artWorkRepository.findBySearchKeyWord(keyword, lastArtWorkId, pageable);
+    }
+
+    private List<AccountResponseDto.TopArtist> getTopArtist() {
+        return accountRepository.findTopArtist();
     }
 
     private Page<ArtWorkResponseDto.ArtworkMain> getArtworkList(String interest) {
