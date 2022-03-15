@@ -12,18 +12,13 @@ public class AccountRequestDto {
     @NoArgsConstructor
     public static class UpdateAccountInfo {
         private String nickname;
-
         private String work_email;
-
         private String work_time;
-
         private String linked_in;
-
         private String brunch;
-
         private String insta;
-
         private String phone_number;
+        private String job;
 
     }
 
@@ -45,6 +40,7 @@ public class AccountRequestDto {
     public static class InitProfileSetting {
 
         private String nickname;
+        private String job;
         private String profile_img;
         private String intro_content;
         private String work_email;

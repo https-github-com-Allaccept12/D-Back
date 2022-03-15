@@ -1,5 +1,6 @@
 package TeamDPlus.code.domain.artwork;
 
+import TeamDPlus.code.domain.artwork.comment.QArtWorkComment;
 import TeamDPlus.code.domain.artwork.like.QArtWorkLikes;
 import TeamDPlus.code.dto.response.ArtWorkResponseDto;
 import com.querydsl.core.types.Projections;
@@ -16,28 +17,26 @@ import java.util.List;
 import static TeamDPlus.code.domain.account.QAccount.account;
 import static TeamDPlus.code.domain.artwork.QArtWorks.artWorks;
 import static TeamDPlus.code.domain.artwork.bookmark.QArtWorkBookMark.artWorkBookMark;
+import static TeamDPlus.code.domain.artwork.comment.QArtWorkComment.artWorkComment;
 import static TeamDPlus.code.domain.artwork.image.QArtWorkImage.artWorkImage;
 import static TeamDPlus.code.domain.artwork.like.QArtWorkLikes.artWorkLikes;
 import static TeamDPlus.code.domain.post.QPost.post;
 
 @RequiredArgsConstructor
-public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom{
+public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<ArtWorkResponseDto.ArtWorkFeed> findByArtWorkImageAndAccountId(Long lastArtWorkId,Pageable paging,
-                                                                               Long visitAccountId,Long accountId,boolean isPortfolio) {
+    public List<ArtWorkResponseDto.ArtWorkFeed> findByArtWorkImageAndAccountId(Long lastArtWorkId, Pageable paging,
+                                                                               Long visitAccountId, Long accountId, boolean isPortfolio) {
         return queryFactory
                 .select(Projections.constructor(
                         ArtWorkResponseDto.ArtWorkFeed.class,
                         artWorks.id,
                         artWorks.scope,
                         artWorkImage.artworkImg,
-                        artWorks.view,
-                        artWorks.isMaster,
-                        artWorks.created,
-                        artWorks.modified
+                        artWorks.isMaster
                 ))
                 .from(artWorks)
                 .leftJoin(artWorkImage).on(artWorkImage.artWorks.eq(artWorks))
@@ -52,22 +51,55 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom{
     }
 
     @Override
-    public Page<ArtWorkResponseDto.ArtWorkBookMark> findArtWorkBookMarkByAccountId(Long lastArtWorkId,Pageable paging,Long accountId) {
+    public Page<ArtWorkResponseDto.ArtWorkBookMark> findArtWorkBookMarkByAccountId(Long lastArtWorkId, Pageable paging, Long accountId) {
         List<ArtWorkResponseDto.ArtWorkBookMark> result = queryFactory
                 .select(Projections.constructor(ArtWorkResponseDto.ArtWorkBookMark.class,
                         artWorks.id,
                         artWorks.account.nickname,
                         artWorkImage.artworkImg,
-                        artWorks.view))
+                        artWorks.view,
+                        artWorkLikes.count()
+                ))
                 .from(artWorks)
                 .join(artWorkBookMark).on(artWorkBookMark.artWorks.eq(artWorks))
                 .join(artWorkImage).on(artWorkImage.artWorks.eq(artWorks))
+                .leftJoin(artWorkLikes).on(artWorkLikes.artWorks.eq(artWorks))
                 .offset(paging.getOffset())
                 .limit(paging.getPageSize())
                 .where(artWorkBookMark.account.id.eq(accountId).and(artWorks.scope.isTrue()),
                         isLastArtworkId(lastArtWorkId))
+                .groupBy(artWorks.id)
+                .orderBy(artWorks.created.desc())
                 .fetch();
-        return new PageImpl<>(result,paging,result.size());
+        return new PageImpl<>(result, paging, result.size());
+    }
+
+    @Override
+    public Page<ArtWorkResponseDto.ArtworkMain> findArtWorkByMostViewAndMostLike(String interest, Pageable pageable) {
+        List<ArtWorkResponseDto.ArtworkMain> result = queryFactory
+                .select(
+                        Projections.constructor(ArtWorkResponseDto.ArtworkMain.class,
+                                artWorks.id,
+                                account.id,
+                                account.nickname,
+                                account.profileImg,
+                                artWorkImage.artworkImg,
+                                artWorks.view,
+                                artWorkLikes.count(),
+                                artWorks.category,
+                                artWorks.created
+                        ))
+                .from(artWorks)
+                .join(artWorks.account, account)
+                .leftJoin(artWorkLikes).on(artWorkLikes.artWorks.eq(artWorks))
+                .leftJoin(artWorkImage).on(artWorkImage.artWorks.eq(artWorks).and(artWorkImage.thumbnail.isTrue()))
+                .offset(0)
+                .limit(10)
+                .groupBy(artWorks.id)
+                .orderBy(artWorkLikes.count().desc(),artWorks.view.desc())
+                .where(isInterest(interest))
+                .fetch();
+        return new PageImpl<>(result,pageable,result.size());
     }
 
     @Override
@@ -81,43 +113,45 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom{
                         account.profileImg,
                         artWorkImage.artworkImg,
                         artWorks.view,
+                        artWorkLikes.count(),
                         artWorks.category,
                         artWorks.created
                 ))
                 .from(artWorks)
                 .join(account).on(account.id.eq(artWorks.account.id))
                 .join(artWorkImage).on(artWorkImage.artWorks.eq(artWorks).and(artWorkImage.thumbnail.isTrue()))
+                .leftJoin(artWorkLikes).on(artWorkLikes.artWorks.eq(artWorks))
                 .offset(paging.getOffset())
                 .limit(paging.getPageSize())
                 .where(isLastArtworkId(lastArtworkId))
+                .groupBy(artWorks.id)
+                .orderBy(artWorks.created.desc())
                 .fetch();
-        return new PageImpl<>(result,paging,result.size());
+        return new PageImpl<>(result, paging, result.size());
     }
 
     @Override
-    public Page<ArtWorkResponseDto.ArtworkMain> findArtWorkByMostViewAndMostLike(String interest,Pageable pageable) {
-//        queryFactory
-//                .select(Projections.constructor(ArtWorkResponseDto.ArtworkMain.class,
-//                        artWorks.id,
-//                        account.id,
-//                        account.nickname,
-//                        account.profileImg,
-//                        artWorkImage.artworkImg,
-//                        artWorks.view,
-//                        artWorks.category,
-//                        artWorks.created))
-//                .from(artWorks)
-//                .join(account).on(account.id.eq(artWorks.account.id))
-//                .join(artWorkImage).on(artWorkImage.artWorks.eq(artWorks).and(artWorkImage.thumbnail.isTrue()))
-//                .offset(pageable.getOffset())
-//                .limit(pageable.getPageSize())
-//                .where(artWorks.id.eq(
-//                        JPAExpressions.select(artWorks.id)
-//                                .from(artWorkLikes)
-//                                .join(artWorks).on(artWorkLikes.artWorks.eq(artWorks))
-//                                .where(artWorkLikes.)
-//                ))
-        return null;
+    public ArtWorkResponseDto.ArtWorkSubDetail findByArtWorkSubDetail(Long accountId, Long artworkId) {
+        return queryFactory
+                .select(Projections.constructor(
+                        ArtWorkResponseDto.ArtWorkSubDetail.class,
+                        artWorks.id,
+                        account.id,
+                        artWorks.title,
+                        artWorks.content,
+                        artWorks.view,
+                        artWorkLikes.count(),
+                        artWorks.category,
+                        artWorks.created,
+                        artWorks.modified,
+                        artWorks.specialty
+                ))
+                .from(artWorks)
+                .innerJoin(artWorks.account, account)
+                .leftJoin(artWorkLikes).on(artWorkLikes.artWorks.eq(artWorks))
+                .where(artWorks.id.eq(artworkId))
+                .groupBy(artWorks.id)
+                .fetchOne();
     }
 
     @Override
@@ -131,6 +165,7 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom{
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .where(artWorks.account.id.eq(accountId).and(artWorkImage.thumbnail.isTrue()))
+                .orderBy(artWorks.created.desc())
                 .fetch();
         return new PageImpl<>(result,pageable,result.size());
 
@@ -146,20 +181,26 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom{
                         account.profileImg,
                         artWorkImage.artworkImg,
                         artWorks.view,
+                        artWorkLikes.count(),
                         artWorks.category,
                         artWorks.created))
                 .from(artWorks)
                 .join(account).on(account.id.eq(artWorks.account.id))
                 .join(artWorkImage).on(artWorkImage.artWorks.eq(artWorks).and(artWorkImage.thumbnail.isTrue()))
+                .leftJoin(artWorkLikes).on(artWorkLikes.artWorks.eq(artWorks))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .where(isLastArtworkId(lastArtWorkId),
                         artWorks.title.contains(keyword)
                                 .or(artWorks.title.contains(keyword))
                                 .or(artWorks.account.nickname.eq(keyword)))
+                .groupBy(artWorks.id)
+                .orderBy(artWorks.created.desc())
                 .fetch();
         return new PageImpl<>(result,pageable,result.size());
     }
+
+
 
     @Override
     public void updateArtWorkIdMasterToFalse(Long artWorkId) {
@@ -180,6 +221,7 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom{
                 .execute();
     }
 
+    //account의 interest를 확인하고 메인페이지에 뿌려줄 top10
     public BooleanExpression isInterest(String interest) {
         return interest != null ? artWorks.category.eq(interest) : null;
     }

@@ -3,6 +3,7 @@ package TeamDPlus.code.service.artwork;
 import TeamDPlus.code.domain.account.Account;
 import TeamDPlus.code.dto.request.ArtWorkRequestDto;
 import TeamDPlus.code.dto.response.ArtWorkResponseDto;
+import TeamDPlus.code.dto.response.MainResponseDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -16,7 +17,7 @@ public interface ArtworkMainService {
 
     ArtWorkResponseDto.ArtWorkDetail detailArtWork(Long accountId, Long artWorkId);
 
-    Page<ArtWorkResponseDto.ArtworkMain> mostPopularArtWork(Long accountId);
+    MainResponseDto mostPopularArtWork(Long accountId);
 
     Page<ArtWorkResponseDto.ArtworkMain> findBySearchKeyWord(String keyword, Long lastArtWorkId);
 
