@@ -84,13 +84,14 @@ public class AccountResponseDto {
     }
 
 
-
+    @Getter
+    @NoArgsConstructor
     public static class TopArtist {
         private Long account_id;
         private String account_nickname;
         private String account_profile;
         private String account_job;
-        private boolean is_follow;
+        private boolean is_follow = false;
 
         @Builder
         public TopArtist(Long account_id, String account_nickname, String account_profile,
@@ -99,7 +100,6 @@ public class AccountResponseDto {
             this.account_nickname = account_nickname;
             this.account_profile = account_profile;
             this.account_job = account_job;
-
         }
         public void setIsFollow() {
             this.is_follow = true;

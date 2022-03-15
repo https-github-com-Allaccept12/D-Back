@@ -19,7 +19,7 @@ public class FollowService {
     private final FollowRepository followRepository;
 
     public void follow(Long following_id, Account account) {
-        if (followRepository.existsByFollowerIdAndAndFollowingId(account.getId(),following_id)) {
+        if (followRepository.existsByFollowerIdAndFollowingId(account.getId(),following_id)) {
             throw new IllegalArgumentException("이미 팔로우한 사람 입니다.");
         }
         account.getRank().upRankScore();
@@ -28,7 +28,7 @@ public class FollowService {
     }
 
     public void unFollow(Long unFollowing_id, Account account) {
-        if (!followRepository.existsByFollowerIdAndAndFollowingId(account.getId(), unFollowing_id)) {
+        if (!followRepository.existsByFollowerIdAndFollowingId(account.getId(), unFollowing_id)) {
           throw new IllegalArgumentException("이미 언팔로우한 사람 입니다.");
         }
         account.getRank().downRankScore();

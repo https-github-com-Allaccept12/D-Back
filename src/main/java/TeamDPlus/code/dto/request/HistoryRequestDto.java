@@ -7,7 +7,15 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 public class HistoryRequestDto {
+
+    @Getter
+    @NoArgsConstructor
+    public static class HistoryUpdateList {
+        private List<HistoryUpdate> history;
+    }
 
     @Getter
     @NoArgsConstructor

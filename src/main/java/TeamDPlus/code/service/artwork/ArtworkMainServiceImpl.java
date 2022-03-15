@@ -20,6 +20,7 @@ import TeamDPlus.code.dto.response.MainResponseDto;
 import TeamDPlus.code.service.file.FileProcessService;
 import jdk.jfr.internal.tool.Main;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -30,6 +31,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ArtworkMainServiceImpl implements ArtworkMainService {
 
     private final ArtWorkRepository artWorkRepository;
@@ -51,15 +53,27 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
             Page<ArtWorkResponseDto.ArtworkMain> artWorkList = getArtworkList(account.getInterest());
             List<AccountResponseDto.TopArtist> topArtist = getTopArtist();
             setIsLike(accountId, artWorkList);
+            isFollow(accountId, topArtist);
             return MainResponseDto.builder().artwork(artWorkList).top_artist(topArtist).build();
 
         }
         Page<ArtWorkResponseDto.ArtworkMain> artworkList = getArtworkList(null);
         List<AccountResponseDto.TopArtist> topArtist = getTopArtist();
+        isFollow(accountId, topArtist);
         return MainResponseDto.builder().artwork(artworkList).top_artist(topArtist).build();
 
     }
 
+    private void isFollow(Long accountId, List<AccountResponseDto.TopArtist> topArtist) {
+        topArtist.forEach((artist) -> {
+            boolean isFollow = followRepository.existsByFollowerIdAndFollowingId(accountId, artist.getAccount_id());
+            if (isFollow)
+                artist.setIsFollow();
+        });
+
+    }
+
+    //둘러보기
     @Transactional(readOnly = true)
     public Page<ArtWorkResponseDto.ArtworkMain> showArtworkMain(Long accountId,Long lastArtWorkId){
         Pageable pageable = PageRequest.of(0,10);
@@ -71,7 +85,8 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
     @Transactional(readOnly = true)
     public ArtWorkResponseDto.ArtWorkDetail detailArtWork(Long accountId, Long artWorkId) {
         //작품 게시글 존재여부
-        ArtWorks artWorks = artworkValidation(accountId, artWorkId);
+        ArtWorks artWorks = artWorkRepository.findById(artWorkId)
+                .orElseThrow(() -> new ApiRequestException("해당 게시글은 존재하지 않습니다."));
         //조회수
         artWorks.addViewCount();
         //작품 좋아요개수와 작품 기본정보 가져오기
@@ -83,13 +98,12 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
         //해당 유저의 다른 작품들 가져오기
         Pageable pageable = PageRequest.of(0, 5);
         Page<ArtWorkResponseDto.ArtWorkSimilarWork> similarList = artWorkRepository.findSimilarArtWork(accountId,pageable);
-
         //지금 상세페이지를 보고있는사람이 좋아요를 했는지
         boolean isLike = artWorkLikesRepository.existByAccountIdAndArtWorkId(accountId, artWorkId);
         //지금 상세페이지를 보고있는사람이 북마크를 했는지
         boolean isBookmark = artWorkBookMarkRepository.existByAccountIdAndArtWorkId(accountId, artWorkId);
         //지금 상세페이지를 보고있는사람이 팔로우를 했는지
-        boolean isFollow = followRepository.existsByFollowerIdAndAndFollowingId(accountId, artWorksSub.getAccount_id());
+        boolean isFollow = followRepository.existsByFollowerIdAndFollowingId(accountId, artWorksSub.getAccount_id());
         //상세페이지의 코멘트 개수
         artWorksSub.setComment_count((long) commentList.size());
         return ArtWorkResponseDto.ArtWorkDetail.from(imgList,commentList,similarList,artWorksSub,isLike,isBookmark,isFollow);
@@ -106,7 +120,7 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
 
     @Transactional
     public Long updateArtwork(Account account, Long artworkId, ArtWorkRequestDto.ArtWorkCreateAndUpdate dto) {
-        ArtWorks findArtWork = artWorkRepository.findById(artworkId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글입니다."));
+        ArtWorks findArtWork = artworkValidation(account.getId(), artworkId);
         artWorkImageRepository.deleteAllByArtWorksId(artworkId);
         //s3에서도 삭제
         setImgUrl(dto.getImg(), findArtWork);
@@ -117,18 +131,20 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
     // 작품을 ManyToOne하고 있는 모든 엔티티 삭제 - s3에서도 삭제
     @Transactional
     public void deleteArtwork(Long accountId, Long artworkId) {
+        artworkValidation(accountId, artworkId);
         artWorkLikesRepository.deleteAllByArtWorksId(artworkId);
         artWorkBookMarkRepository.deleteAllByArtWorksId(artworkId);
         artWorkCommentRepository.deleteAllByArtWorksId(artworkId);
         artWorkRepository.delete(artworkValidation(accountId, artworkId));
     }
 
-
     //작품 검색
     @Transactional(readOnly = true)
-    public Page<ArtWorkResponseDto.ArtworkMain> findBySearchKeyWord(String keyword, Long lastArtWorkId) {
+    public Page<ArtWorkResponseDto.ArtworkMain> findBySearchKeyWord(String keyword, Long lastArtWorkId,Long accountId) {
         Pageable pageable = PageRequest.of(0,10);
-        return artWorkRepository.findBySearchKeyWord(keyword, lastArtWorkId, pageable);
+        Page<ArtWorkResponseDto.ArtworkMain> artWorkList = artWorkRepository.findBySearchKeyWord(keyword, lastArtWorkId, pageable);
+        setIsLike(accountId,artWorkList);
+        return artWorkList;
     }
 
     private List<AccountResponseDto.TopArtist> getTopArtist() {

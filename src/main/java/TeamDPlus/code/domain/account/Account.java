@@ -119,17 +119,6 @@ public class Account extends BaseEntity {
         this.instagram = dto.getInsta();
         this.phoneNumber =dto.getPhone_number();
     }
-
-    public void updateInfo(final AccountRequestDto.UpdateAccountInfo dto) {
-        this.nickname = dto.getNickname();
-        this.job = dto.getJob();
-        this.workEmail = dto.getWork_email();
-        this.workTime = dto.getWork_time();
-        this.linkedIn = dto.getLinked_in();
-        this.brunch = dto.getBrunch();
-        this.instagram = dto.getInsta();
-        this.phoneNumber = dto.getPhone_number();
-    }
     public void updateIntro(final AccountRequestDto.UpdateAccountIntro dto) {
         this.titleContent = dto.getTitle_content();
         this.subContent = dto.getSub_content();

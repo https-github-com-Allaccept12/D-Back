@@ -40,7 +40,7 @@ public class AccountMyPageServiceImpl implements AccountMyPageService {
         final Account findAccount = accountRepository.findById(visitAccountId).orElseThrow(() -> new IllegalStateException("존재 하지않는 사용자 입니다."));
         final Long follower = followRepository.countByFollowerId(findAccount.getId());
         final Long following = followRepository.countByFollowingId(findAccount.getId());
-        final boolean isFollow= followRepository.existsByFollowerIdAndAndFollowingId(visitAccountId,accountId);
+        final boolean isFollow= followRepository.existsByFollowerIdAndFollowingId(visitAccountId,accountId);
         return AccountResponseDto.AccountInfo.from(findAccount,follower,following, isFollow,visitAccountId.equals(accountId));
     }
     //연혁
@@ -57,14 +57,6 @@ public class AccountMyPageServiceImpl implements AccountMyPageService {
         final Pageable pageable = PageRequest.of(0,5);
         return artWorkRepository.findByArtWorkImageAndAccountId(lastArtWorkId,pageable,visitAccountId,accountId,true);
     }
-
-    //포트폴리오 - 기본 유저정보 수정
-    @Transactional
-    public void updateAccountInfo(final AccountRequestDto.UpdateAccountInfo dto,final Long accountId) {
-        Account account = getAccount(accountId);
-        //프로필 기본 설정 update
-        account.updateInfo(dto);
-    }
     //포트폴리오 - 기본 소개 수정
     @Transactional
     public void updateAccountIntro(AccountRequestDto.UpdateAccountIntro dto, Long accountId) {
@@ -80,12 +72,12 @@ public class AccountMyPageServiceImpl implements AccountMyPageService {
     }
 
     @Transactional
-    public void updateAccountHistory(List<HistoryRequestDto.HistoryUpdate> dto, Long accountId) {
+    public void updateAccountHistory(HistoryRequestDto.HistoryUpdateList dto, Long accountId) {
         //히스토리 전체 삭제 벌크
         Account account = getAccount(accountId);
-        historyRepository.deleteAllByAccountId(accountId);
+        historyRepository.deleteAllByAccountId(account.getId());
         //다시셋팅
-        List<History> collect = dto.stream()
+        List<History> collect = dto.getHistory().stream()
                 .map(data -> History.toEntity(data,account))
                 .collect(Collectors.toList());
         historyRepository.saveAll(collect);
@@ -95,7 +87,6 @@ public class AccountMyPageServiceImpl implements AccountMyPageService {
     @Transactional
     public void updateAccountCareerFeedList(ArtWorkRequestDto.ArtWorkPortFolioUpdate dto, Account account) {
         //유저가 원하는 작품들 Is_Master를 True로 벌크
-
         artWorkRepository.updateAllArtWorkIsMasterToTrue(dto.getArtwork_feed());
     }
 
@@ -122,7 +113,7 @@ public class AccountMyPageServiceImpl implements AccountMyPageService {
         return artWorkRepository.findByArtWorkImageAndAccountId(lastArtWorkId,pageable,visitAccountId,accountId,false);
     }
 
-    //마이페이지/스크랩
+    //마이페이지/북마크
     @Transactional(readOnly = true)
     public Page<ArtWorkResponseDto.ArtWorkBookMark> showAccountArtWorkBookMark(Long lastArtWorkId,final Long accountId) {
         Pageable pageable = PageRequest.of(0,10);

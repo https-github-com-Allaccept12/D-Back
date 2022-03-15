@@ -26,14 +26,21 @@ public class ArtWorkCommentService {
         return save.getId();
     }
 
-    public void updateComment(Long commentId, ArtWorkRequestDto.ArtWorkComment dto) {
+    public void updateComment(Long commentId, ArtWorkRequestDto.ArtWorkComment dto,Long accountId) {
         ArtWorkComment artWorkComment = artWorkCommentRepository.findById(commentId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글이거나, 댓글입니다."));
-
+        if (!artWorkComment.getAccount().getId().equals(accountId)) {
+            throw new IllegalStateException("댓글 작성자가 아닙니다.");
+        }
         artWorkComment.updateComment(dto.getContent());
     }
 
-    public void deleteComment(Long commentId) {
+    public void deleteComment(Long commentId,Long accountId) {
+        ArtWorkComment artWorkComment = artWorkCommentRepository.findById(commentId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글이거나, 댓글입니다."));
+        if (!artWorkComment.getAccount().getId().equals(accountId)) {
+            throw new IllegalStateException("댓글 작성자가 아닙니다.");
+        }
         artWorkCommentRepository.deleteById(commentId);
     }
 

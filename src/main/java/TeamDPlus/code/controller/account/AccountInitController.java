@@ -21,7 +21,7 @@ public class AccountInitController {
     private final AccountInitialService accountInitialService;
 
     //프로필 설정
-    @PostMapping("/profile")
+    @RequestMapping(value = "/profile",method = {RequestMethod.POST,RequestMethod.PATCH})
     public ResponseEntity<Success<Long>> initProfile(@RequestBody InitProfileSetting initProfile,
                                                      @AuthenticationPrincipal UserDetailsImpl user) {
         return new ResponseEntity<>(new Success<>("프로필 설정 완료",

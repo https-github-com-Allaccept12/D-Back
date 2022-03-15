@@ -5,6 +5,7 @@ import TeamDPlus.code.domain.account.Account;
 import TeamDPlus.code.dto.request.AccountRequestDto;
 import TeamDPlus.code.dto.request.ArtWorkRequestDto;
 import TeamDPlus.code.dto.request.HistoryRequestDto;
+import TeamDPlus.code.dto.request.HistoryRequestDto.HistoryUpdateList;
 import TeamDPlus.code.dto.response.AccountResponseDto;
 import TeamDPlus.code.dto.response.ArtWorkResponseDto;
 import TeamDPlus.code.dto.response.HistoryResponseDto;
@@ -21,9 +22,7 @@ public interface AccountMyPageService {
 
     List<ArtWorkResponseDto.ArtWorkFeed> showAccountCareerFeed(Long lastArtWorkId, Long visitAccountId, Long accountId);
 
-    void updateAccountInfo(final AccountRequestDto.UpdateAccountInfo dto, final Long accountId);
-
-    void updateAccountHistory(final List<HistoryRequestDto.HistoryUpdate> dto, final Long accountId);
+    void updateAccountHistory(final HistoryUpdateList dto, final Long accountId);
 
     void updateAccountCareerFeedList(ArtWorkRequestDto.ArtWorkPortFolioUpdate dto, final Account accountId);
 
