@@ -16,9 +16,14 @@ public interface PostRepositoryCustom {
     Page<PostResponseDto.PostPageMain> findAllPostOrderByPostLikes(Long lastPostId, Pageable pageable);
 
 
-    // 글 상세 페이지
-    PostResponseDto.PostDetailPage findDetailPost(Long postId);
+    // 상세페이지 서브
+    PostResponseDto.PostSubDetail findByPostSubDetail (Long accountId, Long postId);
 
+    // 조회수 + 라이크 찾기
+    List<PostResponseDto.PostPageMain> findPostByMostViewAndMostLike();
+
+    // 검색
     Page<PostResponseDto.PostPageMain> findPostBySearchKeyWord(String keyword, Long lastPostId, Pageable pageable);
+
 
 }

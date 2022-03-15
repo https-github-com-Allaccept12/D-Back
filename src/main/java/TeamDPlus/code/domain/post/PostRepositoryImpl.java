@@ -14,6 +14,7 @@ import java.util.List;
 
 import static TeamDPlus.code.domain.account.QAccount.account;
 import static TeamDPlus.code.domain.post.QPost.post;
+import static TeamDPlus.code.domain.post.like.QPostLikes.postLikes;
 
 @RequiredArgsConstructor
 public class PostRepositoryImpl implements PostRepositoryCustom{
@@ -61,34 +62,35 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                 ))
                 .from(post)
                 .join(account).on(account.id.eq(post.account.id))
+                .leftJoin(postLikes).on(postLikes.id.eq(postLikes.post.id))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .where(isLastPostId(lastPostId))
-                .orderBy(post.created.desc())
+                .orderBy(postLikes.count().desc())
                 .fetch();
 
         return new PageImpl<>(fetch, pageable, fetch.size());
     }
 
-    // 글 상세 페이지
+    // 상세페이지 서브 정보
     @Override
-    public PostResponseDto.PostDetailPage findDetailPost(Long postId){
+    public PostResponseDto.PostSubDetail findByPostSubDetail(Long accountId, Long postId) {
         return queryFactory
-                .select(Projections.constructor(PostResponseDto.PostDetailPage.class,
+                .select(Projections.constructor(PostResponseDto.PostSubDetail.class,
                         post.id,
-                        post.content,
-                        post.created,
                         post.title,
+                        post.content,
+                        post.view,
                         post.category,
                         post.created,
                         post.modified,
                         account.id,
-                        account.nickname,
                         account.profileImg,
-                        post.view
-                        ))
+                        account.nickname
+                ))
                 .from(post)
                 .join(account).on(account.id.eq(post.account.id))
+                .where(post.id.eq(postId))
                 .fetchOne();
     }
 
@@ -116,6 +118,33 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                                 .or(post.content.contains(keyword)))
                 .fetch();
         return new PageImpl<>(result,pageable,result.size());
+    }
+
+
+    // 좋아요 + 조회수 탑 10
+   @Override
+    public List<PostResponseDto.PostPageMain> findPostByMostViewAndMostLike() {
+        List<PostResponseDto.PostPageMain> result = queryFactory
+                .select(Projections.constructor(PostResponseDto.PostPageMain.class,
+                        post.id,
+                        post.title,
+                        post.content,
+                        post.view,
+                        post.category,
+                        post.created,
+                        account.id,
+                        account.nickname,
+                        account.profileImg
+                ))
+                .from(post)
+                .join(post.account, account)
+                .leftJoin(postLikes).on(postLikes.post.eq(post))
+                .offset(0)
+                .limit(10)
+                .groupBy(post.id)
+                .orderBy(postLikes.count().desc(), post.view.desc())
+                .fetch();
+        return result;
     }
 
     public BooleanExpression isLastPostId(Long lastPostId){

@@ -48,12 +48,13 @@ public class Post extends BaseEntity {
 
     @Builder
     public Post(final String title, final String content, final String category,
-                final Account account, final Long view) {
+                final Account account, final Long view, final Boolean isSelected) {
         this.title = title;
         this.content = content;
         this.category = category;
         this.account = account;
         this.view = view;
+        this.isSelected = isSelected;
     }
 
     public void addViewCount() {
