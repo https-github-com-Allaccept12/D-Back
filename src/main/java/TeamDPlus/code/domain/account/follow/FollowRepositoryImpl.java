@@ -44,6 +44,7 @@ public class FollowRepositoryImpl implements FollowRepositoryCustom{
 
     @Override
     public boolean existsByFollowerIdAndFollowingId(Long accountId, Long followingId) {
+
         Integer fetchOne = queryFactory
                 .selectOne()
                 .from(follow)

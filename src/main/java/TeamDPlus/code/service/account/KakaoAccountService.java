@@ -2,6 +2,7 @@ package TeamDPlus.code.service.account;
 
 import TeamDPlus.code.domain.account.Account;
 import TeamDPlus.code.domain.account.AccountRepository;
+import TeamDPlus.code.domain.account.Specialty;
 import TeamDPlus.code.domain.account.rank.Rank;
 import TeamDPlus.code.domain.account.rank.RankRepository;
 import TeamDPlus.code.dto.KakaoUserInfoDto;
@@ -118,10 +119,10 @@ public class KakaoAccountService {
             String nickname = kakaoUserInfo.getNickname();
 
             String profileImg = kakaoUserInfo.getProfile_img();
-
             Rank rank = Rank.builder().rankScore(0L).build();
             Rank saveRank = rankRepository.save(rank);
-            kakaoUser = Account.builder().nickname(nickname).profileImg(profileImg).email(email).rank(saveRank).build();
+            Specialty specialty = new Specialty();
+            kakaoUser = Account.builder().nickname(nickname).profileImg(profileImg).email(email).rank(saveRank).specialty(specialty).build();
             accountRepository.save(kakaoUser);
         }
         return kakaoUser;

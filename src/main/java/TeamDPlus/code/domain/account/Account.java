@@ -70,7 +70,8 @@ public class Account extends BaseEntity {
     public Account(final String email, final String nickname, final String subContent,final String titleContent, final String profileImg,
                    final int career, final String phoneNumber, final String workTime,
                    final String workEmail, final String tendency, final Long exp, final String refreshToken,
-                   final String linkedIn, final String brunch, final String instagram, final String interest,final Rank rank,final String job)  {
+                   final String linkedIn, final String brunch, final String instagram,
+                   final String interest,final Rank rank,final String job,final Specialty specialty)  {
         this.email = email;
         this.nickname = nickname;
         this.titleContent = titleContent;
@@ -89,6 +90,7 @@ public class Account extends BaseEntity {
         this.interest = interest;
         this.rank = rank;
         this.job = job;
+        this.specialty = specialty;
     }
 
     public void refreshToken(final String refreshToken) {

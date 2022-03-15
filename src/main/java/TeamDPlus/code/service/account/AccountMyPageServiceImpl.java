@@ -110,7 +110,7 @@ public class AccountMyPageServiceImpl implements AccountMyPageService {
     @Transactional(readOnly = true)
     public List<ArtWorkResponseDto.ArtWorkFeed> showAccountArtWork(final Long lastArtWorkId,final Long visitAccountId, final Long accountId) {
         Pageable pageable = PageRequest.of(0,10);
-        return artWorkRepository.findByArtWorkImageAndAccountId(lastArtWorkId,pageable,visitAccountId,accountId,false);
+        return artWorkRepository.findByArtWorkImageAndAccountId(lastArtWorkId, pageable, visitAccountId, accountId, false);
     }
 
     //마이페이지/북마크
