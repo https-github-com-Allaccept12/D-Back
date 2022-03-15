@@ -1,6 +1,5 @@
 package TeamDPlus.code.domain.post.answer;
 
-import TeamDPlus.code.domain.BaseEntity;
 import TeamDPlus.code.domain.account.Account;
 import TeamDPlus.code.domain.post.Post;
 import lombok.AccessLevel;
@@ -13,11 +12,11 @@ import javax.persistence.*;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class PostAnswer extends BaseEntity {
+public class PostAnswerComment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    @Column(name = "post_answer_id")
+    @Column(name = "answer_comment_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -26,25 +25,17 @@ public class PostAnswer extends BaseEntity {
 
     @ManyToOne(fetch= FetchType.LAZY)
     @JoinColumn(name = "post_id")
-    private Post post;
+    private PostAnswer postAnswer;
 
     @Lob
     @Column(nullable = false)
     private String content;
 
-    @Column(columnDefinition = "BIGINT default 0")
-    private Long view;
-
-    @Column(columnDefinition = "TINYINT default 0")
-    private Boolean isSelected;
-
     @Builder
-    public PostAnswer(final Account account, final Post post, final String content, final Long view, final Boolean isSelected) {
+    public PostAnswerComment(final Account account, final PostAnswer postAnswer, final String content) {
         this.account = account;
-        this.post = post;
+        this.postAnswer = postAnswer;
         this.content = content;
-        this.view = view;
-        this.isSelected = isSelected;
     }
 
     public void updateComment(final String content) {

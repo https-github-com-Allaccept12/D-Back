@@ -40,15 +40,19 @@ public class Post extends BaseEntity {
     @Column(columnDefinition = "BIGINT default 0")
     private Long view;
 
+    // isSelected : 게시물 채택 여부
+    @Column(columnDefinition = "TINYINT default 0")
+    private Boolean isSelected;
 
     @Builder
     public Post(final String title,final String content,final String category,
-                final Account account, final Long view) {
+                final Account account, final Long view, Boolean isSelected) {
         this.title = title;
         this.content = content;
         this.category = category;
         this.account = account;
         this.view = view;
+        this.isSelected = isSelected;
     }
 
     public void addViewCount() {

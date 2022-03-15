@@ -21,13 +21,13 @@ public class AccountController {
     private final SecurityService securityService;
 
     @GetMapping("/user/kakao/callback")
-    public ResponseEntity<Success> kakaoLogin(@RequestParam String code) throws JsonProcessingException {
+    public ResponseEntity<Success> kakaoLogin(@RequestParam("code") String code) throws JsonProcessingException {
         return new ResponseEntity<>(new Success<>(
                 "로그인 성공", kakaoAccountService.kakaoLogin(code)), HttpStatus.OK);
     }
 
     @GetMapping("/user/google/callback")
-    public ResponseEntity<Success> googleLogin(@RequestParam String code) throws JsonProcessingException {
+    public ResponseEntity<Success> googleLogin(@RequestParam("code") String code) throws JsonProcessingException {
         return new ResponseEntity<>(new Success<>(
                 "로그인 성공", googleAccountService.googleLogin(code)), HttpStatus.OK);
     }

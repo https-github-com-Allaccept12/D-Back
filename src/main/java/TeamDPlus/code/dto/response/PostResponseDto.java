@@ -1,6 +1,7 @@
 package TeamDPlus.code.dto.response;
 
 import TeamDPlus.code.domain.post.Post;
+import TeamDPlus.code.domain.post.answer.PostAnswerComment;
 import TeamDPlus.code.domain.post.comment.PostComment;
 import TeamDPlus.code.domain.post.image.PostImage;
 import TeamDPlus.code.domain.post.tag.PostTag;
@@ -178,6 +179,48 @@ public class PostResponseDto {
             this.modify_time = modify_time;
             this.is_selected = is_selected;
             this.like_count = like_count;
+        }
+    }
+
+    @Getter
+    @NoArgsConstructor
+    public static class PostAnswer {
+        private Long account_id;
+        private Long answer_id;
+        private String content;
+        private Timestamp modify_time;
+        private int is_selected;
+        private Long like_count;
+        private Long view_count;
+        private List<PostResponseDto.PostAnswerComment> answerComment;
+
+        @Builder
+        public PostAnswer(final Long account_id, final Long answer_id, final String content, final Timestamp modify_time,
+                          final int is_selected, final Long like_count, final Long view_count,
+                          final List<PostResponseDto.PostAnswerComment> answerComment) {
+            this.account_id = account_id;
+            this.answer_id = answer_id;
+            this.content = content;
+            this.modify_time = modify_time;
+            this.is_selected = is_selected;
+            this.like_count = like_count;
+            this.view_count = view_count;
+            this.answerComment = answerComment;
+        }
+    }
+
+    @Getter
+    @NoArgsConstructor
+    public static class PostAnswerComment {
+        private Long account_id;
+        private Long answer_comment_id;
+        private String content;
+
+        @Builder
+        public PostAnswerComment(final Long account_id, final Long answer_comment_id, final String content) {
+            this.account_id = account_id;
+            this.answer_comment_id = answer_comment_id;
+            this.content = content;
         }
     }
 }
