@@ -30,7 +30,7 @@ public class ArtWorkRequestDto {
 
         private String work_end;
 
-        private boolean is_master;
+        private boolean master;
 
         private Specialty specialty;
 

@@ -112,7 +112,7 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
 
     @Transactional
     public Long updateArtwork(Account account, Long artworkId, ArtWorkRequestDto.ArtWorkCreateAndUpdate dto) {
-        ArtWorks findArtWork = artworkValidation(account.getId(), artworkId);
+        ArtWorks findArtWork = artWorkRepository.findById(artworkId).orElseThrow(() -> new ApiRequestException("게시글이 존재하지 않습니다."));
         artWorkImageRepository.deleteAllByArtWorksId(artworkId);
         //s3에서도 삭제
         setImgUrl(dto.getImg(), findArtWork);

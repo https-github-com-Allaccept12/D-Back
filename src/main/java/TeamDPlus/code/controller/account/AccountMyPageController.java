@@ -84,25 +84,40 @@ public class AccountMyPageController {
 
 
     //다건
-    @RequestMapping(value = {"/career-feed"}, method = {RequestMethod.POST, RequestMethod.PATCH})
+    @PostMapping(value = {"/career-feed"})
     public ResponseEntity<Success> createAndUpdateCareerFeed(@RequestBody ArtWorkPortFolioUpdate data,
                                                              @AuthenticationPrincipal UserDetailsImpl user) {
-        accountMyPageService.updateAccountCareerFeedList(data, user.getUser());
+        accountMyPageService.updateAccountCareerFeedList(data);
         return new ResponseEntity<>(new Success("포트폴리오 선택/수정 성공", ""), HttpStatus.OK);
     }
     //단건
-    @RequestMapping(value = "/masterpiece/{artwork_id}",method = {RequestMethod.POST, RequestMethod.PATCH})
+    @PostMapping(value = "/masterpiece/{artwork_id}")
     public ResponseEntity<Success> masterpieceSelect(@PathVariable Long artwork_id,
                                                      @AuthenticationPrincipal UserDetailsImpl user) {
-        accountMyPageService.updateAccountCareerFeed(artwork_id,user.getUser());
+        accountMyPageService.masterAccountCareerFeed(artwork_id,user.getUser());
         return new ResponseEntity<>(new Success("포트폴리오 작품 선택",""),HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/hidepiece/{artwork_id}", method = {RequestMethod.POST, RequestMethod.PATCH})
+    @PatchMapping(value = "/masterpiece/{artwork_id}")
+    public ResponseEntity<Success> masterpieceClear(@PathVariable Long artwork_id,
+                                                     @AuthenticationPrincipal UserDetailsImpl user) {
+        accountMyPageService.nonMasterAccountCareerFeed(artwork_id,user.getUser());
+        return new ResponseEntity<>(new Success("포트폴리오 작품 해지",""),HttpStatus.OK);
+    }
+
+    //보이기
+    @PostMapping(value = "/hidepiece/{artwork_id}")
     public ResponseEntity<Success> hidepieceSelect(@PathVariable Long artwork_id,
                                                    @AuthenticationPrincipal UserDetailsImpl user) {
-        accountMyPageService.updateArtWorkScope(artwork_id,user.getUser());
-        return new ResponseEntity<>(new Success("작품 숨기기/보이기",""),HttpStatus.OK);
+        accountMyPageService.nonHideArtWorkScope(artwork_id,user.getUser());
+        return new ResponseEntity<>(new Success("작품 보이기",""),HttpStatus.OK);
+    }
+    //숨기기
+    @PatchMapping(value = "/hidepiece/{artwork_id}")
+    public ResponseEntity<Success> hidepieceClear(@PathVariable Long artwork_id,
+                                                   @AuthenticationPrincipal UserDetailsImpl user) {
+        accountMyPageService.hideArtWorkScope(artwork_id,user.getUser());
+        return new ResponseEntity<>(new Success("작품 숨기기",""),HttpStatus.OK);
     }
 
 

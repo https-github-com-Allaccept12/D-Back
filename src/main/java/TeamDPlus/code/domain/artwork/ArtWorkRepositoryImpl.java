@@ -44,6 +44,7 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
                 .limit(paging.getPageSize())
                 .where(isPortfolio(isPortfolio),
                         artWorks.account.id.eq(visitAccountId),
+                        artWorks.scope.isTrue(),
                         isVisitor(visitAccountId, accountId),
                         isLastArtworkId(lastArtWorkId))
                 .groupBy(artWorks.id)
@@ -215,11 +216,12 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
 
     //in절을 통한 List 벌크
     @Override
-    public void updateAllArtWorkIsMasterToTrue(List<Long> accountIdList) {
+    public void updateAllArtWorkIsMasterToTrue(List<Long> artworkIdList) {
         queryFactory
                 .update(artWorks)
                 .set(artWorks.isMaster, true)
-                .where(artWorks.account.id.in(accountIdList))
+                .set(artWorks.scope, true)
+                .where(artWorks.id.in(artworkIdList))
                 .execute();
     }
 
