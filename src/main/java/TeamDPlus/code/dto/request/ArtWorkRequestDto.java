@@ -26,11 +26,11 @@ public class ArtWorkRequestDto {
 
         private String category;
 
-        private Timestamp work_start;
+        private String work_start;
 
-        private Timestamp work_end;
+        private String work_end;
 
-        private boolean is_master;
+        private boolean master;
 
         private Specialty specialty;
 

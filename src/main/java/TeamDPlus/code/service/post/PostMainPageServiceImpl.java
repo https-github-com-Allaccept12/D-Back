@@ -83,7 +83,7 @@ public class PostMainPageServiceImpl implements PostMainPageService{
         List<PostTag> postTags = postTagRepository.findPostTagsByPostId(postId);
         boolean isLike = postLikesRepository.existByAccountIdAndPostId(accountId, postId);
         boolean isBookmark = postBookMarkRepository.existByAccountIdAndPostId(accountId, postId);
-        boolean isFollow = followRepository.existsByFollowerIdAndAndFollowingId(accountId, postSubDetail.getAccount_id());
+        boolean isFollow = followRepository.existsByFollowerIdAndFollowingId(accountId, postSubDetail.getAccount_id());
         Long comment_count = (long) postComments.size();
         return PostResponseDto.PostDetailPage.from(postImageList, postComments,
                 postTags, postSubDetail, isLike, isBookmark, isFollow, comment_count);

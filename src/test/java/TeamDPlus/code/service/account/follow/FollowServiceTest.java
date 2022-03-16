@@ -41,7 +41,7 @@ class FollowServiceTest {
         Account account2 = testAccountSet("test2.img");
         followSet(account2.getId(), account1.getId());
         //when
-        boolean checkFollow = followRepository.existsByFollowerIdAndAndFollowingId(account1.getId(), account2.getId());
+        boolean checkFollow = followRepository.existsByFollowerIdAndFollowingId(account1.getId(), account2.getId());
         //then
         assertThat(checkFollow).isTrue();
     }
@@ -54,7 +54,7 @@ class FollowServiceTest {
         Account account3 = testAccountSet("test2.img");
         followSet(account2.getId(), account1.getId());
         //when
-        boolean checkFollow = followRepository.existsByFollowerIdAndAndFollowingId(account1.getId(), account3.getId());
+        boolean checkFollow = followRepository.existsByFollowerIdAndFollowingId(account1.getId(), account3.getId());
         //then
         assertThat(checkFollow).isFalse();
     }
@@ -66,12 +66,12 @@ class FollowServiceTest {
         Account account2 = testAccountSet("test2.img");
         followSet(account2.getId(), account1.getId());
         //when - then
-        boolean checkFollow = followRepository.existsByFollowerIdAndAndFollowingId(account1.getId(), account2.getId());
+        boolean checkFollow = followRepository.existsByFollowerIdAndFollowingId(account1.getId(), account2.getId());
         assertThat(checkFollow).isTrue();
         em.flush();
         em.clear();
         followRepository.deleteByFollowerIdAndFollowingId(account1.getId(), account2.getId());
-        boolean checkUnFollow = followRepository.existsByFollowerIdAndAndFollowingId(account1.getId(), account2.getId());
+        boolean checkUnFollow = followRepository.existsByFollowerIdAndFollowingId(account1.getId(), account2.getId());
         assertThat(checkUnFollow).isFalse();
     }
 

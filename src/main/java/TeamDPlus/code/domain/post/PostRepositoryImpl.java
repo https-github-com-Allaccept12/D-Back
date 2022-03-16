@@ -1,5 +1,7 @@
 package TeamDPlus.code.domain.post;
 
+import TeamDPlus.code.domain.post.tag.PostTag;
+import TeamDPlus.code.domain.post.tag.QPostTag;
 import TeamDPlus.code.dto.response.ArtWorkResponseDto;
 import TeamDPlus.code.dto.response.PostResponseDto;
 import com.querydsl.core.types.Projections;
@@ -17,6 +19,7 @@ import static TeamDPlus.code.domain.account.QAccount.account;
 import static TeamDPlus.code.domain.post.QPost.post;
 import static TeamDPlus.code.domain.post.bookmark.QPostBookMark.postBookMark;
 import static TeamDPlus.code.domain.post.like.QPostLikes.postLikes;
+import static TeamDPlus.code.domain.post.tag.QPostTag.postTag;
 
 @RequiredArgsConstructor
 public class PostRepositoryImpl implements PostRepositoryCustom{
@@ -113,17 +116,21 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                         post.title,
                         post.content,
                         post.category,
-                        post.created
+                        post.created,
+                        postTag.hashTag
                         ))
                 .from(post)
                 .join(account).on(account.id.eq(post.account.id))
+                .leftJoin(postTag).on(postTag.post.eq(post))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .where(isLastPostId(lastPostId),
                         post.title.contains(keyword)
-                                .or(post.content.contains(keyword))
+                                .or(post.title.contains(keyword))
                                 .or(post.account.nickname.contains(keyword))
-                                .or(post.content.contains(keyword)))
+                                .or(post.content.contains(keyword))
+                                .or(postTag.hashTag.contains(keyword)))
+                .orderBy(post.created.desc())
                 .fetch();
         return new PageImpl<>(result,pageable,result.size());
     }

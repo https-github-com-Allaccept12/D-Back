@@ -1,18 +1,14 @@
 package TeamDPlus.code.dto.response;
 
-import TeamDPlus.code.domain.post.Post;
 import TeamDPlus.code.domain.post.PostBoard;
-import TeamDPlus.code.domain.post.comment.PostComment;
 import TeamDPlus.code.domain.post.image.PostImage;
 import TeamDPlus.code.domain.post.tag.PostTag;
 import TeamDPlus.code.dto.common.CommonDto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.domain.Page;
 
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -96,7 +92,7 @@ public class PostResponseDto {
                                           final List<PostTag> postTagsList, final PostSubDetail postSubDetail,
                                           final boolean is_like, final boolean is_bookmark, final boolean is_follow,
                                           final Long comment_count
-                                          ){
+        ){
             return PostDetailPage.builder()
                     .postSubDetail(postSubDetail)
                     .img(postImageList.stream()

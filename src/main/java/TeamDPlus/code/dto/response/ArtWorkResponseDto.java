@@ -61,12 +61,12 @@ public class ArtWorkResponseDto {
         private ArtWorkSubDetail artWorkSubDetail;
         private List<CommonDto.ImgUrlDto> img;
         private List<ArtWorkComment> comment;
-        private Page<ArtWorkSimilarWork> similar_Work;
+        private List<ArtWorkSimilarWork> similar_Work;
 
         @Builder
         public ArtWorkDetail(final List<CommonDto.ImgUrlDto> img,
                              final List<ArtWorkComment> comment,
-                             final Page<ArtWorkSimilarWork> similar_Work,
+                             final List<ArtWorkSimilarWork> similar_Work,
                              final ArtWorkSubDetail artWorkSubDetail,
                              final boolean is_like, final boolean is_bookmark,final boolean is_follow) {
             this.is_like = is_like;
@@ -79,7 +79,7 @@ public class ArtWorkResponseDto {
         }
 
         public static ArtWorkDetail from(final List<ArtWorkImage> imgList, final List<ArtWorkComment> commentList,
-                                         final Page<ArtWorkSimilarWork> similarList, ArtWorkSubDetail artWorkSubDetail,
+                                         final List<ArtWorkSimilarWork> similarList, ArtWorkSubDetail artWorkSubDetail,
                                          final boolean is_like, final boolean is_bookmark, final boolean is_follow) {
             return ArtWorkDetail.builder()
                     .img(imgList.stream()
@@ -161,6 +161,11 @@ public class ArtWorkResponseDto {
     public static class ArtWorkSimilarWork {
         private Long artwork_id;
         private String img;
+
+        public ArtWorkSimilarWork(final Long artwork_id,final String img) {
+            this.artwork_id = artwork_id;
+            this.img = img;
+        }
     }
 
 
