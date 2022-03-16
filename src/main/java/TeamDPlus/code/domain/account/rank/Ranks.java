@@ -1,18 +1,19 @@
 package TeamDPlus.code.domain.account.rank;
 
 
-import TeamDPlus.code.domain.account.Account;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Rank {
+@DynamicInsert
+public class Ranks {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -27,7 +28,7 @@ public class Rank {
     private Long rankScore;
 
     @Builder
-    public Rank(final Long rankScore) {
+    public Ranks(final Long rankScore) {
         this.rankScore = rankScore;
 
     }

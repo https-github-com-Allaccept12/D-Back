@@ -1,23 +1,25 @@
 package TeamDPlus.code.domain.account;
 
-import TeamDPlus.code.domain.account.rank.QRank;
 import TeamDPlus.code.dto.response.AccountResponseDto;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
 import static TeamDPlus.code.domain.account.QAccount.account;
-import static TeamDPlus.code.domain.account.rank.QRank.rank;
+import static TeamDPlus.code.domain.account.rank.QRanks.ranks;
 
 @RequiredArgsConstructor
+@Slf4j
 public class AccountRepositoryImpl implements AccountRepositoryCustom{
 
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<AccountResponseDto.TopArtist> findTopArtist() {
+    public List<AccountResponseDto.TopArtist> findTopArtist(Pageable pageable) {
         return queryFactory
                 .select(
                         Projections.constructor(AccountResponseDto.TopArtist.class,
@@ -26,10 +28,10 @@ public class AccountRepositoryImpl implements AccountRepositoryCustom{
                                 account.profileImg,
                                 account.job))
                 .from(account)
-                .innerJoin(account.rank, rank)
-                .offset(0)
-                .limit(10)
-                .orderBy(rank.rankScore.desc())
+                .innerJoin(account.rank, ranks)
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .orderBy(ranks.rankScore.desc())
                 .fetch();
     }
 }

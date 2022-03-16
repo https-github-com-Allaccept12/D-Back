@@ -2,7 +2,8 @@ package TeamDPlus.code.service.account;
 
 import TeamDPlus.code.domain.account.Account;
 import TeamDPlus.code.domain.account.AccountRepository;
-import TeamDPlus.code.domain.account.rank.Rank;
+import TeamDPlus.code.domain.account.Specialty;
+import TeamDPlus.code.domain.account.rank.Ranks;
 import TeamDPlus.code.domain.account.rank.RankRepository;
 import TeamDPlus.code.dto.KakaoUserInfoDto;
 import TeamDPlus.code.dto.response.LoginResponseDto;
@@ -40,10 +41,10 @@ public class KakaoAccountService {
         KakaoUserInfoDto kakaoUserInfo = getKakaoUserInfo(accessToken);
 
         // 3. 필요시에 회원가입
-        Account kakaoUser = registerKakaoUserIfNeeded(kakaoUserInfo);
+        return registerKakaoUserIfNeeded(kakaoUserInfo);
 
         // 4. 강제 로그인 처리
-        return forceLogin(kakaoUser);
+//        return forceLogin(kakaoUser);
     }
 
     private String getAccessToken(String code) throws JsonProcessingException {
@@ -107,27 +108,29 @@ public class KakaoAccountService {
         return new KakaoUserInfoDto(id, nickname, profileImage, email);
     }
 
-    private Account registerKakaoUserIfNeeded(KakaoUserInfoDto kakaoUserInfo) {
+    private LoginResponseDto registerKakaoUserIfNeeded(KakaoUserInfoDto kakaoUserInfo) {
         // DB 에 중복된 Kakao Id 가 있는지 확인
         String email = kakaoUserInfo.getEmail();
 
         Account kakaoUser = accountRepository.findByEmail(email)
                 .orElse(null);
+
+        boolean isSignUp = false;
+
         if (kakaoUser == null) {
             // 회원가입
+            isSignUp = true;
             String nickname = kakaoUserInfo.getNickname();
 
             String profileImg = kakaoUserInfo.getProfile_img();
-
-            Rank rank = Rank.builder().rankScore(0L).build();
-            Rank saveRank = rankRepository.save(rank);
-            kakaoUser = Account.builder().nickname(nickname).profileImg(profileImg).email(email).rank(saveRank).build();
+            Ranks rank = Ranks.builder().rankScore(0L).build();
+            Ranks saveRank = rankRepository.save(rank);
+            Specialty specialty = new Specialty();
+            kakaoUser = Account.builder().nickname(nickname).profileImg(profileImg).email(email).rank(saveRank).specialty(specialty).build();
             accountRepository.save(kakaoUser);
         }
-        return kakaoUser;
-    }
+//        return kakaoUser;
 
-    private LoginResponseDto forceLogin(Account kakaoUser) {
         String accessToken = jwtTokenProvider.createToken(Long.toString(kakaoUser.getId()), kakaoUser.getEmail());
         String refreshToken = jwtTokenProvider.createRefreshToken(Long.toString(kakaoUser.getId()));
         kakaoUser.refreshToken(refreshToken);
@@ -136,7 +139,20 @@ public class KakaoAccountService {
                 .profile_img(kakaoUser.getProfileImg())
                 .access_token(accessToken)
                 .refresh_token(refreshToken)
+                .isSignUp(isSignUp)
                 .build();
     }
+
+//    private LoginResponseDto forceLogin(Account kakaoUser) {
+//        String accessToken = jwtTokenProvider.createToken(Long.toString(kakaoUser.getId()), kakaoUser.getEmail());
+//        String refreshToken = jwtTokenProvider.createRefreshToken(Long.toString(kakaoUser.getId()));
+//        kakaoUser.refreshToken(refreshToken);
+//        return LoginResponseDto.builder()
+//                .account_id(kakaoUser.getId())
+//                .profile_img(kakaoUser.getProfileImg())
+//                .access_token(accessToken)
+//                .refresh_token(refreshToken)
+//                .build();
+//    }
 
 }

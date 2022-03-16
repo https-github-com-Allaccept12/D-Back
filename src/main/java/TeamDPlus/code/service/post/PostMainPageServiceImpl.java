@@ -85,7 +85,7 @@ public class PostMainPageServiceImpl implements PostMainPageService{
         List<PostTag> postTags = postTagRepository.findPostTagsByPostId(postId);
         boolean isLike = postLikesRepository.existByAccountIdAndPostId(accountId, postId);
         boolean isBookmark = postBookMarkRepository.existByAccountIdAndPostId(accountId, postId);
-        boolean isFollow = followRepository.existsByFollowerIdAndAndFollowingId(accountId, postSubDetail.getAccount_id());
+        boolean isFollow = followRepository.existsByFollowerIdAndFollowingId(accountId, postSubDetail.getAccount_id());
 
 //        return PostResponseDto.PostDetailPage.from();
         return null;
@@ -170,15 +170,12 @@ public class PostMainPageServiceImpl implements PostMainPageService{
         return post;
     }
 
-
-
-
-
     // 디모 QnA 상세페이지
     @Transactional(readOnly = true)
     public PostResponseDto.PostAnswerDetailPage detailAnswer(Long accountId, Long postId) {
         // 작품 게시글 존재여부
-        Post post = postValidation(accountId, postId);
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new ApiRequestException("해당 게시글은 존재하지 않습니다."));
         // 조회수 + 1
         post.addViewCount();
         // QnA 좋아요 개수와 QnA 기본정보 가져오기
@@ -189,19 +186,30 @@ public class PostMainPageServiceImpl implements PostMainPageService{
         List<PostResponseDto.PostAnswer> postAnswerList = postAnswerRepository.findPostAnswerByPostId(postId);
         // 태그 리스트 가져오기
         List<PostTag> postTagList = postTagRepository.findPostTagsByPostId(postId);
-        // 좋아요 수
-        Long likeCount = postLikesRepository.countByPostId(postId);
         // 북마크 수
         Long bookMarkCount = postBookMarkRepository.countByPostId(postId);
-        // 답변 수
-        Long answerCount = postAnswerRepository.countByPostId(postId);
-        // 지금 상세페이지를 보고있는 사람이 좋아요를 했는지
-        boolean isLike = postLikesRepository.existByAccountIdAndPostId(accountId, postId);
-        // 지금 상세페이지를 보고있는 사람이 북마크를 했는지
-        boolean isBookmark = postBookMarkRepository.existByAccountIdAndPostId(accountId, postId);
-        // 지금 상세페이지를 보고있는 사람이 팔로우를 했는지
-        boolean isFollow = followRepository.existsByFollowerIdAndAndFollowingId(accountId, postSubDetail.getAccount_id());
-        return PostResponseDto.PostAnswerDetailPage.from(imgList, postAnswerList, postTagList, postSubDetail, isLike, isBookmark, isFollow, likeCount, bookMarkCount, answerCount);
+
+        boolean isLike = false;
+        boolean isBookmark = false;
+        boolean isFollow = false;
+
+        if (accountId != null) {
+            // 지금 상세페이지를 보고있는 사람이 좋아요를 했는지
+            isLike = postLikesRepository.existByAccountIdAndPostId(accountId, postId);
+            // 지금 상세페이지를 보고있는 사람이 북마크를 했는지
+            isBookmark = postBookMarkRepository.existByAccountIdAndPostId(accountId, postId);
+            // 지금 상세페이지를 보고있는 사람이 팔로우를 했는지
+            isFollow = followRepository.existsByFollowerIdAndFollowingId(accountId, postSubDetail.getAccount_id());
+        }
+
+        //상세페이지의 답글 개수
+        postSubDetail.setComment_count((long) postAnswerList.size());
+        return PostResponseDto.PostAnswerDetailPage.from(imgList, postAnswerList, postTagList, postSubDetail, isLike, isBookmark, isFollow, bookMarkCount);
     }
 
+    // 디모 QnA 유사한질문
+    @Transactional(readOnly = true)
+    public PostResponseDto relatedQuestion() {
+        return null;
+    }
 }

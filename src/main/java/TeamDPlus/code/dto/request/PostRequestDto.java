@@ -43,5 +43,13 @@ public class PostRequestDto {
         private String content;
 
     }
+
+    @Getter
+    @NoArgsConstructor
+    public static class PostAnswerComment {
+
+        private String content;
+
+    }
 }
 

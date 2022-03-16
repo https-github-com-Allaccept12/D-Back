@@ -6,7 +6,6 @@ import TeamDPlus.code.domain.account.Account;
 import TeamDPlus.code.domain.artwork.ArtWorks;
 import TeamDPlus.code.dto.request.ArtWorkRequestDto;
 import TeamDPlus.code.dto.request.PostRequestDto;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;

@@ -2,7 +2,8 @@ package TeamDPlus.code.service.account;
 
 import TeamDPlus.code.domain.account.Account;
 import TeamDPlus.code.domain.account.AccountRepository;
-import TeamDPlus.code.domain.account.rank.Rank;
+import TeamDPlus.code.domain.account.Specialty;
+import TeamDPlus.code.domain.account.rank.Ranks;
 import TeamDPlus.code.domain.account.rank.RankRepository;
 import TeamDPlus.code.dto.GoogleUserInfoDto;
 import TeamDPlus.code.dto.response.LoginResponseDto;
@@ -114,9 +115,10 @@ public class GoogleAccountService {
             // 회원가입
             String name = googleUserInfo.getName();
             String profileImg = googleUserInfo.getProfile_img();
-            Rank rank = Rank.builder().rankScore(0L).build();
-            Rank saveRank = rankRepository.save(rank);
-            googleUser = Account.builder().nickname(name).profileImg(profileImg).email(email).rank(saveRank).build();
+            Ranks rank = Ranks.builder().rankScore(0L).build();
+            Ranks saveRank = rankRepository.save(rank);
+            Specialty specialty = new Specialty();
+            googleUser = Account.builder().nickname(name).profileImg(profileImg).email(email).specialty(specialty).rank(saveRank).build();
             accountRepository.save(googleUser);
         }
         return googleUser;

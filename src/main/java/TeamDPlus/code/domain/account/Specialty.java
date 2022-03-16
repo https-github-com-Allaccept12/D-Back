@@ -2,23 +2,38 @@ package TeamDPlus.code.domain.account;
 
 
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import javax.persistence.*;
 
 @Embeddable
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Specialty {
 
-    private boolean figma = false;
-    private boolean framer = false;
-    private boolean afterEffect = false;
-    private boolean illustration = false;
-    private boolean sketch = false;
-    private boolean protopie = false;
-    private boolean jira = false;
-    private boolean hotjar = false;
-    private boolean mixpanel = false;
-    private boolean miro = false;
+    private Boolean figma ;
+    private Boolean framer ;
+    private Boolean afterEffect;
+    private Boolean illustration;
+    private Boolean sketch;
+    private Boolean protopie;
+    private Boolean jira;
+    private Boolean hotjar;
+    private Boolean mixpanel;
+    private Boolean miro;
+
+    public Specialty() {
+        this.figma = false;
+        this.framer = false;
+        this.afterEffect = false;
+        this.illustration = false;
+        this.sketch = false;
+        this.protopie = false;
+        this.jira = false;
+        this.hotjar = false;
+        this.mixpanel = false;
+        this.miro = false;
+    }
+
+
 }

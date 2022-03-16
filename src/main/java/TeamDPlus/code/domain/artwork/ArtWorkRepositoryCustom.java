@@ -16,15 +16,15 @@ public interface ArtWorkRepositoryCustom {
 
     Page<ArtWorkResponseDto.ArtWorkBookMark> findArtWorkBookMarkByAccountId(Long lastArtWorkId,Pageable pageable,Long accountId);
 
-    Page<ArtWorkResponseDto.ArtworkMain> findArtWorkByMostViewAndMostLike(String interest,Pageable pageable);
+    List<ArtWorkResponseDto.ArtworkMain> findArtWorkByMostViewAndMostLike(String interest,Pageable pageable);
 
-    Page<ArtWorkResponseDto.ArtworkMain> findAllArtWork(Long lastArtWorkId,Pageable pageable);
+    List<ArtWorkResponseDto.ArtworkMain> findAllArtWork(Long lastArtWorkId,Pageable pageable);
 
     Page<ArtWorkResponseDto.ArtWorkSimilarWork> findSimilarArtWork(Long accountId, Pageable pageable);
 
-    Page<ArtWorkResponseDto.ArtworkMain> findBySearchKeyWord(String keyword,Long lastArtWorkId,Pageable pageable);
+    List<ArtWorkResponseDto.ArtworkMain> findBySearchKeyWord(String keyword,Long lastArtWorkId,Pageable pageable);
 
-    ArtWorkResponseDto.ArtWorkSubDetail findByArtWorkSubDetail(Long accountId, Long artworkId);
+    ArtWorkResponseDto.ArtWorkSubDetail findByArtWorkSubDetail(Long artworkId);
 
 
     void updateArtWorkIdMasterToFalse(Long artWorkId);

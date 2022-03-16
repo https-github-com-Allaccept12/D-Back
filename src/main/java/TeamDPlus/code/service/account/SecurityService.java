@@ -37,12 +37,10 @@ public class SecurityService {
         String updateRefreshToken = jwtTokenProvider.createRefreshToken(Long.toString(account.getId()));
         account.refreshToken(updateRefreshToken);
 
-        TokenResponseDto responseDto = TokenResponseDto.builder()
+        return TokenResponseDto.builder()
                 .accessToken(updateToken)
                 .refreshToken(updateRefreshToken)
                 .build();
-
-        return responseDto;
     }
 
 }

@@ -2,13 +2,11 @@ package TeamDPlus.code.service.post.answer;
 
 import TeamDPlus.code.advice.ApiRequestException;
 import TeamDPlus.code.domain.account.Account;
-import TeamDPlus.code.domain.artwork.ArtWorks;
 import TeamDPlus.code.domain.post.Post;
 import TeamDPlus.code.domain.post.PostRepository;
 import TeamDPlus.code.domain.post.answer.PostAnswer;
 import TeamDPlus.code.domain.post.answer.PostAnswerRepository;
 import TeamDPlus.code.dto.request.PostRequestDto;
-import TeamDPlus.code.dto.response.PostResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,15 +28,26 @@ public class PostAnswerService {
     }
 
     @Transactional
-    public void updateAnswer(Long answerId, PostRequestDto.PostAnswer dto) {
+    public void updateAnswer(Long answerId, PostRequestDto.PostAnswer dto, Long accountId) {
         PostAnswer postAnswer = postAnswerRepository.findById(answerId)
                 .orElseThrow(() -> new ApiRequestException("존재하지 않는 게시글이거나, 댓글입니다."));
+
+        if (!postAnswer.getAccount().getId().equals(accountId)) {
+            throw new IllegalStateException("댓글 작성자가 아닙니다.");
+        }
 
         postAnswer.updateComment(dto.getContent());
     }
 
     @Transactional
-    public void deleteAnswer(Long answerId) {
+    public void deleteAnswer(Long answerId, Long accountId) {
+        PostAnswer postAnswer = postAnswerRepository.findById(answerId)
+                .orElseThrow(() -> new ApiRequestException("존재하지 않는 게시글이거나, 댓글입니다."));
+
+        if (!postAnswer.getAccount().getId().equals(accountId)) {
+            throw new IllegalStateException("댓글 작성자가 아닙니다.");
+        }
+
         postAnswerRepository.deleteById(answerId);
     }
 

@@ -1,23 +1,17 @@
 package TeamDPlus.code.dto.response;
 
-import TeamDPlus.code.domain.post.Post;
-import TeamDPlus.code.domain.post.answer.PostAnswerComment;
-import TeamDPlus.code.domain.post.comment.PostComment;
 import TeamDPlus.code.domain.post.image.PostImage;
 import TeamDPlus.code.domain.post.tag.PostTag;
 import TeamDPlus.code.dto.common.CommonDto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.domain.Page;
 
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class PostResponseDto {
-
 
     @Getter
     @NoArgsConstructor
@@ -43,7 +37,6 @@ public class PostResponseDto {
                             final String account_profile_img, final String title,
                             final String content, final String category,
                             final Timestamp create_time, final List<CommonDto.PostTagDto> hash_tag, final boolean is_selected) {
-
             this.post_id = post_id;
             this.account_id = account_id;
             this.account_nickname = account_nickname;
@@ -132,6 +125,8 @@ public class PostResponseDto {
         private String title;
         private String content;
         private Long view_count;
+        private Long answer_count;
+        private Long like_count;
         private String category;
         private Timestamp create_time;
         private Timestamp modify_time;
@@ -139,7 +134,7 @@ public class PostResponseDto {
         @Builder
         public PostSubDetail(Long post_id, Long account_id, Long account_nickname,
                              String account_profile_img, String title,
-                             String content, Long view_count, String category,
+                             String content, Long view_count, Long like_count, String category,
                              Timestamp create_time, Timestamp modify_time) {
             this.post_id = post_id;
             this.account_id = account_id;
@@ -148,9 +143,13 @@ public class PostResponseDto {
             this.title = title;
             this.content = content;
             this.view_count = view_count;
+            this.like_count = like_count;
             this.category = category;
             this.create_time = create_time;
             this.modify_time = modify_time;
+        }
+        public void setComment_count(Long answer_count) {
+            this.answer_count = answer_count;
         }
     }
 
@@ -222,8 +221,6 @@ public class PostResponseDto {
         private Boolean is_bookmark;
         private boolean is_follow;
         private Long bookmark_count;
-        private Long like_count;
-        private Long answer_count;
         private PostSubDetail postSubDetail;
         private List<CommonDto.ImgUrlDto> img;
         private List<CommonDto.PostTagDto> hash_tag;
@@ -232,7 +229,7 @@ public class PostResponseDto {
         @Builder
         public PostAnswerDetailPage(boolean is_like, boolean is_bookmark, boolean is_follow, PostSubDetail postSubDetail,
                               List<CommonDto.ImgUrlDto> img, List<CommonDto.PostTagDto> hash_tag,
-                              List<PostAnswer> answers, Long like_count, Long bookmark_count, Long answer_count) {
+                              List<PostAnswer> answers, Long bookmark_count) {
             this.is_like = is_like;
             this.is_bookmark = is_bookmark;
             this.is_follow = is_follow;
@@ -240,9 +237,7 @@ public class PostResponseDto {
             this.img = img;
             this.hash_tag = hash_tag;
             this.answers = answers;
-            this.like_count = like_count;
             this.bookmark_count = bookmark_count;
-            this.answer_count = answer_count;
         }
 
 //        public void setCountList(Long bookmark_count, Long like_count, Long answer_count){
@@ -254,7 +249,7 @@ public class PostResponseDto {
         public static PostAnswerDetailPage from(final List<PostImage> postImageList, final List<PostAnswer> answerList,
                                           final List<PostTag> postTagsList, final PostSubDetail postSubDetail,
                                           final boolean is_like, final boolean is_bookmark, final boolean is_follow,
-                                          final Long like_count, final Long bookmark_count, final Long answer_count
+                                          final Long bookmark_count
         ){
             return PostAnswerDetailPage.builder()
                     .postSubDetail(postSubDetail)
@@ -264,9 +259,7 @@ public class PostResponseDto {
                     .is_like(is_like)
                     .is_bookmark(is_bookmark)
                     .is_follow(is_follow)
-                    .like_count(like_count)
                     .bookmark_count(bookmark_count)
-                    .answer_count(answer_count)
                     .hash_tag(postTagsList.stream()
                             .map(i -> new CommonDto.PostTagDto(i.getHashTag())).collect(Collectors.toList()))
                     .build();
