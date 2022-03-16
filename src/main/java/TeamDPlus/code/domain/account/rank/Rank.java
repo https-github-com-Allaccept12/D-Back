@@ -31,11 +31,11 @@ public class Rank {
     }
 
     public void upRankScore() {
-        this.rankScore += 1;
+        this.rankScore += 1L;
     }
 
     public void downRankScore() {
-        this.rankScore -= 1;
+        this.rankScore -= 1L;
     }
 
     public void initCount() {

@@ -2,13 +2,10 @@ package TeamDPlus.code.controller.account;
 
 
 import TeamDPlus.code.dto.Success;
-import TeamDPlus.code.dto.request.AccountRequestDto;
-import TeamDPlus.code.dto.request.AccountRequestDto.AccountIsMyPage;
+import TeamDPlus.code.dto.request.AccountRequestDto.AccountVisit;
 import TeamDPlus.code.dto.request.AccountRequestDto.UpdateAccountIntro;
 import TeamDPlus.code.dto.request.AccountRequestDto.UpdateSpecialty;
 import TeamDPlus.code.dto.request.ArtWorkRequestDto.ArtWorkPortFolioUpdate;
-import TeamDPlus.code.dto.request.HistoryRequestDto;
-import TeamDPlus.code.dto.request.HistoryRequestDto.HistoryUpdate;
 import TeamDPlus.code.dto.request.HistoryRequestDto.HistoryUpdateList;
 import TeamDPlus.code.jwt.UserDetailsImpl;
 import TeamDPlus.code.service.account.AccountMyPageService;
@@ -17,8 +14,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -29,14 +24,14 @@ public class AccountMyPageController {
 
 
     @GetMapping("")
-    public ResponseEntity<Success> accountInfo(@RequestBody AccountIsMyPage accountId,
+    public ResponseEntity<Success> accountInfo(@RequestBody AccountVisit accountId,
                                                @AuthenticationPrincipal UserDetailsImpl user) {
         return new ResponseEntity<>(new Success("마이페이지 기본정보 조회",
                 accountMyPageService.showAccountInfo(accountId.getAccount_id(), user.getUser().getId())), HttpStatus.OK);
     }
 
     @GetMapping("/career-feed/{last_artwork_id}")
-    public ResponseEntity<Success> accountCareerFeed(@RequestBody AccountIsMyPage accountId,
+    public ResponseEntity<Success> accountCareerFeed(@RequestBody AccountVisit accountId,
                                                      @PathVariable String last_artwork_id,
                                                      @AuthenticationPrincipal UserDetailsImpl user) {
         return new ResponseEntity<>(new Success("마이페이지 커리어피드 조회",
@@ -44,7 +39,7 @@ public class AccountMyPageController {
     }
 
     @GetMapping("/history")
-    public ResponseEntity<Success> accountHistory(@RequestBody AccountIsMyPage accountId,
+    public ResponseEntity<Success> accountHistory(@RequestBody AccountVisit accountId,
                                                   @AuthenticationPrincipal UserDetailsImpl user) {
         return new ResponseEntity<>(new Success("마이페이지 연혁 조회",
                 accountMyPageService.showAccountHistory(accountId.getAccount_id())), HttpStatus.OK);
@@ -59,7 +54,7 @@ public class AccountMyPageController {
 
     @GetMapping("/artwork/{last_artwork_id}")
     public ResponseEntity<Success> accountArtWorkList(@PathVariable Long last_artwork_id,
-                                                      @RequestBody AccountIsMyPage accountId,
+                                                      @RequestBody AccountVisit accountId,
                                                       @AuthenticationPrincipal UserDetailsImpl user) {
         return new ResponseEntity<>(new Success("유저 작품 목록",
                 accountMyPageService.showAccountArtWork(last_artwork_id,accountId.getAccount_id(),user.getUser().getId())),HttpStatus.OK);
