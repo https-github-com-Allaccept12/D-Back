@@ -4,6 +4,7 @@ import TeamDPlus.code.dto.response.ArtWorkResponseDto;
 import TeamDPlus.code.dto.response.PostResponseDto;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -14,6 +15,7 @@ import java.util.List;
 
 import static TeamDPlus.code.domain.account.QAccount.account;
 import static TeamDPlus.code.domain.post.QPost.post;
+import static TeamDPlus.code.domain.post.bookmark.QPostBookMark.postBookMark;
 import static TeamDPlus.code.domain.post.like.QPostLikes.postLikes;
 
 @RequiredArgsConstructor
@@ -33,7 +35,8 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                         post.title,
                         post.category,
                         post.content,
-                        post.created
+                        post.created,
+                        post.isSelected
                 ))
                 .from(post)
                 .join(account).on(account.id.eq(post.account.id))
@@ -58,7 +61,8 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                         post.title,
                         post.category,
                         post.content,
-                        post.created
+                        post.created,
+                        post.isSelected
                 ))
                 .from(post)
                 .join(account).on(account.id.eq(post.account.id))
@@ -77,19 +81,23 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
     public PostResponseDto.PostSubDetail findByPostSubDetail(Long accountId, Long postId) {
         return queryFactory
                 .select(Projections.constructor(PostResponseDto.PostSubDetail.class,
-                        post.id,
+                        Expressions.asNumber(postId).as("post_id"),
                         post.title,
                         post.content,
                         post.view,
                         post.category,
                         post.created,
                         post.modified,
-                        account.id,
+                        Expressions.asNumber(accountId).as("account_id"),
                         account.profileImg,
-                        account.nickname
+                        account.nickname,
+                        postBookMark.count(),
+                        postLikes.count()
                 ))
                 .from(post)
-                .join(account).on(account.id.eq(post.account.id))
+                .innerJoin(post.account, account)
+                .leftJoin(postBookMark).on(postBookMark.post.eq(post))
+                .leftJoin(postLikes).on(postLikes.post.eq(post))
                 .where(post.id.eq(postId))
                 .fetchOne();
     }

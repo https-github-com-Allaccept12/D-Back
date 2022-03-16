@@ -9,6 +9,7 @@ import java.util.List;
 
 import static TeamDPlus.code.domain.post.comment.QPostComment.postComment;
 import static TeamDPlus.code.domain.post.QPost.post;
+import static TeamDPlus.code.domain.post.comment.like.QPostCommentLikes.postCommentLikes;
 
 @RequiredArgsConstructor
 public class PostCommentRepositoryImpl implements PostCommentRepositoryCustom{
@@ -24,10 +25,12 @@ public class PostCommentRepositoryImpl implements PostCommentRepositoryCustom{
                         postComment.account.profileImg,
                         postComment.id,
                         postComment.content,
-                        postComment.modified
+                        postComment.modified,
+                        postCommentLikes.count()
                 ))
                 .from(postComment)
                 .join(post).on(post.id.eq(postId))
+                .leftJoin(postCommentLikes).on(postComment.id.eq(postCommentLikes.postComment.id))
                 .fetch();
     }
 }

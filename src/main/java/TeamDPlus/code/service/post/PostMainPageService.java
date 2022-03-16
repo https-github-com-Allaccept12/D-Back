@@ -12,10 +12,10 @@ public interface PostMainPageService {
     Page<PostResponseDto.PostPageMain> showPostMain(Long accountId, Long postId);
 
     // 전체 게시물 조회 (좋아요순)
-    Page<PostResponseDto.PostPageMain> showPostMainByLikes(Long accountId, Long postId);
+//    Page<PostResponseDto.PostPageMain> showPostMainByLikes(Long accountId, Long postId);
 
     // 게시글 작성
-    Long createPost(Account account, PostRequestDto.PostCreateAndUpdate dto);
+    Long createPost(Account account, PostRequestDto.PostCreate dto);
 
     // 게시글 검색
     Page<PostResponseDto.PostPageMain> findBySearchKeyWord(String keyword, Long lastArtWorkId);
@@ -24,7 +24,7 @@ public interface PostMainPageService {
     PostResponseDto.PostDetailPage showPostDetail(Long accountId, Long postId);
 
     // 게시글 수정
-    Long updatePost(Account account, Long postId, PostRequestDto.PostCreateAndUpdate dto);
+    Long updatePost(Account account, Long postId, PostRequestDto.PostUpdate dto);
 
     // 게시글 삭제
     void deletePost(Long accountId, Long postId);

@@ -1,6 +1,7 @@
 package TeamDPlus.code.dto.response;
 
 import TeamDPlus.code.domain.post.Post;
+import TeamDPlus.code.domain.post.PostBoard;
 import TeamDPlus.code.domain.post.comment.PostComment;
 import TeamDPlus.code.domain.post.image.PostImage;
 import TeamDPlus.code.domain.post.tag.PostTag;
@@ -36,7 +37,6 @@ public class PostResponseDto {
         private boolean is_selected;
         private List<CommonDto.PostTagDto> hash_tag;
 
-        // 태그 탭 상의할 것
         @Builder
         public PostPageMain(final Long post_id, final Long account_id, final String account_nickname,
                             final String account_profile_img, final String title,
@@ -67,22 +67,20 @@ public class PostResponseDto {
     @NoArgsConstructor
     public static class PostDetailPage {
 
-
         private boolean is_like;
         private boolean is_bookmark;
         private boolean is_follow;
-        private Long bookmark_count;
-        private Long like_count;
         private Long comment_count;
         private PostSubDetail postSubDetail;
         private List<CommonDto.ImgUrlDto> img;
         private List<CommonDto.PostTagDto> hash_tag;
         private List<PostResponseDto.PostComment> comment;
+        private PostBoard board;
 
         @Builder
-        public PostDetailPage(boolean is_like, boolean is_bookmark, boolean is_follow, PostSubDetail postSubDetail,
-                              List<CommonDto.ImgUrlDto> img, List<CommonDto.PostTagDto> hash_tag,
-                              List<PostComment> comment) {
+        public PostDetailPage(final boolean is_like, final boolean is_bookmark, final boolean is_follow,
+                              final PostSubDetail postSubDetail, final List<CommonDto.ImgUrlDto> img, final PostBoard board,
+                              final List<CommonDto.PostTagDto> hash_tag, final List<PostComment> comment, final Long comment_count) {
             this.is_like = is_like;
             this.is_bookmark = is_bookmark;
             this.is_follow = is_follow;
@@ -90,18 +88,14 @@ public class PostResponseDto {
             this.img = img;
             this.hash_tag = hash_tag;
             this.comment = comment;
-        }
-
-        public void setCountList(Long bookmark_count, Long like_count, Long comment_count){
-            this.bookmark_count = bookmark_count;
-            this.like_count = like_count;
             this.comment_count = comment_count;
+            this.board = board;
         }
 
         public static PostDetailPage from(final List<PostImage> postImageList, final List<PostComment> commentList,
                                           final List<PostTag> postTagsList, final PostSubDetail postSubDetail,
                                           final boolean is_like, final boolean is_bookmark, final boolean is_follow,
-                                          final Long like_count, final Long bookmark_count, final Long comment_count
+                                          final Long comment_count
                                           ){
             return PostDetailPage.builder()
                     .postSubDetail(postSubDetail)
@@ -111,9 +105,7 @@ public class PostResponseDto {
                     .is_like(is_like)
                     .is_bookmark(is_bookmark)
                     .is_follow(is_follow)
-//                    .like_count(like_count)
-//                    .bookmark_count(bookmark_count)
-//                    .comment_count(comment_count)
+                    .comment_count(comment_count)
                     .hash_tag(postTagsList.stream()
                             .map(i -> new CommonDto.PostTagDto(i.getHashTag())).collect(Collectors.toList()))
                     .build();
@@ -134,12 +126,15 @@ public class PostResponseDto {
         private String category;
         private Timestamp create_time;
         private Timestamp modify_time;
+        private Long bookmark_count;
+        private Long like_count;
 
         @Builder
-        public PostSubDetail(Long post_id, Long account_id, Long account_nickname,
-                             String account_profile_img, String title,
-                             String content, Long view_count, String category,
-                             Timestamp create_time, Timestamp modify_time) {
+        public PostSubDetail(final Long post_id, final Long account_id, final Long account_nickname,
+                             final String account_profile_img, final String title,
+                             final String content, final Long view_count, final String category,
+                             final Timestamp create_time, final Timestamp modify_time,
+                             final Long bookmark_count, final Long like_count) {
             this.post_id = post_id;
             this.account_id = account_id;
             this.account_nickname = account_nickname;
@@ -150,6 +145,8 @@ public class PostResponseDto {
             this.category = category;
             this.create_time = create_time;
             this.modify_time = modify_time;
+            this.bookmark_count = bookmark_count;
+            this.like_count = like_count;
         }
     }
 

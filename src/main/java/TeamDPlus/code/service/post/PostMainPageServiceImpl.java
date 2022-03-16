@@ -42,7 +42,7 @@ public class PostMainPageServiceImpl implements PostMainPageService{
     private final FollowRepository followRepository;
 
 
-    // 전체 페이지 (최신순)
+    // 메인 페이지 (최신순) => 최신순으로 디폴트로 전달하고, 좋아요는 프론트에서 처리 디플픽 + 메인페이지 Dto 한번에 담아서 날리기
     @Transactional(readOnly = true)
     public Page<PostResponseDto.PostPageMain> showPostMain(Long accountId, Long lastPostId) {
         Pageable pageable = PageRequest.of(0,12);
@@ -51,16 +51,16 @@ public class PostMainPageServiceImpl implements PostMainPageService{
         return postList;
     }
 
-    // 전체 페이지 (좋아요 순)
-    @Transactional(readOnly = true)
-    public Page<PostResponseDto.PostPageMain> showPostMainByLikes(Long accountId, Long lastPostId) {
-        Pageable pageable = PageRequest.of(0,12);
-        Page<PostResponseDto.PostPageMain> postList = postRepository.findAllPostOrderByPostLikes(lastPostId, pageable);
-        setCountList(accountId, postList);
-        return postList;
-    }
+//    // 메인 페이지 (좋아요 순)
+//    @Transactional(readOnly = true)
+//    public Page<PostResponseDto.PostPageMain> showPostMainByLikes(Long accountId, Long lastPostId) {
+//        Pageable pageable = PageRequest.of(0,12);
+//        Page<PostResponseDto.PostPageMain> post인ist = postRepository.findAllPostOrderByPostLikes(lastPostId, pageable);
+//        setCountList(accountId, postList);
+//        return postList;
+//    }
 
-    // 추천페이지
+    // 디플픽
     @Transactional(readOnly = true)
     public List<PostResponseDto.PostPageMain> showRecommendation(Long accountId, Long postId) {
         List<PostResponseDto.PostPageMain> postList = postRepository.findPostByMostViewAndMostLike();
@@ -84,13 +84,14 @@ public class PostMainPageServiceImpl implements PostMainPageService{
         boolean isLike = postLikesRepository.existByAccountIdAndPostId(accountId, postId);
         boolean isBookmark = postBookMarkRepository.existByAccountIdAndPostId(accountId, postId);
         boolean isFollow = followRepository.existsByFollowerIdAndAndFollowingId(accountId, postSubDetail.getAccount_id());
-
-        return PostResponseDto.PostDetailPage.from();
+        Long comment_count = (long) postComments.size();
+        return PostResponseDto.PostDetailPage.from(postImageList, postComments,
+                postTags, postSubDetail, isLike, isBookmark, isFollow, comment_count);
     }
 
     // 게시글 작성
     @Transactional
-    public Long createPost(Account account, PostRequestDto.PostCreateAndUpdate dto) {
+    public Long createPost(Account account, PostRequestDto.PostCreate dto) {
         Post post = Post.of(account, dto);
         Post savedPost = postRepository.save(post);
         setPostTag(dto.getHashTag(), savedPost);
@@ -100,9 +101,9 @@ public class PostMainPageServiceImpl implements PostMainPageService{
 
     // 게시물 수정
     @Transactional
-    public Long updatePost(Account account, Long postId, PostRequestDto.PostCreateAndUpdate dto){
+    public Long updatePost(Account account, Long postId, PostRequestDto.PostUpdate dto){
         Post post = postValidation(account.getId(), postId);
-        post.createAndupdate(dto);
+        post.updatePost(dto);
         postImageRepository.deleteAllByPostId(postId);
         setImgUrl(dto.getImg(), post);
         postTagRepository.deleteAllByPostId(postId);
