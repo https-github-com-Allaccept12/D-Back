@@ -10,6 +10,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
 import java.math.BigInteger;
@@ -19,6 +20,7 @@ import java.util.List;
 
 @Entity
 @Getter
+@DynamicInsert
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ArtWorks extends BaseEntity {
 
@@ -47,6 +49,7 @@ public class ArtWorks extends BaseEntity {
 
     private String workEnd;
 
+    @Column(columnDefinition = "TINYINT default 0")
     private Boolean isMaster;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -73,7 +76,7 @@ public class ArtWorks extends BaseEntity {
     }
 
     public void addViewCount() {
-        this.view += 1;
+        this.view += 1L;
     }
 
     public void updateArtWork(ArtWorkRequestDto.ArtWorkCreateAndUpdate dto) {

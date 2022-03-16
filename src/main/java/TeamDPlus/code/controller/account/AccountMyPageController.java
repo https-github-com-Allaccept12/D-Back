@@ -93,7 +93,7 @@ public class AccountMyPageController {
     public ResponseEntity<Success> createAndUpdateCareerFeed(@RequestBody ArtWorkPortFolioUpdate data,
                                                              @AuthenticationPrincipal UserDetailsImpl user) {
         accountMyPageService.updateAccountCareerFeedList(data, user.getUser());
-        return new ResponseEntity<>(new Success("포트폴리오 등록/수정 성공", ""), HttpStatus.OK);
+        return new ResponseEntity<>(new Success("포트폴리오 선택/수정 성공", ""), HttpStatus.OK);
     }
     //단건
     @RequestMapping(value = "/masterpiece/{artwork_id}",method = {RequestMethod.POST, RequestMethod.PATCH})

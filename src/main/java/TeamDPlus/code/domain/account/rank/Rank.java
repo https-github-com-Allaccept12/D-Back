@@ -6,11 +6,13 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
 
 @Entity
 @Getter
+@DynamicInsert
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Rank {
 
@@ -18,10 +20,6 @@ public class Rank {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "rank_id")
     private Long id;
-
-//    @Column(unique = true)
-//    @OneToOne(mappedBy = "rank")
-//    private Account accountId;
 
     @Column(columnDefinition = "BIGINT default 0")
     private Long rankScore;

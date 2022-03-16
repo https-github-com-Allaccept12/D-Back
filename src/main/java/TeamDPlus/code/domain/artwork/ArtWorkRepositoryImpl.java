@@ -145,7 +145,9 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
                         artWorks.category,
                         artWorks.created,
                         artWorks.modified,
-                        artWorks.specialty
+                        artWorks.specialty,
+                        account.nickname,
+                        account.profileImg
                 ))
                 .from(artWorks)
                 .innerJoin(artWorks.account, account)
@@ -156,19 +158,20 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
     }
 
     @Override
-    public Page<ArtWorkResponseDto.ArtWorkSimilarWork> findSimilarArtWork(Long accountId, Pageable pageable) {
-        List<ArtWorkResponseDto.ArtWorkSimilarWork> result = queryFactory
+    public List<ArtWorkResponseDto.ArtWorkSimilarWork> findSimilarArtWork(Long accountId,Long artWorkId, Pageable pageable) {
+        return  queryFactory
                 .select(Projections.constructor(ArtWorkResponseDto.ArtWorkSimilarWork.class,
                         artWorks.id,
                         artWorkImage.artworkImg))
                 .from(artWorks)
-                .join(artWorkImage).on(artWorkImage.artWorks.eq(artWorks))
+                .join(artWorkImage).on(artWorkImage.artWorks.eq(artWorks)
+                        .and(artWorkImage.thumbnail.isTrue()))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
-                .where(artWorks.account.id.eq(accountId).and(artWorkImage.thumbnail.isTrue()))
+                .where(artWorks.account.id.eq(accountId).and(artWorks.id.ne(artWorkId)))
                 .orderBy(artWorks.created.desc())
                 .fetch();
-        return new PageImpl<>(result,pageable,result.size());
+
 
     }
 

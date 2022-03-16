@@ -77,6 +77,7 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
         ArtWorks artWorks = artWorkRepository.findById(artWorkId)
                 .orElseThrow(() -> new ApiRequestException("해당 게시글은 존재하지 않습니다."));
         //조회수
+        System.out.println(artWorks.getView());
         artWorks.addViewCount();
         //작품 좋아요개수와 작품 기본정보 가져오기
         ArtWorkResponseDto.ArtWorkSubDetail artWorksSub = artWorkRepository.findByArtWorkSubDetail(artWorkId);
@@ -86,8 +87,8 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
         List<ArtWorkResponseDto.ArtWorkComment> commentList = artWorkCommentRepository.findArtWorkCommentByArtWorksId(artWorksSub.getArtwork_id());
         //해당 유저의 다른 작품들 가져오기
         Pageable pageable = PageRequest.of(0, 5);
-        Page<ArtWorkResponseDto.ArtWorkSimilarWork> similarList = artWorkRepository.findSimilarArtWork(artWorks.getAccount().getId(),pageable);
-
+        List<ArtWorkResponseDto.ArtWorkSimilarWork> similarList = artWorkRepository
+                .findSimilarArtWork(artWorks.getAccount().getId(),artWorks.getId(),pageable);
         boolean isLike = false;
         boolean isBookmark = false;
         boolean isFollow = false;
@@ -127,6 +128,7 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
     @Transactional
     public void deleteArtwork(Long accountId, Long artworkId) {
         ArtWorks artWorks = artworkValidation(accountId, artworkId);
+        artWorkImageRepository.deleteAllByArtWorksId(artworkId);
         artWorkLikesRepository.deleteAllByArtWorksId(artworkId);
         artWorkBookMarkRepository.deleteAllByArtWorksId(artworkId);
         artWorkCommentRepository.deleteAllByArtWorksId(artworkId);

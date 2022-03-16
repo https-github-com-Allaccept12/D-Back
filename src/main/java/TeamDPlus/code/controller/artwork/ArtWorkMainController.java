@@ -55,7 +55,7 @@ public class ArtWorkMainController {
         return new ResponseEntity<>(new Success("작품 수정 완료",
                 artworkMainService.updateArtwork(user.getUser(),artwork_id,data)),HttpStatus.OK);
     }
-///여기서부터 테스트 ㄱㄱ
+
     @DeleteMapping("/api/artwork/{artwork_id}")
     public ResponseEntity<Success> deleteArtWork(@AuthenticationPrincipal UserDetailsImpl user,
                                                  @PathVariable Long artwork_id) {
