@@ -24,7 +24,7 @@ public class ArtWorkBookMarkService {
         if (artWorkBookMarkRepository.existByAccountIdAndArtWorkId(account.getId(), artWorkId)) {
             throw new ApiRequestException("이미 북마크한 게시글 입니다.");
         }
-        artWorks.getAccount().getRank().upRankScore();
+        artWorks.getAccount().getRanks().upRankScore();
         ArtWorkBookMark artWorkBookMark = ArtWorkBookMark.builder().artWorks(artWorks).account(account).build();
         artWorkBookMarkRepository.save(artWorkBookMark);
     }
@@ -35,7 +35,7 @@ public class ArtWorkBookMarkService {
         if (!artWorkBookMarkRepository.existByAccountIdAndArtWorkId(account.getId(), artWorkId)) {
             throw new ApiRequestException("이미 북마크를 해지한 게시글 입니다.");
         }
-        artWorks.getAccount().getRank().downRankScore();
+        artWorks.getAccount().getRanks().downRankScore();
         artWorkBookMarkRepository.deleteByArtWorksIdAndAccountId(artWorkId,account.getId());
     }
 

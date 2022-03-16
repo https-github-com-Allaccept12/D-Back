@@ -16,7 +16,7 @@ import javax.persistence.*;
 public class ArtWorkBookMark {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "artwork_bookmark_id")
     private Long id;
 

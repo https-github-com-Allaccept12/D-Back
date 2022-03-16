@@ -24,7 +24,7 @@ public class ArtworkLikeService {
         if (artWorkLikesRepository.existByAccountIdAndArtWorkId(account.getId(), artWorkId)) {
             throw new ApiRequestException("이미 좋아요한 게시글 입니다.");
         }
-        artWorks.getAccount().getRank().upRankScore();
+        artWorks.getAccount().getRanks().upRankScore();
         ArtWorkLikes artWorkLikes = ArtWorkLikes.builder().artWorks(artWorks).account(account).build();
         artWorkLikesRepository.save(artWorkLikes);
     }
@@ -35,7 +35,7 @@ public class ArtworkLikeService {
         if (!artWorkLikesRepository.existByAccountIdAndArtWorkId(account.getId(), artWorkId)) {
             throw new ApiRequestException("이미 좋아요 해지한 게시글 입니다.");
         }
-        artWorks.getAccount().getRank().downRankScore();
+        artWorks.getAccount().getRanks().downRankScore();
         artWorkLikesRepository.deleteByArtWorksIdAndAccountId(artWorkId,account.getId());
     }
 

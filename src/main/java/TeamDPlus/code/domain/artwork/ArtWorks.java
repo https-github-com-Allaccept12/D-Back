@@ -25,7 +25,7 @@ import java.util.List;
 public class ArtWorks extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "artwork_id")
     private Long id;
 

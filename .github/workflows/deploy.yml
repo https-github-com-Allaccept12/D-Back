@@ -3,26 +3,26 @@ name: DPlus-webservice
 on:
   push:
     branches:
-      - main # (1) 실습하시는분들은 master로 하시면 됩니다. (저는 별도 브랜치로 지정)
-  workflow_dispatch: # (2) 수동 실행
+      - main
+  workflow_dispatch:
 
 jobs:
   build:
-    runs-on: ubuntu-latest # (3)
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2 # (4)
+        uses: actions/checkout@v2
 
       - name: Set up JDK 1.8
-        uses: actions/setup-java@v1 # (5)
+        uses: actions/setup-java@v1
         with:
           java-version: 1.8
 
       - name: Grant execute permission for gradlew
-        run: chmod +x ./gradlew # (6)
+        run: chmod +x ./gradlew
         shell: bash
 
       - name: Build with Gradle
-        run: ./gradlew clean build # (7)
+        run: ./gradlew clean build
         shell: bash

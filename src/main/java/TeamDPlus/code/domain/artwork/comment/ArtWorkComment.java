@@ -17,7 +17,7 @@ import javax.persistence.*;
 public class ArtWorkComment extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "artwork_comment_id")
     private Long id;
 

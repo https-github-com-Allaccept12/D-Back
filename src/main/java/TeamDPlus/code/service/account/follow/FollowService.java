@@ -6,16 +6,13 @@ import TeamDPlus.code.domain.account.Account;
 import TeamDPlus.code.domain.account.AccountRepository;
 import TeamDPlus.code.domain.account.follow.Follow;
 import TeamDPlus.code.domain.account.follow.FollowRepository;
-import TeamDPlus.code.domain.account.rank.Rank;
 import TeamDPlus.code.domain.account.rank.RankRepository;
-import TeamDPlus.code.dto.request.AccountRequestDto;
 import TeamDPlus.code.dto.response.FollowResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -31,7 +28,7 @@ public class FollowService {
         if (followRepository.existsByFollowerIdAndFollowingId(account.getId(),following_id)) {
             throw new ApiRequestException("이미 팔로우한 사람 입니다.");
         }
-        account.getRank().upRankScore();
+        account.getRanks().upRankScore();
         final Follow follow = Follow.builder().followerId(account.getId()).followingId(following_id).build();
         followRepository.save(follow);
     }
@@ -42,7 +39,7 @@ public class FollowService {
         if (!followRepository.existsByFollowerIdAndFollowingId(account.getId(), unFollowing_id)) {
           throw new ApiRequestException("이미 언팔로우한 사람 입니다.");
         }
-        account.getRank().downRankScore();
+        account.getRanks().downRankScore();
         followRepository.deleteByFollowerIdAndFollowingId(account.getId(),unFollowing_id);
     }
 

@@ -2,7 +2,7 @@ package TeamDPlus.code.domain.account;
 
 
 import TeamDPlus.code.domain.BaseEntity;
-import TeamDPlus.code.domain.account.rank.Rank;
+import TeamDPlus.code.domain.account.rank.Ranks;
 import TeamDPlus.code.dto.request.AccountRequestDto;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -19,7 +19,7 @@ import javax.persistence.*;
 public class Account extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE) // h2는 auto, mysql는 IDENTITY
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // h2는 auto, mysql는 IDENTITY
     @Column(name = "account_id")
     private Long id;
 
@@ -66,14 +66,14 @@ public class Account extends BaseEntity {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "rank_id",nullable = false)
-    private Rank rank;
+    private Ranks ranks;
 
     @Builder
-    public Account(final String email, final String nickname, final String subContent,final String titleContent, final String profileImg,
+    public Account(final String email, final String nickname, final String subContent, final String titleContent, final String profileImg,
                    final int career, final String phoneNumber, final String workTime,
                    final String workEmail, final String tendency, final Long exp, final String refreshToken,
                    final String linkedIn, final String brunch, final String instagram,
-                   final String interest,final Rank rank,final String job,final Specialty specialty)  {
+                   final String interest, final Ranks ranks, final String job, final Specialty specialty)  {
         this.email = email;
         this.nickname = nickname;
         this.titleContent = titleContent;
@@ -90,7 +90,7 @@ public class Account extends BaseEntity {
         this.brunch = brunch;
         this.instagram = instagram;
         this.interest = interest;
-        this.rank = rank;
+        this.ranks = ranks;
         this.job = job;
         this.specialty = specialty;
     }
