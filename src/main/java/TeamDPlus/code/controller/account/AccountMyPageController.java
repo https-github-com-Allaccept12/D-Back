@@ -85,8 +85,7 @@ public class AccountMyPageController {
 
     //다건
     @PostMapping(value = {"/career-feed"})
-    public ResponseEntity<Success> createAndUpdateCareerFeed(@RequestBody ArtWorkPortFolioUpdate data,
-                                                             @AuthenticationPrincipal UserDetailsImpl user) {
+    public ResponseEntity<Success> createAndUpdateCareerFeed(@RequestBody ArtWorkPortFolioUpdate data) {
         accountMyPageService.updateAccountCareerFeedList(data);
         return new ResponseEntity<>(new Success("포트폴리오 선택/수정 성공", ""), HttpStatus.OK);
     }
