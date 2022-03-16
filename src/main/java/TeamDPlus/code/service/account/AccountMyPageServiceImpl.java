@@ -115,7 +115,7 @@ public class AccountMyPageServiceImpl implements AccountMyPageService {
 
     //마이페이지/북마크
     @Transactional(readOnly = true)
-    public Page<ArtWorkResponseDto.ArtWorkBookMark> showAccountArtWorkBookMark(Long lastArtWorkId,final Long accountId) {
+    public List<ArtWorkResponseDto.ArtWorkBookMark> showAccountArtWorkBookMark(Long lastArtWorkId,final Long accountId) {
         Pageable pageable = PageRequest.of(0,10);
         return artWorkRepository.findArtWorkBookMarkByAccountId(lastArtWorkId,pageable,accountId);
     }

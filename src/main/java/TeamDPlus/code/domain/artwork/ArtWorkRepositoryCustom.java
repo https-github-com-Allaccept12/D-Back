@@ -14,7 +14,7 @@ public interface ArtWorkRepositoryCustom {
     // visitAccountId 게시글 등록자가 내 마이페이지에 방문했을때 게시글 표시 public, private 구분
     List<ArtWorkResponseDto.ArtWorkFeed> findByArtWorkImageAndAccountId(Long lastArtWorkId,Pageable pageable,Long visitAccountId,Long accountId,boolean isPortfolio);
 
-    Page<ArtWorkResponseDto.ArtWorkBookMark> findArtWorkBookMarkByAccountId(Long lastArtWorkId,Pageable pageable,Long accountId);
+    List<ArtWorkResponseDto.ArtWorkBookMark> findArtWorkBookMarkByAccountId(Long lastArtWorkId,Pageable pageable,Long accountId);
 
     List<ArtWorkResponseDto.ArtworkMain> findArtWorkByMostViewAndMostLike(String interest,Pageable pageable);
 

@@ -43,7 +43,7 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
                 .offset(paging.getOffset())
                 .limit(paging.getPageSize())
                 .where(isPortfolio(isPortfolio),
-                        artWorks.account.id.eq(accountId),
+                        artWorks.account.id.eq(visitAccountId),
                         isVisitor(visitAccountId, accountId),
                         isLastArtworkId(lastArtWorkId))
                 .groupBy(artWorks.id)
@@ -52,8 +52,8 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
     }
 
     @Override
-    public Page<ArtWorkResponseDto.ArtWorkBookMark> findArtWorkBookMarkByAccountId(Long lastArtWorkId, Pageable paging, Long accountId) {
-        List<ArtWorkResponseDto.ArtWorkBookMark> result = queryFactory
+    public List<ArtWorkResponseDto.ArtWorkBookMark> findArtWorkBookMarkByAccountId(Long lastArtWorkId, Pageable paging, Long accountId) {
+        return queryFactory
                 .select(Projections.constructor(ArtWorkResponseDto.ArtWorkBookMark.class,
                         artWorks.id,
                         artWorks.account.nickname,
@@ -72,7 +72,6 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
                 .groupBy(artWorks.id)
                 .orderBy(artWorks.created.desc())
                 .fetch();
-        return new PageImpl<>(result, paging, result.size());
     }
 
     @Override
@@ -201,7 +200,6 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
                 .groupBy(artWorks.id)
                 .orderBy(artWorks.created.desc())
                 .fetch();
-//        return new PageImpl<>(result,pageable,result.size());
     }
 
 

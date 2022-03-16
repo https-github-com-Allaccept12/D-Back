@@ -3,7 +3,6 @@ package TeamDPlus.code.service.artwork;
 import TeamDPlus.code.advice.ApiRequestException;
 import TeamDPlus.code.domain.account.Account;
 import TeamDPlus.code.domain.account.AccountRepository;
-import TeamDPlus.code.domain.account.AccountRepositoryCustom;
 import TeamDPlus.code.domain.account.follow.FollowRepository;
 import TeamDPlus.code.domain.artwork.ArtWorkRepository;
 import TeamDPlus.code.domain.artwork.ArtWorks;
@@ -18,10 +17,8 @@ import TeamDPlus.code.dto.response.AccountResponseDto;
 import TeamDPlus.code.dto.response.ArtWorkResponseDto;
 import TeamDPlus.code.dto.response.MainResponseDto;
 import TeamDPlus.code.service.file.FileProcessService;
-import jdk.jfr.internal.tool.Main;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -71,13 +68,12 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
         return artWorkList;
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public ArtWorkResponseDto.ArtWorkDetail detailArtWork(Long accountId, Long artWorkId) {
         //작품 게시글 존재여부
         ArtWorks artWorks = artWorkRepository.findById(artWorkId)
                 .orElseThrow(() -> new ApiRequestException("해당 게시글은 존재하지 않습니다."));
         //조회수
-        System.out.println(artWorks.getView());
         artWorks.addViewCount();
         //작품 좋아요개수와 작품 기본정보 가져오기
         ArtWorkResponseDto.ArtWorkSubDetail artWorksSub = artWorkRepository.findByArtWorkSubDetail(artWorkId);

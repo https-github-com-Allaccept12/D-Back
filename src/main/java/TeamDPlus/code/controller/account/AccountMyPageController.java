@@ -74,7 +74,7 @@ public class AccountMyPageController {
         return new ResponseEntity<>(new Success("스킬셋 수정",""),HttpStatus.OK);
     }
     //내 북마크
-    @GetMapping("/{last_artwork_id}")
+    @GetMapping("/bookmark/{last_artwork_id}")
     public ResponseEntity<Success> ArtWorkBookmarkList(@PathVariable Long last_artwork_id,
                                                        @AuthenticationPrincipal UserDetailsImpl user) {
         return new ResponseEntity<>(new Success("작품 북마크 목록",
