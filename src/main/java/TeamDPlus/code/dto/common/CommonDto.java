@@ -52,4 +52,11 @@ public class CommonDto {
 
 
     }
+
+    @Getter
+    @NoArgsConstructor
+    public static class ArtWorkKeyword {
+        private String keyword;
+    }
+
 }

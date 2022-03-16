@@ -43,9 +43,9 @@ public class ArtWorks extends BaseEntity {
     @Column(columnDefinition = "BIGINT default 0")
     private Long view;
 
-    private Timestamp workStart;
+    private String workStart;
 
-    private Timestamp workEnd;
+    private String workEnd;
 
     private Boolean isMaster;
 
@@ -58,7 +58,7 @@ public class ArtWorks extends BaseEntity {
 
     @Builder
     public ArtWorks(final boolean scope,final String title,final String content,final String category,
-                    final Long view,final Timestamp workStart,final Timestamp workEnd,final Account account,
+                    final Long view,final String workStart,final String workEnd,final Account account,
                     final boolean isMaster, final Specialty specialty) {
         this.scope = scope;
         this.title = title;
@@ -87,7 +87,6 @@ public class ArtWorks extends BaseEntity {
     public void updateArtWorkIsMaster() {
         this.isMaster = !isMaster; //false 면 트루 , 트루면 false
     }
-
     public void updateArtWorkIsScope() {
         this.scope = !scope;
     }

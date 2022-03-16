@@ -39,13 +39,14 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
                         artWorks.isMaster
                 ))
                 .from(artWorks)
-                .leftJoin(artWorkImage).on(artWorkImage.artWorks.eq(artWorks))
+                .leftJoin(artWorkImage).on(artWorkImage.artWorks.eq(artWorks).and(artWorkImage.thumbnail.isTrue()))
                 .offset(paging.getOffset())
                 .limit(paging.getPageSize())
-                .where(isPortfolio(isPortfolio)
-                                .and(artWorks.account.id.eq(accountId)),
+                .where(isPortfolio(isPortfolio),
+                        artWorks.account.id.eq(accountId),
                         isVisitor(visitAccountId, accountId),
                         isLastArtworkId(lastArtWorkId))
+                .groupBy(artWorks.id)
                 .orderBy(artWorks.created.desc())
                 .fetch();
     }
@@ -75,8 +76,8 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
     }
 
     @Override
-    public Page<ArtWorkResponseDto.ArtworkMain> findArtWorkByMostViewAndMostLike(String interest, Pageable pageable) {
-        List<ArtWorkResponseDto.ArtworkMain> result = queryFactory
+    public List<ArtWorkResponseDto.ArtworkMain> findArtWorkByMostViewAndMostLike(String interest, Pageable pageable) {
+        return queryFactory
                 .select(
                         Projections.constructor(ArtWorkResponseDto.ArtworkMain.class,
                                 artWorks.id,
@@ -93,19 +94,19 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
                 .join(artWorks.account, account)
                 .leftJoin(artWorkLikes).on(artWorkLikes.artWorks.eq(artWorks))
                 .leftJoin(artWorkImage).on(artWorkImage.artWorks.eq(artWorks).and(artWorkImage.thumbnail.isTrue()))
-                .offset(0)
-                .limit(10)
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .groupBy(artWorks.id)
                 .orderBy(artWorkLikes.count().desc(),artWorks.view.desc())
                 .where(isInterest(interest))
                 .fetch();
-        return new PageImpl<>(result,pageable,result.size());
+//        return new PageImpl<>(result,pageable,result.size());
     }
 
     @Override
-    public Page<ArtWorkResponseDto.ArtworkMain> findAllArtWork(Long lastArtworkId, Pageable paging) {
+    public List<ArtWorkResponseDto.ArtworkMain> findAllArtWork(Long lastArtworkId, Pageable paging) {
 
-        List<ArtWorkResponseDto.ArtworkMain> result = queryFactory
+        return queryFactory
                 .select(Projections.constructor(ArtWorkResponseDto.ArtworkMain.class,
                         artWorks.id,
                         account.id,
@@ -123,15 +124,15 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
                 .leftJoin(artWorkLikes).on(artWorkLikes.artWorks.eq(artWorks))
                 .offset(paging.getOffset())
                 .limit(paging.getPageSize())
-                .where(isLastArtworkId(lastArtworkId))
+                .where(isLastArtworkId(lastArtworkId),artWorks.scope.isTrue())
                 .groupBy(artWorks.id)
                 .orderBy(artWorks.created.desc())
                 .fetch();
-        return new PageImpl<>(result, paging, result.size());
+
     }
 
     @Override
-    public ArtWorkResponseDto.ArtWorkSubDetail findByArtWorkSubDetail(Long accountId, Long artworkId) {
+    public ArtWorkResponseDto.ArtWorkSubDetail findByArtWorkSubDetail( Long artworkId) {
         return queryFactory
                 .select(Projections.constructor(
                         ArtWorkResponseDto.ArtWorkSubDetail.class,
@@ -172,8 +173,8 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
     }
 
     @Override
-    public Page<ArtWorkResponseDto.ArtworkMain> findBySearchKeyWord(String keyword,Long lastArtWorkId, Pageable pageable) {
-        List<ArtWorkResponseDto.ArtworkMain> result = queryFactory
+    public List<ArtWorkResponseDto.ArtworkMain> findBySearchKeyWord(String keyword,Long lastArtWorkId, Pageable pageable) {
+        return queryFactory
                 .select(Projections.constructor(ArtWorkResponseDto.ArtworkMain.class,
                         artWorks.id,
                         account.id,
@@ -197,7 +198,7 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
                 .groupBy(artWorks.id)
                 .orderBy(artWorks.created.desc())
                 .fetch();
-        return new PageImpl<>(result,pageable,result.size());
+//        return new PageImpl<>(result,pageable,result.size());
     }
 
 

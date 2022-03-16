@@ -29,12 +29,13 @@ public class PostResponseDto {
         private Long like_count;
         private Long comment_count;
         private String category;
+        private String hash_tag;
         private Timestamp create_time;
 
         // 태그 탭 상의할 것
         @Builder
         public PostPageMain(final Long post_id, final Long account_id, final String account_nickname, final String account_profile,
-                            final String title, final String content, final String category, final Timestamp create_time) {
+                            final String title, final String content, final String category, final Timestamp create_time,final String hash_tag) {
             this.post_id = post_id;
             this.account_id = account_id;
             this.account_nickname = account_nickname;
@@ -43,6 +44,7 @@ public class PostResponseDto {
             this.content = content;
             this.category = category;
             this.create_time = create_time;
+            this.hash_tag = hash_tag;
         }
         public void setCountList(Long bookmark_count, Long like_count, Long comment_count){
             this.bookmark_count = bookmark_count;
