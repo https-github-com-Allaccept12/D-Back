@@ -6,6 +6,7 @@ import TeamDPlus.code.domain.account.Account;
 import TeamDPlus.code.domain.artwork.ArtWorks;
 import TeamDPlus.code.dto.request.ArtWorkRequestDto;
 import TeamDPlus.code.dto.request.PostRequestDto;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -45,8 +46,8 @@ public class Post extends BaseEntity {
     private Boolean isSelected;
 
     @Builder
-    public Post(final String title,final String content,final String category,
-                final Account account, final Long view, Boolean isSelected) {
+    public Post(final String title, final String content, final String category,
+                final Account account, final Long view, final Boolean isSelected) {
         this.title = title;
         this.content = content;
         this.category = category;

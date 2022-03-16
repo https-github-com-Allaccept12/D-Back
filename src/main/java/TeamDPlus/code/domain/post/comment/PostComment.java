@@ -41,7 +41,6 @@ public class PostComment extends BaseEntity {
         this.content = content;
         this.account = account;
         this.post = post;
-        this.isSelected = is_selected;
     }
 
     public void updateComment(final String content) {

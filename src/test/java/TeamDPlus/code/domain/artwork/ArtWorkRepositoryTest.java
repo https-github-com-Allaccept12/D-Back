@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 //package TeamDPlus.code.domain.artwork;
 //
 //import TeamDPlus.code.domain.account.Account;
@@ -230,6 +231,8 @@
 //    }
 //}
 =======
+=======
+>>>>>>> 398350460d8c1867b0e917241dfe8a5aedfe0d54
 package TeamDPlus.code.domain.artwork;
 
 import TeamDPlus.code.domain.account.Account;
@@ -292,6 +295,7 @@ class ArtWorkRepositoryTest {
 
     @Autowired
     ArtWorkCommentRepository artWorkCommentRepository;
+<<<<<<< HEAD
 
     @Autowired
     ArtWorkLikesRepository artWorkLikesRepository;
@@ -300,6 +304,16 @@ class ArtWorkRepositoryTest {
     EntityManager em;
 
     @Autowired
+=======
+
+    @Autowired
+    ArtWorkLikesRepository artWorkLikesRepository;
+
+    @Autowired
+    EntityManager em;
+
+    @Autowired
+>>>>>>> 398350460d8c1867b0e917241dfe8a5aedfe0d54
     RankRepository rankRepository;
     @Test
     public void artwork_feed_query_test() throws Exception {
@@ -443,6 +457,14 @@ class ArtWorkRepositoryTest {
         assertThat(result.get(1).getImg()).isEqualTo(artWorkImage3.getArtworkImg());
         assertThat(result.get(1).getAccount_id()).isEqualTo(account1.getId());
     }
+<<<<<<< HEAD
+
+    @Test
+    public void 게시글_sub_상세_() throws Exception {
+        //given
+        Account account1 = testAccountSet();
+        ArtWorks artWorks1 = testArtWorksSet(account1);
+=======
 
     @Test
     public void 게시글_sub_상세_() throws Exception {
@@ -485,7 +507,118 @@ class ArtWorkRepositoryTest {
         assert fetch != null;
 
         assertThat(fetch.getLike_count()).isEqualTo(3);
+>>>>>>> 398350460d8c1867b0e917241dfe8a5aedfe0d54
 
+        testCommentSet(artWorks1, account1);
+        testCommentSet(artWorks1, account1);
+//        testCommentSet(artWorks1, account1);
+//        testCommentSet(artWorks1, account1);
+        testLikeSet(artWorks1, account1);
+        testLikeSet(artWorks1, account1);
+        testLikeSet(artWorks1, account1);
+//        testLikeSet(artWorks1, account1);
+        //when
+        ArtWorkResponseDto.ArtWorkSubDetail fetch = queryFactory
+                .select(Projections.constructor(
+                        ArtWorkResponseDto.ArtWorkSubDetail.class,
+                        artWorks.id,
+                        account.id,
+                        artWorks.title,
+                        artWorks.content,
+                        artWorks.view,
+                        artWorkLikes.id.count(),
+                        artWorks.category,
+                        artWorks.created,
+                        artWorks.modified,
+                        artWorks.specialty,
+                        account.nickname,
+                        account.profileImg
+                ))
+                .from(artWorks)
+                .groupBy(artWorks.id)
+                .innerJoin(artWorks.account, account)
+                .leftJoin(artWorkLikes).on(artWorkLikes.artWorks.eq(artWorks))
+                .where(artWorks.id.eq(artWorks1.getId()))
+                .fetchOne();
+        //then
+        assert fetch != null;
+
+        assertThat(fetch.getLike_count()).isEqualTo(3);
+
+    }
+
+    @Test
+    @Commit
+    public void 가장_좋아요가_많고_조회수가_많은_작품() throws Exception {
+        //given
+        Account account1 = testAccountSet();
+        ArtWorks artWorks1 = testArtWorksSet(account1);
+        ArtWorks artWorks2 = testArtWorksSet(account1);
+        ArtWorks artWorks3 = testArtWorksSet(account1);
+        ArtWorks artWorks4 = testArtWorksSet(account1);
+        testLikeSet(artWorks1,account1); //2
+        testLikeSet(artWorks2,account1); //2
+        testLikeSet(artWorks2,account1); //2
+        testLikeSet(artWorks2,account1);
+        testLikeSet(artWorks2,account1); // 0
+        testLikeSet(artWorks3,account1);
+        testLikeSet(artWorks3,account1);
+        testLikeSet(artWorks4,account1); //1
+        testLikeSet(artWorks4,account1);
+        testLikeSet(artWorks4,account1);
+        Pageable pageable = PageRequest.of(0,10);
+        //만약 10개 이하라면
+        //when
+        List<ArtWorkResponseDto.ArtworkMain> result = queryFactory
+                .select(
+                        Projections.constructor(ArtWorkResponseDto.ArtworkMain.class,
+                                artWorks.id,
+                                account.id,
+                                account.nickname,
+                                account.profileImg,
+                                artWorkImage.artworkImg,
+                                artWorks.view,
+                                artWorkLikes.id.count(),
+                                artWorks.category,
+                                artWorks.created
+                        ))
+                .from(artWorks)
+                .join(artWorks.account, account)
+                .leftJoin(artWorkLikes).on(artWorkLikes.artWorks.eq(artWorks))
+                .leftJoin(artWorkImage).on(artWorkImage.artWorks.eq(artWorks))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .groupBy(artWorks.id)
+                .orderBy(artWorkLikes.count().desc(),artWorks.view.desc())
+                .where(isInterest(account1.getInterest()))
+                .fetch();
+        //then
+        assert result != null;
+        assertThat(result.get(0).getArtwork_id()).isEqualTo(artWorks2.getId());
+        assertThat(result.get(1).getArtwork_id()).isEqualTo(artWorks4.getId());
+        assertThat(result.get(2).getArtwork_id()).isEqualTo(artWorks3.getId());
+        assertThat(result.get(3).getArtwork_id()).isEqualTo(artWorks1.getId());
+    }
+
+
+    public BooleanExpression isInterest(String interest) {
+        return interest != null ? artWorks.category.eq(interest) : null;
+    }
+
+    private ArtWorkLikes testLikeSet(ArtWorks artWorks, Account account) {
+        ArtWorkLikes likes = ArtWorkLikes.builder().artWorks(artWorks).account(account).build();
+        artWorkLikesRepository.save(likes);
+        em.flush();
+        em.clear();
+        return likes;
+    }
+
+    private ArtWorkComment testCommentSet(ArtWorks artWorks , Account account) {
+        ArtWorkComment comment = ArtWorkComment.builder().artWorks(artWorks).account(account).content("test").build();
+        artWorkCommentRepository.save(comment);
+        em.flush();
+        em.clear();
+        return comment;
     }
 
     @Test
@@ -612,4 +745,7 @@ class ArtWorkRepositoryTest {
     }
 }
 
+<<<<<<< HEAD
 >>>>>>> a7950f574314db1a8f3bbd7cbe098b70a1056832
+=======
+>>>>>>> 398350460d8c1867b0e917241dfe8a5aedfe0d54

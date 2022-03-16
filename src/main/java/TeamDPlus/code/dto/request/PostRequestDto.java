@@ -24,6 +24,8 @@ public class PostRequestDto {
 
         private List<CommonDto.PostTagDto> hashTag;
 
+        private boolean is_selected;
+
     }
 
     @Getter

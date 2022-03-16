@@ -9,6 +9,7 @@ import TeamDPlus.code.domain.post.Post;
 import TeamDPlus.code.domain.post.PostRepository;
 import TeamDPlus.code.domain.post.answer.PostAnswerRepository;
 import TeamDPlus.code.domain.post.bookmark.PostBookMarkRepository;
+import TeamDPlus.code.domain.post.comment.PostComment;
 import TeamDPlus.code.domain.post.comment.PostCommentRepository;
 import TeamDPlus.code.domain.post.image.PostImage;
 import TeamDPlus.code.domain.post.image.PostImageRepository;
@@ -27,6 +28,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -41,13 +43,52 @@ public class PostMainPageServiceImpl implements PostMainPageService{
     private final PostAnswerRepository postAnswerRepository;
     private final FollowRepository followRepository;
 
-    // 전체 페이지
+
+    // 전체 페이지 (최신순)
     @Transactional(readOnly = true)
     public Page<PostResponseDto.PostPageMain> showPostMain(Long accountId, Long lastPostId) {
         Pageable pageable = PageRequest.of(0,12);
-        Page<PostResponseDto.PostPageMain> postList = postRepository.findAllPost(lastPostId, pageable);
+        Page<PostResponseDto.PostPageMain> postList = postRepository.findAllPostOrderByCreatedDesc(lastPostId, pageable);
         setCountList(accountId, postList);
         return postList;
+    }
+
+    // 전체 페이지 (좋아요 순)
+    @Transactional(readOnly = true)
+    public Page<PostResponseDto.PostPageMain> showPostMainByLikes(Long accountId, Long lastPostId) {
+        Pageable pageable = PageRequest.of(0,12);
+        Page<PostResponseDto.PostPageMain> postList = postRepository.findAllPostOrderByPostLikes(lastPostId, pageable);
+        setCountList(accountId, postList);
+        return postList;
+    }
+
+    // 추천페이지
+    @Transactional(readOnly = true)
+    public List<PostResponseDto.PostPageMain> showRecommendation(Long accountId, Long postId) {
+        List<PostResponseDto.PostPageMain> postList = postRepository.findPostByMostViewAndMostLike();
+        postList.forEach((post) -> {
+                    Long bookmark_count = postBookMarkRepository.countByPostId(post.getPost_id());
+                    Long comment_count = postCommentRepository.countByPostId(post.getPost_id());
+                    Long like_count = postLikesRepository.countByPostId(post.getPost_id());
+                });
+        return postList;
+    }
+
+    // 상세 게시글 (디플 - 꿀팁)
+    @Transactional(readOnly = true)
+    public PostResponseDto.PostDetailPage showPostDetail(Long accountId, Long postId){
+        Post post = postValidation(accountId, postId);
+        post.addViewCount();
+        PostResponseDto.PostSubDetail postSubDetail = postRepository.findByPostSubDetail(accountId, postId);
+        List<PostImage> postImageList = postImageRepository.findByPostId(postId);
+        List<PostResponseDto.PostComment> postComments = postCommentRepository.findPostCommentByPostId(postId);
+        List<PostTag> postTags = postTagRepository.findPostTagsByPostId(postId);
+        boolean isLike = postLikesRepository.existByAccountIdAndPostId(accountId, postId);
+        boolean isBookmark = postBookMarkRepository.existByAccountIdAndPostId(accountId, postId);
+        boolean isFollow = followRepository.existsByFollowerIdAndAndFollowingId(accountId, postSubDetail.getAccount_id());
+
+//        return PostResponseDto.PostDetailPage.from();
+        return null;
     }
 
     // 게시글 작성
@@ -60,7 +101,28 @@ public class PostMainPageServiceImpl implements PostMainPageService{
         return post.getId();
     }
 
+    // 게시물 수정
+    @Transactional
+    public Long updatePost(Account account, Long postId, PostRequestDto.PostCreateAndUpdate dto){
+        Post post = postValidation(account.getId(), postId);
+        post.createAndupdate(dto);
+        postImageRepository.deleteAllByPostId(postId);
+        setImgUrl(dto.getImg(), post);
+        postTagRepository.deleteAllByPostId(postId);
+        setPostTag(dto.getHashTag(), post);
+        return post.getId();
+    }
+
     // 게시글 삭제
+    @Transactional
+    public void deletePost(Long accountId, Long postId){
+        Post post = postValidation(accountId, postId);
+        postLikesRepository.deleteAllByPostId(postId);
+        postTagRepository.deleteAllByPostId(postId);
+        postImageRepository.deleteAllByPostId(postId);
+        postBookMarkRepository.deleteAllByPostId(postId);
+        postRepository.delete(post);
+    }
 
     // 게시글 검색
     @Transactional(readOnly = true)
@@ -108,7 +170,6 @@ public class PostMainPageServiceImpl implements PostMainPageService{
         return post;
     }
 
-    // 로그인한 사용자의 좋아요 표시
 
 
 
@@ -127,7 +188,7 @@ public class PostMainPageServiceImpl implements PostMainPageService{
         // 질문 답변 가져오기
         List<PostResponseDto.PostAnswer> postAnswerList = postAnswerRepository.findPostAnswerByPostId(postId);
         // 태그 리스트 가져오기
-        List<PostTag> postTagList = postTagRepository.findByPostId(postId);
+        List<PostTag> postTagList = postTagRepository.findPostTagsByPostId(postId);
         // 좋아요 수
         Long likeCount = postLikesRepository.countByPostId(postId);
         // 북마크 수
@@ -142,4 +203,5 @@ public class PostMainPageServiceImpl implements PostMainPageService{
         boolean isFollow = followRepository.existsByFollowerIdAndAndFollowingId(accountId, postSubDetail.getAccount_id());
         return PostResponseDto.PostAnswerDetailPage.from(imgList, postAnswerList, postTagList, postSubDetail, isLike, isBookmark, isFollow, likeCount, bookMarkCount, answerCount);
     }
+
 }
