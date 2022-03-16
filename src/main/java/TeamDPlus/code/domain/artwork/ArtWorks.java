@@ -10,6 +10,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
 import java.math.BigInteger;
@@ -19,6 +20,7 @@ import java.util.List;
 
 @Entity
 @Getter
+@DynamicInsert
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ArtWorks extends BaseEntity {
 
@@ -47,6 +49,7 @@ public class ArtWorks extends BaseEntity {
 
     private String workEnd;
 
+    @Column(columnDefinition = "TINYINT default 0")
     private Boolean isMaster;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -73,7 +76,7 @@ public class ArtWorks extends BaseEntity {
     }
 
     public void addViewCount() {
-        this.view += 1;
+        this.view += 1L;
     }
 
     public void updateArtWork(ArtWorkRequestDto.ArtWorkCreateAndUpdate dto) {
@@ -83,12 +86,13 @@ public class ArtWorks extends BaseEntity {
         this.category = dto.getCategory();
         this.workStart = dto.getWork_start();
         this.workEnd = dto.getWork_end();
+        this.isMaster = dto.isMaster();
     }
-    public void updateArtWorkIsMaster() {
-        this.isMaster = !isMaster; //false 면 트루 , 트루면 false
+    public void updateArtWorkIsMaster(boolean isScope) {
+        this.isMaster = isScope;
     }
-    public void updateArtWorkIsScope() {
-        this.scope = !scope;
+    public void updateArtWorkIsScope(boolean isScope) {
+        this.scope = isScope;
     }
 
     public static ArtWorks of(Account account, ArtWorkRequestDto.ArtWorkCreateAndUpdate dto) {
@@ -100,7 +104,7 @@ public class ArtWorks extends BaseEntity {
                 .title(dto.getTitle())
                 .workStart(dto.getWork_start())
                 .workEnd(dto.getWork_end())
-                .isMaster(dto.is_master())
+                .isMaster(dto.isMaster())
                 .specialty(dto.getSpecialty())
                 .build();
     }

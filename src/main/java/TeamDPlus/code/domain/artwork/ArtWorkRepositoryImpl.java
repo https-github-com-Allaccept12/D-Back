@@ -43,7 +43,8 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
                 .offset(paging.getOffset())
                 .limit(paging.getPageSize())
                 .where(isPortfolio(isPortfolio),
-                        artWorks.account.id.eq(accountId),
+                        artWorks.account.id.eq(visitAccountId),
+                        artWorks.scope.isTrue(),
                         isVisitor(visitAccountId, accountId),
                         isLastArtworkId(lastArtWorkId))
                 .groupBy(artWorks.id)
@@ -52,8 +53,8 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
     }
 
     @Override
-    public Page<ArtWorkResponseDto.ArtWorkBookMark> findArtWorkBookMarkByAccountId(Long lastArtWorkId, Pageable paging, Long accountId) {
-        List<ArtWorkResponseDto.ArtWorkBookMark> result = queryFactory
+    public List<ArtWorkResponseDto.ArtWorkBookMark> findArtWorkBookMarkByAccountId(Long lastArtWorkId, Pageable paging, Long accountId) {
+        return queryFactory
                 .select(Projections.constructor(ArtWorkResponseDto.ArtWorkBookMark.class,
                         artWorks.id,
                         artWorks.account.nickname,
@@ -72,7 +73,6 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
                 .groupBy(artWorks.id)
                 .orderBy(artWorks.created.desc())
                 .fetch();
-        return new PageImpl<>(result, paging, result.size());
     }
 
     @Override
@@ -145,7 +145,9 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
                         artWorks.category,
                         artWorks.created,
                         artWorks.modified,
-                        artWorks.specialty
+                        artWorks.specialty,
+                        account.nickname,
+                        account.profileImg
                 ))
                 .from(artWorks)
                 .innerJoin(artWorks.account, account)
@@ -156,19 +158,20 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
     }
 
     @Override
-    public Page<ArtWorkResponseDto.ArtWorkSimilarWork> findSimilarArtWork(Long accountId, Pageable pageable) {
-        List<ArtWorkResponseDto.ArtWorkSimilarWork> result = queryFactory
+    public List<ArtWorkResponseDto.ArtWorkSimilarWork> findSimilarArtWork(Long accountId,Long artWorkId, Pageable pageable) {
+        return  queryFactory
                 .select(Projections.constructor(ArtWorkResponseDto.ArtWorkSimilarWork.class,
                         artWorks.id,
                         artWorkImage.artworkImg))
                 .from(artWorks)
-                .join(artWorkImage).on(artWorkImage.artWorks.eq(artWorks))
+                .join(artWorkImage).on(artWorkImage.artWorks.eq(artWorks)
+                        .and(artWorkImage.thumbnail.isTrue()))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
-                .where(artWorks.account.id.eq(accountId).and(artWorkImage.thumbnail.isTrue()))
+                .where(artWorks.account.id.eq(accountId).and(artWorks.id.ne(artWorkId)))
                 .orderBy(artWorks.created.desc())
                 .fetch();
-        return new PageImpl<>(result,pageable,result.size());
+
 
     }
 
@@ -198,7 +201,6 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
                 .groupBy(artWorks.id)
                 .orderBy(artWorks.created.desc())
                 .fetch();
-//        return new PageImpl<>(result,pageable,result.size());
     }
 
 
@@ -214,11 +216,12 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
 
     //in절을 통한 List 벌크
     @Override
-    public void updateAllArtWorkIsMasterToTrue(List<Long> accountIdList) {
+    public void updateAllArtWorkIsMasterToTrue(List<Long> artworkIdList) {
         queryFactory
                 .update(artWorks)
                 .set(artWorks.isMaster, true)
-                .where(artWorks.account.id.in(accountIdList))
+                .set(artWorks.scope, true)
+                .where(artWorks.id.in(artworkIdList))
                 .execute();
     }
 

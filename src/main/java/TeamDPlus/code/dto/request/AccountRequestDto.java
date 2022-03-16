@@ -11,7 +11,7 @@ public class AccountRequestDto {
 
     @Getter
     @NoArgsConstructor
-    public static class AccountIsMyPage {
+    public static class AccountVisit {
         private Long account_id;
     }
 

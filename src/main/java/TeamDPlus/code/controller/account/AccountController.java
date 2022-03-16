@@ -1,7 +1,6 @@
 package TeamDPlus.code.controller.account;
 
 import TeamDPlus.code.dto.Success;
-import TeamDPlus.code.jwt.UserDetailsImpl;
 import TeamDPlus.code.service.account.GoogleAccountService;
 import TeamDPlus.code.service.account.KakaoAccountService;
 import TeamDPlus.code.service.account.SecurityService;
@@ -9,7 +8,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController

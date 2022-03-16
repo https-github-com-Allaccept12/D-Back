@@ -55,7 +55,7 @@ public class ArtWorkMainController {
         return new ResponseEntity<>(new Success("작품 수정 완료",
                 artworkMainService.updateArtwork(user.getUser(),artwork_id,data)),HttpStatus.OK);
     }
-///여기서부터 테스트 ㄱㄱ
+
     @DeleteMapping("/api/artwork/{artwork_id}")
     public ResponseEntity<Success> deleteArtWork(@AuthenticationPrincipal UserDetailsImpl user,
                                                  @PathVariable Long artwork_id) {
@@ -74,19 +74,19 @@ public class ArtWorkMainController {
                 artworkMainService.detailArtWork(user.getUser().getId(),artwork_id)),HttpStatus.OK);
     }
 
-    @GetMapping("/api/artwork/search/{last_artwork_id}")
+    @GetMapping("/api/artwork/search/{last_artwork_id}/{keyword}")
     public ResponseEntity<Success> artWorkSearch(@AuthenticationPrincipal UserDetailsImpl user,
                                                  @PathVariable Long last_artwork_id,
-                                                 @RequestBody ArtWorkKeyword keyword) {
+                                                 @PathVariable String keyword) {
         if (keyword == null) {
             throw new IllegalStateException("검색어를 입력 해주세요.");
         }
         if (user == null) {
             return new ResponseEntity<>(new Success("작품 검색 완료",
-                    artworkMainService.findBySearchKeyWord(keyword.getKeyword(),last_artwork_id,null)),HttpStatus.OK);
+                    artworkMainService.findBySearchKeyWord(keyword,last_artwork_id,null)),HttpStatus.OK);
         }
         return new ResponseEntity<>(new Success("작품 검색 완료",
-                artworkMainService.findBySearchKeyWord(keyword.getKeyword(),last_artwork_id,user.getUser().getId())),HttpStatus.OK);
+                artworkMainService.findBySearchKeyWord(keyword,last_artwork_id,user.getUser().getId())),HttpStatus.OK);
     }
 
 }

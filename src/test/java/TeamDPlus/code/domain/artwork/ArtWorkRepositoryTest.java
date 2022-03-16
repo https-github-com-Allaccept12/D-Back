@@ -92,7 +92,7 @@ class ArtWorkRepositoryTest {
                 .category("test")
                 .account(saveAccount)
                 .build();
-        testArtWorks.updateArtWorkIsMaster();
+        testArtWorks.updateArtWorkIsMaster(true);
         ArtWorks saveArtWork = artWorkRepository.save(testArtWorks);
         em.flush();
         em.clear();
@@ -359,7 +359,7 @@ class ArtWorkRepositoryTest {
                 .category("test")
                 .account(account)
                 .build();
-        testArtWorks.updateArtWorkIsMaster();
+        testArtWorks.updateArtWorkIsMaster(true);
         ArtWorks saveArtWork = artWorkRepository.save(testArtWorks);
         em.flush();
         em.clear();
