@@ -45,6 +45,12 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
         return new PageImpl<>(fetch, pageable, count);
     }
 
+    // 디모 QnA 상세 페이지
+    @Override
+    public PostResponseDto.PostAnswerDetailPage findDetailPostAnswer(Long postId) {
+        return null;
+    }
+
     // 글 상세 페이지
     @Override
     public PostResponseDto.PostDetailPage findDetailPost(Long postId){
@@ -78,6 +84,28 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
         return null;
     }
 
+    // 상세페이지 서브 정보
+    @Override
+    public PostResponseDto.PostSubDetail findByPostSubDetail(Long accountId, Long postId) {
+        return queryFactory
+                .select(Projections.constructor(PostResponseDto.PostSubDetail.class,
+                        post.id,
+                        post.title,
+                        post.content,
+                        post.view,
+                        post.category,
+                        post.created,
+                        post.modified,
+                        account.id,
+                        account.profileImg,
+                        account.nickname
+                ))
+                .from(post)
+                .join(account).on(account.id.eq(post.account.id))
+                .where(post.id.eq(postId))
+                .fetchOne();
+    }
+
     @Override
     public Page<PostResponseDto.PostPageMain> findPostBySearchKeyWord(String keyword, Long lastPostId, Pageable pageable) {
         List<PostResponseDto.PostPageMain> result = queryFactory
@@ -98,7 +126,8 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                 .where(isLastPostId(lastPostId),
                         post.title.contains(keyword)
                                 .or(post.content.contains(keyword))
-                                .or(post.account.nickname.contains(keyword)))
+                                .or(post.account.nickname.contains(keyword))
+                                .or(post.content.contains(keyword)))
                 .fetch();
         return new PageImpl<>(result,pageable,result.size());
     }

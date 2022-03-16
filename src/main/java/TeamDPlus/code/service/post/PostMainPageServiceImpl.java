@@ -2,10 +2,12 @@ package TeamDPlus.code.service.post;
 
 import TeamDPlus.code.advice.ApiRequestException;
 import TeamDPlus.code.domain.account.Account;
+import TeamDPlus.code.domain.account.follow.FollowRepository;
 import TeamDPlus.code.domain.artwork.ArtWorks;
 import TeamDPlus.code.domain.artwork.image.ArtWorkImage;
 import TeamDPlus.code.domain.post.Post;
 import TeamDPlus.code.domain.post.PostRepository;
+import TeamDPlus.code.domain.post.answer.PostAnswerRepository;
 import TeamDPlus.code.domain.post.bookmark.PostBookMarkRepository;
 import TeamDPlus.code.domain.post.comment.PostCommentRepository;
 import TeamDPlus.code.domain.post.image.PostImage;
@@ -36,6 +38,8 @@ public class PostMainPageServiceImpl implements PostMainPageService{
     private final PostImageRepository postImageRepository;
     private final PostBookMarkRepository postBookMarkRepository;
     private final PostTagRepository postTagRepository;
+    private final PostAnswerRepository postAnswerRepository;
+    private final FollowRepository followRepository;
 
     // 전체 페이지
     @Transactional(readOnly = true)
@@ -106,4 +110,36 @@ public class PostMainPageServiceImpl implements PostMainPageService{
 
     // 로그인한 사용자의 좋아요 표시
 
+
+
+
+    // 디모 QnA 상세페이지
+    @Transactional(readOnly = true)
+    public PostResponseDto.PostAnswerDetailPage detailAnswer(Long accountId, Long postId) {
+        // 작품 게시글 존재여부
+        Post post = postValidation(accountId, postId);
+        // 조회수 + 1
+        post.addViewCount();
+        // QnA 좋아요 개수와 QnA 기본정보 가져오기
+        PostResponseDto.PostSubDetail postSubDetail = postRepository.findByPostSubDetail(accountId, postId);
+        // 작품 이미지들 가져오기
+        List<PostImage> imgList = postImageRepository.findByPostId(postId);
+        // 질문 답변 가져오기
+        List<PostResponseDto.PostAnswer> postAnswerList = postAnswerRepository.findPostAnswerByPostId(postId);
+        // 태그 리스트 가져오기
+        List<PostTag> postTagList = postTagRepository.findByPostId(postId);
+        // 좋아요 수
+        Long likeCount = postLikesRepository.countByPostId(postId);
+        // 북마크 수
+        Long bookMarkCount = postBookMarkRepository.countByPostId(postId);
+        // 답변 수
+        Long answerCount = postAnswerRepository.countByPostId(postId);
+        // 지금 상세페이지를 보고있는 사람이 좋아요를 했는지
+        boolean isLike = postLikesRepository.existByAccountIdAndPostId(accountId, postId);
+        // 지금 상세페이지를 보고있는 사람이 북마크를 했는지
+        boolean isBookmark = postBookMarkRepository.existByAccountIdAndPostId(accountId, postId);
+        // 지금 상세페이지를 보고있는 사람이 팔로우를 했는지
+        boolean isFollow = followRepository.existsByFollowerIdAndAndFollowingId(accountId, postSubDetail.getAccount_id());
+        return PostResponseDto.PostAnswerDetailPage.from(imgList, postAnswerList, postTagList, postSubDetail, isLike, isBookmark, isFollow, likeCount, bookMarkCount, answerCount);
+    }
 }

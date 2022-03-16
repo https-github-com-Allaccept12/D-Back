@@ -16,4 +16,7 @@ public interface PostRepositoryCustom {
 
     Page<PostResponseDto.PostPageMain> findPostBySearchKeyWord(String keyword, Long lastPostId, Pageable pageable);
 
+    PostResponseDto.PostAnswerDetailPage findDetailPostAnswer(Long postId);
+
+    PostResponseDto.PostSubDetail findByPostSubDetail(Long accountId, Long postId);
 }
