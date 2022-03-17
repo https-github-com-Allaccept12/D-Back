@@ -6,6 +6,11 @@ on:
       - main
   workflow_dispatch:
 
+env: # 새로 추가한 부분
+  S3_BUCKET_NAME: dplus-jar
+  PROJECT_NAME: TeamDplus-code
+
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -48,7 +53,7 @@ jobs:
           utcOffset: "+09:00"
 
       - name: Show Current Time
-        run: echo "CurrentTime=${{steps.current-time.outputs.formattedTime}}" # (2)
+        run: echo "CurrentTime=${{steps.current-time.outputs.formattedTime}}"
         shell: bash
 
       - name: Make zip file
