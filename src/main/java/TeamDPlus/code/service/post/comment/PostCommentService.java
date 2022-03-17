@@ -31,10 +31,10 @@ public class PostCommentService {
         return postComment.getId();
     }
 
-    public void deleteComment(Long accountId, Long commentId) {
-        PostComment postComment = commentValidation(accountId, commentId);
-        postCommentLikesRepository.deleteAllByPostCommentId(commentId);
-        postCommentRepository.deleteById(commentId);
+    public void deleteComment(Long accountId, Long postCommentId) {
+        PostComment postComment = commentValidation(accountId, postCommentId);
+        postCommentLikesRepository.deleteAllByPostCommentId(postCommentId);
+        postCommentRepository.deleteById(postCommentId);
     }
 
     // 코멘트 수정삭제 권한 확인

@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import static TeamDPlus.code.domain.post.comment.like.QPostCommentLikes.postCommentLikes;
 
 @RequiredArgsConstructor
-public class PostCommentLikesRespositoryImpl implements PostCommentLikesRespositoryCustom{
+public class PostCommentLikesRepositoryImpl implements PostCommentLikesRepositoryCustom {
 
     private final JPAQueryFactory jpaQueryFactory;
 

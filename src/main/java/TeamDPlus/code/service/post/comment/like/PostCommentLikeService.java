@@ -29,6 +29,6 @@ public class PostCommentLikeService {
     }
 
     public void unLike(Account account, Long postCommentId) {
-        postCommentLikesRepository.deletePostCommentLikesByPostCommentId(postCommentId,account.getId());
+        postCommentLikesRepository.deleteByPostCommentIdAndAccountId(postCommentId,account.getId());
     }
 }

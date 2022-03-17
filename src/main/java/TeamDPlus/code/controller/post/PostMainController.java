@@ -54,7 +54,7 @@ public class PostMainController {
     }
 
     // 게시물 삭제
-    @PatchMapping("/{post_id}")
+    @DeleteMapping("/{post_id}")
     public ResponseEntity<Success> deletePost(@AuthenticationPrincipal UserDetailsImpl user,
                                               @PathVariable Long post_id) {
         postMainPageService.deletePost(user.getUser().getId(), post_id);
