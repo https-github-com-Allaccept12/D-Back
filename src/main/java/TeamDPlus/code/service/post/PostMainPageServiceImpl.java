@@ -179,7 +179,7 @@ public class PostMainPageServiceImpl implements PostMainPageService{
         // 조회수 + 1
         post.addViewCount();
         // QnA 좋아요 개수와 QnA 기본정보 가져오기
-        PostResponseDto.PostAnswerSubDetail postAnswerSubDetail = postRepository.findByPostAnswerSubDetail(accountId, postId);
+        PostResponseDto.PostAnswerSubDetail postAnswerSubDetail = postRepository.findByPostAnswerSubDetail(postId);
         // 작품 이미지들 가져오기
         List<PostImage> imgList = postImageRepository.findByPostId(postId);
         // 질문 답변 가져오기

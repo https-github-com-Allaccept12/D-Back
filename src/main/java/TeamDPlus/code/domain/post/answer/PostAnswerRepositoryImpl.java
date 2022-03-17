@@ -9,6 +9,7 @@ import java.util.List;
 
 import static TeamDPlus.code.domain.post.QPost.post;
 import static TeamDPlus.code.domain.post.answer.QPostAnswer.postAnswer;
+import static TeamDPlus.code.domain.post.like.QPostAnswerLikes.postAnswerLikes;
 
 @RequiredArgsConstructor
 public class PostAnswerRepositoryImpl implements PostAnswerRepositoryCustom {
@@ -25,10 +26,12 @@ public class PostAnswerRepositoryImpl implements PostAnswerRepositoryCustom {
                         postAnswer.id,
                         postAnswer.content,
                         postAnswer.modified,
-                        postAnswer.isSelected
+                        postAnswer.isSelected,
+                        postAnswerLikes.count()
                 ))
                 .from(postAnswer)
                 .join(post).on(post.id.eq(postId))
+                .leftJoin(postAnswerLikes).on(postAnswerLikes.postAnswer.eq(postAnswer))
                 .fetch();
     }
 

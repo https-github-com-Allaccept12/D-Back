@@ -109,7 +109,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
 
     // 질문 상세페이지 정보
     @Override
-    public PostResponseDto.PostAnswerSubDetail findByPostAnswerSubDetail(Long accountId, Long postId) {
+    public PostResponseDto.PostAnswerSubDetail findByPostAnswerSubDetail(Long postId) {
         return queryFactory
                 .select(Projections.constructor(PostResponseDto.PostAnswerSubDetail.class,
                         post.id,
