@@ -125,8 +125,6 @@ public class PostResponseDto {
         private String title;
         private String content;
         private Long view_count;
-        private Long answer_count;
-        private Long like_count;
         private String category;
         private Timestamp create_time;
         private Timestamp modify_time;
@@ -134,7 +132,7 @@ public class PostResponseDto {
         @Builder
         public PostSubDetail(Long post_id, Long account_id, Long account_nickname,
                              String account_profile_img, String title,
-                             String content, Long view_count, Long like_count, String category,
+                             String content, Long view_count, String category,
                              Timestamp create_time, Timestamp modify_time) {
             this.post_id = post_id;
             this.account_id = account_id;
@@ -143,13 +141,9 @@ public class PostResponseDto {
             this.title = title;
             this.content = content;
             this.view_count = view_count;
-            this.like_count = like_count;
             this.category = category;
             this.create_time = create_time;
             this.modify_time = modify_time;
-        }
-        public void setComment_count(Long answer_count) {
-            this.answer_count = answer_count;
         }
     }
 
@@ -221,38 +215,32 @@ public class PostResponseDto {
         private Boolean is_bookmark;
         private boolean is_follow;
         private Long bookmark_count;
-        private PostSubDetail postSubDetail;
+        private PostAnswerSubDetail postAnswerSubDetail;
         private List<CommonDto.ImgUrlDto> img;
         private List<CommonDto.PostTagDto> hash_tag;
         private List<PostResponseDto.PostAnswer> answers;
 
         @Builder
-        public PostAnswerDetailPage(boolean is_like, boolean is_bookmark, boolean is_follow, PostSubDetail postSubDetail,
+        public PostAnswerDetailPage(boolean is_like, boolean is_bookmark, boolean is_follow, PostAnswerSubDetail postAnswerSubDetail,
                               List<CommonDto.ImgUrlDto> img, List<CommonDto.PostTagDto> hash_tag,
                               List<PostAnswer> answers, Long bookmark_count) {
             this.is_like = is_like;
             this.is_bookmark = is_bookmark;
             this.is_follow = is_follow;
-            this.postSubDetail = postSubDetail;
+            this.postAnswerSubDetail = postAnswerSubDetail;
             this.img = img;
             this.hash_tag = hash_tag;
             this.answers = answers;
             this.bookmark_count = bookmark_count;
         }
 
-//        public void setCountList(Long bookmark_count, Long like_count, Long answer_count){
-//            this.bookmark_count = bookmark_count;
-//            this.like_count = like_count;
-//            this.answer_count = answer_count;
-//        }
-
         public static PostAnswerDetailPage from(final List<PostImage> postImageList, final List<PostAnswer> answerList,
-                                          final List<PostTag> postTagsList, final PostSubDetail postSubDetail,
+                                          final List<PostTag> postTagsList, final PostAnswerSubDetail postAnswerSubDetail,
                                           final boolean is_like, final boolean is_bookmark, final boolean is_follow,
                                           final Long bookmark_count
         ){
             return PostAnswerDetailPage.builder()
-                    .postSubDetail(postSubDetail)
+                    .postAnswerSubDetail(postAnswerSubDetail)
                     .img(postImageList.stream()
                             .map(i -> new CommonDto.ImgUrlDto(i.getPostImg())).collect(Collectors.toList()))
                     .answers(answerList)
@@ -265,6 +253,46 @@ public class PostResponseDto {
                     .build();
         }
 
+    }
+
+    @Getter
+    @NoArgsConstructor
+    public static class PostAnswerSubDetail {
+        private Long post_id;
+        private Long account_id;
+        private Long account_nickname;
+        private String account_profile_img;
+        private String title;
+        private String content;
+        private Long view_count;
+        private Long answer_count;
+        private Long like_count;
+        private String category;
+        private Timestamp create_time;
+        private Timestamp modify_time;
+        private boolean isSelected;
+
+        @Builder
+        public PostAnswerSubDetail(Long post_id, Long account_id, Long account_nickname,
+                             String account_profile_img, String title,
+                             String content, Long view_count, Long like_count, String category,
+                             Timestamp create_time, Timestamp modify_time, boolean isSelected) {
+            this.post_id = post_id;
+            this.account_id = account_id;
+            this.account_nickname = account_nickname;
+            this.account_profile_img = account_profile_img;
+            this.title = title;
+            this.content = content;
+            this.view_count = view_count;
+            this.like_count = like_count;
+            this.category = category;
+            this.create_time = create_time;
+            this.modify_time = modify_time;
+            this.isSelected = isSelected;
+        }
+        public void setComment_count(Long answer_count) {
+            this.answer_count = answer_count;
+        }
     }
 
     @Getter

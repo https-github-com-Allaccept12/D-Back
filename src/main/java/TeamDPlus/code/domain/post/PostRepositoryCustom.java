@@ -26,4 +26,5 @@ public interface PostRepositoryCustom {
 
     PostResponseDto.PostAnswerDetailPage findDetailPostAnswer(Long postId);
 
+    PostResponseDto.PostAnswerSubDetail findByPostAnswerSubDetail(Long accountId, Long postId);
 }

@@ -97,6 +97,29 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                         post.category,
                         post.created,
                         post.modified,
+                        account.id,
+                        account.profileImg,
+                        account.nickname
+                ))
+                .from(post)
+                .join(account).on(account.id.eq(post.account.id))
+                .where(post.id.eq(postId))
+                .fetchOne();
+    }
+
+    // 질문 상세페이지 정보
+    @Override
+    public PostResponseDto.PostAnswerSubDetail findByPostAnswerSubDetail(Long accountId, Long postId) {
+        return queryFactory
+                .select(Projections.constructor(PostResponseDto.PostAnswerSubDetail.class,
+                        post.id,
+                        post.title,
+                        post.content,
+                        post.view,
+                        post.category,
+                        post.created,
+                        post.modified,
+                        post.isSelected,
                         postLikes.count(),
                         account.id,
                         account.profileImg,

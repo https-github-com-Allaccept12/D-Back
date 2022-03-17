@@ -40,11 +40,9 @@ public class KakaoAccountService {
         // 2. 토큰으로 카카오 API 호출
         KakaoUserInfoDto kakaoUserInfo = getKakaoUserInfo(accessToken);
 
-        // 3. 필요시에 회원가입
+        // 3. 필요시에 회원가입, JWT 토큰 발행
         return registerKakaoUserIfNeeded(kakaoUserInfo);
 
-        // 4. 강제 로그인 처리
-//        return forceLogin(kakaoUser);
     }
 
     private String getAccessToken(String code) throws JsonProcessingException {
@@ -129,7 +127,6 @@ public class KakaoAccountService {
             kakaoUser = Account.builder().nickname(nickname).profileImg(profileImg).email(email).rank(saveRank).specialty(specialty).build();
             accountRepository.save(kakaoUser);
         }
-//        return kakaoUser;
 
         String accessToken = jwtTokenProvider.createToken(Long.toString(kakaoUser.getId()), kakaoUser.getEmail());
         String refreshToken = jwtTokenProvider.createRefreshToken(Long.toString(kakaoUser.getId()));
@@ -142,17 +139,5 @@ public class KakaoAccountService {
                 .isSignUp(isSignUp)
                 .build();
     }
-
-//    private LoginResponseDto forceLogin(Account kakaoUser) {
-//        String accessToken = jwtTokenProvider.createToken(Long.toString(kakaoUser.getId()), kakaoUser.getEmail());
-//        String refreshToken = jwtTokenProvider.createRefreshToken(Long.toString(kakaoUser.getId()));
-//        kakaoUser.refreshToken(refreshToken);
-//        return LoginResponseDto.builder()
-//                .account_id(kakaoUser.getId())
-//                .profile_img(kakaoUser.getProfileImg())
-//                .access_token(accessToken)
-//                .refresh_token(refreshToken)
-//                .build();
-//    }
 
 }

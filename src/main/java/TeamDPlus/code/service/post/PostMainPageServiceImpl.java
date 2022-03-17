@@ -179,7 +179,7 @@ public class PostMainPageServiceImpl implements PostMainPageService{
         // 조회수 + 1
         post.addViewCount();
         // QnA 좋아요 개수와 QnA 기본정보 가져오기
-        PostResponseDto.PostSubDetail postSubDetail = postRepository.findByPostSubDetail(accountId, postId);
+        PostResponseDto.PostAnswerSubDetail postAnswerSubDetail = postRepository.findByPostAnswerSubDetail(accountId, postId);
         // 작품 이미지들 가져오기
         List<PostImage> imgList = postImageRepository.findByPostId(postId);
         // 질문 답변 가져오기
@@ -199,12 +199,12 @@ public class PostMainPageServiceImpl implements PostMainPageService{
             // 지금 상세페이지를 보고있는 사람이 북마크를 했는지
             isBookmark = postBookMarkRepository.existByAccountIdAndPostId(accountId, postId);
             // 지금 상세페이지를 보고있는 사람이 팔로우를 했는지
-            isFollow = followRepository.existsByFollowerIdAndFollowingId(accountId, postSubDetail.getAccount_id());
+            isFollow = followRepository.existsByFollowerIdAndFollowingId(accountId, postAnswerSubDetail.getAccount_id());
         }
 
         //상세페이지의 답글 개수
-        postSubDetail.setComment_count((long) postAnswerList.size());
-        return PostResponseDto.PostAnswerDetailPage.from(imgList, postAnswerList, postTagList, postSubDetail, isLike, isBookmark, isFollow, bookMarkCount);
+        postAnswerSubDetail.setComment_count((long) postAnswerList.size());
+        return PostResponseDto.PostAnswerDetailPage.from(imgList, postAnswerList, postTagList, postAnswerSubDetail, isLike, isBookmark, isFollow, bookMarkCount);
     }
 
     // 디모 QnA 유사한질문

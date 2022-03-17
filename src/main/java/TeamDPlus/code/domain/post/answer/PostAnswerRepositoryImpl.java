@@ -17,7 +17,6 @@ public class PostAnswerRepositoryImpl implements PostAnswerRepositoryCustom {
 
     @Override
     public List<PostResponseDto.PostAnswer> findPostAnswerByPostId(Long postId) {
-//        return null;
         return jpaQueryFactory
                 .select(Projections.constructor(PostResponseDto.PostAnswer.class,
                         postAnswer.account.id,
@@ -25,7 +24,8 @@ public class PostAnswerRepositoryImpl implements PostAnswerRepositoryCustom {
                         postAnswer.account.profileImg,
                         postAnswer.id,
                         postAnswer.content,
-                        postAnswer.modified
+                        postAnswer.modified,
+                        postAnswer.isSelected
                 ))
                 .from(postAnswer)
                 .join(post).on(post.id.eq(postId))
