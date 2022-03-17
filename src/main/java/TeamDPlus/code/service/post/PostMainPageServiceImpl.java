@@ -50,7 +50,7 @@ public class PostMainPageServiceImpl implements PostMainPageService{
     // 메인 페이지 (최신순)
     @Transactional(readOnly = true)
     public PostMainResponseDto showPostMain(Long accountId, Long lastPostId, PostBoard board){
-        
+
         // 메인 페이지 전체 피드
         Pageable pageable = PageRequest.of(0,12);
         Page<PostResponseDto.PostPageMain> postList = postRepository.findAllPostOrderByCreatedDesc(lastPostId, pageable);
