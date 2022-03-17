@@ -21,6 +21,7 @@ import TeamDPlus.code.domain.post.tag.PostTagRepository;
 import TeamDPlus.code.dto.common.CommonDto;
 import TeamDPlus.code.dto.request.ArtWorkRequestDto;
 import TeamDPlus.code.dto.request.PostRequestDto;
+import TeamDPlus.code.dto.response.PostMainResponseDto;
 import TeamDPlus.code.dto.response.PostResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -46,13 +47,24 @@ public class PostMainPageServiceImpl implements PostMainPageService{
     private final PostCommentLikesRepository postCommentLikesRepository;
 
 
-    // 메인 페이지 (최신순) => 최신순으로 디폴트로 전달하고, 좋아요는 프론트에서 처리 디플픽 + 메인페이지 Dto 한번에 담아서 날리기
+    // 메인 페이지 (최신순)
     @Transactional(readOnly = true)
-    public Page<PostResponseDto.PostPageMain> showPostMain(Long accountId, Long lastPostId, PostBoard board) {
+    public PostMainResponseDto showPostMain(Long accountId, Long lastPostId, PostBoard board){
+        
+        // 메인 페이지 전체 피드
         Pageable pageable = PageRequest.of(0,12);
         Page<PostResponseDto.PostPageMain> postList = postRepository.findAllPostOrderByCreatedDesc(lastPostId, pageable);
-        setCountList(accountId, postList);
-        return postList;
+        setCountList(postList);
+
+        // 메인페이지 추천피드
+        List<PostResponseDto.PostPageMain> postRecommendation = postRepository.findPostByMostViewAndMostLike();
+        postList.forEach((post) -> {
+            Long bookmark_count = postBookMarkRepository.countByPostId(post.getPost_id());
+            Long comment_count = postCommentRepository.countByPostId(post.getPost_id());
+            Long like_count = postLikesRepository.countByPostId(post.getPost_id());
+            post.setCountList(bookmark_count, comment_count, like_count);
+        });
+        return PostMainResponseDto.builder().postMainPage(postList).postRecommendationFeed(postRecommendation).build();
     }
 
 //    // 메인 페이지 (좋아요 순)
@@ -63,18 +75,6 @@ public class PostMainPageServiceImpl implements PostMainPageService{
 //        setCountList(accountId, postList);
 //        return postList;
 //    }
-
-    // 디플픽
-    @Transactional(readOnly = true)
-    public List<PostResponseDto.PostPageMain> showRecommendation(Long accountId, Long postId) {
-        List<PostResponseDto.PostPageMain> postList = postRepository.findPostByMostViewAndMostLike();
-        postList.forEach((post) -> {
-                    Long bookmark_count = postBookMarkRepository.countByPostId(post.getPost_id());
-                    Long comment_count = postCommentRepository.countByPostId(post.getPost_id());
-                    Long like_count = postLikesRepository.countByPostId(post.getPost_id());
-                });
-        return postList;
-    }
 
     // 상세 게시글 (디플 - 꿀팁)
     @Transactional(readOnly = true)
@@ -133,7 +133,7 @@ public class PostMainPageServiceImpl implements PostMainPageService{
         return postRepository.findPostBySearchKeyWord(keyword,lastArtWorkId,pageable);
     }
 
-    private void setCountList(Long accountId, Page<PostResponseDto.PostPageMain> postList){
+    private void setCountList(Page<PostResponseDto.PostPageMain> postList){
         postList.forEach((post) -> {
             Long bookmark_count = postBookMarkRepository.countByPostId(post.getPost_id());
             Long comment_count = postCommentRepository.countByPostId(post.getPost_id());

@@ -4,6 +4,7 @@ import TeamDPlus.code.domain.account.Account;
 import TeamDPlus.code.domain.post.Post;
 import TeamDPlus.code.domain.post.PostBoard;
 import TeamDPlus.code.dto.request.PostRequestDto;
+import TeamDPlus.code.dto.response.PostMainResponseDto;
 import TeamDPlus.code.dto.response.PostResponseDto;
 import org.springframework.data.domain.Page;
 
@@ -11,7 +12,7 @@ import java.util.List;
 
 public interface PostMainPageService {
     // 전체 게시물 조회 (최신순)
-    Page<PostResponseDto.PostPageMain> showPostMain(Long accountId, Long lastPostId, PostBoard board);
+    PostMainResponseDto showPostMain(Long accountId, Long lastPostId, PostBoard board);
 
     // 전체 게시물 조회 (좋아요순)
 //    Page<PostResponseDto.PostPageMain> showPostMainByLikes(Long accountId, Long postId);
@@ -30,9 +31,6 @@ public interface PostMainPageService {
 
     // 게시글 삭제
     void deletePost(Long accountId, Long postId);
-
-    // 게시글 추천 피드
-    List<PostResponseDto.PostPageMain> showRecommendation(Long account, Long postId);
 
     // 코멘트 생성
     Long createPostComment(Account account, Post post, PostRequestDto.PostComment dto);
