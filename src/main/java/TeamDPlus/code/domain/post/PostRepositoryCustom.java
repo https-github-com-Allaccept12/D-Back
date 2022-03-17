@@ -15,9 +15,8 @@ public interface PostRepositoryCustom {
     // 포스트 메인페이지 출력 (좋아요)
     Page<PostResponseDto.PostPageMain> findAllPostOrderByPostLikes(Long lastPostId, Pageable pageable);
 
-
     // 상세페이지 서브
-    PostResponseDto.PostSubDetail findByPostSubDetail (Long accountId, Long postId);
+    PostResponseDto.PostSubDetail findByPostSubDetail (Long postId);
 
     // 조회수 + 라이크 찾기
     List<PostResponseDto.PostPageMain> findPostByMostViewAndMostLike();

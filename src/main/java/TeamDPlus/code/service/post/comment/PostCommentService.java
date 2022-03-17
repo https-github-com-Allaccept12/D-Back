@@ -27,7 +27,7 @@ public class PostCommentService {
         PostComment postComment = postCommentRepository.findById(commentId)
                 .orElseThrow(() -> new ApiRequestException("존재하지 않는 게시글이거나, 댓글입니다."));
 
-        postComment.updateComment(dto.getContent());
+        postComment.updateComment(dto);
     }
 
     public void deleteComment(Long commentId) {

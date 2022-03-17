@@ -6,10 +6,13 @@ import TeamDPlus.code.domain.account.follow.FollowRepository;
 import TeamDPlus.code.domain.artwork.ArtWorks;
 import TeamDPlus.code.domain.artwork.image.ArtWorkImage;
 import TeamDPlus.code.domain.post.Post;
+import TeamDPlus.code.domain.post.PostBoard;
 import TeamDPlus.code.domain.post.PostRepository;
 import TeamDPlus.code.domain.post.bookmark.PostBookMarkRepository;
 import TeamDPlus.code.domain.post.comment.PostComment;
 import TeamDPlus.code.domain.post.comment.PostCommentRepository;
+import TeamDPlus.code.domain.post.comment.like.PostCommentLikes;
+import TeamDPlus.code.domain.post.comment.like.PostCommentLikesRepository;
 import TeamDPlus.code.domain.post.image.PostImage;
 import TeamDPlus.code.domain.post.image.PostImageRepository;
 import TeamDPlus.code.domain.post.like.PostLikesRepository;
@@ -40,11 +43,12 @@ public class PostMainPageServiceImpl implements PostMainPageService{
     private final PostBookMarkRepository postBookMarkRepository;
     private final PostTagRepository postTagRepository;
     private final FollowRepository followRepository;
+    private final PostCommentLikesRepository postCommentLikesRepository;
 
 
     // 메인 페이지 (최신순) => 최신순으로 디폴트로 전달하고, 좋아요는 프론트에서 처리 디플픽 + 메인페이지 Dto 한번에 담아서 날리기
     @Transactional(readOnly = true)
-    public Page<PostResponseDto.PostPageMain> showPostMain(Long accountId, Long lastPostId) {
+    public Page<PostResponseDto.PostPageMain> showPostMain(Long accountId, Long lastPostId, PostBoard board) {
         Pageable pageable = PageRequest.of(0,12);
         Page<PostResponseDto.PostPageMain> postList = postRepository.findAllPostOrderByCreatedDesc(lastPostId, pageable);
         setCountList(accountId, postList);
@@ -75,9 +79,9 @@ public class PostMainPageServiceImpl implements PostMainPageService{
     // 상세 게시글 (디플 - 꿀팁)
     @Transactional(readOnly = true)
     public PostResponseDto.PostDetailPage showPostDetail(Long accountId, Long postId){
-        Post post = postValidation(accountId, postId);
+        Post post = postRepository.findById(postId).orElseThrow(() -> new ApiRequestException("해당 게시글은 존재하지 않습니다."));
         post.addViewCount();
-        PostResponseDto.PostSubDetail postSubDetail = postRepository.findByPostSubDetail(accountId, postId);
+        PostResponseDto.PostSubDetail postSubDetail = postRepository.findByPostSubDetail(postId);
         List<PostImage> postImageList = postImageRepository.findByPostId(postId);
         List<PostResponseDto.PostComment> postComments = postCommentRepository.findPostCommentByPostId(postId);
         List<PostTag> postTags = postTagRepository.findPostTagsByPostId(postId);
@@ -166,5 +170,40 @@ public class PostMainPageServiceImpl implements PostMainPageService{
             throw new ApiRequestException("권한이 없습니다.");
         }
         return post;
+    }
+
+    // 댓글 수정, 삭제 권한 확인
+    private PostComment commentValidation(Long accountId, Long postCommentId){
+        PostComment postComment = postCommentRepository.findById(postCommentId).orElseThrow(() -> new ApiRequestException("해당 댓글은 존재하지 않습니다."));
+        if(!postComment.getAccount().getId().equals(accountId)){
+            throw new ApiRequestException("권한이 없습니다.");
+        }
+        return postComment;
+    }
+
+    // 코멘트 생성
+    @Transactional
+    public Long createPostComment(Account account, Post post, PostRequestDto.PostComment dto) {
+        PostComment postComment = PostComment.of(account, post, dto);
+        PostComment savedComment = postCommentRepository.save(postComment);
+        return savedComment.getId();
+    }
+
+    // 코멘트 삭제
+    @Transactional
+    public void deletePostComment(Long accountId, Long postCommentId) {
+        PostComment postComment = commentValidation(accountId, postCommentId);
+        // 코멘트에 달린 좋아요 삭제
+        postCommentLikesRepository.deleteAllByPostCommentId(postCommentId);
+        // 코멘트 삭제
+        postCommentRepository.deleteById(postComment.getId());
+    }
+
+    // 코멘트 수정
+    @Transactional
+    public Long updatePostComment(Long accountId, Long postCommentId, PostRequestDto.PostComment dto) {
+        PostComment postComment = commentValidation(accountId, postCommentId);
+        postComment.updateComment(dto);
+        return postComment.getId();
     }
 }

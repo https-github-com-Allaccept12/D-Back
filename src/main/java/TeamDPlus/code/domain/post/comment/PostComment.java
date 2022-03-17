@@ -4,6 +4,7 @@ import TeamDPlus.code.domain.BaseEntity;
 import TeamDPlus.code.domain.account.Account;
 import TeamDPlus.code.domain.artwork.ArtWorks;
 import TeamDPlus.code.domain.post.Post;
+import TeamDPlus.code.dto.request.PostRequestDto;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -53,7 +54,15 @@ public class PostComment extends BaseEntity {
         this.post = post;
     }
 
-    public void updateComment(final String content) {
-        this.content = content;
+    public void updateComment(final PostRequestDto.PostComment dto) {
+        this.content = dto.getContent();
+    }
+
+    public static PostComment of(Account account, Post post, PostRequestDto.PostComment dto) {
+        return PostComment.builder()
+                .account(account)
+                .post(post)
+                .content(dto.getContent())
+                .build();
     }
 }

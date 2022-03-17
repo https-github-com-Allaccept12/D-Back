@@ -81,7 +81,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
 
     // 상세페이지 서브 정보
     @Override
-    public PostResponseDto.PostSubDetail findByPostSubDetail(Long accountId, Long postId) {
+    public PostResponseDto.PostSubDetail findByPostSubDetail(Long postId) {
         return queryFactory
                 .select(Projections.constructor(PostResponseDto.PostSubDetail.class,
                         Expressions.asNumber(postId).as("post_id"),
@@ -91,7 +91,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                         post.category,
                         post.created,
                         post.modified,
-                        Expressions.asNumber(accountId).as("account_id"),
+                        account.id,
                         account.profileImg,
                         account.nickname,
                         postBookMark.count(),
