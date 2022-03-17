@@ -31,6 +31,8 @@ public class PostCommentRepositoryImpl implements PostCommentRepositoryCustom{
                 .from(postComment)
                 .join(post).on(post.id.eq(postId))
                 .leftJoin(postCommentLikes).on(postComment.id.eq(postCommentLikes.postComment.id))
+                .groupBy(postComment.id) // groupBy로 묶어줘야 성능 올라감
+                .orderBy(postCommentLikes.count().desc())
                 .fetch();
     }
 }

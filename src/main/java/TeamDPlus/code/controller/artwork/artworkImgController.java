@@ -25,12 +25,13 @@ public class artworkImgController {
 
     @PostMapping("/artwork/image")
     public void testUpload(@RequestParam(value = "imageFile",required = false,defaultValue = "") List<MultipartFile> imageFile) {
+        // json 추가 (컨트롤러단)
         imageFile.forEach((img) -> {
             String s = test.uploadImage(img);
             ArtWorks build = ArtWorks.builder().scope(true).title("test").content("test1").category("testca").build();
-            ArtWorks save = artWorkRepository.save(build);
+            ArtWorks save = artWorkRepository.save(build); // save - entity return
             ArtWorkImage build1 = ArtWorkImage.builder().artWorks(save).artworkImg(s).build();
-            artWorkImageRepository.save(build1);
+            artWorkImageRepository.save(build1); // postImage에서 s3 등록
         });
 
 
@@ -39,7 +40,7 @@ public class artworkImgController {
 
     @DeleteMapping("/artwork/image")
     public void deleteImage(@RequestBody CommonDto.ImgUrlDto url) {
-        int separator = url.getImg_url().lastIndexOf("/") + 1;
+        int separator = url.getImg_url().lastIndexOf("/") + 1; //uuid 인덱스 번호 확인
         String substring = url.getImg_url().substring(separator);
         test.deleteImage(substring);
     }

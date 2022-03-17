@@ -31,6 +31,8 @@ public class FileServiceImpl implements FileService{
         amazonS3Client.deleteObject(new DeleteObjectRequest(amazonS3Component.getBucket(), fileName));
     }
 
+    // update 추가
+
     @Override
     public String getFileUrl(String fileName) {
         return amazonS3Client.getUrl(amazonS3Component.getBucket(), fileName).toString();
