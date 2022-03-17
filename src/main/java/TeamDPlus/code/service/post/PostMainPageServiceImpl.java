@@ -44,7 +44,6 @@ public class PostMainPageServiceImpl implements PostMainPageService{
     private final PostBookMarkRepository postBookMarkRepository;
     private final PostTagRepository postTagRepository;
     private final FollowRepository followRepository;
-    private final PostCommentLikesRepository postCommentLikesRepository;
 
 
     // 메인 페이지 (최신순)
@@ -172,38 +171,4 @@ public class PostMainPageServiceImpl implements PostMainPageService{
         return post;
     }
 
-    // 댓글 수정, 삭제 권한 확인
-    private PostComment commentValidation(Long accountId, Long postCommentId){
-        PostComment postComment = postCommentRepository.findById(postCommentId).orElseThrow(() -> new ApiRequestException("해당 댓글은 존재하지 않습니다."));
-        if(!postComment.getAccount().getId().equals(accountId)){
-            throw new ApiRequestException("권한이 없습니다.");
-        }
-        return postComment;
-    }
-
-    // 코멘트 생성
-    @Transactional
-    public Long createPostComment(Account account, Post post, PostRequestDto.PostComment dto) {
-        PostComment postComment = PostComment.of(account, post, dto);
-        PostComment savedComment = postCommentRepository.save(postComment);
-        return savedComment.getId();
-    }
-
-    // 코멘트 삭제
-    @Transactional
-    public void deletePostComment(Long accountId, Long postCommentId) {
-        PostComment postComment = commentValidation(accountId, postCommentId);
-        // 코멘트에 달린 좋아요 삭제
-        postCommentLikesRepository.deleteAllByPostCommentId(postCommentId);
-        // 코멘트 삭제
-        postCommentRepository.deleteById(postComment.getId());
-    }
-
-    // 코멘트 수정
-    @Transactional
-    public Long updatePostComment(Long accountId, Long postCommentId, PostRequestDto.PostComment dto) {
-        PostComment postComment = commentValidation(accountId, postCommentId);
-        postComment.updateComment(dto);
-        return postComment.getId();
-    }
 }

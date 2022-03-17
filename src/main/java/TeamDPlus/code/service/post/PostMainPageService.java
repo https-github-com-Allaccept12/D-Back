@@ -32,12 +32,4 @@ public interface PostMainPageService {
     // 게시글 삭제
     void deletePost(Long accountId, Long postId);
 
-    // 코멘트 생성
-    Long createPostComment(Account account, Post post, PostRequestDto.PostComment dto);
-
-    // 코멘트 삭제
-    void deletePostComment(Long accountId, Long postCommentId);
-
-    // 코멘트 수정
-    Long updatePostComment(Long accountId, Long postCommentId, PostRequestDto.PostComment dto);
 }
