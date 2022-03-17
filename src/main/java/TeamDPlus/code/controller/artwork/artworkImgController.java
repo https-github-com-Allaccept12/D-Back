@@ -32,13 +32,12 @@ public class artworkImgController {
             ArtWorkImage build1 = ArtWorkImage.builder().artWorks(save).artworkImg(s).build();
             artWorkImageRepository.save(build1);
         });
-
-
-
     }
+
 
     @DeleteMapping("/artwork/image")
     public void deleteImage(@RequestBody CommonDto.ImgUrlDto url) {
+
         int separator = url.getImg_url().lastIndexOf("/") + 1;
         String substring = url.getImg_url().substring(separator);
         test.deleteImage(substring);
