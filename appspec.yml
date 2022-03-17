@@ -2,7 +2,7 @@ version: 0.0
   os: linux
     files:
         - source: /
-          destination: /home/ec2-user/TeamDplus-code/ # 프로젝트 이름
+          destination: /home/ec2-user/ # 프로젝트 이름
           overwrite: yes
 permissions:
   - object: /
