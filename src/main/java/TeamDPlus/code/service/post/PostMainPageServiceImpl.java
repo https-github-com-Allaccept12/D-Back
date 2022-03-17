@@ -13,12 +13,15 @@ import TeamDPlus.code.domain.post.comment.PostComment;
 import TeamDPlus.code.domain.post.comment.PostCommentRepository;
 import TeamDPlus.code.domain.post.image.PostImage;
 import TeamDPlus.code.domain.post.image.PostImageRepository;
+import TeamDPlus.code.domain.post.like.PostAnswerLikesRepository;
 import TeamDPlus.code.domain.post.like.PostLikesRepository;
 import TeamDPlus.code.domain.post.tag.PostTag;
 import TeamDPlus.code.domain.post.tag.PostTagRepository;
 import TeamDPlus.code.dto.common.CommonDto;
 import TeamDPlus.code.dto.request.ArtWorkRequestDto;
 import TeamDPlus.code.dto.request.PostRequestDto;
+import TeamDPlus.code.dto.response.AccountResponseDto;
+import TeamDPlus.code.dto.response.ArtWorkResponseDto;
 import TeamDPlus.code.dto.response.PostResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -42,6 +45,7 @@ public class PostMainPageServiceImpl implements PostMainPageService{
     private final PostTagRepository postTagRepository;
     private final PostAnswerRepository postAnswerRepository;
     private final FollowRepository followRepository;
+    private final PostAnswerLikesRepository postAnswerLikesRepository;
 
 
     // 전체 페이지 (최신순)
@@ -200,16 +204,39 @@ public class PostMainPageServiceImpl implements PostMainPageService{
             isBookmark = postBookMarkRepository.existByAccountIdAndPostId(accountId, postId);
             // 지금 상세페이지를 보고있는 사람이 팔로우를 했는지
             isFollow = followRepository.existsByFollowerIdAndFollowingId(accountId, postAnswerSubDetail.getAccount_id());
+            // 지금 상세페이지를 보고있는 사람이 답글 좋아요를 했는지
+            setIsLike(accountId, postAnswerList);
+            // 지금 상세페이지를 보고있는 사람이 답글 팔로우를 했는지
+            isFollow(accountId, postAnswerList);
         }
 
         //상세페이지의 답글 개수
-        postAnswerSubDetail.setComment_count((long) postAnswerList.size());
+        postAnswerSubDetail.setAnswer_count((long) postAnswerList.size());
         return PostResponseDto.PostAnswerDetailPage.from(imgList, postAnswerList, postTagList, postAnswerSubDetail, isLike, isBookmark, isFollow, bookMarkCount);
     }
 
-    // 디모 QnA 유사한질문
+    private void isFollow(Long accountId, List<PostResponseDto.PostAnswer> postAnswerList) {
+        postAnswerList.forEach((postAnswer) -> {
+            postAnswer.setIsFollow(false);
+            boolean isFollow = followRepository.existsByFollowerIdAndFollowingId(accountId, postAnswer.getAccount_id());
+            if (isFollow)
+                postAnswer.setIsFollow(true);
+        });
+    }
+
+    private void setIsLike(Long accountId, List<PostResponseDto.PostAnswer> postAnswerList) {
+        postAnswerList.forEach((postAnswer) -> {
+            postAnswer.setLikeCountAndIsLike(false);
+            if(postAnswerLikesRepository.existByAccountIdAndPostAnswerId(accountId, postAnswer.getAnswer_id())) {
+                postAnswer.setLikeCountAndIsLike(true);
+            }
+        });
+    }
+
+    // 디모 QnA 유사한질문 조회
     @Transactional(readOnly = true)
-    public PostResponseDto relatedQuestion() {
+    public PostResponseDto.PostSimilarQuestion relatedQuestion(String category, Long accountId) {
+//        List<PostResponseDto.PostSimilarQuestionSub> postSubList = postRepository.findByCategory(category);
         return null;
     }
 }

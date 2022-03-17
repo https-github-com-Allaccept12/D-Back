@@ -34,10 +34,10 @@ public class PostComment extends BaseEntity {
     private Post post;
 
     @Column(name = "is_selected", columnDefinition = "TINYINT default 0")
-    private Boolean isSelected;
+    private boolean isSelected;
 
     @Builder
-    public PostComment(final String content,final Account account,final Post post, Boolean is_selected) {
+    public PostComment(final String content,final Account account,final Post post, boolean is_selected) {
         this.content = content;
         this.account = account;
         this.post = post;

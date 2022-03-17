@@ -36,10 +36,10 @@ public class PostAnswer extends BaseEntity {
     private Long view;
 
     @Column(columnDefinition = "TINYINT default 0")
-    private Boolean isSelected;
+    private boolean isSelected;
 
     @Builder
-    public PostAnswer(final Account account, final Post post, final String content, final Long view, final Boolean isSelected) {
+    public PostAnswer(final Account account, final Post post, final String content, final Long view, final boolean isSelected) {
         this.account = account;
         this.post = post;
         this.content = content;
