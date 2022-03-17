@@ -33,9 +33,6 @@ public class artworkImgController {
             ArtWorkImage build1 = ArtWorkImage.builder().artWorks(save).artworkImg(s).build();
             artWorkImageRepository.save(build1); // postImage에서 s3 등록
         });
-
-
-
     }
 
     @DeleteMapping("/artwork/image")

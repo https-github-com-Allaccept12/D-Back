@@ -46,6 +46,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .where(isLastPostId(lastPostId))
+                .groupBy(post.id)
                 .orderBy(post.created.desc())
                 .fetch();
 
@@ -53,31 +54,31 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
     }
 
     // 전체 페이지 (좋아요 순)
-    @Override
-    public Page<PostResponseDto.PostPageMain> findAllPostOrderByPostLikes(Long lastPostId, Pageable pageable) {
-        List<PostResponseDto.PostPageMain> fetch = queryFactory
-                .select(Projections.constructor(PostResponseDto.PostPageMain.class,
-                        post.id,
-                        account.id,
-                        account.nickname,
-                        account.profileImg,
-                        post.title,
-                        post.category,
-                        post.content,
-                        post.created,
-                        post.isSelected
-                ))
-                .from(post)
-                .join(account).on(account.id.eq(post.account.id))
-                .leftJoin(postLikes).on(postLikes.id.eq(postLikes.post.id))
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .where(isLastPostId(lastPostId))
-                .orderBy(postLikes.count().desc())
-                .fetch();
-
-        return new PageImpl<>(fetch, pageable, fetch.size());
-    }
+//    @Override
+//    public Page<PostResponseDto.PostPageMain> findAllPostOrderByPostLikes(Long lastPostId, Pageable pageable) {
+//        List<PostResponseDto.PostPageMain> fetch = queryFactory
+//                .select(Projections.constructor(PostResponseDto.PostPageMain.class,
+//                        post.id,
+//                        account.id,
+//                        account.nickname,
+//                        account.profileImg,
+//                        post.title,
+//                        post.category,
+//                        post.content,
+//                        post.created,
+//                        post.isSelected
+//                ))
+//                .from(post)
+//                .join(account).on(account.id.eq(post.account.id))
+//                .leftJoin(postLikes).on(postLikes.id.eq(postLikes.post.id))
+//                .offset(pageable.getOffset())
+//                .limit(pageable.getPageSize())
+//                .where(isLastPostId(lastPostId))
+//                .orderBy(postLikes.count().desc())
+//                .fetch();
+//
+//        return new PageImpl<>(fetch, pageable, fetch.size());
+//    }
 
     // 상세페이지 서브 정보
     @Override
