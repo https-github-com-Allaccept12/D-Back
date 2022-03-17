@@ -17,8 +17,14 @@ public class ExceptionController {
         return new ResponseEntity<>(notFoundException, HttpStatus.OK);
     }
 
+    @ExceptionHandler(value = {IllegalArgumentException.class})
+    public ResponseEntity<Fail> badRequestHandle(IllegalStateException ex) {
+        Fail notFoundException = new Fail(ex.getMessage());
+        return new ResponseEntity<>(notFoundException, HttpStatus.OK);
+    }
+
     @ExceptionHandler(value = {ApiRequestException.class})
-    public ResponseEntity<Fail> apiRequestHandle(ApiRequestException ex) {
+    public ResponseEntity<Fail> apiBadRequestHandle(ApiRequestException ex) {
         Fail apiException = new Fail(ex.getMessage());
         return new ResponseEntity<>(apiException, HttpStatus.OK);
     }

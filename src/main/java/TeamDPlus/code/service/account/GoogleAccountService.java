@@ -113,8 +113,10 @@ public class GoogleAccountService {
             // 회원가입
             String name = googleUserInfo.getName();
             String profileImg = googleUserInfo.getProfile_img();
+
             Ranks rank = Ranks.builder().rankScore(0L).build();
             Ranks saveRank = rankRepository.save(rank);
+
             Specialty specialty = new Specialty();
             googleUser = Account.builder().nickname(name).profileImg(profileImg).email(email).specialty(specialty).rank(saveRank).build();
             accountRepository.save(googleUser);

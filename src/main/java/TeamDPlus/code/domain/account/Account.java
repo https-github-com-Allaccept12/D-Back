@@ -14,6 +14,7 @@ import javax.persistence.*;
 
 @Entity
 @Getter
+@DynamicInsert
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @DynamicInsert
 public class Account extends BaseEntity {

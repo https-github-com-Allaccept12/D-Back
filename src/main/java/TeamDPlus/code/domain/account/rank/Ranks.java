@@ -11,6 +11,7 @@ import javax.persistence.*;
 
 @Entity
 @Getter
+@DynamicInsert
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @DynamicInsert
 public class Ranks {
@@ -19,10 +20,6 @@ public class Ranks {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "rank_id")
     private Long id;
-
-//    @Column(unique = true)
-//    @OneToOne(mappedBy = "rank")
-//    private Account accountId;
 
     @Column(columnDefinition = "BIGINT default 0")
     private Long rankScore;
@@ -34,11 +31,11 @@ public class Ranks {
     }
 
     public void upRankScore() {
-        this.rankScore += 1;
+        this.rankScore += 1L;
     }
 
     public void downRankScore() {
-        this.rankScore -= 1;
+        this.rankScore -= 1L;
     }
 
     public void initCount() {

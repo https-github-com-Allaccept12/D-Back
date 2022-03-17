@@ -1,4 +1,4 @@
-package TeamDPlus.code.controller;
+package TeamDPlus.code.controller.post;
 
 import TeamDPlus.code.dto.Success;
 import TeamDPlus.code.dto.request.PostRequestDto;
@@ -21,7 +21,7 @@ public class PostAnswerController {
     private final PostAnswerService postAnswerService;
 
     @PostMapping("/api/post")
-    public ResponseEntity<Success> createPost(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody PostRequestDto.PostCreateAndUpdate dto) {
+    public ResponseEntity<Success> createPost(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody PostRequestDto.PostCreate dto) {
         return new ResponseEntity<>(new Success<>(
                 "포스팅 성공", postMainPageService.createPost(userDetails.getUser(), dto)), HttpStatus.OK);
     }

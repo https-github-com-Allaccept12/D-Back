@@ -24,19 +24,20 @@ public interface AccountMyPageService {
 
     void updateAccountHistory(final HistoryUpdateList dto, final Long accountId);
 
-    void updateAccountCareerFeedList(ArtWorkRequestDto.ArtWorkPortFolioUpdate dto, final Account accountId);
+    void updateAccountCareerFeedList(ArtWorkRequestDto.ArtWorkPortFolioUpdate dto);
 
     void updateAccountIntro(final AccountRequestDto.UpdateAccountIntro dto, final Long accountId);
 
     void updateAccountSpecialty(final AccountRequestDto.UpdateSpecialty dto, final Long accountId);
 
-    void updateAccountCareerFeed(final Long artWorkId,final Account account);
-
-    void updateArtWorkScope(final Long artWorkId,final Account accountId);
+    void masterAccountCareerFeed(Long artWorkId,Account account);
+    void nonMasterAccountCareerFeed(Long artWorkId,Account account);
+    void hideArtWorkScope(Long artWorkId, Account account);
+    void nonHideArtWorkScope(Long artWorkId, Account account);
 
     List<ArtWorkResponseDto.ArtWorkFeed> showAccountArtWork(final Long lastArtWorkId,final Long visitAccountId,final Long accountId);
 
-    Page<ArtWorkResponseDto.ArtWorkBookMark> showAccountArtWorkBookMark(final Long lastArtWorkId,final Long accountId);
+    List<ArtWorkResponseDto.ArtWorkBookMark> showAccountArtWorkBookMark(final Long lastArtWorkId,final Long accountId);
 
 
 

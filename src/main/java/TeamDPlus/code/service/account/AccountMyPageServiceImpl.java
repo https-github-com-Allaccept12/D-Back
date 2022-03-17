@@ -85,25 +85,39 @@ public class AccountMyPageServiceImpl implements AccountMyPageService {
 
     //포트폴리오에서 올리기 한방에 다건
     @Transactional
-    public void updateAccountCareerFeedList(ArtWorkRequestDto.ArtWorkPortFolioUpdate dto, Account account) {
+    public void updateAccountCareerFeedList(ArtWorkRequestDto.ArtWorkPortFolioUpdate dto) {
         //유저가 원하는 작품들 Is_Master를 True로 벌크
         artWorkRepository.updateAllArtWorkIsMasterToTrue(dto.getArtwork_feed());
     }
 
-    //내 작품탭에서 내리기/올리기 단건
+    //내 작품탭에서 올리기 단건
     @Transactional
-    public void updateAccountCareerFeed(Long artWorkId,Account account) {
+    public void masterAccountCareerFeed(Long artWorkId,Account account) {
         ArtWorks artWorks = getArtWorks(artWorkId);
         createrValid(account, artWorks);
-        artWorks.updateArtWorkIsMaster();
+        artWorks.updateArtWorkIsMaster(true);
+    }
+    //내 작품탭에서 내리기
+    @Transactional
+    public void nonMasterAccountCareerFeed(Long artWorkId,Account account) {
+        ArtWorks artWorks = getArtWorks(artWorkId);
+        createrValid(account, artWorks);
+        artWorks.updateArtWorkIsMaster(false);
     }
 
-    //작품 숨김/보이기
+    //작품 보이기
     @Transactional
-    public void updateArtWorkScope(Long artWorkId, Account account) {
+    public void nonHideArtWorkScope(Long artWorkId, Account account) {
         ArtWorks artWorks = getArtWorks(artWorkId);
         createrValid(account,artWorks);
-        artWorks.updateArtWorkIsScope();
+        artWorks.updateArtWorkIsScope(true);
+    }
+    //작품 숨김
+    @Transactional
+    public void hideArtWorkScope(Long artWorkId, Account account) {
+        ArtWorks artWorks = getArtWorks(artWorkId);
+        createrValid(account,artWorks);
+        artWorks.updateArtWorkIsScope(false);
     }
 
     //마이페이지/유저작품
@@ -115,7 +129,7 @@ public class AccountMyPageServiceImpl implements AccountMyPageService {
 
     //마이페이지/북마크
     @Transactional(readOnly = true)
-    public Page<ArtWorkResponseDto.ArtWorkBookMark> showAccountArtWorkBookMark(Long lastArtWorkId,final Long accountId) {
+    public List<ArtWorkResponseDto.ArtWorkBookMark> showAccountArtWorkBookMark(Long lastArtWorkId,final Long accountId) {
         Pageable pageable = PageRequest.of(0,10);
         return artWorkRepository.findArtWorkBookMarkByAccountId(lastArtWorkId,pageable,accountId);
     }

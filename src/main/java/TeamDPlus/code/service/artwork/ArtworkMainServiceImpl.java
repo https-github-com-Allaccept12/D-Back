@@ -20,7 +20,6 @@ import TeamDPlus.code.service.file.FileProcessService;
 //import jdk.jfr.internal.tool.Main;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -70,7 +69,7 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
         return artWorkList;
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public ArtWorkResponseDto.ArtWorkDetail detailArtWork(Long accountId, Long artWorkId) {
         //작품 게시글 존재여부
         ArtWorks artWorks = artWorkRepository.findById(artWorkId)
@@ -85,8 +84,8 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
         List<ArtWorkResponseDto.ArtWorkComment> commentList = artWorkCommentRepository.findArtWorkCommentByArtWorksId(artWorksSub.getArtwork_id());
         //해당 유저의 다른 작품들 가져오기
         Pageable pageable = PageRequest.of(0, 5);
-        Page<ArtWorkResponseDto.ArtWorkSimilarWork> similarList = artWorkRepository.findSimilarArtWork(artWorks.getAccount().getId(),pageable);
-
+        List<ArtWorkResponseDto.ArtWorkSimilarWork> similarList = artWorkRepository
+                .findSimilarArtWork(artWorks.getAccount().getId(),artWorks.getId(),pageable);
         boolean isLike = false;
         boolean isBookmark = false;
         boolean isFollow = false;
@@ -114,7 +113,7 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
 
     @Transactional
     public Long updateArtwork(Account account, Long artworkId, ArtWorkRequestDto.ArtWorkCreateAndUpdate dto) {
-        ArtWorks findArtWork = artworkValidation(account.getId(), artworkId);
+        ArtWorks findArtWork = artWorkRepository.findById(artworkId).orElseThrow(() -> new ApiRequestException("게시글이 존재하지 않습니다."));
         artWorkImageRepository.deleteAllByArtWorksId(artworkId);
         //s3에서도 삭제
         setImgUrl(dto.getImg(), findArtWork);
@@ -126,6 +125,7 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
     @Transactional
     public void deleteArtwork(Long accountId, Long artworkId) {
         ArtWorks artWorks = artworkValidation(accountId, artworkId);
+        artWorkImageRepository.deleteAllByArtWorksId(artworkId);
         artWorkLikesRepository.deleteAllByArtWorksId(artworkId);
         artWorkBookMarkRepository.deleteAllByArtWorksId(artworkId);
         artWorkCommentRepository.deleteAllByArtWorksId(artworkId);

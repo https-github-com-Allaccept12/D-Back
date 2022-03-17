@@ -12,6 +12,7 @@ import javax.persistence.*;
 
 @Entity
 @Getter
+@DynamicInsert
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @DynamicInsert
 public class ArtWorkImage {
@@ -28,6 +29,7 @@ public class ArtWorkImage {
     @Column(nullable = false)
     private String artworkImg;
 
+    @Column(columnDefinition = "TINYINT default 0")
     private boolean thumbnail;
 
     @Builder

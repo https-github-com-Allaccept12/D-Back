@@ -121,8 +121,10 @@ public class KakaoAccountService {
             String nickname = kakaoUserInfo.getNickname();
 
             String profileImg = kakaoUserInfo.getProfile_img();
+
             Ranks rank = Ranks.builder().rankScore(0L).build();
             Ranks saveRank = rankRepository.save(rank);
+
             Specialty specialty = new Specialty();
             kakaoUser = Account.builder().nickname(nickname).profileImg(profileImg).email(email).rank(saveRank).specialty(specialty).build();
             accountRepository.save(kakaoUser);
