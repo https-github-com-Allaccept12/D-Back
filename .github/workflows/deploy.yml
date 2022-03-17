@@ -24,6 +24,7 @@ jobs:
         shell: bash
 
       - name: Set Yaml
+        uses: microsoft/variable-substitution@v1
         with:
           file: src/main/resources/application.yml
         env:
