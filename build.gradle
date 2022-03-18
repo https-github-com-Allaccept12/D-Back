@@ -12,7 +12,7 @@ plugins {
 }
 
 group = 'Team-D-Plus'
-version = '0.0.2-SNAPSHOT'
+version = '0.0.3-SNAPSHOT'
 sourceCompatibility = '1.8'
 
 configurations {
