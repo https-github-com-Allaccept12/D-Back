@@ -13,7 +13,7 @@ env: # 새로 추가한 부분
 
 jobs:
   build:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
