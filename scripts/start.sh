@@ -8,7 +8,7 @@ ABSDIR=$(dirname $ABSPATH)
 source ${ABSDIR}/profile.sh
 
 REPOSITORY=/home/ec2-user/dplus
-PROJECT_NAME=code-0.0.1-SNAPSHOT
+PROJECT_NAME=code-0.0.2-SNAPSHOT
 
 echo "> Build 파일 복사"
 echo "> cp ./build/libs/*.jar $REPOSITORY/"
