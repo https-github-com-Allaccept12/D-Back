@@ -8,7 +8,7 @@ ABSDIR=$(dirname $ABSPATH)
 source ${ABSDIR}/profile.sh
 
 REPOSITORY=/home/ec2-user/dplus
-PROJECT_NAME=code-0.0.4-SNAPSHOT
+PROJECT_NAME=code-0.0.5-SNAPSHOT
 
 echo "> 새 어플리케이션 배포"
 JAR_NAME=$(ls -tr $REPOSITORY/*.jar | tail -n 1)
