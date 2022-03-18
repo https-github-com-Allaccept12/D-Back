@@ -36,7 +36,7 @@ public class PostAnswerService {
             throw new IllegalStateException("댓글 작성자가 아닙니다.");
         }
 
-        postAnswer.updateComment(dto.getContent());
+        postAnswer.updateAnswer(dto.getContent());
         return postAnswer.getId();
     }
 
@@ -50,6 +50,26 @@ public class PostAnswerService {
         }
 
         postAnswerRepository.deleteById(answerId);
+    }
+
+    @Transactional
+    public void doIsSelected(Long postAnswerId, Long accountId) {
+        PostAnswer postAnswer = postAnswerRepository.findById(postAnswerId)
+                .orElseThrow(() -> new ApiRequestException("존재하지 않는 게시글입니다."));
+
+        if (!postAnswer.getAccount().getId().equals(accountId)) {
+            throw new IllegalStateException("댓글 작성자가 아닙니다.");
+        }
+
+        if (postAnswer.isSelected()) {
+            throw new IllegalStateException("이미 채택된 게시글입니다.");
+        }
+
+        postAnswer.doIsSelected(true);
+
+        if (!postAnswer.getPost().isSelected()) {
+            postAnswer.getPost().doIsSelected(true);
+        }
     }
 
 }

@@ -61,4 +61,12 @@ public class PostMainController {
         return new ResponseEntity<>(new Success("디플 게시물 삭제",""), HttpStatus.OK);
     }
 
+    // 질문글 상세 조회
+    @PostMapping("/question/{post_id}")
+    public ResponseEntity<Success> postQuestionDetail(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                      @PathVariable Long post_id) {
+        return new ResponseEntity<>(new Success("디플 질문 상세페이지 조회",
+                postMainPageService.detailAnswer(userDetails.getUser().getId(), post_id)), HttpStatus.OK);
+    }
+
 }

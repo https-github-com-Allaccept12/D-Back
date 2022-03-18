@@ -8,6 +8,7 @@ import TeamDPlus.code.domain.artwork.image.ArtWorkImage;
 import TeamDPlus.code.domain.post.Post;
 import TeamDPlus.code.domain.post.PostBoard;
 import TeamDPlus.code.domain.post.PostRepository;
+import TeamDPlus.code.domain.post.answer.PostAnswer;
 import TeamDPlus.code.domain.post.answer.PostAnswerRepository;
 import TeamDPlus.code.domain.post.bookmark.PostBookMarkRepository;
 import TeamDPlus.code.domain.post.comment.PostComment;
@@ -194,7 +195,7 @@ public class PostMainPageServiceImpl implements PostMainPageService{
         // 태그 리스트 가져오기
         List<PostTag> postTagList = postTagRepository.findPostTagsByPostId(postId);
         // 북마크 수
-        Long bookMarkCount = postBookMarkRepository.countByPostId(postId);
+//        Long bookMarkCount = postBookMarkRepository.countByPostId(postId);
 
         boolean isLike = false;
         boolean isBookmark = false;
@@ -215,7 +216,7 @@ public class PostMainPageServiceImpl implements PostMainPageService{
 
         //상세페이지의 답글 개수
         postAnswerSubDetail.setAnswer_count((long) postAnswerList.size());
-        return PostResponseDto.PostAnswerDetailPage.from(imgList, postAnswerList, postTagList, postAnswerSubDetail, isLike, isBookmark, isFollow, bookMarkCount);
+        return PostResponseDto.PostAnswerDetailPage.from(imgList, postAnswerList, postTagList, postAnswerSubDetail, isLike, isBookmark, isFollow);
     }
 
     private void isFollow(Long accountId, List<PostResponseDto.PostAnswer> postAnswerList) {
@@ -238,8 +239,8 @@ public class PostMainPageServiceImpl implements PostMainPageService{
 
     // 디모 QnA 유사한질문 조회
     @Transactional(readOnly = true)
-    public PostResponseDto.PostSimilarQuestion relatedQuestion(String category, Long accountId) {
-//        List<PostResponseDto.PostSimilarQuestionSub> postSubList = postRepository.findByCategory(category);
+    public List<PostResponseDto.PostSimilarQuestion> relatedQuestion(String category, Long accountId) {
+//        List<PostResponseDto.PostSimilarQuestion> postSimilarList = postRepository.findByCategory(category);
         return null;
     }
 }

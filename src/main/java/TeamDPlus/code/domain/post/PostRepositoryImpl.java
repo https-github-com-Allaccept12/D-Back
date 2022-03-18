@@ -54,14 +54,6 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
         return new PageImpl<>(fetch, pageable, fetch.size());
     }
 
-    // 디모 QnA 상세 페이지
-    @Override
-    public PostResponseDto.PostAnswerDetailPage findDetailPostAnswer(Long postId) {
-        return null;
-    }
-
-    // 글 상세 페이지
-
     // 전체 페이지 (좋아요 순)
     @Override
     public Page<PostResponseDto.PostPageMain> findAllPostOrderByPostLikes(Long lastPostId, Pageable pageable) {
@@ -129,12 +121,14 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                         post.modified,
                         post.isSelected,
                         postLikes.count(),
+                        postBookMark.count(),
                         account.id,
                         account.profileImg,
                         account.nickname
                 ))
                 .from(post)
                 .innerJoin(post.account, account)
+                .leftJoin(postBookMark).on(postBookMark.post.eq(post))
                 .leftJoin(postLikes).on(postLikes.post.eq(post))
                 .where(post.id.eq(postId))
                 .groupBy(post.id)
@@ -201,4 +195,30 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
     public BooleanExpression isLastPostId(Long lastPostId){
         return lastPostId != 0 ? post.id.lt(lastPostId) : null;
     }
+
+    // 질문 상세페이지 정보
+//    @Override
+//    public List<PostResponseDto.PostSimilarQuestion> findByCategory(String category) {
+//        return queryFactory
+//                .select(Projections.constructor(PostResponseDto.PostSimilarQuestion.class,
+//                        post.id,
+//                        post.title,
+//                        post.content,
+//                        post.category,
+//                        post.created,
+//                        post.modified,
+//                        post.isSelected,
+//                        postLikes.count(),
+//                        postBookMark.count(),
+//                        account.id,
+//                        account.profileImg
+//                ))
+//                .from(post)
+//                .innerJoin(post.account, account)
+//                .leftJoin(postBookMark).on(postBookMark.post.eq(post))
+//                .leftJoin(postLikes).on(postLikes.post.eq(post))
+//                .where(post.category.eq(category))
+//                .groupBy(post.id)
+//                .fetchOne();
+//    }
 }

@@ -24,7 +24,7 @@ public interface PostRepositoryCustom {
     // 검색
     Page<PostResponseDto.PostPageMain> findPostBySearchKeyWord(String keyword, Long lastPostId, Pageable pageable);
 
-    PostResponseDto.PostAnswerDetailPage findDetailPostAnswer(Long postId);
-
     PostResponseDto.PostAnswerSubDetail findByPostAnswerSubDetail(Long postId);
+
+//    List<PostResponseDto.PostSimilarQuestion> findByCategory(String category);
 }

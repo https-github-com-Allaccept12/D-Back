@@ -47,7 +47,11 @@ public class PostAnswer extends BaseEntity {
         this.isSelected = isSelected;
     }
 
-    public void updateComment(final String content) {
+    public void updateAnswer(final String content) {
         this.content = content;
+    }
+
+    public void doIsSelected(final boolean isSElected) {
+        this.isSelected = isSelected;
     }
 }

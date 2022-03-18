@@ -41,4 +41,11 @@ public class PostAnswerController {
         return new ResponseEntity<>(new Success("질문글 답변 삭제 완료",""), HttpStatus.OK);
     }
 
+    @PatchMapping("/answer/{post_answer_id}")
+    public ResponseEntity<Success> doIsSelected(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                @PathVariable Long post_answer_id) {
+        postAnswerService.doIsSelected(post_answer_id, userDetails.getUser().getId());
+        return new ResponseEntity<>(new Success("채택 완료", ""), HttpStatus.OK);
+    }
+
 }

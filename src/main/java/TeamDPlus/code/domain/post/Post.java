@@ -79,4 +79,8 @@ public class Post extends BaseEntity {
                 .isSelected(dto.is_selected())
                 .build();
     }
+
+    public void doIsSelected(final boolean isSelected) {
+        this.isSelected = isSelected;
+    }
 }
