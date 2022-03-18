@@ -31,7 +31,9 @@ public class PostAnswerRepositoryImpl implements PostAnswerRepositoryCustom {
                 ))
                 .from(postAnswer)
                 .join(post).on(post.id.eq(postId))
-                .leftJoin(postAnswerLikes).on(postAnswerLikes.postAnswer.eq(postAnswer))
+                .leftJoin(postAnswerLikes).on(postAnswer.id.eq(postAnswerLikes.postAnswer.id))
+                .groupBy(postAnswer.id)
+                .orderBy(postAnswerLikes.count().desc())
                 .fetch();
     }
 

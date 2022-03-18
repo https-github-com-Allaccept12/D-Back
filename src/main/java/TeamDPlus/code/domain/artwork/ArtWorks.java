@@ -22,7 +22,6 @@ import java.util.List;
 @Getter
 @DynamicInsert
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@DynamicInsert
 public class ArtWorks extends BaseEntity {
 
     @Id

@@ -14,7 +14,6 @@ import javax.persistence.*;
 @Getter
 @DynamicInsert
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@DynamicInsert
 public class ArtWorkImage {
 
     @Id
