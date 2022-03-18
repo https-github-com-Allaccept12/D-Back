@@ -58,19 +58,19 @@ jobs:
         shell: bash
 
       - name: Make Directory
-        run: mkdir -p deploy
+        run: mkdir deploy
         # Jar 파일 복사
       - name: Copy Jar
-        run: cp ./build/libs/*.jar ./deploy
+        run: cp ./build/libs/*.jar ./deploy/
 
       - name: Copy script
-        run: cp ./scripts/*.sh ./deploy
+        run: cp ./scripts/*.sh ./deploy/
 
       - name: Copy appspec.yml
-        run: cp appspec.yml ./deploy
+        run: cp appspec.yml ./deploy/
 
       - name: Make zip file
-        run: zip -r ./$GITHUB_SHA.zip ./deploy
+        run: zip -r -qq -j ./$GITHUB_SHA.zip ./deploy/
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
