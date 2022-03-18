@@ -59,13 +59,13 @@ jobs:
         shell: bash
 
       - name: Make Directory
-      run: mkdir -p deploy
+        run: mkdir -p deploy
         # Jar 파일 복사
       - name: Copy Jar
         run: cp ./build/libs/*.jar ./deploy
 
       - name: Copy appspec.yml
-          run: cp appspec.yml ./deploy
+        run: cp appspec.yml ./deploy
 
       - name: Make zip file
         run: zip -r ./$GITHUB_SHA.zip ./deploy
