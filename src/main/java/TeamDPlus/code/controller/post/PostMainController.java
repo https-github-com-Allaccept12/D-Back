@@ -54,7 +54,7 @@ public class PostMainController {
     }
 
     // 게시물 삭제
-    @PatchMapping("/{post_id}")
+    @DeleteMapping("/{post_id}")
     public ResponseEntity<Success> deletePost(@AuthenticationPrincipal UserDetailsImpl user,
                                               @PathVariable Long post_id) {
         postMainPageService.deletePost(user.getUser().getId(), post_id);
@@ -67,6 +67,14 @@ public class PostMainController {
                                                       @PathVariable Long post_id) {
         return new ResponseEntity<>(new Success("디플 질문 상세페이지 조회",
                 postMainPageService.detailAnswer(userDetails.getUser().getId(), post_id)), HttpStatus.OK);
+    }
+
+    // 유사한 질문 조회
+    @GetMapping("/question/similar/{category}")
+    public ResponseEntity<Success> similarQuestion(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                   @PathVariable String category) {
+        return new ResponseEntity<>(new Success("유사한 질문 리스트",
+                postMainPageService.similarQuestion(category, userDetails.getUser().getId())), HttpStatus.OK);
     }
 
 }

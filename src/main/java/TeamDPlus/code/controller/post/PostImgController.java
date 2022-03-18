@@ -15,6 +15,6 @@ public class PostImgController {
     private final PostImageRepository postImageRepository;
     private final FileProcessService test;
 
-    // 이미지 등록 (프론트) , 이미지 삭제 및 수정 (백?)
+    //
 
 }

@@ -26,5 +26,5 @@ public interface PostRepositoryCustom {
 
     PostResponseDto.PostAnswerSubDetail findByPostAnswerSubDetail(Long postId);
 
-//    List<PostResponseDto.PostSimilarQuestion> findByCategory(String category);
+    List<PostResponseDto.PostSimilarQuestion> findByCategory(String category);
 }

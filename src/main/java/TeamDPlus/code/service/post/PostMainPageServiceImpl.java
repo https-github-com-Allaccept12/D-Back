@@ -51,7 +51,6 @@ public class PostMainPageServiceImpl implements PostMainPageService{
     private final PostAnswerRepository postAnswerRepository;
     private final FollowRepository followRepository;
     private final PostAnswerLikesRepository postAnswerLikesRepository;
-    private final PostCommentLikesRepository postCommentLikesRepository;
 
     // 메인 페이지 (최신순)
     @Transactional(readOnly = true)
@@ -239,8 +238,31 @@ public class PostMainPageServiceImpl implements PostMainPageService{
 
     // 디모 QnA 유사한질문 조회
     @Transactional(readOnly = true)
-    public List<PostResponseDto.PostSimilarQuestion> relatedQuestion(String category, Long accountId) {
-//        List<PostResponseDto.PostSimilarQuestion> postSimilarList = postRepository.findByCategory(category);
-        return null;
+    public List<PostResponseDto.PostSimilarQuestion> similarQuestion(String category, Long accountId) {
+        List<PostResponseDto.PostSimilarQuestion> postSimilarList = postRepository.findByCategory(category);
+        postSimilarList.forEach((postSimilar) -> {
+            // 좋아요 여부
+            postSimilar.setLikeCountAndIsLike(false);
+            if(postLikesRepository.existByAccountIdAndPostId(accountId, postSimilar.getPost_id())) {
+                postSimilar.setLikeCountAndIsLike(true);
+            }
+
+            // 북마크 여부
+            postSimilar.setIsBookmark(false);
+            if(postBookMarkRepository.existByAccountIdAndPostId(accountId, postSimilar.getPost_id())) {
+                postSimilar.setIsBookmark(true);
+            }
+
+            // 질문 답변 가져오기
+            Long answerCount = postAnswerRepository.countByPostId(postSimilar.getPost_id());
+            postSimilar.setAnswer_count(answerCount);
+
+            // 태그 리스트 가져오기
+            List<PostTag> postTagList = postTagRepository.findPostTagsByPostId(postSimilar.getPost_id());
+            postSimilar.setHash_tag(postTagList);
+
+        });
+        return postSimilarList;
     }
+
 }

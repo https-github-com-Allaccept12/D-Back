@@ -48,6 +48,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .where(isLastPostId(lastPostId))
+                .groupBy(post.id)
                 .orderBy(post.created.desc())
                 .fetch();
 
@@ -196,29 +197,32 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
         return lastPostId != 0 ? post.id.lt(lastPostId) : null;
     }
 
-    // 질문 상세페이지 정보
-//    @Override
-//    public List<PostResponseDto.PostSimilarQuestion> findByCategory(String category) {
-//        return queryFactory
-//                .select(Projections.constructor(PostResponseDto.PostSimilarQuestion.class,
-//                        post.id,
-//                        post.title,
-//                        post.content,
-//                        post.category,
-//                        post.created,
-//                        post.modified,
-//                        post.isSelected,
-//                        postLikes.count(),
-//                        postBookMark.count(),
-//                        account.id,
-//                        account.profileImg
-//                ))
-//                .from(post)
-//                .innerJoin(post.account, account)
-//                .leftJoin(postBookMark).on(postBookMark.post.eq(post))
-//                .leftJoin(postLikes).on(postLikes.post.eq(post))
-//                .where(post.category.eq(category))
-//                .groupBy(post.id)
-//                .fetchOne();
-//    }
+    // 유사한 질문
+    @Override
+    public List<PostResponseDto.PostSimilarQuestion> findByCategory(String category) {
+        List<PostResponseDto.PostSimilarQuestion> result = queryFactory
+                .select(Projections.constructor(PostResponseDto.PostSimilarQuestion.class,
+                        post.id,
+                        post.title,
+                        post.content,
+                        post.view,
+                        post.category,
+                        post.created,
+                        post.modified,
+                        postLikes.count(),
+                        postBookMark.count(),
+                        account.id,
+                        account.profileImg
+                ))
+                .from(post)
+                .join(post.account, account)
+                .leftJoin(postBookMark).on(postBookMark.post.eq(post))
+                .leftJoin(postLikes).on(postLikes.post.eq(post))
+                .offset(0)
+                .limit(5)
+                .groupBy(post.id)
+                .orderBy(postLikes.count().desc(), post.view.desc())
+                .fetch();
+        return result;
+    }
 }

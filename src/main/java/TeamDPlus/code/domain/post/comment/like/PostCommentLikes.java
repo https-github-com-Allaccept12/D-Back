@@ -29,7 +29,7 @@ public class PostCommentLikes extends BaseEntity {
     private PostComment postComment;
 
     @Builder
-    public PostCommentLikes(Account account, PostComment postComment) {
+    public PostCommentLikes(final Account account, final PostComment postComment) {
         this.account = account;
         this.postComment = postComment;
     }

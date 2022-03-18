@@ -34,4 +34,8 @@ public interface PostMainPageService {
 
     // 상세 질문글
     PostResponseDto.PostAnswerDetailPage detailAnswer(Long accountId, Long postId);
+
+    // 유사한 질문 리스트
+    List<PostResponseDto.PostSimilarQuestion> similarQuestion(String category, Long accountId);
+
 }
