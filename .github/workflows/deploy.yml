@@ -20,9 +20,10 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Set up JDK 1.8
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v2
         with:
-          java-version: 1.8
+          java-version: '8'
+          distribution: 'adopt'
 
       - name: Set Yaml
         uses: microsoft/variable-substitution@v1
@@ -56,9 +57,12 @@ jobs:
         run: echo "CurrentTime=${{steps.current-time.outputs.formattedTime}}"
         shell: bash
 
+        # Jar 파일 복사
+      - name: Copy Jar
+        run: cp ./build/libs/*.jar ./deploy
+
       - name: Make zip file
-        run: zip -r ./$GITHUB_SHA.zip .
-        shell: bash
+        run: zip -r ./$GITHUB_SHA.zip ./deploy
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -70,8 +74,8 @@ jobs:
       - name: Upload to S3
         run: aws s3 cp --region ap-northeast-2 ./$GITHUB_SHA.zip s3://$S3_BUCKET_NAME/$PROJECT_NAME/$GITHUB_SHA.zip
 
-      - name: Code Deploy
-        run: aws deploy create-deployment --application-name dplus-deploy --deployment-config-name CodeDeployDefault.AllAtOnce --deployment-group-name develop --s3-location bucket=$S3_BUCKET_NAME,bundleType=zip,key=$PROJECT_NAME/$GITHUB_SHA.zip
+#      - name: Code Deploy
+#        run: aws deploy create-deployment --application-name dplus-deploy --deployment-config-name CodeDeployDefault.AllAtOnce --deployment-group-name develop --s3-location bucket=$S3_BUCKET_NAME,bundleType=zip,key=$PROJECT_NAME/$GITHUB_SHA.zip
 
 
 
