@@ -6,7 +6,7 @@ on:
       - main
   workflow_dispatch:
 
-env: # 새로 추가한 부분
+env:
   S3_BUCKET_NAME: dplus-jar
   PROJECT_NAME: TeamDplus-code
 
