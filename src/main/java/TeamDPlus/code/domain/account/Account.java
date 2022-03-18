@@ -104,7 +104,7 @@ public class Account extends BaseEntity {
     }
 
     public void updateExp(final int score) {
-        this.exp = (long) score;
+        this.exp += (long) score;
     }
 
     public void updateInterest(final String interest) {

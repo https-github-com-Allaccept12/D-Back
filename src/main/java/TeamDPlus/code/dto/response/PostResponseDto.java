@@ -388,61 +388,30 @@ public class PostResponseDto {
             this.isSelected = isSelected;
         }
 
-//        public static PostSimilarQuestion from(final Long post_id, final Long account_id, final String account_profile_img, final String title, final String content,
-//                                               final Long answer_count, final Long like_count, final Long bookmark_count, final String category,
-//                                               final Timestamp create_time, final Timestamp modify_time, final boolean is_like, final boolean is_bookmark,
-//                                               final List<PostImage> postImageList, final List<PostTag> postTagsList, final boolean isSelected) {
-//            return PostSimilarQuestion.builder()
-//                    .post_id(post_id)
-//                    .account_id(account_id)
-//                    .account_profile_img(account_profile_img)
-//                    .title(title)
-//                    .content(content)
-//                    .answer_count(answer_count)
-//                    .like_count(like_count)
-//                    .bookmark_count(bookmark_count)
-//                    .create_time(create_time)
-//                    .modify_time(modify_time)
-//                    .is_like(is_like)
-//                    .is_bookmark(is_bookmark)
-//                    .img(postImageList.stream()
-//                            .map(i -> new CommonDto.ImgUrlDto(i.getPostImg())).collect(Collectors.toList()))
-//                    .hash_tag(postTagsList.stream()
-//                            .map(i -> new CommonDto.PostTagDto(i.getHashTag())).collect(Collectors.toList()))
-//                    .isSelected(isSelected)
-//                    .build();
-//        }
+        public static PostSimilarQuestion from(final Long post_id, final Long account_id, final String account_profile_img, final String title, final String content,
+                                               final Long answer_count, final Long like_count, final Long bookmark_count, final String category,
+                                               final Timestamp create_time, final Timestamp modify_time, final boolean is_like, final boolean is_bookmark,
+                                               final List<PostImage> postImageList, final List<PostTag> postTagsList, final boolean isSelected) {
+            return PostSimilarQuestion.builder()
+                    .post_id(post_id)
+                    .account_id(account_id)
+                    .account_profile_img(account_profile_img)
+                    .title(title)
+                    .content(content)
+                    .answer_count(answer_count)
+                    .like_count(like_count)
+                    .bookmark_count(bookmark_count)
+                    .create_time(create_time)
+                    .modify_time(modify_time)
+                    .is_like(is_like)
+                    .is_bookmark(is_bookmark)
+                    .img(postImageList.stream()
+                            .map(i -> new CommonDto.ImgUrlDto(i.getPostImg())).collect(Collectors.toList()))
+                    .hash_tag(postTagsList.stream()
+                            .map(i -> new CommonDto.PostTagDto(i.getHashTag())).collect(Collectors.toList()))
+                    .isSelected(isSelected)
+                    .build();
+        }
     }
 
-//    @Getter
-//    @NoArgsConstructor
-//    public static class PostSimilarQuestionSub {
-//        private Long post_id;
-//        private String account_profile_img;
-//        private String title;
-//        private String content;
-//        private Long answer_count;
-//        private Long like_count;
-//        private String category;
-//        private Timestamp create_time;
-//        private Timestamp modify_time;
-//
-//        @Builder
-//        public PostSimilarQuestionSub(final Long post_id, final String account_profile_img, final String title,
-//                                      final String content, final Long answer_count, final Long like_count,
-//                                      final String category, final Timestamp create_time, final Timestamp modify_time) {
-//            this.post_id = post_id;
-//            this.account_profile_img = account_profile_img;
-//            this.title = title;
-//            this.content = content;
-//            this.answer_count = answer_count;
-//            this.like_count = like_count;
-//            this.category = category;
-//            this.create_time = create_time;
-//            this.modify_time = modify_time;
-//        }
-//        public void setAnswer_count(Long answer_count) {
-//            this.answer_count = answer_count;
-//        }
-//    }
 }

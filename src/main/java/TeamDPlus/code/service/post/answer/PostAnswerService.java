@@ -24,6 +24,7 @@ public class PostAnswerService {
         Post post = postRepository.findById(postId).orElseThrow(() -> new ApiRequestException("게시글이 존재하지 않습니다."));
         PostAnswer postAnswer = PostAnswer.builder().post(post).account(account).content(dto.getContent()).build();
         PostAnswer save = postAnswerRepository.save(postAnswer);
+        account.updateExp(3);
         return save.getId();
     }
 
@@ -57,7 +58,7 @@ public class PostAnswerService {
         PostAnswer postAnswer = postAnswerRepository.findById(postAnswerId)
                 .orElseThrow(() -> new ApiRequestException("존재하지 않는 게시글입니다."));
 
-        if (!postAnswer.getAccount().getId().equals(accountId)) {
+        if (!postAnswer.getPost().getAccount().getId().equals(accountId)) {
             throw new IllegalStateException("댓글 작성자가 아닙니다.");
         }
 
@@ -66,6 +67,7 @@ public class PostAnswerService {
         }
 
         postAnswer.doIsSelected(true);
+        postAnswer.getAccount().updateExp(20);
 
         if (!postAnswer.getPost().isSelected()) {
             postAnswer.getPost().doIsSelected(true);
