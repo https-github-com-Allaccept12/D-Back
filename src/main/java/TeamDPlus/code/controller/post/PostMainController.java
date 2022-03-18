@@ -20,10 +20,18 @@ public class PostMainController {
     private PostMainPageService postMainPageService;
 
     // 전체 목록
-    @GetMapping("/{last_post_id}/{board}")
-    public ResponseEntity<Success> postMain(@AuthenticationPrincipal UserDetailsImpl user,
+    @GetMapping("/{last_post_id}/{board}/latest")
+    public ResponseEntity<Success> postMainLatest(@AuthenticationPrincipal UserDetailsImpl user,
                                         @PathVariable Long last_post_id,
                                         @PathVariable PostBoard board) {
+        return new ResponseEntity<>(new Success("디플 메인 페이지",
+                postMainPageService.showPostMain(user.getUser().getId(), last_post_id, board)), HttpStatus.OK);
+    }
+
+    @GetMapping("/{last_post_id}/{board}/likes")
+    public ResponseEntity<Success> postMainLikes(@AuthenticationPrincipal UserDetailsImpl user,
+                                            @PathVariable Long last_post_id,
+                                            @PathVariable PostBoard board) {
         return new ResponseEntity<>(new Success("디플 메인 페이지",
                 postMainPageService.showPostMain(user.getUser().getId(), last_post_id, board)), HttpStatus.OK);
     }

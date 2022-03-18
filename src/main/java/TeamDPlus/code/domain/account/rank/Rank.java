@@ -14,6 +14,7 @@ import javax.persistence.*;
 @Getter
 @DynamicInsert
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(name = "Ranks")
 public class Rank {
 
     @Id

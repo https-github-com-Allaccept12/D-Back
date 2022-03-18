@@ -23,6 +23,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -101,11 +102,30 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
         return ArtWorkResponseDto.ArtWorkDetail.from(imgList,commentList,similarList,artWorksSub,isLike,isBookmark,isFollow);
     }
 
+//    @Transactional
+//    public Long createArtwork(Account account, ArtWorkRequestDto.ArtWorkCreateAndUpdate dto) {
+//        ArtWorks artWorks = ArtWorks.of(account, dto);
+//        ArtWorks saveArtWork = artWorkRepository.save(artWorks);
+//        setImgUrl(dto.getImg(), saveArtWork);
+//        return saveArtWork.getId();
+//    }
+
     @Transactional
-    public Long createArtwork(Account account, ArtWorkRequestDto.ArtWorkCreateAndUpdate dto) {
+    public Long createArtwork(Account account, ArtWorkRequestDto.ArtWorkCreateAndUpdate dto, List<MultipartFile> multipartFiles) {
+
+        // 아트웍 저장
         ArtWorks artWorks = ArtWorks.of(account, dto);
-        ArtWorks saveArtWork = artWorkRepository.save(artWorks);
-        setImgUrl(dto.getImg(), saveArtWork);
+        ArtWorks saveArtwork = artWorkRepository.save(artWorks);
+
+        // 데이터 저장
+        multipartFiles.forEach((file) -> {
+            String s = fileProcessService.uploadImage(file);
+            ArtWorkImage img = ArtWorkImage.builder().artWorks(saveArtwork).artworkImg(s).build();
+            artWorkImageRepository.save(img);
+        });
+
+        //
+        setImgUrl(dto.getImg()., saveArtwork);
         return saveArtWork.getId();
     }
 
@@ -160,8 +180,8 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
     }
 
     //이미지 s3에서도 업로드
-    private void setImgUrl(List<CommonDto.ImgUrlDto> dto, ArtWorks artWork) {
-        dto.forEach((img) -> {
+    private void setImgUrl(List<CommonDto.ImgUrlDto> imgDto, ArtWorks artWork) {
+        imgDto.forEach((img) -> {
             ArtWorkImage artWorkImage = ArtWorkImage.builder()
                     .artWorks(artWork)
                     .artworkImg(img.getImg_url())

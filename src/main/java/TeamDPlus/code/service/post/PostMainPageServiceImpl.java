@@ -52,7 +52,7 @@ public class PostMainPageServiceImpl implements PostMainPageService{
 
         // 메인 페이지 전체 피드
         Pageable pageable = PageRequest.of(0,12);
-        Page<PostResponseDto.PostPageMain> postList = postRepository.findAllPostOrderByCreatedDesc(lastPostId, pageable);
+        Page<PostResponseDto.PostPageMain> postList = postRepository.findAllPostOrderByCreatedDesc(lastPostId, pageable, board);
         setCountList(postList);
 
         // 메인페이지 추천피드
@@ -66,14 +66,24 @@ public class PostMainPageServiceImpl implements PostMainPageService{
         return PostMainResponseDto.builder().postMainPage(postList).postRecommendationFeed(postRecommendation).build();
     }
 
-//    // 메인 페이지 (좋아요 순)
-//    @Transactional(readOnly = true)
-//    public Page<PostResponseDto.PostPageMain> showPostMainByLikes(Long accountId, Long lastPostId) {
-//        Pageable pageable = PageRequest.of(0,12);
-//        Page<PostResponseDto.PostPageMain> post인ist = postRepository.findAllPostOrderByPostLikes(lastPostId, pageable);
-//        setCountList(accountId, postList);
-//        return postList;
-//    }
+    // 메인 페이지 (좋아요 순)
+    @Transactional(readOnly = true)
+    public PostMainResponseDto showPostMainByLikes(Long accountId, Long lastPostId, PostBoard board) {
+
+        Pageable pageable = PageRequest.of(0,12);
+        Page<PostResponseDto.PostPageMain> postList = postRepository.findAllPostOrderByPostLikes(lastPostId, pageable, board);
+        setCountList(postList);
+
+        // 메인페이지 추천피드
+        List<PostResponseDto.PostPageMain> postRecommendation = postRepository.findPostByMostViewAndMostLike();
+        postList.forEach((post) -> {
+            Long bookmark_count = postBookMarkRepository.countByPostId(post.getPost_id());
+            Long comment_count = postCommentRepository.countByPostId(post.getPost_id());
+            Long like_count = postLikesRepository.countByPostId(post.getPost_id());
+            post.setCountList(bookmark_count, comment_count, like_count);
+        });
+        return PostMainResponseDto.builder().postMainPage(postList).postRecommendationFeed(postRecommendation).build();
+    }
 
     // 상세 게시글 (디플 - 꿀팁)
     @Transactional(readOnly = true)

@@ -12,6 +12,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -43,9 +46,11 @@ public class ArtWorkMainController {
 
     @PostMapping("/api/artwork")
     public ResponseEntity<Success> createArtWork(@AuthenticationPrincipal UserDetailsImpl user,
-                                                 @RequestBody ArtWorkCreateAndUpdate data) {
+                                                 @RequestPart ArtWorkCreateAndUpdate data,
+                                                 @RequestPart List<MultipartFile> imgFile) {
+
         return new ResponseEntity<>(new Success("작품 등록 완료"
-                ,artworkMainService.createArtwork(user.getUser(),data)),HttpStatus.OK);
+                ,artworkMainService.createArtwork(user.getUser(),data, imgFile)),HttpStatus.OK);
     }
 
     @PatchMapping("/api/artwork/{artwork_id}")
