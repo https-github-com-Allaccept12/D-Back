@@ -28,7 +28,7 @@ public class PostAnswerService {
     }
 
     @Transactional
-    public void updateAnswer(Long answerId, PostRequestDto.PostAnswer dto, Long accountId) {
+    public Long updateAnswer(PostRequestDto.PostAnswer dto, Long answerId, Long accountId) {
         PostAnswer postAnswer = postAnswerRepository.findById(answerId)
                 .orElseThrow(() -> new ApiRequestException("존재하지 않는 게시글이거나, 댓글입니다."));
 
@@ -37,6 +37,7 @@ public class PostAnswerService {
         }
 
         postAnswer.updateComment(dto.getContent());
+        return postAnswer.getId();
     }
 
     @Transactional
