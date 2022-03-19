@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -117,24 +118,40 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
         ArtWorks artWorks = ArtWorks.of(account, dto);
         ArtWorks saveArtwork = artWorkRepository.save(artWorks);
 
-        // 데이터 저장
-        multipartFiles.forEach((file) -> {
-            String s = fileProcessService.uploadImage(file);
-            ArtWorkImage img = ArtWorkImage.builder().artWorks(saveArtwork).artworkImg(s).build();
-            artWorkImageRepository.save(img);
-        });
-
-        //
-        setImgUrl(dto.getImg()., saveArtwork);
-        return saveArtWork.getId();
+        // 작품 이미지가 들어온 경우
+        if(multipartFiles!=null){
+            // 데이터 저장
+            multipartFiles.forEach((file) -> {
+                String s = fileProcessService.uploadImage(file);
+                ArtWorkImage img = ArtWorkImage.builder().artWorks(saveArtwork).artworkImg(s).build();
+                artWorkImageRepository.save(img);
+            });
+        }
+        return saveArtwork.getId();
     }
 
 
     @Transactional
-    public Long updateArtwork(Account account, Long artworkId, ArtWorkRequestDto.ArtWorkCreateAndUpdate dto) {
+    public Long updateArtwork(Account account, Long artworkId, ArtWorkRequestDto.ArtWorkCreateAndUpdate dto,
+                              List<MultipartFile> multipartFiles) {
         ArtWorks findArtWork = artWorkRepository.findById(artworkId).orElseThrow(() -> new ApiRequestException("게시글이 존재하지 않습니다."));
-        artWorkImageRepository.deleteAllByArtWorksId(artworkId);
-        //s3에서도 삭제
+        List<ArtWorkImage> artWorkImages = artWorkImageRepository.findByArtWorksId(findArtWork.getId());
+        // 작품 이미지가 들어온 경우
+        if(multipartFiles!=null){
+            artWorkImages.forEach((img) -> {
+                // S3의 이미지 하나씩 삭제
+                fileProcessService.deleteImage(img.getArtworkImg());
+            });
+            // db 삭제
+            artWorkImageRepository.deleteAllByArtWorksId(artworkId);
+
+            // 데이터 재 저장
+            multipartFiles.forEach((file) -> {
+                String s = fileProcessService.uploadImage(file);
+                ArtWorkImage img = ArtWorkImage.builder().artWorks(findArtWork).artworkImg(s).build();
+                artWorkImageRepository.save(img);
+            });
+        }
         setImgUrl(dto.getImg(), findArtWork);
         findArtWork.updateArtWork(dto);
         return findArtWork.getId();
@@ -144,6 +161,13 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
     @Transactional
     public void deleteArtwork(Long accountId, Long artworkId) {
         ArtWorks artWorks = artworkValidation(accountId, artworkId);
+        List<ArtWorkImage> artWorkImages = artWorkImageRepository.findByArtWorksId(artWorks.getId());
+        artWorkImages.forEach((img) -> {
+            // S3의 이미지 하나씩 삭제
+            fileProcessService.deleteImage(img.getArtworkImg());
+        });
+        // db 삭제
+        artWorkImageRepository.deleteAllByArtWorksId(artworkId);
         artWorkImageRepository.deleteAllByArtWorksId(artworkId);
         artWorkLikesRepository.deleteAllByArtWorksId(artworkId);
         artWorkBookMarkRepository.deleteAllByArtWorksId(artworkId);

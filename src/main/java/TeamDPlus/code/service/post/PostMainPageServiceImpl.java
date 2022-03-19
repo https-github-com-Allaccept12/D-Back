@@ -23,12 +23,14 @@ import TeamDPlus.code.dto.request.ArtWorkRequestDto;
 import TeamDPlus.code.dto.request.PostRequestDto;
 import TeamDPlus.code.dto.response.PostMainResponseDto;
 import TeamDPlus.code.dto.response.PostResponseDto;
+import TeamDPlus.code.service.file.FileProcessService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
@@ -44,6 +46,8 @@ public class PostMainPageServiceImpl implements PostMainPageService{
     private final PostBookMarkRepository postBookMarkRepository;
     private final PostTagRepository postTagRepository;
     private final FollowRepository followRepository;
+
+    private final FileProcessService fileProcessService;
 
 
     // 메인 페이지 (최신순)
@@ -104,9 +108,16 @@ public class PostMainPageServiceImpl implements PostMainPageService{
 
     // 게시글 작성
     @Transactional
-    public Long createPost(Account account, PostRequestDto.PostCreate dto) {
+    public Long createPost(Account account, PostRequestDto.PostCreate dto, List<MultipartFile> imgFile) {
         Post post = Post.of(account, dto);
         Post savedPost = postRepository.save(post);
+        if(imgFile!=null){
+            imgFile.forEach((img) -> {
+                String s = fileProcessService.uploadImage(img);
+                PostImage postImage = PostImage.builder().post(post).postImg(s).build();
+                postImageRepository.save(postImage);
+            });
+        }
         setPostTag(dto.getHashTag(), savedPost);
         setImgUrl(dto.getImg(), savedPost);
         return post.getId();
@@ -114,11 +125,27 @@ public class PostMainPageServiceImpl implements PostMainPageService{
 
     // 게시물 수정
     @Transactional
-    public Long updatePost(Account account, Long postId, PostRequestDto.PostUpdate dto){
+    public Long updatePost(Account account, Long postId, PostRequestDto.PostUpdate dto, List<MultipartFile> imgFile){
         Post post = postValidation(account.getId(), postId);
+        List<PostImage> postImages = postImageRepository.findByPostId(post.getId());
+        if(imgFile!=null){
+            postImages.forEach((img) -> {
+                // S3 삭제
+                fileProcessService.deleteImage(img.getPostImg());
+            });
+            // db 삭제
+            postImageRepository.deleteAllByPostId(postId);
+
+            // 재저장
+            imgFile.forEach((img) -> {
+                String s = fileProcessService.uploadImage(img);
+                PostImage postImage = PostImage.builder().post(post).postImg(s).build();
+                postImageRepository.save(postImage);
+            });
+        }
         post.updatePost(dto);
-        postImageRepository.deleteAllByPostId(postId);
         setImgUrl(dto.getImg(), post);
+        // 태그도 지우고 다시 세팅
         postTagRepository.deleteAllByPostId(postId);
         setPostTag(dto.getHashTag(), post);
         return post.getId();
@@ -128,6 +155,12 @@ public class PostMainPageServiceImpl implements PostMainPageService{
     @Transactional
     public void deletePost(Long accountId, Long postId){
         Post post = postValidation(accountId, postId);
+        List<PostImage> postImages = postImageRepository.findByPostId(postId);
+        postImages.forEach((img) -> {
+            // S3 이미지 삭제
+            fileProcessService.deleteImage(img.getPostImg());
+        });
+        // db 삭제
         postLikesRepository.deleteAllByPostId(postId);
         postTagRepository.deleteAllByPostId(postId);
         postImageRepository.deleteAllByPostId(postId);

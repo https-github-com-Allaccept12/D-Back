@@ -56,9 +56,10 @@ public class ArtWorkMainController {
     @PatchMapping("/api/artwork/{artwork_id}")
     public ResponseEntity<Success> updateArtWork(@AuthenticationPrincipal UserDetailsImpl user,
                                                  @PathVariable Long artwork_id,
-                                                 @RequestBody ArtWorkCreateAndUpdate data) {
+                                                 @RequestPart ArtWorkCreateAndUpdate data,
+                                                 @RequestPart List<MultipartFile> imgFile) {
         return new ResponseEntity<>(new Success("작품 수정 완료",
-                artworkMainService.updateArtwork(user.getUser(),artwork_id,data)),HttpStatus.OK);
+                artworkMainService.updateArtwork(user.getUser(),artwork_id,data, imgFile)),HttpStatus.OK);
     }
 
     @DeleteMapping("/api/artwork/{artwork_id}")

@@ -11,6 +11,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -33,7 +36,7 @@ public class PostMainController {
                                             @PathVariable Long last_post_id,
                                             @PathVariable PostBoard board) {
         return new ResponseEntity<>(new Success("디플 메인 페이지",
-                postMainPageService.showPostMain(user.getUser().getId(), last_post_id, board)), HttpStatus.OK);
+                postMainPageService.showPostMainByLikes(user.getUser().getId(), last_post_id, board)), HttpStatus.OK);
     }
 
     // 상세 목록
@@ -47,18 +50,20 @@ public class PostMainController {
     // 게시물 등록
     @PostMapping("")
     public ResponseEntity<Success> createPost(@AuthenticationPrincipal UserDetailsImpl user,
-                                              @RequestBody PostRequestDto.PostCreate data) {
+                                              @RequestPart PostRequestDto.PostCreate data,
+                                              @RequestPart List<MultipartFile> imgFile) {
         return new ResponseEntity<>(new Success("디플 게시물 등록",
-                postMainPageService.createPost(user.getUser(), data)), HttpStatus.OK);
+                postMainPageService.createPost(user.getUser(), data, imgFile)), HttpStatus.OK);
     }
 
     // 게시물 수정
     @PatchMapping("/{post_id}")
     public ResponseEntity<Success> updatePost(@AuthenticationPrincipal UserDetailsImpl user,
                                               @PathVariable Long post_id,
-                                              @RequestBody PostRequestDto.PostUpdate data) {
+                                              @RequestBody PostRequestDto.PostUpdate data,
+                                              @RequestPart List<MultipartFile> imgFile) {
         return new ResponseEntity<>(new Success("디플 게시물 수정",
-                postMainPageService.updatePost(user.getUser(), post_id, data)), HttpStatus.OK);
+                postMainPageService.updatePost(user.getUser(), post_id, data, imgFile)), HttpStatus.OK);
     }
 
     // 게시물 삭제

@@ -17,7 +17,7 @@ public interface ArtworkMainService {
 //    Long createArtwork(Account account, ArtWorkRequestDto.ArtWorkCreateAndUpdate artWorkCreate);
     Long createArtwork(Account account, ArtWorkRequestDto.ArtWorkCreateAndUpdate artWorkCreate, List<MultipartFile> multipartFiles);
 
-    Long updateArtwork(Account account, Long artworkId, ArtWorkRequestDto.ArtWorkCreateAndUpdate artWorkUpdate);
+    Long updateArtwork(Account account, Long artworkId, ArtWorkRequestDto.ArtWorkCreateAndUpdate artWorkUpdate, List<MultipartFile> multipartFiles);
 
     void deleteArtwork(Long accountId, Long artworkId);
 
