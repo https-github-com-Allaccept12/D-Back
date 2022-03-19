@@ -28,19 +28,6 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
 
-#      - name: Set Yaml
-#        uses: microsoft/variable-substitution@v1
-#        with:
-#          files: ./src/main/resources/application-real.yml
-#        env:
-#          spring.datasource.url: ${{ secrets.RDS_HOST }}
-#          spring.datasource.username: ${{ secrets.RDS_USERNAME }}
-#          spring.datasource.password: ${{ secrets.RDS_PASSWORD }}
-#          jwt.secret: ${{ secrets.JWT_SECRET }}
-#          cloud.aws.credentials.accessKey: ${{secrets.AWS_S3_ACCESS_KEY}}
-#          cloud.aws.credentials.secretKey: ${{secrets.AWS_S3_SECRET_KEY}}
-#          cloud.aws.s3.region: ${{secrets.AWS_REGION}}
-#          cloud.aws.s3.bucket: ${{secrets.AWS_S3_BUCKET_NAME}}
       - name: Set Yaml-1
         uses: microsoft/variable-substitution@v1
         with:
@@ -113,28 +100,3 @@ jobs:
       - name: Code Deploy
         run: aws deploy create-deployment --application-name dplus-deploy --deployment-config-name CodeDeployDefault.AllAtOnce --deployment-group-name develop --s3-location bucket=$S3_BUCKET_NAME,bundleType=zip,key=$GITHUB_SHA.zip
 
-
-
-
-
-#      - name: Generate deployment package
-#        run: |
-#          mkdir -p deploy          cp build/libs/*.jar deploy/application.jar # 빌드 완료 시 jar 파일명을 application.jar로 변경
-#          cp Procfile deploy/Procfile
-#          cp -r .ebextensions deploy/.ebextensions
-#          cp -r .platform deploy/.platform
-#          cd deploy && zip -r deploy.zip . # Procfile, .ebextensions, .platform 포함하여 zip 생성
-
-#      # Beanstalk Deploy 플러그인 사용
-#      - name: Beanstalk Deploy
-#        uses: einaregilsson/beanstalk-deploy@v14
-#        with:
-#          aws_access_key: ${{ secrets.AWS_EB_ACCESS_KEY }} # github secrets로 등록한 값 사용
-#          aws_secret_key: ${{ secrets.AWS_EB_SECRET_KEY }} # github secrets로 등록한 값 사용
-#          application_name: dplus-beanstalk # EB application 이름
-#          environment_name: Dplusbeanstalk-env # EB environment 이름
-#          version_label: github-action-${{steps.current-time.outputs.formattedTime}} # 배포 버전은 타임스탬프를 이용하여 구분
-#          region: ap-northeast-2
-#          deployment_package: deploy/deploy.zip
-#          wait_for_environment_recovery: 300 # default wait time은 30초이며, 필자의 EB가 느려서 180초로 지정했습니다(지정 안하면 간혹 timeout 발생).
-#

@@ -27,8 +27,7 @@ cloud:
   aws:
     s3:
       bucket: ${aws.s3.bucketname}
-      region:
-        static: ap-northeast-2
+      region: ${aws.s3.region}
       stack:
         auto: false
 
