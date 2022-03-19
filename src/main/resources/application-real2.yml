@@ -1,4 +1,8 @@
 spring:
+  config:
+    activate:
+      on-profile: real2
+
   datasource:
     #h2 setting
     #    driver-class-name: org.h2.Driver

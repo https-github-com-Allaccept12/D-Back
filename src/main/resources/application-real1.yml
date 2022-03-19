@@ -1,4 +1,8 @@
 spring:
+  config:
+    activate:
+      on-profile: real1
+
   datasource:
     #h2 setting
     #    driver-class-name: org.h2.Driver
@@ -22,6 +26,7 @@ spring:
         format_sql: true
         default_batch_fetch_size: 1000
     open-in-view: false
+
 
 cloud:
   aws:
