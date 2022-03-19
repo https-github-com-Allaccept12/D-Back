@@ -31,7 +31,8 @@ cloud:
   aws:
     s3:
       bucket: ${aws.s3.bucketname}
-      region: ${cloud.aws.s3.region}
+      region:
+        static: ${cloud.aws.s3.region}
       stack:
         auto: false
 
