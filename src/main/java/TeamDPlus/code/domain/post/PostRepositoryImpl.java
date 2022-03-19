@@ -122,14 +122,12 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                         post.modified,
                         post.isSelected,
                         postLikes.count(),
-                        postBookMark.count(),
                         account.id,
                         account.profileImg,
                         account.nickname
                 ))
                 .from(post)
                 .innerJoin(post.account, account)
-                .leftJoin(postBookMark).on(postBookMark.post.eq(post))
                 .leftJoin(postLikes).on(postLikes.post.eq(post))
                 .where(post.id.eq(postId))
                 .groupBy(post.id)
@@ -210,13 +208,11 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                         post.created,
                         post.modified,
                         postLikes.count(),
-                        postBookMark.count(),
                         account.id,
                         account.profileImg
                 ))
                 .from(post)
                 .join(post.account, account)
-                .leftJoin(postBookMark).on(postBookMark.post.eq(post))
                 .leftJoin(postLikes).on(postLikes.post.eq(post))
                 .offset(0)
                 .limit(5)

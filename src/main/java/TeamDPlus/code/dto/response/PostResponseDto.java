@@ -215,11 +215,12 @@ public class PostResponseDto {
         private List<CommonDto.ImgUrlDto> img;
         private List<CommonDto.PostTagDto> hash_tag;
         private List<PostResponseDto.PostAnswer> answers;
+        private Long bookMark_count;
 
         @Builder
         public PostAnswerDetailPage(boolean is_like, boolean is_bookmark, boolean is_follow, PostAnswerSubDetail postAnswerSubDetail,
                               List<CommonDto.ImgUrlDto> img, List<CommonDto.PostTagDto> hash_tag,
-                              List<PostAnswer> answers) {
+                              List<PostAnswer> answers, Long bookMark_count) {
             this.is_like = is_like;
             this.is_bookmark = is_bookmark;
             this.is_follow = is_follow;
@@ -227,11 +228,12 @@ public class PostResponseDto {
             this.img = img;
             this.hash_tag = hash_tag;
             this.answers = answers;
+            this.bookMark_count = bookMark_count;
         }
 
         public static PostAnswerDetailPage from(final List<PostImage> postImageList, final List<PostAnswer> answerList,
                                           final List<PostTag> postTagsList, final PostAnswerSubDetail postAnswerSubDetail,
-                                          final boolean is_like, final boolean is_bookmark, final boolean is_follow
+                                          final boolean is_like, final boolean is_bookmark, final boolean is_follow, final Long bookMark_count
         ){
             return PostAnswerDetailPage.builder()
                     .postAnswerSubDetail(postAnswerSubDetail)
@@ -243,6 +245,7 @@ public class PostResponseDto {
                     .is_follow(is_follow)
                     .hash_tag(postTagsList.stream()
                             .map(i -> new CommonDto.PostTagDto(i.getHashTag())).collect(Collectors.toList()))
+                    .bookMark_count(bookMark_count)
                     .build();
         }
 
@@ -260,7 +263,6 @@ public class PostResponseDto {
         private Long view_count;
         private Long answer_count;
         private Long like_count;
-        private Long bookmark_count;
         private String category;
         private Timestamp create_time;
         private Timestamp modify_time;
@@ -269,7 +271,7 @@ public class PostResponseDto {
         @Builder
         public PostAnswerSubDetail(final Long post_id, final Long account_id, final Long account_nickname,
                              final String account_profile_img, final String title, final String content,
-                             final Long view_count, final Long like_count, final Long bookmark_count, final String category,
+                             final Long view_count, final Long like_count, final String category,
                              final Timestamp create_time, final Timestamp modify_time, final boolean isSelected) {
             this.post_id = post_id;
             this.account_id = account_id;
@@ -279,7 +281,6 @@ public class PostResponseDto {
             this.content = content;
             this.view_count = view_count;
             this.like_count = like_count;
-            this.bookmark_count = bookmark_count;
             this.category = category;
             this.create_time = create_time;
             this.modify_time = modify_time;
@@ -394,6 +395,10 @@ public class PostResponseDto {
 
         public void setAnswer_count(Long answer_count) {
             this.answer_count = answer_count;
+        }
+
+        public void setBookmark_count(Long bookmark_count) {
+            this.bookmark_count = bookmark_count;
         }
 
         public void setHash_tag(List<PostTag> hash_tag) {
