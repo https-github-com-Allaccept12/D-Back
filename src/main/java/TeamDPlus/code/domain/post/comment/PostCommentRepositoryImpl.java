@@ -1,5 +1,7 @@
 package TeamDPlus.code.domain.post.comment;
 
+import TeamDPlus.code.domain.post.PostBoard;
+import TeamDPlus.code.dto.response.AccountResponseDto;
 import TeamDPlus.code.dto.response.PostResponseDto;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -7,9 +9,11 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
+import static TeamDPlus.code.domain.account.QAccount.account;
 import static TeamDPlus.code.domain.post.comment.QPostComment.postComment;
 import static TeamDPlus.code.domain.post.QPost.post;
 import static TeamDPlus.code.domain.post.comment.like.QPostCommentLikes.postCommentLikes;
+import static TeamDPlus.code.domain.post.like.QPostLikes.postLikes;
 
 @RequiredArgsConstructor
 public class PostCommentRepositoryImpl implements PostCommentRepositoryCustom{
@@ -32,6 +36,26 @@ public class PostCommentRepositoryImpl implements PostCommentRepositoryCustom{
                 .join(post).on(post.id.eq(postId))
                 .leftJoin(postCommentLikes).on(postComment.id.eq(postCommentLikes.postComment.id))
                 .groupBy(postComment.id) // groupBy로 묶어줘야 성능 올라감
+                .orderBy(postCommentLikes.count().desc())
+                .fetch();
+    }
+
+    // 나의 댓글
+    @Override
+    public List<AccountResponseDto.MyComment> findPostCommentByAccountId(Long accountId) {
+        return jpaQueryFactory
+                .select(Projections.constructor(AccountResponseDto.MyComment.class,
+                        postComment.id,
+                        postComment.content,
+                        postComment.created,
+                        postComment.modified,
+                        postCommentLikes.count(),
+                        account.profileImg
+                ))
+                .from(postComment)
+                .join(postComment.account, account).on(account.id.eq(accountId))
+                .leftJoin(postCommentLikes).on(postComment.id.eq(postCommentLikes.postComment.id))
+                .groupBy(postComment.id)
                 .orderBy(postCommentLikes.count().desc())
                 .fetch();
     }

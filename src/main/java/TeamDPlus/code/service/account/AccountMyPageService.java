@@ -39,7 +39,16 @@ public interface AccountMyPageService {
 
     List<ArtWorkResponseDto.ArtWorkBookMark> showAccountArtWorkBookMark(final Long lastArtWorkId,final Long accountId);
 
+    AccountResponseDto.MyPostAndComment myPostAndComment(Long accountId, String board);
 
+    AccountResponseDto.MyQuestionAndAnswer myQuestionAndAnswer(Long accountId, String board);
 
+    List<AccountResponseDto.MyPost> getMyPost(Long accountId, String board);
+
+    List<AccountResponseDto.MyPost> getMyBookMarkPost(Long accountId, String board);
+
+    List<AccountResponseDto.MyAnswer> getMyAnswer(Long accountId);
+
+    List<AccountResponseDto.MyComment> getMyComment(Long accountId);
 
 }

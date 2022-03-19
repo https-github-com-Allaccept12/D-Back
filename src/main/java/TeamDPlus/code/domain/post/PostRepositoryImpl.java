@@ -2,6 +2,7 @@ package TeamDPlus.code.domain.post;
 
 import TeamDPlus.code.domain.post.tag.PostTag;
 import TeamDPlus.code.domain.post.tag.QPostTag;
+import TeamDPlus.code.dto.response.AccountResponseDto;
 import TeamDPlus.code.dto.response.ArtWorkResponseDto;
 import TeamDPlus.code.dto.response.PostResponseDto;
 import com.querydsl.core.types.Projections;
@@ -17,6 +18,8 @@ import java.util.List;
 
 import static TeamDPlus.code.domain.account.QAccount.account;
 import static TeamDPlus.code.domain.artwork.QArtWorks.artWorks;
+import static TeamDPlus.code.domain.artwork.bookmark.QArtWorkBookMark.artWorkBookMark;
+import static TeamDPlus.code.domain.artwork.image.QArtWorkImage.artWorkImage;
 import static TeamDPlus.code.domain.artwork.like.QArtWorkLikes.artWorkLikes;
 import static TeamDPlus.code.domain.post.QPost.post;
 import static TeamDPlus.code.domain.post.bookmark.QPostBookMark.postBookMark;
@@ -166,7 +169,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
 
 
     // 좋아요 + 조회수 탑 10
-   @Override
+    @Override
     public List<PostResponseDto.PostPageMain> findPostByMostViewAndMostLike() {
         List<PostResponseDto.PostPageMain> result = queryFactory
                 .select(Projections.constructor(PostResponseDto.PostPageMain.class,
@@ -214,11 +217,57 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                 .from(post)
                 .join(post.account, account)
                 .leftJoin(postLikes).on(postLikes.post.eq(post))
+                .where(post.category.eq(category))
                 .offset(0)
                 .limit(5)
                 .groupBy(post.id)
                 .orderBy(postLikes.count().desc(), post.view.desc())
                 .fetch();
         return result;
+    }
+
+    // 나의 질문
+    @Override
+    public List<AccountResponseDto.MyPost> findPostByAccountIdAndBoard(Long accountId, String board) {
+        List<AccountResponseDto.MyPost> result = queryFactory
+                .select(Projections.constructor(AccountResponseDto.MyPost.class,
+                        post.id,
+                        post.title,
+                        post.content,
+                        post.created,
+                        post.modified,
+                        postLikes.count(),
+                        account.profileImg
+                ))
+                .from(post)
+                .join(post.account, account).on(account.id.eq(accountId))
+                .leftJoin(postLikes).on(postLikes.post.eq(post))
+                .where(post.board.eq(PostBoard.valueOf(board)))
+                .groupBy(post.id)
+                .orderBy(postLikes.count().desc(), post.view.desc())
+                .fetch();
+        return result;
+    }
+
+    // 내가 스크랩한 글
+    @Override
+    public List<AccountResponseDto.MyPost> findPostBookMarkByAccountId(Long accountId, String board) {
+        return queryFactory
+                .select(Projections.constructor(AccountResponseDto.MyPost.class,
+                        post.id,
+                        post.account.profileImg,
+                        post.title,
+                        post.content,
+                        post.created,
+                        post.modified,
+                        postLikes.count()
+                ))
+                .from(post)
+                .join(postBookMark).on(postBookMark.post.eq(post))
+                .leftJoin(postLikes).on(postLikes.post.eq(post))
+                .where(artWorkBookMark.account.id.eq(accountId), post.board.eq(PostBoard.valueOf(board)))
+                .groupBy(post.id)
+                .orderBy(post.created.desc())
+                .fetch();
     }
 }

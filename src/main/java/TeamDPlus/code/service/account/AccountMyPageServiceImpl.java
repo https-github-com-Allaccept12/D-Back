@@ -1,5 +1,6 @@
 package TeamDPlus.code.service.account;
 
+import TeamDPlus.code.advice.ApiRequestException;
 import TeamDPlus.code.domain.account.Account;
 import TeamDPlus.code.domain.account.AccountRepository;
 import TeamDPlus.code.domain.account.follow.FollowRepository;
@@ -7,12 +8,19 @@ import TeamDPlus.code.domain.account.history.History;
 import TeamDPlus.code.domain.account.history.HistoryRepository;
 import TeamDPlus.code.domain.artwork.ArtWorkRepository;
 import TeamDPlus.code.domain.artwork.ArtWorks;
+import TeamDPlus.code.domain.artwork.bookmark.ArtWorkBookMark;
+import TeamDPlus.code.domain.artwork.bookmark.ArtWorkBookMarkRepository;
+import TeamDPlus.code.domain.post.PostRepository;
+import TeamDPlus.code.domain.post.answer.PostAnswerRepository;
+import TeamDPlus.code.domain.post.bookmark.PostBookMarkRepository;
+import TeamDPlus.code.domain.post.comment.PostCommentRepository;
 import TeamDPlus.code.dto.request.AccountRequestDto;
 import TeamDPlus.code.dto.request.ArtWorkRequestDto;
 import TeamDPlus.code.dto.request.HistoryRequestDto;
 import TeamDPlus.code.dto.response.AccountResponseDto;
 import TeamDPlus.code.dto.response.ArtWorkResponseDto;
 import TeamDPlus.code.dto.response.HistoryResponseDto;
+import TeamDPlus.code.dto.response.PostResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -32,7 +40,10 @@ public class AccountMyPageServiceImpl implements AccountMyPageService {
     private final HistoryRepository historyRepository;
     private final ArtWorkRepository artWorkRepository;
     private final FollowRepository followRepository;
-
+    private final PostRepository postRepository;
+    private final PostAnswerRepository postAnswerRepository;
+    private final PostBookMarkRepository postBookMarkRepository;
+    private final PostCommentRepository postCommentRepository;
 
     //마이페이지
     @Transactional(readOnly = true)
@@ -147,9 +158,43 @@ public class AccountMyPageServiceImpl implements AccountMyPageService {
         }
     }
 
+    public AccountResponseDto.MyPostAndComment myPostAndComment(Long accountId, String board) {
+        return AccountResponseDto.MyPostAndComment.from(getMyPost(accountId, board), getMyComment(accountId));
+    }
 
+    public AccountResponseDto.MyQuestionAndAnswer myQuestionAndAnswer(Long accountId, String board) {
+        return AccountResponseDto.MyQuestionAndAnswer.from(getMyPost(accountId, board), getMyAnswer(accountId));
+    }
 
+    public List<AccountResponseDto.MyPost> getMyPost(Long accountId, String board) {
+        List<AccountResponseDto.MyPost> myPosts = postRepository.findPostByAccountIdAndBoard(accountId, board);
+        setPostInfo(myPosts);
+        return myPosts;
+    }
 
+    public List<AccountResponseDto.MyPost> getMyBookMarkPost(Long accountId, String board) {
+        return postRepository.findPostBookMarkByAccountId(accountId, board);
+    }
+
+    public List<AccountResponseDto.MyAnswer> getMyAnswer(Long accountId) {
+        List<AccountResponseDto.MyAnswer> myAnswers = postAnswerRepository.findPostAnswerByAccountId(accountId);
+        return myAnswers;
+    }
+
+    public List<AccountResponseDto.MyComment> getMyComment(Long accountId) {
+        List<AccountResponseDto.MyComment> myComments = postCommentRepository.findPostCommentByAccountId(accountId);
+        return myComments;
+    }
+
+    private void setPostInfo(List<AccountResponseDto.MyPost> myPosts) {
+        myPosts.forEach((myPost) -> {
+           Long answerCount = postAnswerRepository.countByPostId(myPost.getPost_id());
+           myPost.setAnswer_count(answerCount);
+
+           Long bookMarkCount = postBookMarkRepository.countByPostId(myPost.getPost_id());
+           myPost.setBookmark_count(bookMarkCount);
+        });
+    }
 
 }
 

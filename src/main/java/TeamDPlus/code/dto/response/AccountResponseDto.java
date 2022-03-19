@@ -3,10 +3,14 @@ package TeamDPlus.code.dto.response;
 import TeamDPlus.code.domain.account.Account;
 import TeamDPlus.code.domain.account.Specialty;
 import TeamDPlus.code.domain.account.history.History;
+import TeamDPlus.code.domain.artwork.ArtWorks;
+import TeamDPlus.code.domain.artwork.bookmark.ArtWorkBookMark;
+import TeamDPlus.code.dto.common.CommonDto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -106,6 +110,127 @@ public class AccountResponseDto {
         }
     }
 
+    @Getter
+    @NoArgsConstructor
+    public static class MyPostAndComment {
+        private List<MyPost> myPosts;
+        private List<MyComment> myComments;
+
+        @Builder
+        public MyPostAndComment(List<MyPost> myPosts, List<MyComment> myComments) {
+            this.myPosts = myPosts;
+            this.myComments = myComments;
+        }
+
+        public static MyPostAndComment from(final List<MyPost> myPosts, final List<MyComment> myComments) {
+            return MyPostAndComment.builder()
+                    .myPosts(myPosts)
+                    .myComments(myComments)
+                    .build();
+        }
+    }
+
+    @Getter
+    @NoArgsConstructor
+    public static class MyQuestionAndAnswer {
+        private List<MyPost> myPosts;
+        private List<MyAnswer> myAnswers;
+
+        @Builder
+        public MyQuestionAndAnswer(List<MyPost> myPosts, List<MyAnswer> myAnswers) {
+            this.myPosts = myPosts;
+            this.myAnswers = myAnswers;
+        }
+
+        public static MyQuestionAndAnswer from(final List<MyPost> myPosts, final List<MyAnswer> myAnswers) {
+            return MyQuestionAndAnswer.builder()
+                    .myPosts(myPosts)
+                    .myAnswers(myAnswers)
+                    .build();
+        }
+    }
+
+    @Getter
+    @NoArgsConstructor
+    public static class MyPost {
+        private Long post_id;
+        private String title;
+        private String content;
+        private Long answer_count;
+        private Long like_count;
+        private Long bookmark_count;
+        private Timestamp create_time;
+        private Timestamp modify_time;
+        private String profileImg;
+
+        @Builder
+        public MyPost(final Long post_id, final String title, final String content, final Long answer_count,
+                          final Long like_count, final Long bookmark_count, final Timestamp create_time,
+                          final Timestamp modify_time, final String profileImg) {
+            this.post_id = post_id;
+            this.title = title;
+            this.content = content;
+            this.answer_count = answer_count;
+            this.like_count = like_count;
+            this.bookmark_count = bookmark_count;
+            this.create_time = create_time;
+            this.modify_time = modify_time;
+            this.profileImg = profileImg;
+        }
+
+        public void setAnswer_count(Long answer_count) {
+            this.answer_count = answer_count;
+        }
+
+        public void setBookmark_count(Long bookmark_count) {
+            this.bookmark_count = bookmark_count;
+        }
+    }
+
+    @Getter
+    @NoArgsConstructor
+    public static class MyAnswer {
+        private Long post_answer_id;
+        private String content;
+        private Long like_count;
+        private Timestamp create_time;
+        private Timestamp modify_time;
+        private String profileImg;
+
+        @Builder
+        public MyAnswer(final Long post_answer_id, final String content, final Long like_count,
+                        final Timestamp create_time, final Timestamp modify_time, final String profileImg) {
+            this.post_answer_id = post_answer_id;
+            this.content = content;
+            this.like_count = like_count;
+            this.create_time = create_time;
+            this.modify_time = modify_time;
+            this.profileImg = profileImg;
+        }
+
+    }
+
+    @Getter
+    @NoArgsConstructor
+    public static class MyComment {
+        private Long post_comment_id;
+        private String content;
+        private Long like_count;
+        private Timestamp create_time;
+        private Timestamp modify_time;
+        private String profileImg;
+
+        @Builder
+        public MyComment(final Long post_comment_id, final String content, final Long like_count,
+                         final Timestamp create_time, final Timestamp modify_time, final String profileImg) {
+            this.post_comment_id = post_comment_id;
+            this.content = content;
+            this.like_count = like_count;
+            this.create_time = create_time;
+            this.modify_time = modify_time;
+            this.profileImg = profileImg;
+        }
+    }
 
 }
 

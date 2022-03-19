@@ -301,14 +301,12 @@ public class PostResponseDto {
         private int is_selected;
         private Long like_count;
         private Long view_count;
-        private List<PostResponseDto.PostAnswerComment> answerComment;
         private boolean is_like;
         private boolean is_follow;
 
         @Builder
         public PostAnswer(final Long account_id, final Long answer_id, final String content, final Timestamp modify_time,
                           final int is_selected, final Long like_count, final Long view_count,
-                          final List<PostResponseDto.PostAnswerComment> answerComment,
                           final boolean is_like, final boolean is_follow) {
             this.account_id = account_id;
             this.answer_id = answer_id;
@@ -317,7 +315,6 @@ public class PostResponseDto {
             this.is_selected = is_selected;
             this.like_count = like_count;
             this.view_count = view_count;
-            this.answerComment = answerComment;
             this.is_like = is_like;
             this.is_follow = is_follow;
         }
@@ -328,21 +325,6 @@ public class PostResponseDto {
 
         public void setIsFollow(boolean is_follow) {
             this.is_follow = is_follow;
-        }
-    }
-
-    @Getter
-    @NoArgsConstructor
-    public static class PostAnswerComment {
-        private Long account_id;
-        private Long answer_comment_id;
-        private String content;
-
-        @Builder
-        public PostAnswerComment(final Long account_id, final Long answer_comment_id, final String content) {
-            this.account_id = account_id;
-            this.answer_comment_id = answer_comment_id;
-            this.content = content;
         }
     }
 
@@ -406,29 +388,6 @@ public class PostResponseDto {
                     .map(i -> new CommonDto.PostTagDto(i.getHashTag())).collect(Collectors.toList());
         }
 
-//        public static PostSimilarQuestion from(final Long post_id, final Long account_id, final String account_profile_img, final String title, final String content,
-//                                               final Long answer_count, final Long like_count, final Long bookmark_count, final String category,
-//                                               final Timestamp create_time, final Timestamp modify_time, final boolean is_like, final boolean is_bookmark,
-//                                               final List<PostImage> postImageList, final List<PostTag> postTagsList) {
-//            return PostSimilarQuestion.builder()
-//                    .post_id(post_id)
-//                    .account_id(account_id)
-//                    .account_profile_img(account_profile_img)
-//                    .title(title)
-//                    .content(content)
-//                    .answer_count(answer_count)
-//                    .like_count(like_count)
-//                    .bookmark_count(bookmark_count)
-//                    .create_time(create_time)
-//                    .modify_time(modify_time)
-//                    .is_like(is_like)
-//                    .is_bookmark(is_bookmark)
-//                    .img(postImageList.stream()
-//                            .map(i -> new CommonDto.ImgUrlDto(i.getPostImg())).collect(Collectors.toList()))
-//                    .hash_tag(postTagsList.stream()
-//                            .map(i -> new CommonDto.PostTagDto(i.getHashTag())).collect(Collectors.toList()))
-//                    .build();
-//        }
     }
 
 }
