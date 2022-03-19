@@ -44,5 +44,5 @@ jwt:
   #hs256 알고리즘 32비트 이상의 시크릿키
   secret: ${jwt.secret}
 
-#server:
-#  port: 8081
+server:
+  port: 8080
