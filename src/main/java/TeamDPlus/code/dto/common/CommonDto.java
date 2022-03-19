@@ -1,6 +1,7 @@
 package TeamDPlus.code.dto.common;
 
 import TeamDPlus.code.domain.artwork.image.ArtWorkImage;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -18,7 +19,7 @@ public class CommonDto {
         private String content;
         private Timestamp modify_time;
 
-        public CommentDto(Long account_id, Long comment_id, String content, Timestamp modify_time) {
+        public CommentDto(final Long account_id, final Long comment_id, final String content, final Timestamp modify_time) {
             this.account_id = account_id;
             this.comment_id = comment_id;
             this.content = content;
