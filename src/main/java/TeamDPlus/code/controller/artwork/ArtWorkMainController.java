@@ -27,14 +27,14 @@ public class ArtWorkMainController {
     @Value("${cloud.aws.credentials.secret-key}")
     private String secretKey;
 
-    
+
 
     private final AmazonS3Component testS3;
 
     @GetMapping("/")
     public ResponseEntity<Success> main(@AuthenticationPrincipal UserDetailsImpl user) {
         if (user == null) {
-            return new ResponseEntity<>(new Success("메인 페이지 진짜..되나?"+ accessKey+"  "+secretKey+ "  " + region + " " + testS3.getBucket(),
+            return new ResponseEntity<>(new Success("메인 페이지 진짜..되나?"+ accessKey+"  "+secretKey+ "  " + testS3.getBucket(),
                     artworkMainService.mostPopularArtWork(null)), HttpStatus.OK);
         }
         return new ResponseEntity<>(new Success("메인 페이지",
