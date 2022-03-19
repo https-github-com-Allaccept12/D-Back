@@ -32,6 +32,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -47,6 +48,7 @@ public class PostMainPageServiceImpl implements PostMainPageService{
     private final PostBookMarkRepository postBookMarkRepository;
     private final PostTagRepository postTagRepository;
     private final FollowRepository followRepository;
+    private final PostCommentLikesRepository postCommentLikesRepository;
 
     private final FileProcessService fileProcessService;
 
@@ -103,8 +105,19 @@ public class PostMainPageServiceImpl implements PostMainPageService{
         boolean isBookmark = postBookMarkRepository.existByAccountIdAndPostId(accountId, postId);
         boolean isFollow = followRepository.existsByFollowerIdAndFollowingId(accountId, postSubDetail.getAccount_id());
         Long comment_count = (long) postComments.size();
+
+        // 리스트 생성
+        List<CommonDto.IsCommentsLiked> isCommentsLikes = new ArrayList<>();
+
+        // 코멘트 당 좋아요 눌렀는지 체크
+        for (int i = 0; i < postComments.size(); i++) {
+            boolean isCommentLike = postCommentLikesRepository.existByAccountIdAndPostCommentId(accountId, postComments.get(i).getComment_id());
+            isCommentsLikes.get(i).setIsCommentsLiked(isCommentLike);
+            return PostResponseDto.PostDetailPage.from(postImageList, postComments,
+                    postTags, postSubDetail, isLike, isBookmark, isFollow, comment_count, isCommentsLikes);
+        }
         return PostResponseDto.PostDetailPage.from(postImageList, postComments,
-                postTags, postSubDetail, isLike, isBookmark, isFollow, comment_count);
+                postTags, postSubDetail, isLike, isBookmark, isFollow, comment_count, isCommentsLikes);
     }
 
     // 게시글 작성

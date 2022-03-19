@@ -70,13 +70,15 @@ public class PostResponseDto {
         private PostSubDetail postSubDetail;
         private List<CommonDto.ImgUrlDto> img;
         private List<CommonDto.PostTagDto> hash_tag;
+        private List<CommonDto.IsCommentsLiked> is_comments_likes;
         private List<PostResponseDto.PostComment> comment;
         private PostBoard board;
 
         @Builder
         public PostDetailPage(final boolean is_like, final boolean is_bookmark, final boolean is_follow,
                               final PostSubDetail postSubDetail, final List<CommonDto.ImgUrlDto> img, final PostBoard board,
-                              final List<CommonDto.PostTagDto> hash_tag, final List<PostComment> comment, final Long comment_count) {
+                              final List<CommonDto.PostTagDto> hash_tag, final List<PostComment> comment, final Long comment_count,
+                              final List<CommonDto.IsCommentsLiked> is_comments_likes) {
             this.is_like = is_like;
             this.is_bookmark = is_bookmark;
             this.is_follow = is_follow;
@@ -86,12 +88,13 @@ public class PostResponseDto {
             this.comment = comment;
             this.comment_count = comment_count;
             this.board = board;
+            this.is_comments_likes = is_comments_likes;
         }
 
         public static PostDetailPage from(final List<PostImage> postImageList, final List<PostComment> commentList,
                                           final List<PostTag> postTagsList, final PostSubDetail postSubDetail,
                                           final boolean is_like, final boolean is_bookmark, final boolean is_follow,
-                                          final Long comment_count
+                                          final Long comment_count, final List<CommonDto.IsCommentsLiked> isCommentLikeList
         ){
             return PostDetailPage.builder()
                     .postSubDetail(postSubDetail)
@@ -104,6 +107,8 @@ public class PostResponseDto {
                     .comment_count(comment_count)
                     .hash_tag(postTagsList.stream()
                             .map(i -> new CommonDto.PostTagDto(i.getHashTag())).collect(Collectors.toList()))
+                    .is_comments_likes(isCommentLikeList.stream()
+                            .map(i -> new CommonDto.IsCommentsLiked()).collect(Collectors.toList()))
                     .build();
         }
 
