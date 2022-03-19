@@ -33,6 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -109,24 +110,34 @@ public class PostMainPageServiceImpl implements PostMainPageService{
     // 게시글 작성
     @Transactional
     public Long createPost(Account account, PostRequestDto.PostCreate dto, List<MultipartFile> imgFile) {
+        postWriteValidation(dto);
         Post post = Post.of(account, dto);
         Post savedPost = postRepository.save(post);
+//        for(int i =0; i <dto.getImg().size(); i++){
+//            boolean thumbnail = dto.getImg().get(i).getThumbnail();
+//            String s = fileProcessService.uploadImage(imgFile.get(i));
+//        }
+
         if(imgFile!=null){
             imgFile.forEach((img) -> {
-                String s = fileProcessService.uploadImage(img);
-                PostImage postImage = PostImage.builder().post(post).postImg(s).build();
+                String s = fileProcessService.uploadImage(img); // s3 url
+                PostImage postImage = PostImage.builder().post(post).postImg(s).build(); // 1 번 포스트에 1번이미지
                 postImageRepository.save(postImage);
             });
         }
+
+        // 1) dto에 어떻게 img url 값을 세팅해야할지?
+        // 2) 저걸 할 필요가 있을지
         setPostTag(dto.getHashTag(), savedPost);
-        setImgUrl(dto.getImg(), savedPost);
+        // setImgUrl(dto.getImg(), savedPost);
         return post.getId();
     }
 
     // 게시물 수정
     @Transactional
     public Long updatePost(Account account, Long postId, PostRequestDto.PostUpdate dto, List<MultipartFile> imgFile){
-        Post post = postValidation(account.getId(), postId);
+        postUpdateValidation(dto);
+        Post post = postAuthValidation(account.getId(), postId);
         List<PostImage> postImages = postImageRepository.findByPostId(post.getId());
         if(imgFile!=null){
             postImages.forEach((img) -> {
@@ -144,7 +155,7 @@ public class PostMainPageServiceImpl implements PostMainPageService{
             });
         }
         post.updatePost(dto);
-        setImgUrl(dto.getImg(), post);
+        // setImgUrl(dto.getImg(), post);
         // 태그도 지우고 다시 세팅
         postTagRepository.deleteAllByPostId(postId);
         setPostTag(dto.getHashTag(), post);
@@ -154,7 +165,7 @@ public class PostMainPageServiceImpl implements PostMainPageService{
     // 게시글 삭제
     @Transactional
     public void deletePost(Long accountId, Long postId){
-        Post post = postValidation(accountId, postId);
+        Post post = postAuthValidation(accountId, postId);
         List<PostImage> postImages = postImageRepository.findByPostId(postId);
         postImages.forEach((img) -> {
             // S3 이미지 삭제
@@ -184,15 +195,15 @@ public class PostMainPageServiceImpl implements PostMainPageService{
         });
     }
 
-    private void setImgUrl(List<CommonDto.ImgUrlDto> dto, Post post) {
-        dto.forEach((img) -> {
-            PostImage postImage = PostImage.builder()
-                    .post(post)
-                    .postImg(img.getImg_url())
-                    .build();
-            postImageRepository.save(postImage);
-        });
-    }
+//    private void setImgUrl(List<CommonDto.ImgUrlDto> dto, Post post) {
+//        dto.forEach((img) -> {
+//            PostImage postImage = PostImage.builder()
+//                    .post(post)
+//                    .postImg(img.getFilename())
+//                    .build();
+//            postImageRepository.save(postImage);
+//        });
+//    }
 
     // #단위로 끊어서 해쉬태그 들어옴
     private void setPostTag(List<CommonDto.PostTagDto> dto, Post post){
@@ -206,12 +217,41 @@ public class PostMainPageServiceImpl implements PostMainPageService{
     }
 
     // post 수정, 삭제 권한 확인
-    private Post postValidation(Long accountId, Long postId){
+    private Post postAuthValidation(Long accountId, Long postId){
         Post post = postRepository.findById(postId).orElseThrow(() -> new ApiRequestException("해당 게시글은 존재하지 않습니다."));
         if(!post.getAccount().getId().equals(accountId)){
             throw new ApiRequestException("권한이 없습니다.");
         }
         return post;
+    }
+
+    // 게시글작성 필수요소 validation
+    private void postWriteValidation(PostRequestDto.PostCreate dto){
+        if(Objects.equals(dto.getTitle(), "")){
+            throw new ApiRequestException("제목을 입력하세요");
+        }
+        if(Objects.equals(dto.getContent(), "")){
+            throw new ApiRequestException("내용을 입력하세요");
+        }
+        if(Objects.equals(dto.getCategory(), "")){
+            throw new ApiRequestException("카테고리를 입력하세요");
+        }
+        if(Objects.equals(dto.getBoard(), "")){
+            throw new ApiRequestException("디모 게시판 종류를 선택하세요");
+        }
+    }
+
+    // 게시글수정 필수요소 validation
+    private void postUpdateValidation(PostRequestDto.PostUpdate dto){
+        if(Objects.equals(dto.getTitle(), "")){
+            throw new ApiRequestException("제목을 입력하세요");
+        }
+        if(Objects.equals(dto.getContent(), "")){
+            throw new ApiRequestException("내용을 입력하세요");
+        }
+        if(Objects.equals(dto.getCategory(), "")){
+            throw new ApiRequestException("카테고리를 입력하세요");
+        }
     }
 
 }

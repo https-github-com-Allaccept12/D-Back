@@ -1,5 +1,4 @@
 package TeamDPlus.code.dto.response;
-import TeamDPlus.code.domain.account.QSpecialty;
 import TeamDPlus.code.domain.account.Specialty;
 import TeamDPlus.code.domain.artwork.ArtWorks;
 import TeamDPlus.code.domain.artwork.comment.ArtWorkComment;

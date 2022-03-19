@@ -34,9 +34,6 @@ public class ArtWorkRequestDto {
 
         private Specialty specialty;
 
-        public void setImg(List<CommonDto.ImgUrlDto> img) {
-            this.img = img;
-        }
     }
 
     @Getter

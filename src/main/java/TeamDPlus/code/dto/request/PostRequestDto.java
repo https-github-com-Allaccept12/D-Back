@@ -22,7 +22,7 @@ public class PostRequestDto {
 
         private String content;
 
-        private List<CommonDto.ImgUrlDto> img;
+        private List<CommonDto.ImgUrlDto> img; // null
 
         private List<CommonDto.PostTagDto> hashTag;
 

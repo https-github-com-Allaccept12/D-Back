@@ -47,7 +47,7 @@ public class PostMainController {
                 postMainPageService.showPostDetail(user.getUser().getId(), post_id)), HttpStatus.OK);
     }
 
-    // 게시물 등록
+    // 게시물 등록 - dto에서 파일명이랑 썸네일 boolean 값
     @PostMapping("")
     public ResponseEntity<Success> createPost(@AuthenticationPrincipal UserDetailsImpl user,
                                               @RequestPart PostRequestDto.PostCreate data,
@@ -60,7 +60,7 @@ public class PostMainController {
     @PatchMapping("/{post_id}")
     public ResponseEntity<Success> updatePost(@AuthenticationPrincipal UserDetailsImpl user,
                                               @PathVariable Long post_id,
-                                              @RequestBody PostRequestDto.PostUpdate data,
+                                              @RequestPart PostRequestDto.PostUpdate data,
                                               @RequestPart List<MultipartFile> imgFile) {
         return new ResponseEntity<>(new Success("디플 게시물 수정",
                 postMainPageService.updatePost(user.getUser(), post_id, data, imgFile)), HttpStatus.OK);
