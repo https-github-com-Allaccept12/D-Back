@@ -1,14 +1,17 @@
-spring:
-  mvc:
-    pathmatch:
-      matching-strategy: ant_path_matcher
-
-  profiles:
-    include:
-      - aws
-      - credentials
-      - db
-      - secret
+datasource:
+  #h2 setting
+  #    driver-class-name: org.h2.Driver
+  #    url: jdbc:h2:tcp://localhost/~/testdb
+  #    username: sa
+  #    password:
+  #mysql setting
+  driver-class-name: com.mysql.cj.jdbc.Driver
+  # DB Source
+  url: ${rds.host}
+  # DB username
+  username: ${rds.username}
+  # DB password
+  password: ${rds.password}
 
   jpa:
     hibernate:
@@ -20,8 +23,26 @@ spring:
     open-in-view: false
 
 
+cloud:
+  aws:
+    s3:
+      bucket: ${aws.s3.bucketname}
+      region:
+        static: ap-northeast-2
+      stack:
+        auto: false
+
+    credentials:
+      accessKey: ${aws.s3.accesskey}
+      secretKey: ${aws.s3.secretkey}
+
 logging.level:
   org.hibernate.SQL: debug
+
+jwt:
+  header: Authorization
+  #hs256 알고리즘 32비트 이상의 시크릿키
+  secret: ${jwt.secret}
 
 server:
   port: 8081
