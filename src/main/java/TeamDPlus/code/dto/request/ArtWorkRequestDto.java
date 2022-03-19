@@ -22,7 +22,7 @@ public class ArtWorkRequestDto {
 
         private String content;
 
-        private List<CommonDto.ImgUrlDto> img;
+        private List<CommonDto.uploadImgDto> img;
 
         private String category;
 

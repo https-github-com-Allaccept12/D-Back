@@ -58,7 +58,7 @@ public class PostResponseDto {
     }
 
 
-    // 디모 - 꿀팁
+   // 디모 - 꿀팁
     @Getter
     @NoArgsConstructor
     public static class PostDetailPage {

@@ -106,15 +106,13 @@ public class PostMainPageServiceImpl implements PostMainPageService{
         boolean isFollow = followRepository.existsByFollowerIdAndFollowingId(accountId, postSubDetail.getAccount_id());
         Long comment_count = (long) postComments.size();
 
-        // 리스트 생성
+        // 코멘트 좋아요 담을 리스트 생성
         List<CommonDto.IsCommentsLiked> isCommentsLikes = new ArrayList<>();
 
         // 코멘트 당 좋아요 눌렀는지 체크
         for (int i = 0; i < postComments.size(); i++) {
             boolean isCommentLike = postCommentLikesRepository.existByAccountIdAndPostCommentId(accountId, postComments.get(i).getComment_id());
             isCommentsLikes.get(i).setIsCommentsLiked(isCommentLike);
-            return PostResponseDto.PostDetailPage.from(postImageList, postComments,
-                    postTags, postSubDetail, isLike, isBookmark, isFollow, comment_count, isCommentsLikes);
         }
         return PostResponseDto.PostDetailPage.from(postImageList, postComments,
                 postTags, postSubDetail, isLike, isBookmark, isFollow, comment_count, isCommentsLikes);
@@ -126,23 +124,12 @@ public class PostMainPageServiceImpl implements PostMainPageService{
         postWriteValidation(dto);
         Post post = Post.of(account, dto);
         Post savedPost = postRepository.save(post);
-//        for(int i =0; i <dto.getImg().size(); i++){
-//            boolean thumbnail = dto.getImg().get(i).getThumbnail();
-//            String s = fileProcessService.uploadImage(imgFile.get(i));
-//        }
-
-        if(imgFile!=null){
-            imgFile.forEach((img) -> {
-                String s = fileProcessService.uploadImage(img); // s3 url
-                PostImage postImage = PostImage.builder().post(post).postImg(s).build(); // 1 번 포스트에 1번이미지
-                postImageRepository.save(postImage);
-            });
+        for(int i = 0; i < dto.getImg().size(); i++){
+            String img_url = fileProcessService.uploadImage(imgFile.get(i));
+            PostImage postImage = PostImage.builder().post(savedPost).postImg(img_url).build();
+            postImageRepository.save(postImage);
         }
-
-        // 1) dto에 어떻게 img url 값을 세팅해야할지?
-        // 2) 저걸 할 필요가 있을지
         setPostTag(dto.getHashTag(), savedPost);
-        // setImgUrl(dto.getImg(), savedPost);
         return post.getId();
     }
 
@@ -160,7 +147,7 @@ public class PostMainPageServiceImpl implements PostMainPageService{
             // db 삭제
             postImageRepository.deleteAllByPostId(postId);
 
-            // 재저장
+            // 재저장 - 포스트는 썸네일 안필요함!
             imgFile.forEach((img) -> {
                 String s = fileProcessService.uploadImage(img);
                 PostImage postImage = PostImage.builder().post(post).postImg(s).build();
@@ -168,7 +155,6 @@ public class PostMainPageServiceImpl implements PostMainPageService{
             });
         }
         post.updatePost(dto);
-        // setImgUrl(dto.getImg(), post);
         // 태그도 지우고 다시 세팅
         postTagRepository.deleteAllByPostId(postId);
         setPostTag(dto.getHashTag(), post);
@@ -207,16 +193,6 @@ public class PostMainPageServiceImpl implements PostMainPageService{
             post.setCountList(bookmark_count, comment_count, like_count);
         });
     }
-
-//    private void setImgUrl(List<CommonDto.ImgUrlDto> dto, Post post) {
-//        dto.forEach((img) -> {
-//            PostImage postImage = PostImage.builder()
-//                    .post(post)
-//                    .postImg(img.getFilename())
-//                    .build();
-//            postImageRepository.save(postImage);
-//        });
-//    }
 
     // #단위로 끊어서 해쉬태그 들어옴
     private void setPostTag(List<CommonDto.PostTagDto> dto, Post post){

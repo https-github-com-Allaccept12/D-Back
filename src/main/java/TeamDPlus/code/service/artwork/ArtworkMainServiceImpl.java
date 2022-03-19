@@ -11,6 +11,7 @@ import TeamDPlus.code.domain.artwork.comment.ArtWorkCommentRepository;
 import TeamDPlus.code.domain.artwork.image.ArtWorkImage;
 import TeamDPlus.code.domain.artwork.image.ArtWorkImageRepository;
 import TeamDPlus.code.domain.artwork.like.ArtWorkLikesRepository;
+import TeamDPlus.code.domain.post.image.PostImage;
 import TeamDPlus.code.dto.common.CommonDto;
 import TeamDPlus.code.dto.request.ArtWorkRequestDto;
 import TeamDPlus.code.dto.response.AccountResponseDto;
@@ -103,14 +104,6 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
         return ArtWorkResponseDto.ArtWorkDetail.from(imgList,commentList,similarList,artWorksSub,isLike,isBookmark,isFollow);
     }
 
-//    @Transactional
-//    public Long createArtwork(Account account, ArtWorkRequestDto.ArtWorkCreateAndUpdate dto) {
-//        ArtWorks artWorks = ArtWorks.of(account, dto);
-//        ArtWorks saveArtWork = artWorkRepository.save(artWorks);
-//        setImgUrl(dto.getImg(), saveArtWork);
-//        return saveArtWork.getId();
-//    }
-
     @Transactional
     public Long createArtwork(Account account, ArtWorkRequestDto.ArtWorkCreateAndUpdate dto, List<MultipartFile> multipartFiles) {
 
@@ -118,14 +111,12 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
         ArtWorks artWorks = ArtWorks.of(account, dto);
         ArtWorks saveArtwork = artWorkRepository.save(artWorks);
 
-        // 작품 이미지가 들어온 경우
-        if(multipartFiles!=null){
-            // 데이터 저장
-            multipartFiles.forEach((file) -> {
-                String s = fileProcessService.uploadImage(file);
-                ArtWorkImage img = ArtWorkImage.builder().artWorks(saveArtwork).artworkImg(s).build();
-                artWorkImageRepository.save(img);
-            });
+        // 작품 dto(파일명, 썸네일)을 받아서, artworkImage에 저장
+        for(int i = 0; i < dto.getImg().size(); i++){
+            boolean thumbnail = dto.getImg().get(i).isThumbnail();
+            String img_url = fileProcessService.uploadImage(multipartFiles.get(i));
+            ArtWorkImage postImage = ArtWorkImage.builder().artWorks(saveArtwork).artworkImg(img_url).thumbnail(thumbnail).build();
+            artWorkImageRepository.save(postImage);
         }
         return saveArtwork.getId();
     }
@@ -146,13 +137,13 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
             artWorkImageRepository.deleteAllByArtWorksId(artworkId);
 
             // 데이터 재 저장
-            multipartFiles.forEach((file) -> {
-                String s = fileProcessService.uploadImage(file);
-                ArtWorkImage img = ArtWorkImage.builder().artWorks(findArtWork).artworkImg(s).build();
-                artWorkImageRepository.save(img);
-            });
+            for(int i = 0; i < dto.getImg().size(); i++){
+                boolean thumbnail = dto.getImg().get(i).isThumbnail();
+                String img_url = fileProcessService.uploadImage(multipartFiles.get(i));
+                ArtWorkImage postImage = ArtWorkImage.builder().artWorks(findArtWork).artworkImg(img_url).thumbnail(thumbnail).build();
+                artWorkImageRepository.save(postImage);
+            }
         }
-        setImgUrl(dto.getImg(), findArtWork);
         findArtWork.updateArtWork(dto);
         return findArtWork.getId();
     }
@@ -201,18 +192,6 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
     private List<ArtWorkResponseDto.ArtworkMain> getArtworkList(String interest) {
         Pageable pageable = PageRequest.of(0,10);
         return artWorkRepository.findArtWorkByMostViewAndMostLike(interest,pageable);
-    }
-
-    //이미지 s3에서도 업로드
-    private void setImgUrl(List<CommonDto.ImgUrlDto> imgDto, ArtWorks artWork) {
-        imgDto.forEach((img) -> {
-            ArtWorkImage artWorkImage = ArtWorkImage.builder()
-                    .artWorks(artWork)
-                    .artworkImg(img.getImg_url())
-                    .thumbnail(img.isThumbnail())
-                    .build();
-            artWorkImageRepository.save(artWorkImage);
-        });
     }
 
     private ArtWorks artworkValidation(Long accountId, Long artworkId){
