@@ -32,7 +32,7 @@ cloud:
     s3:
       bucket: ${aws.s3.bucketname}
       region:
-        static: ${cloud.aws.s3.region}
+        static: ap-northeast-2
       stack:
         auto: false
 

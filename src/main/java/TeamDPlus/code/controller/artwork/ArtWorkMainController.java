@@ -27,8 +27,7 @@ public class ArtWorkMainController {
     @Value("${cloud.aws.credentials.secret-key}")
     private String secretKey;
 
-    @Value("${cloud.aws.region.static}")
-    private String region;
+    
 
     private final AmazonS3Component testS3;
 
