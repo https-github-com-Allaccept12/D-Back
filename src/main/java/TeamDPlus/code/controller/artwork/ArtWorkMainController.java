@@ -1,6 +1,7 @@
 package TeamDPlus.code.controller.artwork;
 
 
+import TeamDPlus.code.config.amazons3.AmazonS3Component;
 import TeamDPlus.code.dto.Success;
 import TeamDPlus.code.dto.common.CommonDto.ArtWorkKeyword;
 import TeamDPlus.code.dto.request.ArtWorkRequestDto.ArtWorkCreateAndUpdate;
@@ -8,6 +9,7 @@ import TeamDPlus.code.jwt.UserDetailsImpl;
 import TeamDPlus.code.service.artwork.ArtworkMainService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -19,11 +21,21 @@ import org.springframework.web.bind.annotation.*;
 public class ArtWorkMainController {
 
     private final ArtworkMainService artworkMainService;
+    @Value("${cloud.aws.credentials.access-key}")
+    private String accessKey;
+
+    @Value("${cloud.aws.credentials.secret-key}")
+    private String secretKey;
+
+    @Value("${cloud.aws.region.static}")
+    private String region;
+
+    private final AmazonS3Component testS3;
 
     @GetMapping("/")
     public ResponseEntity<Success> main(@AuthenticationPrincipal UserDetailsImpl user) {
         if (user == null) {
-            return new ResponseEntity<>(new Success("메인 페이지 진짜..되나?",
+            return new ResponseEntity<>(new Success("메인 페이지 진짜..되나?"+ accessKey+"  "+secretKey+ "  " + region + " " + testS3.getBucket(),
                     artworkMainService.mostPopularArtWork(null)), HttpStatus.OK);
         }
         return new ResponseEntity<>(new Success("메인 페이지",
