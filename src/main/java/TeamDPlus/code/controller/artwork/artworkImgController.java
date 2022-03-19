@@ -26,7 +26,9 @@
 //    @PostMapping("/artwork/image")
 //    public void testUpload(@RequestParam(value = "imageFile",required = false,defaultValue = "") List<MultipartFile> imageFile) {
 //        imageFile.forEach((img) -> {
+
 //            String s = test.uploadImage(img);
+
 //            ArtWorks build = ArtWorks.builder().scope(true).title("test").content("test1").category("testca").build();
 //            ArtWorks save = artWorkRepository.save(build);
 //            ArtWorkImage build1 = ArtWorkImage.builder().artWorks(save).artworkImg(s).build();
