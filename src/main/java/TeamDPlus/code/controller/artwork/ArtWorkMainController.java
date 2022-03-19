@@ -23,7 +23,7 @@ public class ArtWorkMainController {
     @GetMapping("/")
     public ResponseEntity<Success> main(@AuthenticationPrincipal UserDetailsImpl user) {
         if (user == null) {
-            return new ResponseEntity<>(new Success("메인 페이지 check",
+            return new ResponseEntity<>(new Success("메인 페이지 진짜..되나?",
                     artworkMainService.mostPopularArtWork(null)), HttpStatus.OK);
         }
         return new ResponseEntity<>(new Success("메인 페이지",
