@@ -10,11 +10,13 @@ import TeamDPlus.code.domain.post.bookmark.QPostBookMark;
 import TeamDPlus.code.domain.post.comment.PostComment;
 import TeamDPlus.code.domain.post.comment.PostCommentRepository;
 import TeamDPlus.code.domain.post.comment.QPostComment;
+import TeamDPlus.code.domain.post.comment.like.PostCommentLikesRepository;
 import TeamDPlus.code.domain.post.image.PostImage;
 import TeamDPlus.code.domain.post.image.PostImageRepository;
 import TeamDPlus.code.domain.post.like.PostLikes;
 import TeamDPlus.code.domain.post.like.PostLikesRepository;
 import TeamDPlus.code.domain.post.like.QPostLikes;
+import TeamDPlus.code.domain.post.tag.PostTagRepository;
 import TeamDPlus.code.dto.response.PostResponseDto;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -55,6 +57,9 @@ public class PostRepositoryTests {
     AccountRepository accountRepository;
 
     @Autowired
+    PostTagRepository postTagRepository;
+
+    @Autowired
     PostImageRepository postImageRepository;
 
     @Autowired
@@ -62,6 +67,9 @@ public class PostRepositoryTests {
 
     @Autowired
     PostCommentRepository postCommentRepository;
+
+    @Autowired
+    PostCommentLikesRepository postCommentLikesRepository;
 
     @Autowired
     PostLikesRepository postLikesRepository;

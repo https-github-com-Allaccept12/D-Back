@@ -6,6 +6,7 @@ import TeamDPlus.code.domain.account.Account;
 import TeamDPlus.code.domain.artwork.ArtWorks;
 import TeamDPlus.code.dto.request.ArtWorkRequestDto;
 import TeamDPlus.code.dto.request.PostRequestDto;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -40,36 +41,43 @@ public class Post extends BaseEntity {
     @Column(columnDefinition = "BIGINT default 0")
     private Long view;
 
+    @Column(columnDefinition = "TINYINT default 0")
+    private Boolean isSelected;
+
+    @Enumerated
+    private PostBoard board;
+
 
     @Builder
-    public Post(final String title,final String content,final String category,
-                final Account account, final Long view) {
+    public Post(final String title, final String content, final String category,
+                final Account account, final Long view, final Boolean isSelected, final PostBoard board) {
         this.title = title;
         this.content = content;
         this.category = category;
         this.account = account;
         this.view = view;
+        this.isSelected = isSelected;
+        this.board = board;
     }
 
     public void addViewCount() {
         this.view += 1;
     }
 
-    public void createAndupdate(PostRequestDto.PostCreateAndUpdate dto) {
+    public void updatePost(PostRequestDto.PostUpdate dto){
         this.title = dto.getTitle();
         this.category = dto.getCategory();
         this.content = dto.getContent();
+        this.isSelected = dto.is_selected();
     }
-
-    public static Post of(Account account, PostRequestDto.PostCreateAndUpdate dto) {
+    public static Post of(Account account, PostRequestDto.PostCreate dto) {
         return Post.builder()
                 .account(account)
                 .category(dto.getCategory())
                 .content(dto.getContent())
                 .title(dto.getTitle())
+                .board(dto.getBoard())
+                .isSelected(dto.is_selected())
                 .build();
     }
-
-
-
 }
