@@ -18,10 +18,8 @@ function find_idle_profile()
     if [ ${CURRENT_PROFILE} == real1 ]
     then
       IDLE_PROFILE=real2
-      echo "연결되지않은 : ${IDLE_PROFILE}"
     else
       IDLE_PROFILE=real1
-      echo "연결되지않은 : ${IDLE_PROFILE}"
     fi
 
     # bash script는 값의 반환이 안된다.
