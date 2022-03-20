@@ -194,8 +194,6 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
                 .groupBy(artWorks.id)
                 .orderBy(artWorks.created.desc())
                 .fetch();
-
-
     }
 
     @Override

@@ -71,6 +71,19 @@ public class ArtWorkMainController {
                 artworkMainService.showArtworkMain(user.getUser().getId(),last_artwork_id,category,sortsign)),HttpStatus.OK);
     }
 
+    @GetMapping("/api/artwork/sort-follow/{category}/{last_artwork_id}")
+    public ResponseEntity<Success> artWorkSortFollow(@AuthenticationPrincipal UserDetailsImpl user,
+                                               @PathVariable Long last_artwork_id,
+                                               @PathVariable String category) {
+        if (user != null){
+            return new ResponseEntity<>(new Success("카테고리별 정렬한 작업물",
+                    artworkMainService.findByFollowerArtWork(user.getUser().getId(),category,last_artwork_id)),HttpStatus.OK);
+        }
+        throw new IllegalStateException("로그인을 안했거나, 로그인이 만료되었습니다.");
+
+    }
+
+
     @PostMapping("/api/artwork")
     public ResponseEntity<Success> createArtWork(@AuthenticationPrincipal UserDetailsImpl user,
                                                  @RequestPart ArtWorkCreateAndUpdate data,

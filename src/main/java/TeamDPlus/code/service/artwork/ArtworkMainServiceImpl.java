@@ -104,6 +104,7 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
         return ArtWorkResponseDto.ArtWorkDetail.from(imgList,commentList,similarList,artWorksSub,isLike,isBookmark,isFollow);
     }
 
+
     @Transactional
     public int createArtwork(Account account, ArtWorkRequestDto.ArtWorkCreateAndUpdate dto, List<MultipartFile> multipartFiles) {
         if (account.getArtWorkCreateCount() >= 5) {
@@ -177,6 +178,12 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
         if(accountId != null)
             setIsLike(accountId,artWorkList);
         return artWorkList;
+    }
+
+    @Override
+    public List<ArtworkMain> findByFollowerArtWork(Long accountId, String category, Long lastArtWorkId) {
+        Pageable pageable = PageRequest.of(0,10);
+        return artWorkRepository.findByFollowerArtWork(accountId,category,lastArtWorkId,pageable);
     }
 
     private void isFollow(Long accountId, List<AccountResponseDto.TopArtist> topArtist) {
