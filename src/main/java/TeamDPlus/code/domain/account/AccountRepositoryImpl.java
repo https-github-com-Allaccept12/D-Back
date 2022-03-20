@@ -10,7 +10,7 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 import static TeamDPlus.code.domain.account.QAccount.account;
-import static TeamDPlus.code.domain.account.rank.QRanks.ranks;
+import static TeamDPlus.code.domain.account.rank.QRank.rank;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -28,10 +28,10 @@ public class AccountRepositoryImpl implements AccountRepositoryCustom{
                                 account.profileImg,
                                 account.job))
                 .from(account)
-                .innerJoin(account.rank, ranks)
+                .innerJoin(account.rank, rank)
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
-                .orderBy(ranks.rankScore.desc())
+                .orderBy(rank.rankScore.desc())
                 .fetch();
     }
 }

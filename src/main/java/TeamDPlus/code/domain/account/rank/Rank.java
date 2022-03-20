@@ -13,7 +13,8 @@ import javax.persistence.*;
 @Getter
 @DynamicInsert
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Ranks {
+@Table(name = "Ranks")
+public class Rank {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -24,7 +25,7 @@ public class Ranks {
     private Long rankScore;
 
     @Builder
-    public Ranks(final Long rankScore) {
+    public Rank(final Long rankScore) {
         this.rankScore = rankScore;
 
     }

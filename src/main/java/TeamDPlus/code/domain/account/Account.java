@@ -2,7 +2,7 @@ package TeamDPlus.code.domain.account;
 
 
 import TeamDPlus.code.domain.BaseEntity;
-import TeamDPlus.code.domain.account.rank.Ranks;
+import TeamDPlus.code.domain.account.rank.Rank;
 import TeamDPlus.code.dto.request.AccountRequestDto;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -66,14 +66,14 @@ public class Account extends BaseEntity {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "rank_id",nullable = false)
-    private Ranks rank;
+    private Rank rank;
 
     @Builder
     public Account(final String email, final String nickname, final String subContent, final String titleContent, final String profileImg,
                    final int career, final String phoneNumber, final String workTime,
                    final String workEmail, final String tendency, final Long exp, final String refreshToken,
                    final String linkedIn, final String brunch, final String instagram,
-                   final String interest, final Ranks rank, final String job, final Specialty specialty)  {
+                   final String interest, final Rank rank, final String job, final Specialty specialty)  {
         this.email = email;
         this.nickname = nickname;
         this.titleContent = titleContent;

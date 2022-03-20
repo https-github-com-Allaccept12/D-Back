@@ -28,14 +28,17 @@ import TeamDPlus.code.dto.response.AccountResponseDto;
 import TeamDPlus.code.dto.response.ArtWorkResponseDto;
 import TeamDPlus.code.dto.response.PostMainResponseDto;
 import TeamDPlus.code.dto.response.PostResponseDto;
+import TeamDPlus.code.service.file.FileProcessService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -51,6 +54,7 @@ public class PostMainPageServiceImpl implements PostMainPageService{
     private final PostAnswerRepository postAnswerRepository;
     private final FollowRepository followRepository;
     private final PostAnswerLikesRepository postAnswerLikesRepository;
+    private final FileProcessService fileProcessService;
 
     // 메인 페이지 (최신순)
     @Transactional(readOnly = true)
@@ -58,7 +62,7 @@ public class PostMainPageServiceImpl implements PostMainPageService{
 
         // 메인 페이지 전체 피드
         Pageable pageable = PageRequest.of(0,12);
-        Page<PostResponseDto.PostPageMain> postList = postRepository.findAllPostOrderByCreatedDesc(lastPostId, pageable);
+        Page<PostResponseDto.PostPageMain> postList = postRepository.findAllPostOrderByCreatedDesc(lastPostId, pageable, board);
         setCountList(postList);
 
         // 메인페이지 추천피드
@@ -72,14 +76,24 @@ public class PostMainPageServiceImpl implements PostMainPageService{
         return PostMainResponseDto.builder().postMainPage(postList).postRecommendationFeed(postRecommendation).build();
     }
 
-//    // 메인 페이지 (좋아요 순)
-//    @Transactional(readOnly = true)
-//    public Page<PostResponseDto.PostPageMain> showPostMainByLikes(Long accountId, Long lastPostId) {
-//        Pageable pageable = PageRequest.of(0,12);
-//        Page<PostResponseDto.PostPageMain> post인ist = postRepository.findAllPostOrderByPostLikes(lastPostId, pageable);
-//        setCountList(accountId, postList);
-//        return postList;
-//    }
+    // 메인 페이지 (좋아요 순)
+    @Transactional(readOnly = true)
+    public PostMainResponseDto showPostMainByLikes(Long accountId, Long lastPostId, PostBoard board) {
+
+        Pageable pageable = PageRequest.of(0,12);
+        Page<PostResponseDto.PostPageMain> postList = postRepository.findAllPostOrderByPostLikes(lastPostId, pageable, board);
+        setCountList(postList);
+
+        // 메인페이지 추천피드
+        List<PostResponseDto.PostPageMain> postRecommendation = postRepository.findPostByMostViewAndMostLike();
+        postList.forEach((post) -> {
+            Long bookmark_count = postBookMarkRepository.countByPostId(post.getPost_id());
+            Long comment_count = postCommentRepository.countByPostId(post.getPost_id());
+            Long like_count = postLikesRepository.countByPostId(post.getPost_id());
+            post.setCountList(bookmark_count, comment_count, like_count);
+        });
+        return PostMainResponseDto.builder().postMainPage(postList).postRecommendationFeed(postRecommendation).build();
+    }
 
     // 상세 게시글 (디플 - 꿀팁)
     @Transactional(readOnly = true)
@@ -100,21 +114,54 @@ public class PostMainPageServiceImpl implements PostMainPageService{
 
     // 게시글 작성
     @Transactional
-    public Long createPost(Account account, PostRequestDto.PostCreate dto) {
+    public Long createPost(Account account, PostRequestDto.PostCreate dto, List<MultipartFile> imgFile) {
+        postWriteValidation(dto);
         Post post = Post.of(account, dto);
         Post savedPost = postRepository.save(post);
+//        for(int i =0; i <dto.getImg().size(); i++){
+//            boolean thumbnail = dto.getImg().get(i).getThumbnail();
+//            String s = fileProcessService.uploadImage(imgFile.get(i));
+//        }
+
+        if(imgFile!=null){
+            imgFile.forEach((img) -> {
+                String s = fileProcessService.uploadImage(img); // s3 url
+                PostImage postImage = PostImage.builder().post(post).postImg(s).build(); // 1 번 포스트에 1번이미지
+                postImageRepository.save(postImage);
+            });
+        }
+
+        // 1) dto에 어떻게 img url 값을 세팅해야할지?
+        // 2) 저걸 할 필요가 있을지
         setPostTag(dto.getHashTag(), savedPost);
-        setImgUrl(dto.getImg(), savedPost);
+        // setImgUrl(dto.getImg(), savedPost);
         return post.getId();
     }
 
     // 게시물 수정
     @Transactional
-    public Long updatePost(Account account, Long postId, PostRequestDto.PostUpdate dto){
-        Post post = postValidation(account.getId(), postId);
+    public Long updatePost(Account account, Long postId, PostRequestDto.PostUpdate dto, List<MultipartFile> imgFile){
+        postUpdateValidation(dto);
+        Post post = postAuthValidation(account.getId(), postId);
+        List<PostImage> postImages = postImageRepository.findByPostId(post.getId());
+        if(imgFile!=null){
+            postImages.forEach((img) -> {
+                // S3 삭제
+                fileProcessService.deleteImage(img.getPostImg());
+            });
+            // db 삭제
+            postImageRepository.deleteAllByPostId(postId);
+
+            // 재저장
+            imgFile.forEach((img) -> {
+                String s = fileProcessService.uploadImage(img);
+                PostImage postImage = PostImage.builder().post(post).postImg(s).build();
+                postImageRepository.save(postImage);
+            });
+        }
         post.updatePost(dto);
-        postImageRepository.deleteAllByPostId(postId);
-        setImgUrl(dto.getImg(), post);
+        // setImgUrl(dto.getImg(), post);
+        // 태그도 지우고 다시 세팅
         postTagRepository.deleteAllByPostId(postId);
         setPostTag(dto.getHashTag(), post);
         return post.getId();
@@ -123,7 +170,13 @@ public class PostMainPageServiceImpl implements PostMainPageService{
     // 게시글 삭제
     @Transactional
     public void deletePost(Long accountId, Long postId){
-        Post post = postValidation(accountId, postId);
+        Post post = postAuthValidation(accountId, postId);
+        List<PostImage> postImages = postImageRepository.findByPostId(postId);
+        postImages.forEach((img) -> {
+            // S3 이미지 삭제
+            fileProcessService.deleteImage(img.getPostImg());
+        });
+        // db 삭제
         postLikesRepository.deleteAllByPostId(postId);
         postTagRepository.deleteAllByPostId(postId);
         postImageRepository.deleteAllByPostId(postId);
@@ -147,15 +200,15 @@ public class PostMainPageServiceImpl implements PostMainPageService{
         });
     }
 
-    private void setImgUrl(List<CommonDto.ImgUrlDto> dto, Post post) {
-        dto.forEach((img) -> {
-            PostImage postImage = PostImage.builder()
-                    .post(post)
-                    .postImg(img.getImg_url())
-                    .build();
-            postImageRepository.save(postImage);
-        });
-    }
+//    private void setImgUrl(List<CommonDto.ImgUrlDto> dto, Post post) {
+//        dto.forEach((img) -> {
+//            PostImage postImage = PostImage.builder()
+//                    .post(post)
+//                    .postImg(img.getFilename())
+//                    .build();
+//            postImageRepository.save(postImage);
+//        });
+//    }
 
     // #단위로 끊어서 해쉬태그 들어옴
     private void setPostTag(List<CommonDto.PostTagDto> dto, Post post){
@@ -169,7 +222,7 @@ public class PostMainPageServiceImpl implements PostMainPageService{
     }
 
     // post 수정, 삭제 권한 확인
-    private Post postValidation(Long accountId, Long postId){
+    private Post postAuthValidation(Long accountId, Long postId){
         Post post = postRepository.findById(postId).orElseThrow(() -> new ApiRequestException("해당 게시글은 존재하지 않습니다."));
         if(!post.getAccount().getId().equals(accountId)){
             throw new ApiRequestException("권한이 없습니다.");
@@ -243,13 +296,13 @@ public class PostMainPageServiceImpl implements PostMainPageService{
         postSimilarList.forEach((postSimilar) -> {
             // 좋아요 여부
             postSimilar.setLikeCountAndIsLike(false);
-            if(postLikesRepository.existByAccountIdAndPostId(accountId, postSimilar.getPost_id())) {
+            if (postLikesRepository.existByAccountIdAndPostId(accountId, postSimilar.getPost_id())) {
                 postSimilar.setLikeCountAndIsLike(true);
             }
 
             // 북마크 여부
             postSimilar.setIsBookmark(false);
-            if(postBookMarkRepository.existByAccountIdAndPostId(accountId, postSimilar.getPost_id())) {
+            if (postBookMarkRepository.existByAccountIdAndPostId(accountId, postSimilar.getPost_id())) {
                 postSimilar.setIsBookmark(true);
             }
 
@@ -266,6 +319,35 @@ public class PostMainPageServiceImpl implements PostMainPageService{
 
         });
         return postSimilarList;
+    }
+
+    // 게시글작성 필수요소 validation
+    private void postWriteValidation(PostRequestDto.PostCreate dto){
+        if(Objects.equals(dto.getTitle(), "")){
+            throw new ApiRequestException("제목을 입력하세요");
+        }
+        if(Objects.equals(dto.getContent(), "")){
+            throw new ApiRequestException("내용을 입력하세요");
+        }
+        if(Objects.equals(dto.getCategory(), "")){
+            throw new ApiRequestException("카테고리를 입력하세요");
+        }
+        if(Objects.equals(dto.getBoard(), "")){
+            throw new ApiRequestException("디모 게시판 종류를 선택하세요");
+        }
+    }
+
+    // 게시글수정 필수요소 validation
+    private void postUpdateValidation(PostRequestDto.PostUpdate dto){
+        if(Objects.equals(dto.getTitle(), "")){
+            throw new ApiRequestException("제목을 입력하세요");
+        }
+        if(Objects.equals(dto.getContent(), "")){
+            throw new ApiRequestException("내용을 입력하세요");
+        }
+        if(Objects.equals(dto.getCategory(), "")){
+            throw new ApiRequestException("카테고리를 입력하세요");
+        }
     }
 
 }

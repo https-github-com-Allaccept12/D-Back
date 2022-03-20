@@ -33,7 +33,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
 
     // 전체 페이지
     @Override
-    public Page<PostResponseDto.PostPageMain> findAllPostOrderByCreatedDesc(Long lastPostId, Pageable pageable) {
+    public Page<PostResponseDto.PostPageMain> findAllPostOrderByCreatedDesc(Long lastPostId, Pageable pageable, PostBoard board) {
         List<PostResponseDto.PostPageMain> fetch = queryFactory
                 .select(Projections.constructor(PostResponseDto.PostPageMain.class,
                         post.id,
@@ -50,7 +50,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                 .join(account).on(account.id.eq(post.account.id))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
-                .where(isLastPostId(lastPostId))
+                .where(isLastPostId(lastPostId), post.board.eq(board))
                 .groupBy(post.id)
                 .orderBy(post.created.desc())
                 .fetch();
@@ -60,7 +60,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
 
     // 전체 페이지 (좋아요 순)
     @Override
-    public Page<PostResponseDto.PostPageMain> findAllPostOrderByPostLikes(Long lastPostId, Pageable pageable) {
+    public Page<PostResponseDto.PostPageMain> findAllPostOrderByPostLikes(Long lastPostId, Pageable pageable, PostBoard board) {
         List<PostResponseDto.PostPageMain> fetch = queryFactory
                 .select(Projections.constructor(PostResponseDto.PostPageMain.class,
                         post.id,
@@ -78,7 +78,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                 .leftJoin(postLikes).on(postLikes.id.eq(postLikes.post.id))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
-                .where(isLastPostId(lastPostId))
+                .where(isLastPostId(lastPostId), post.board.eq(board))
                 .orderBy(postLikes.count().desc())
                 .fetch();
 

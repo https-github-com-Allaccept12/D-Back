@@ -1,6 +1,7 @@
 package TeamDPlus.code.dto.common;
 
 import TeamDPlus.code.domain.artwork.image.ArtWorkImage;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 

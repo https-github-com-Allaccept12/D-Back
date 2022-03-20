@@ -4,7 +4,7 @@ package TeamDPlus.code.domain.account.rank;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 
-import static TeamDPlus.code.domain.account.rank.QRanks.ranks;
+import static TeamDPlus.code.domain.account.rank.QRank.rank;
 
 @RequiredArgsConstructor
 public class RankRepositoryImpl implements RankRepositoryCustom{
@@ -15,8 +15,8 @@ public class RankRepositoryImpl implements RankRepositoryCustom{
     @Override
     public void RankInitializationBulk() {
         queryFactory
-                .update(ranks)
-                .set(ranks.rankScore, 0L)
+                .update(rank)
+                .set(rank.rankScore, 0L)
                 .execute();
     }
 }
