@@ -13,6 +13,7 @@ import TeamDPlus.code.domain.artwork.image.ArtWorkImageRepository;
 import TeamDPlus.code.domain.artwork.like.ArtWorkLikesRepository;
 import TeamDPlus.code.dto.common.CommonDto;
 import TeamDPlus.code.dto.request.ArtWorkRequestDto;
+import TeamDPlus.code.dto.request.ArtWorkRequestDto.ArtWorkCreateAndUpdate;
 import TeamDPlus.code.dto.response.AccountResponseDto;
 import TeamDPlus.code.dto.response.ArtWorkResponseDto;
 import TeamDPlus.code.dto.response.ArtWorkResponseDto.ArtworkMain;
@@ -106,7 +107,7 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
 
 
     @Transactional
-    public int createArtwork(Account account, ArtWorkRequestDto.ArtWorkCreateAndUpdate dto, List<MultipartFile> multipartFiles) {
+    public int createArtwork(Account account, ArtWorkCreateAndUpdate dto, List<MultipartFile> multipartFiles) {
         if (account.getArtWorkCreateCount() >= 5) {
             throw new ApiRequestException("일일 작성 가능한 게시글분을 다 사용하셨습니다.");
         }
@@ -129,8 +130,7 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
 
 
     @Transactional
-    public Long updateArtwork(Account account, Long artworkId, ArtWorkRequestDto.ArtWorkCreateAndUpdate dto,
-                              List<MultipartFile> multipartFiles) {
+    public Long updateArtwork(Account account, Long artworkId, ArtWorkCreateAndUpdate dto, List<MultipartFile> multipartFiles) {
         ArtWorks findArtWork = artWorkRepository.findById(artworkId).orElseThrow(() -> new ApiRequestException("게시글이 존재하지 않습니다."));
         List<ArtWorkImage> artWorkImages = artWorkImageRepository.findByArtWorksId(findArtWork.getId());
         // 작품 이미지가 들어온 경우
@@ -183,7 +183,10 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
     @Override
     public List<ArtworkMain> findByFollowerArtWork(Long accountId, String category, Long lastArtWorkId) {
         Pageable pageable = PageRequest.of(0,10);
-        return artWorkRepository.findByFollowerArtWork(accountId,category,lastArtWorkId,pageable);
+        List<ArtworkMain> artWorkList = artWorkRepository.findByFollowerArtWork(accountId, category, lastArtWorkId, pageable);
+        if(accountId != null)
+            setIsLike(accountId,artWorkList);
+        return artWorkList;
     }
 
     private void isFollow(Long accountId, List<AccountResponseDto.TopArtist> topArtist) {
@@ -225,10 +228,8 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
 
     private void setIsLike(Long accountId, List<ArtworkMain> artWorkList) {
         artWorkList.forEach((artWork) -> {
-            artWork.setLikeCountAndIsLike(false);
-            if(artWorkLikesRepository.existByAccountIdAndArtWorkId(accountId,artWork.getArtwork_id())) {
-                artWork.setLikeCountAndIsLike(true);
-            }
+            artWork.setLikeCountAndIsLike(artWorkLikesRepository.
+                    existByAccountIdAndArtWorkId(accountId, artWork.getArtwork_id()));
         });
     }
 }

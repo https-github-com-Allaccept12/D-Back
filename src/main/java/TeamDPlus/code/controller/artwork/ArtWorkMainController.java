@@ -76,7 +76,7 @@ public class ArtWorkMainController {
                                                @PathVariable Long last_artwork_id,
                                                @PathVariable String category) {
         if (user != null){
-            return new ResponseEntity<>(new Success("카테고리별 정렬한 작업물",
+            return new ResponseEntity<>(new Success("팔로우한 작가 작업물",
                     artworkMainService.findByFollowerArtWork(user.getUser().getId(),category,last_artwork_id)),HttpStatus.OK);
         }
         throw new IllegalStateException("로그인을 안했거나, 로그인이 만료되었습니다.");

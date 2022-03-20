@@ -212,7 +212,8 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
                         artWorks.modified,
                         artWorks.specialty,
                         account.nickname,
-                        account.profileImg
+                        account.profileImg,
+                        artWorks.copyright
                 ))
                 .from(artWorks)
                 .innerJoin(artWorks.account, account)
