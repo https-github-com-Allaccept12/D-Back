@@ -48,6 +48,15 @@ public class AccountRepositoryImpl implements AccountRepositoryCustom{
                 .orderBy(rank.rankScore.desc())
                 .fetch();
     }
+
+    @Override
+    public void accountCreateCountInitialization() {
+        queryFactory
+                .update(account)
+                .set(account.artWorkCreateCount,0)
+                .set(account.postCreateCount, 0)
+                .execute();
+    }
 }
 
 

@@ -21,6 +21,8 @@ import java.util.List;
 @Slf4j
 public class ArtWorkMainController {
 
+    private final int SORT_SIGN_LATEST = 1;
+    private final int SORT_SIGN_LIKE = 2;
     private final ArtworkMainService artworkMainService;
 
     @GetMapping("/")
@@ -38,10 +40,35 @@ public class ArtWorkMainController {
                                                @PathVariable Long last_artwork_id) {
         if (user == null) {
             return new ResponseEntity<>(new Success("둘러보기",
-                    artworkMainService.showArtworkMain(null,last_artwork_id)),HttpStatus.OK);
+                    artworkMainService.showArtworkMain(null,last_artwork_id,"",SORT_SIGN_LATEST)),HttpStatus.OK);
         }
         return new ResponseEntity<>(new Success("둘러보기",
-                artworkMainService.showArtworkMain(user.getUser().getId(),last_artwork_id)),HttpStatus.OK);
+                artworkMainService.showArtworkMain(user.getUser().getId(),last_artwork_id,"",SORT_SIGN_LATEST)),HttpStatus.OK);
+    }
+
+    @GetMapping("/api/artwork/category/{category}/{last_artwork_id}/")
+    public ResponseEntity<Success> artWorkCategory(@AuthenticationPrincipal UserDetailsImpl user,
+                                               @PathVariable String category,
+                                               @PathVariable Long last_artwork_id) {
+        if (user == null) {
+            return new ResponseEntity<>(new Success("카테고리별 작업물",
+                    artworkMainService.showArtworkMain(null,last_artwork_id,category,SORT_SIGN_LATEST)),HttpStatus.OK);
+        }
+        return new ResponseEntity<>(new Success("카테고리별 작업물",
+                artworkMainService.showArtworkMain(user.getUser().getId(),last_artwork_id,category,SORT_SIGN_LATEST)),HttpStatus.OK);
+    }
+
+    @GetMapping("/api/artwork/sort/{category}/{sortsign}/{last_artwork_id}")
+    public ResponseEntity<Success> artWorkSort(@AuthenticationPrincipal UserDetailsImpl user,
+                                               @PathVariable int sortsign,
+                                               @PathVariable Long last_artwork_id,
+                                               @PathVariable String category) {
+        if (user == null) {
+            return new ResponseEntity<>(new Success("카테고리별 정렬한 작업물",
+                    artworkMainService.showArtworkMain(null,last_artwork_id,category,sortsign)),HttpStatus.OK);
+        }
+        return new ResponseEntity<>(new Success("카테고리별 정렬한 작업물",
+                artworkMainService.showArtworkMain(user.getUser().getId(),last_artwork_id,category,sortsign)),HttpStatus.OK);
     }
 
     @PostMapping("/api/artwork")
