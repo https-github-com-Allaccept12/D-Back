@@ -88,8 +88,8 @@ public class ArtWorks extends BaseEntity {
         this.workEnd = dto.getWork_end();
         this.isMaster = dto.isMaster();
     }
-    public void updateArtWorkIsMaster(boolean isScope) {
-        this.isMaster = isScope;
+    public void updateArtWorkIsMaster(boolean isMaster) {
+        this.isMaster = isMaster;
     }
     public void updateArtWorkIsScope(boolean isScope) {
         this.scope = isScope;

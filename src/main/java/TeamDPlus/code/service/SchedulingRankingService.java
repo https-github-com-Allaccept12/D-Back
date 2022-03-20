@@ -15,7 +15,7 @@ public class SchedulingRankingService {
 
     private final RankRepository rankRepository;
 
-    @Scheduled(cron = "0 */5 * * * *")
+    @Scheduled(cron = "0 0 0/1 * * *")
     @Transactional
     public void rankRepositoryInitialization() {
         log.info("랭크 시스템 초기화 집계를 다시 시작합니다.");

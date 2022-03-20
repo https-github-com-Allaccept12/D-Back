@@ -54,7 +54,6 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
             isFollow(accountId,topArtist);
             setIsLike(accountId,artWorkList);
             return MainResponseDto.builder().artwork(artWorkList).top_artist(topArtist).build();
-
         }
         List<ArtWorkResponseDto.ArtworkMain> artworkList = getArtworkList(null);
         List<AccountResponseDto.TopArtist> topArtist = getTopArtist();
@@ -103,14 +102,6 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
         return ArtWorkResponseDto.ArtWorkDetail.from(imgList,commentList,similarList,artWorksSub,isLike,isBookmark,isFollow);
     }
 
-//    @Transactional
-//    public Long createArtwork(Account account, ArtWorkRequestDto.ArtWorkCreateAndUpdate dto) {
-//        ArtWorks artWorks = ArtWorks.of(account, dto);
-//        ArtWorks saveArtWork = artWorkRepository.save(artWorks);
-//        setImgUrl(dto.getImg(), saveArtWork);
-//        return saveArtWork.getId();
-//    }
-
     @Transactional
     public Long createArtwork(Account account, ArtWorkRequestDto.ArtWorkCreateAndUpdate dto, List<MultipartFile> multipartFiles) {
 
@@ -157,7 +148,6 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
         return findArtWork.getId();
     }
 
-    // 작품을 ManyToOne하고 있는 모든 엔티티 삭제 - s3에서도 삭제
     @Transactional
     public void deleteArtwork(Long accountId, Long artworkId) {
         ArtWorks artWorks = artworkValidation(accountId, artworkId);
@@ -167,7 +157,6 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
             fileProcessService.deleteImage(img.getArtworkImg());
         });
         // db 삭제
-        artWorkImageRepository.deleteAllByArtWorksId(artworkId);
         artWorkImageRepository.deleteAllByArtWorksId(artworkId);
         artWorkLikesRepository.deleteAllByArtWorksId(artworkId);
         artWorkBookMarkRepository.deleteAllByArtWorksId(artworkId);

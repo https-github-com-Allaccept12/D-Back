@@ -77,7 +77,7 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
 
     @Override
     public List<ArtWorkResponseDto.ArtworkMain> findArtWorkByMostViewAndMostLike(String interest, Pageable pageable) {
-        return queryFactory
+        List<ArtWorkResponseDto.ArtworkMain> fetch = queryFactory
                 .select(
                         Projections.constructor(ArtWorkResponseDto.ArtworkMain.class,
                                 artWorks.id,
@@ -92,15 +92,41 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
                         ))
                 .from(artWorks)
                 .join(artWorks.account, account)
+                .join(artWorkImage).on(artWorkImage.artWorks.eq(artWorks).and(artWorkImage.thumbnail.isTrue()))
                 .leftJoin(artWorkLikes).on(artWorkLikes.artWorks.eq(artWorks))
-                .leftJoin(artWorkImage).on(artWorkImage.artWorks.eq(artWorks).and(artWorkImage.thumbnail.isTrue()))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
-                .groupBy(artWorks.id)
-                .orderBy(artWorkLikes.count().desc(),artWorks.view.desc())
                 .where(isInterest(interest))
+                .groupBy(artWorks.id)
+                .orderBy(artWorkLikes.count().desc(), artWorks.view.desc())
                 .fetch();
-//        return new PageImpl<>(result,pageable,result.size());
+
+        if (fetch.size() < 10) {
+            return queryFactory
+                    .select(
+                            Projections.constructor(ArtWorkResponseDto.ArtworkMain.class,
+                                    artWorks.id,
+                                    account.id,
+                                    account.nickname,
+                                    account.profileImg,
+                                    artWorkImage.artworkImg,
+                                    artWorks.view,
+                                    artWorkLikes.count(),
+                                    artWorks.category,
+                                    artWorks.created
+                            ))
+                    .from(artWorks)
+                    .join(artWorks.account, account)
+                    .join(artWorkImage).on(artWorkImage.artWorks.eq(artWorks).and(artWorkImage.thumbnail.isTrue()))
+                    .leftJoin(artWorkLikes).on(artWorkLikes.artWorks.eq(artWorks))
+                    .offset(pageable.getOffset())
+                    .limit(pageable.getPageSize())
+                    .groupBy(artWorks.id)
+                    .orderBy(artWorkLikes.count().desc(), artWorks.view.desc())
+                    .fetch();
+        }
+        return fetch;
+
     }
 
     @Override

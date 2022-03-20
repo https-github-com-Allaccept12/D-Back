@@ -61,6 +61,9 @@ public class Account extends BaseEntity {
 
     private String job;
 
+    private String bestArtWorkOne;
+    private String bestArtWorkTwo;
+
     @Embedded
     private Specialty specialty;
 
@@ -109,6 +112,11 @@ public class Account extends BaseEntity {
 
     public void updateInterest(final String interest) {
         this.interest = interest;
+    }
+
+    public void setBestArtWork(String bestArtWorkOne, String bestArtWorkTwo) {
+        this.bestArtWorkOne = bestArtWorkOne;
+        this.bestArtWorkTwo = bestArtWorkTwo;
     }
 
     public void setInitProfile(final AccountRequestDto.InitProfileSetting dto) {
