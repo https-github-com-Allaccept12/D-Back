@@ -31,7 +31,7 @@ public class CommonDto {
     @NoArgsConstructor
     public static class uploadImgDto {
         private String filename;
-        private boolean thumbnail;
+
     }
 
     @Getter

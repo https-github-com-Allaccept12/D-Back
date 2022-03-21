@@ -7,6 +7,7 @@ import TeamDPlus.code.dto.request.PostRequestDto;
 import TeamDPlus.code.jwt.UserDetailsImpl;
 import TeamDPlus.code.service.post.PostMainPageService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -18,9 +19,10 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/post")
+@Slf4j
 public class PostMainController {
 
-    private PostMainPageService postMainPageService;
+    private final PostMainPageService postMainPageService;
 
     // 전체 목록
     @GetMapping("/{last_post_id}/{board}/latest")
@@ -52,6 +54,10 @@ public class PostMainController {
     public ResponseEntity<Success> createPost(@AuthenticationPrincipal UserDetailsImpl user,
                                               @RequestPart PostRequestDto.PostCreate data,
                                               @RequestPart List<MultipartFile> imgFile) {
+        log.info(user.getUser().toString());
+        log.info(data.getTitle());
+        log.info(imgFile.get(0).getOriginalFilename());
+        log.info("등록 체크");
         return new ResponseEntity<>(new Success("디플 게시물 등록",
                 postMainPageService.createPost(user.getUser(), data, imgFile)), HttpStatus.OK);
     }
@@ -61,7 +67,7 @@ public class PostMainController {
     public ResponseEntity<Success> updatePost(@AuthenticationPrincipal UserDetailsImpl user,
                                               @PathVariable Long post_id,
                                               @RequestPart PostRequestDto.PostUpdate data,
-                                              @RequestPart List<MultipartFile> imgFile) {
+                                              @RequestPart(value="file",required = false) List<MultipartFile> imgFile) {
         return new ResponseEntity<>(new Success("디플 게시물 수정",
                 postMainPageService.updatePost(user.getUser(), post_id, data, imgFile)), HttpStatus.OK);
     }

@@ -25,6 +25,8 @@ import TeamDPlus.code.dto.response.PostMainResponseDto;
 import TeamDPlus.code.dto.response.PostResponseDto;
 import TeamDPlus.code.service.file.FileProcessService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -39,6 +41,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class PostMainPageServiceImpl implements PostMainPageService{
 
     private final PostRepository postRepository;
@@ -110,41 +113,58 @@ public class PostMainPageServiceImpl implements PostMainPageService{
 
     // 게시글 작성
     @Transactional
-    public Long createPost(Account account, PostRequestDto.PostCreate dto, List<MultipartFile> imgFile) {
+    public int createPost(Account account, PostRequestDto.PostCreate dto, List<MultipartFile> imgFile) {
+        if (account.getPostCreateCount() >= 5) {
+            throw new ApiRequestException("일일 작성 가능한 게시글분을 다 사용하셨습니다.");
+        }
         postWriteValidation(dto);
         Post post = Post.of(account, dto);
         Post savedPost = postRepository.save(post);
+
         for(int i = 0; i < dto.getImg().size(); i++){
             String img_url = fileProcessService.uploadImage(imgFile.get(i));
             PostImage postImage = PostImage.builder().post(savedPost).postImg(img_url).build();
             postImageRepository.save(postImage);
+            log.info(postImage.getPostImg());
         }
         setPostTag(dto.getHashTag(), savedPost);
-        return post.getId();
+        return 5 - account.getArtWorkCreateCount();
     }
 
     // 게시물 수정
     @Transactional
     public Long updatePost(Account account, Long postId, PostRequestDto.PostUpdate dto, List<MultipartFile> imgFile){
-        postUpdateValidation(dto);
-        Post post = postAuthValidation(account.getId(), postId);
-        List<PostImage> postImages = postImageRepository.findByPostId(post.getId());
-        if(imgFile!=null){
-            postImages.forEach((img) -> {
-                // S3 삭제
-                fileProcessService.deleteImage(img.getPostImg());
-            });
-            // db 삭제
-            postImageRepository.deleteAllByPostId(postId);
 
-            // 재저장 - 포스트는 썸네일 안필요함!
-            imgFile.forEach((img) -> {
-                String s = fileProcessService.uploadImage(img);
-                PostImage postImage = PostImage.builder().post(post).postImg(s).build();
-                postImageRepository.save(postImage);
-            });
+        // dto 필드 비었는지 확인
+        postUpdateValidation(dto);
+
+        // 수정할 어카운트, 게시물 번호로 권한 확인
+        Post post = postAuthValidation(account.getId(), postId);
+
+        // 삭제할 이미지가 있다면, 이미지 주소를 직접 하나씩 지운다
+        if(dto.getImg()!=null){
+            for(int i = 0; i < dto.getImg().size(); i++){
+                String deleteImage = dto.getImg().get(i).getImg_url();
+                // 서버 파일 삭제
+                fileProcessService.deleteImage(deleteImage);
+
+                // db 삭제
+                postImageRepository.deleteByPostImg(deleteImage);
+            }
         }
+
+        // 업로드할 이미지가 있다면, 이미지를 업로드한다.
+        if(imgFile!=null){
+            for(int i = 0; i < imgFile.size(); i++){
+                String img_url = fileProcessService.uploadImage(imgFile.get(i));
+                PostImage postImage = PostImage.builder().post(post).postImg(img_url).build();
+                postImageRepository.save(postImage);
+            }
+        }
+
+        // 게시글을 업데이트 한다
         post.updatePost(dto);
+
         // 태그도 지우고 다시 세팅
         postTagRepository.deleteAllByPostId(postId);
         setPostTag(dto.getHashTag(), post);

@@ -19,7 +19,7 @@ public interface PostMainPageService {
     PostMainResponseDto showPostMainByLikes(Long accountId, Long postId, PostBoard board);
 
     // 게시글 작성
-    Long createPost(Account account, PostRequestDto.PostCreate dto, List<MultipartFile> imageFile);
+    int createPost(Account account, PostRequestDto.PostCreate dto, List<MultipartFile> imageFile);
 
     // 게시글 검색
     Page<PostResponseDto.PostPageMain> findBySearchKeyWord(String keyword, Long lastArtWorkId);
