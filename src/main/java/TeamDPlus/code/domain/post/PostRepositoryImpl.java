@@ -126,41 +126,37 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .where(isLastPostId(lastPostId),
-                        post.title.contains(keyword)
-                                .or(post.title.contains(keyword))
-                                .or(post.account.nickname.contains(keyword))
-                                .or(post.content.contains(keyword))
-                                .or(postTag.hashTag.contains(keyword)))
+                        post.title.contains(keyword),
+                        post.account.nickname.contains(keyword),
+                        post.content.contains(keyword),
+                        postTag.hashTag.contains(keyword))
                 .orderBy(post.created.desc())
                 .fetch();
         return new PageImpl<>(result,pageable,result.size());
     }
 
-
-    // 좋아요 + 조회수 탑 10
    @Override
     public List<PostResponseDto.PostPageMain> findPostByMostViewAndMostLike() {
-        List<PostResponseDto.PostPageMain> result = queryFactory
-                .select(Projections.constructor(PostResponseDto.PostPageMain.class,
-                        post.id,
-                        post.title,
-                        post.content,
-                        post.view,
-                        post.category,
-                        post.created,
-                        account.id,
-                        account.nickname,
-                        account.profileImg
-                ))
-                .from(post)
-                .join(post.account, account)
-                .leftJoin(postLikes).on(postLikes.post.eq(post))
-                .offset(0)
-                .limit(10)
-                .groupBy(post.id)
-                .orderBy(postLikes.count().desc(), post.view.desc())
-                .fetch();
-        return result;
+        return queryFactory
+               .select(Projections.constructor(PostResponseDto.PostPageMain.class,
+                       post.id,
+                       post.title,
+                       post.content,
+                       post.view,
+                       post.category,
+                       post.created,
+                       account.id,
+                       account.nickname,
+                       account.profileImg
+               ))
+               .from(post)
+               .join(post.account, account)
+               .leftJoin(postLikes).on(postLikes.post.eq(post))
+               .offset(0)
+               .limit(10)
+               .groupBy(post.id)
+               .orderBy(postLikes.count().desc(), post.view.desc())
+               .fetch();
     }
 
     public BooleanExpression isLastPostId(Long lastPostId){

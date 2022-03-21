@@ -180,7 +180,7 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
         return artWorkList;
     }
 
-    @Override
+    @Transactional(readOnly = true)
     public List<ArtworkMain> findByFollowerArtWork(Long accountId, String category, Long lastArtWorkId) {
         Pageable pageable = PageRequest.of(0,10);
         List<ArtworkMain> artWorkList = artWorkRepository.findByFollowerArtWork(accountId, category, lastArtWorkId, pageable);
