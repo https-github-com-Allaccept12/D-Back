@@ -85,8 +85,7 @@ public class AccountMyPageController {
 
     //다건
     @PostMapping(value = {"/career-feed"})
-    public ResponseEntity<Success> createAndUpdateCareerFeed(@RequestBody ArtWorkPortFolioUpdate data,
-                                                             @AuthenticationPrincipal UserDetailsImpl user) {
+    public ResponseEntity<Success> createAndUpdateCareerFeed(@RequestBody ArtWorkPortFolioUpdate data) {
         accountMyPageService.updateAccountCareerFeedList(data);
         return new ResponseEntity<>(new Success("포트폴리오 선택/수정 성공", ""), HttpStatus.OK);
     }
@@ -118,18 +117,6 @@ public class AccountMyPageController {
                                                    @AuthenticationPrincipal UserDetailsImpl user) {
         accountMyPageService.hideArtWorkScope(artwork_id,user.getUser());
         return new ResponseEntity<>(new Success("작품 숨기기",""),HttpStatus.OK);
-    }
-
-    @GetMapping("/community/pnc/{board}")
-    public ResponseEntity<Success> myPostAndComment(@PathVariable String board,
-                                                    @AuthenticationPrincipal UserDetailsImpl user) {
-        return new ResponseEntity<>(new Success("나의 PnC",accountMyPageService.myPostAndComment(user.getUser().getId(), board)),HttpStatus.OK);
-    }
-
-    @GetMapping("community/qna/{board}")
-    public ResponseEntity<Success> myQuestionAndAnswer(@PathVariable String board,
-                                                    @AuthenticationPrincipal UserDetailsImpl user) {
-        return new ResponseEntity<>(new Success("나의 QnA",accountMyPageService.myQuestionAndAnswer(user.getUser().getId(), board)),HttpStatus.OK);
     }
 
     @GetMapping("community/myPost/{board}")

@@ -8,4 +8,6 @@ import java.util.List;
 public interface AccountRepositoryCustom {
 
     List<AccountResponseDto.TopArtist> findTopArtist(Pageable pageable);
+
+    void accountCreateCountInitialization();
 }

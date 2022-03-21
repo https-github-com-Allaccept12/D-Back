@@ -3,8 +3,6 @@ package TeamDPlus.code.domain.post;
 
 import TeamDPlus.code.domain.BaseEntity;
 import TeamDPlus.code.domain.account.Account;
-import TeamDPlus.code.domain.artwork.ArtWorks;
-import TeamDPlus.code.dto.request.ArtWorkRequestDto;
 import TeamDPlus.code.dto.request.PostRequestDto;
 import lombok.AccessLevel;
 import lombok.Builder;

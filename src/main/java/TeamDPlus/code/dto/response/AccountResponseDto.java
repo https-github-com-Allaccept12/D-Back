@@ -3,8 +3,6 @@ package TeamDPlus.code.dto.response;
 import TeamDPlus.code.domain.account.Account;
 import TeamDPlus.code.domain.account.Specialty;
 import TeamDPlus.code.domain.account.history.History;
-import TeamDPlus.code.domain.artwork.ArtWorks;
-import TeamDPlus.code.domain.artwork.bookmark.ArtWorkBookMark;
 import TeamDPlus.code.dto.common.CommonDto;
 import lombok.Builder;
 import lombok.Getter;
@@ -94,60 +92,25 @@ public class AccountResponseDto {
         private Long account_id;
         private String account_nickname;
         private String account_profile;
+        private String img_url_fir;
+        private String img_url_sec;
         private String account_job;
         private boolean is_follow = false;
 
         @Builder
-        public TopArtist(Long account_id, String account_nickname, String account_profile,
-                         String account_job) {
+        public TopArtist(final Long account_id, final String account_nickname, final String account_profile,
+                         final String account_job,final String img_url_fir, final  String img_url_sec) {
             this.account_id = account_id;
             this.account_nickname = account_nickname;
             this.account_profile = account_profile;
             this.account_job = account_job;
+            this.img_url_fir = img_url_fir;
+            this.img_url_sec = img_url_sec;
         }
         public void setIsFollow() {
             this.is_follow = true;
         }
-    }
 
-    @Getter
-    @NoArgsConstructor
-    public static class MyPostAndComment {
-        private List<MyPost> myPosts;
-        private List<MyComment> myComments;
-
-        @Builder
-        public MyPostAndComment(List<MyPost> myPosts, List<MyComment> myComments) {
-            this.myPosts = myPosts;
-            this.myComments = myComments;
-        }
-
-        public static MyPostAndComment from(final List<MyPost> myPosts, final List<MyComment> myComments) {
-            return MyPostAndComment.builder()
-                    .myPosts(myPosts)
-                    .myComments(myComments)
-                    .build();
-        }
-    }
-
-    @Getter
-    @NoArgsConstructor
-    public static class MyQuestionAndAnswer {
-        private List<MyPost> myPosts;
-        private List<MyAnswer> myAnswers;
-
-        @Builder
-        public MyQuestionAndAnswer(List<MyPost> myPosts, List<MyAnswer> myAnswers) {
-            this.myPosts = myPosts;
-            this.myAnswers = myAnswers;
-        }
-
-        public static MyQuestionAndAnswer from(final List<MyPost> myPosts, final List<MyAnswer> myAnswers) {
-            return MyQuestionAndAnswer.builder()
-                    .myPosts(myPosts)
-                    .myAnswers(myAnswers)
-                    .build();
-        }
     }
 
     @Getter

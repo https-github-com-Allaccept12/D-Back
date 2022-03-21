@@ -1,14 +1,9 @@
 spring:
-  mvc:
-    pathmatch:
-      matching-strategy: ant_path_matcher
-
   profiles:
     include:
-      - aws
-      - credentials
-      - db
       - secret
+      - db
+      - credentials
 
   jpa:
     hibernate:
@@ -20,8 +15,12 @@ spring:
     open-in-view: false
 
 
+
+
 logging.level:
   org.hibernate.SQL: debug
+
+
 
 server:
   port: 8081

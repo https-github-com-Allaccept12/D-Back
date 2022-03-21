@@ -114,6 +114,7 @@ public class AccountMyPageServiceImpl implements AccountMyPageService {
         ArtWorks artWorks = getArtWorks(artWorkId);
         createrValid(account, artWorks);
         artWorks.updateArtWorkIsMaster(false);
+        artWorks.updateArtWorkIsScope(false);
     }
 
     //작품 보이기
@@ -145,6 +146,13 @@ public class AccountMyPageServiceImpl implements AccountMyPageService {
         return artWorkRepository.findArtWorkBookMarkByAccountId(lastArtWorkId,pageable,accountId);
     }
 
+    //마이페이지 대표작품 설정/수정
+    @Transactional
+    public void setAccountMasterPiece(final Long accountId, final AccountRequestDto.setAccountMasterPiece materPiece) {
+        Account account = getAccount(accountId);
+        account.setBestArtWork(materPiece.getImg_url_fir(),materPiece.getImg_url_sec());
+    }
+
     private Account getAccount(Long accountId) {
         return accountRepository.findById(accountId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
     }
@@ -156,14 +164,6 @@ public class AccountMyPageServiceImpl implements AccountMyPageService {
         if(account.getId().equals(artWorks.getId())){
             throw new IllegalStateException("게시글 작성자가 아닙니다.");
         }
-    }
-
-    public AccountResponseDto.MyPostAndComment myPostAndComment(Long accountId, String board) {
-        return AccountResponseDto.MyPostAndComment.from(getMyPost(accountId, board), getMyComment(accountId));
-    }
-
-    public AccountResponseDto.MyQuestionAndAnswer myQuestionAndAnswer(Long accountId, String board) {
-        return AccountResponseDto.MyQuestionAndAnswer.from(getMyPost(accountId, board), getMyAnswer(accountId));
     }
 
     public List<AccountResponseDto.MyPost> getMyPost(Long accountId, String board) {

@@ -1,0 +1,42 @@
+name: DPlus-webservice
+
+on:
+  push:
+    branches:
+      - main # (1) 실습하시는분들은 master로 하시면 됩니다. (저는 별도 브랜치로 지정)
+  workflow_dispatch: # (2) 수동 실행
+
+env:
+  S3_BUCKET_NAME: dplus-jar
+  PROJECT_NAME: TeamDplus-code
+
+
+jobs:
+    build:
+      runs-on: ubuntu-latest
+
+      steps:
+        - name: Checkout
+          uses: actions/checkout@v2
+
+        - name: Set up JDK 1.8
+          uses: actions/setup-java@v2
+          with:
+            java-version: '8'
+            distribution: 'adopt'
+
+        - name: Grant execute permission for gradlew
+          run: chmod +x ./gradlew
+
+        - name: Set Yaml-1
+          uses: microsoft/variable-substitution@v1
+          with:
+            files: ./src/main/resources/application.yml
+          env:
+            spring.datasource.url: ${{ secrets.RDS_HOST }}
+            spring.datasource.username: ${{ secrets.RDS_USERNAME }}
+            spring.datasource.password: ${{ secrets.RDS_PASSWORD }}
+            jwt.secret: ${{ secrets.JWT_SECRET }}
+            cloud.aws.credentials.accessKey: ${{secrets.AWS_S3_ACCESS_KEY}}
+            cloud.aws.credentials.secretKey: ${{secrets.AWS_S3_SECRET_KEY}}
+            cloud.aws.s3.bucket: ${{secrets.AWS_S3_BUCKET_NAME}}

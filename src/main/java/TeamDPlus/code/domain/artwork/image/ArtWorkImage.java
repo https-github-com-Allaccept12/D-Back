@@ -38,13 +38,6 @@ public class ArtWorkImage {
         this.thumbnail = thumbnail;
     }
 
-    public void updateThumbnail() {
-        this.thumbnail = !this.thumbnail;
-    }
-
-    public void updateImage(String img) {
-        this.artworkImg = img;
-    }
 
 }
 
