@@ -29,7 +29,7 @@ public interface PostRepositoryCustom {
 
     List<PostResponseDto.PostSimilarQuestion> findByCategory(String category);
 
-    List<AccountResponseDto.MyPost> findPostByAccountIdAndBoard(Long accountId, String board);
+    List<AccountResponseDto.MyPost> findPostByAccountIdAndBoard(Long accountId, String board, Pageable pageable);
 
-    List<AccountResponseDto.MyPost> findPostBookMarkByAccountId(Long accountId, String board);
+    List<AccountResponseDto.MyPost> findPostBookMarkByAccountId(Long accountId, String board, Pageable pageable);
 }

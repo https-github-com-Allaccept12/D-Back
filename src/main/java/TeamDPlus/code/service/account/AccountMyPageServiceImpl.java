@@ -167,24 +167,28 @@ public class AccountMyPageServiceImpl implements AccountMyPageService {
     }
 
     public List<AccountResponseDto.MyPost> getMyPost(Long accountId, String board) {
-        List<AccountResponseDto.MyPost> myPosts = postRepository.findPostByAccountIdAndBoard(accountId, board);
+        Pageable pageable = PageRequest.of(0,5);
+        List<AccountResponseDto.MyPost> myPosts = postRepository.findPostByAccountIdAndBoard(accountId, board, pageable);
         setPostInfo(myPosts);
         return myPosts;
     }
 
     public List<AccountResponseDto.MyPost> getMyBookMarkPost(Long accountId, String board) {
-        List<AccountResponseDto.MyPost> myBookMarkPost = postRepository.findPostBookMarkByAccountId(accountId, board);
+        Pageable pageable = PageRequest.of(0,5);
+        List<AccountResponseDto.MyPost> myBookMarkPost = postRepository.findPostBookMarkByAccountId(accountId, board, pageable);
         setPostInfo(myBookMarkPost);
         return myBookMarkPost;
     }
 
     public List<AccountResponseDto.MyAnswer> getMyAnswer(Long accountId) {
-        List<AccountResponseDto.MyAnswer> myAnswers = postAnswerRepository.findPostAnswerByAccountId(accountId);
+        Pageable pageable = PageRequest.of(0,5);
+        List<AccountResponseDto.MyAnswer> myAnswers = postAnswerRepository.findPostAnswerByAccountId(accountId, pageable);
         return myAnswers;
     }
 
     public List<AccountResponseDto.MyComment> getMyComment(Long accountId) {
-        List<AccountResponseDto.MyComment> myComments = postCommentRepository.findPostCommentByAccountId(accountId);
+        Pageable pageable = PageRequest.of(0,5);
+        List<AccountResponseDto.MyComment> myComments = postCommentRepository.findPostCommentByAccountId(accountId, pageable);
         return myComments;
     }
 

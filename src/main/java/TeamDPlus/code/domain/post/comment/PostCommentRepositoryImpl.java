@@ -6,6 +6,7 @@ import TeamDPlus.code.dto.response.PostResponseDto;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -42,7 +43,7 @@ public class PostCommentRepositoryImpl implements PostCommentRepositoryCustom{
 
     // 나의 댓글
     @Override
-    public List<AccountResponseDto.MyComment> findPostCommentByAccountId(Long accountId) {
+    public List<AccountResponseDto.MyComment> findPostCommentByAccountId(Long accountId, Pageable pageable) {
         return jpaQueryFactory
                 .select(Projections.constructor(AccountResponseDto.MyComment.class,
                         postComment.id,
@@ -55,6 +56,8 @@ public class PostCommentRepositoryImpl implements PostCommentRepositoryCustom{
                 .from(postComment)
                 .join(postComment.account, account).on(account.id.eq(accountId))
                 .leftJoin(postCommentLikes).on(postComment.id.eq(postCommentLikes.postComment.id))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .groupBy(postComment.id)
                 .orderBy(postCommentLikes.count().desc())
                 .fetch();

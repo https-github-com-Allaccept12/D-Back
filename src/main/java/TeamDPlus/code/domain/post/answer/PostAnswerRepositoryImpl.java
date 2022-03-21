@@ -5,6 +5,7 @@ import TeamDPlus.code.dto.response.PostResponseDto;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -40,7 +41,7 @@ public class PostAnswerRepositoryImpl implements PostAnswerRepositoryCustom {
     }
 
     @Override
-    public List<AccountResponseDto.MyAnswer> findPostAnswerByAccountId(Long accountId) {
+    public List<AccountResponseDto.MyAnswer> findPostAnswerByAccountId(Long accountId, Pageable pageable) {
         return jpaQueryFactory
                 .select(Projections.constructor(AccountResponseDto.MyAnswer.class,
                         postAnswer.id,
@@ -53,6 +54,8 @@ public class PostAnswerRepositoryImpl implements PostAnswerRepositoryCustom {
                 .from(postAnswer)
                 .join(postAnswer.account, account).on(account.id.eq(accountId))
                 .leftJoin(postAnswerLikes).on(postAnswer.id.eq(postAnswerLikes.postAnswer.id))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .groupBy(postAnswer.id)
                 .orderBy(postAnswerLikes.count().desc())
                 .fetch();

@@ -228,7 +228,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
 
     // 나의 질문
     @Override
-    public List<AccountResponseDto.MyPost> findPostByAccountIdAndBoard(Long accountId, String board) {
+    public List<AccountResponseDto.MyPost> findPostByAccountIdAndBoard(Long accountId, String board, Pageable pageable) {
         List<AccountResponseDto.MyPost> result = queryFactory
                 .select(Projections.constructor(AccountResponseDto.MyPost.class,
                         post.id,
@@ -243,6 +243,8 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                 .join(post.account, account).on(account.id.eq(accountId))
                 .leftJoin(postLikes).on(postLikes.post.eq(post))
                 .where(post.board.eq(PostBoard.valueOf(board)))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .groupBy(post.id)
                 .orderBy(postLikes.count().desc(), post.view.desc())
                 .fetch();
@@ -251,7 +253,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
 
     // 내가 스크랩한 글
     @Override
-    public List<AccountResponseDto.MyPost> findPostBookMarkByAccountId(Long accountId, String board) {
+    public List<AccountResponseDto.MyPost> findPostBookMarkByAccountId(Long accountId, String board, Pageable pageable) {
         return queryFactory
                 .select(Projections.constructor(AccountResponseDto.MyPost.class,
                         post.id,
@@ -266,6 +268,8 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                 .join(postBookMark).on(postBookMark.post.eq(post))
                 .leftJoin(postLikes).on(postLikes.post.eq(post))
                 .where(artWorkBookMark.account.id.eq(accountId), post.board.eq(PostBoard.valueOf(board)))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .groupBy(post.id)
                 .orderBy(post.created.desc())
                 .fetch();
