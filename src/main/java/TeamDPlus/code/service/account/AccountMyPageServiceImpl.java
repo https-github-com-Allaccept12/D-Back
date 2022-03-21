@@ -173,7 +173,9 @@ public class AccountMyPageServiceImpl implements AccountMyPageService {
     }
 
     public List<AccountResponseDto.MyPost> getMyBookMarkPost(Long accountId, String board) {
-        return postRepository.findPostBookMarkByAccountId(accountId, board);
+        List<AccountResponseDto.MyPost> myBookMarkPost = postRepository.findPostBookMarkByAccountId(accountId, board);
+        setPostInfo(myBookMarkPost);
+        return myBookMarkPost;
     }
 
     public List<AccountResponseDto.MyAnswer> getMyAnswer(Long accountId) {
