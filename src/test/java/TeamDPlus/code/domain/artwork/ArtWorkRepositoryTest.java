@@ -3,6 +3,8 @@ package TeamDPlus.code.domain.artwork;
 import TeamDPlus.code.domain.account.Account;
 import TeamDPlus.code.domain.account.AccountRepository;
 import TeamDPlus.code.domain.account.QAccount;
+import TeamDPlus.code.domain.account.follow.Follow;
+import TeamDPlus.code.domain.account.follow.FollowRepository;
 import TeamDPlus.code.domain.account.rank.Rank;
 import TeamDPlus.code.domain.account.rank.RankRepository;
 import TeamDPlus.code.domain.artwork.bookmark.ArtWorkBookMark;
@@ -14,6 +16,7 @@ import TeamDPlus.code.domain.artwork.image.ArtWorkImageRepository;
 import TeamDPlus.code.domain.artwork.like.ArtWorkLikes;
 import TeamDPlus.code.domain.artwork.like.ArtWorkLikesRepository;
 import TeamDPlus.code.dto.response.ArtWorkResponseDto;
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -30,11 +33,13 @@ import javax.persistence.EntityManager;
 import java.util.List;
 
 import static TeamDPlus.code.domain.account.QAccount.account;
+import static TeamDPlus.code.domain.account.follow.QFollow.follow;
 import static TeamDPlus.code.domain.artwork.QArtWorks.artWorks;
 import static TeamDPlus.code.domain.artwork.bookmark.QArtWorkBookMark.artWorkBookMark;
 import static TeamDPlus.code.domain.artwork.comment.QArtWorkComment.artWorkComment;
 import static TeamDPlus.code.domain.artwork.image.QArtWorkImage.artWorkImage;
 import static TeamDPlus.code.domain.artwork.like.QArtWorkLikes.artWorkLikes;
+import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.Assertions.assertThat;
 
 
@@ -48,6 +53,9 @@ class ArtWorkRepositoryTest {
 
     @Autowired
     AccountRepository accountRepository;
+
+    @Autowired
+    FollowRepository followRepository;
 
     @Autowired
     ArtWorkRepository artWorkRepository;
@@ -307,6 +315,192 @@ class ArtWorkRepositoryTest {
         assertThat(result.get(1).getArtwork_id()).isEqualTo(artWorks4.getId());
         assertThat(result.get(2).getArtwork_id()).isEqualTo(artWorks3.getId());
         assertThat(result.get(3).getArtwork_id()).isEqualTo(artWorks1.getId());
+    }
+
+    @Test
+    public void 내가_팔로우한_작가의_작품만보기() throws Exception {
+        //given
+        Account account1 = testAccountSet();
+        Account account2 = testAccountSet();
+        Account account3 = testAccountSet();
+        //account1이 account2를 팔로우
+        followSet(account2.getId(),account1.getId());
+        ArtWorks artWorks1 = testArtWorksSet(account1);
+        ArtWorks artWorks2 = testArtWorksSet(account2);
+        ArtWorks artWorks3 = testArtWorksSet(account2);
+        ArtWorks artWorks4 = testArtWorksSet(account2);
+        ArtWorks artWorks5 = testArtWorksSet(account3);
+
+        testArtWorkImageSet(artWorks1,"팔로워의 작품",true);
+        testArtWorkImageSet(artWorks2,"주인공 작품1",true);
+        testArtWorkImageSet(artWorks3,"주인공 작품2",true);
+        testArtWorkImageSet(artWorks4,"주인공 작품이지만 private작품",false);
+        testArtWorkImageSet(artWorks5,"상관 없는 사람 작품",true);
+        Pageable paging = PageRequest.of(0,10);
+        //when
+        List<Long> followingId = queryFactory
+                .select(follow.followingId)
+                .from(follow)
+                .join(account).on(account.id.eq(follow.followingId))
+                .where(follow.followerId.eq(account1.getId()))
+                .fetch();
+        List<ArtWorkResponseDto.ArtworkMain> testQuery = queryFactory
+                .select(Projections.constructor(ArtWorkResponseDto.ArtworkMain.class,
+                        artWorks.id,
+                        account.id,
+                        account.nickname,
+                        account.profileImg,
+                        artWorkImage.artworkImg,
+                        artWorks.view,
+                        artWorkLikes.count(),
+                        artWorks.category,
+                        artWorks.created
+                ))
+                .from(artWorks)
+                .join(artWorks.account, account)
+                .join(artWorkImage).on(artWorkImage.artWorks.eq(artWorks).and(artWorkImage.thumbnail.isTrue()))
+                .leftJoin(artWorkLikes).on(artWorkLikes.artWorks.eq(artWorks))
+                .offset(paging.getOffset())
+                .limit(paging.getPageSize())
+                .where(isLastArtworkId(100L),
+                        isCategory("test"),
+                        artWorks.scope.isTrue(),
+                        artWorks.account.id.in(followingId))
+                .groupBy(artWorks.id)
+                .orderBy(artWorks.created.desc())
+                .fetch();
+        //then
+        assertThat(testQuery.size()).isEqualTo(2);
+        assertThat(testQuery.get(0).getArtwork_id()).isEqualTo(artWorks3.getId());
+        assertThat(testQuery.get(1).getArtwork_id()).isEqualTo(artWorks2.getId());
+
+    }
+
+
+
+    @Test
+    public void 최신순() throws Exception {
+        //given
+        Account account1 = testAccountSet();
+        Account account2 = testAccountSet();
+        Account account3 = testAccountSet();
+        //account1이 account2를 팔로우
+        ArtWorks artWorks1 = testArtWorksSet(account1);
+        ArtWorks artWorks2 = testArtWorksSet(account2);
+        ArtWorks artWorks3 = testArtWorksSet(account2);
+        ArtWorks artWorks4 = testArtWorksSet(account2);
+        ArtWorks artWorks5 = testArtWorksSet(account3);
+
+        testArtWorkImageSet(artWorks1,"팔로워의 작품",true);
+        testArtWorkImageSet(artWorks2,"주인공 작품1",true);
+        testArtWorkImageSet(artWorks3,"주인공 작품2",true);
+        testArtWorkImageSet(artWorks4,"주인공 작품이지만 private작품",false);
+        testArtWorkImageSet(artWorks5,"상관 없는 사람 작품",true);
+        Pageable paging = PageRequest.of(0,10);
+        //when
+        List<ArtWorkResponseDto.ArtworkMain> fetch = queryFactory
+                .select(Projections.constructor(ArtWorkResponseDto.ArtworkMain.class,
+                        artWorks.id,
+                        account.id,
+                        account.nickname,
+                        account.profileImg,
+                        artWorkImage.artworkImg,
+                        artWorks.view,
+                        artWorkLikes.count(),
+                        artWorks.category,
+                        artWorks.created
+                ))
+                .from(artWorks)
+                .join(account).on(account.id.eq(artWorks.account.id))
+                .join(artWorkImage).on(artWorkImage.artWorks.eq(artWorks).and(artWorkImage.thumbnail.isTrue()))
+                .leftJoin(artWorkLikes).on(artWorkLikes.artWorks.eq(artWorks))
+                .offset(paging.getOffset())
+                .limit(paging.getPageSize())
+                .where(isLastArtworkId(100L),
+                        isCategory(""),
+                        artWorks.scope.isTrue())
+                .groupBy(artWorks.id)
+                .orderBy(isArtWorkSort(1))
+                .fetch();
+        //then
+        assertThat(fetch.size()).isEqualTo(4);
+        assertThat(fetch.get(0).getArtwork_id()).isEqualTo(artWorks5.getId());
+        assertThat(fetch.get(1).getArtwork_id()).isEqualTo(artWorks3.getId());
+        assertThat(fetch.get(2).getArtwork_id()).isEqualTo(artWorks2.getId());
+        assertThat(fetch.get(3).getArtwork_id()).isEqualTo(artWorks1.getId());
+    }
+
+    @Test
+    @Commit
+    public void 좋아요_많은순() throws Exception {
+        //given
+        Account account1 = testAccountSet();
+        ArtWorks artWorks1 = testArtWorksSet(account1);
+        ArtWorks artWorks2 = testArtWorksSet(account1);
+        ArtWorks artWorks3 = testArtWorksSet(account1);
+        ArtWorks artWorks4 = testArtWorksSet(account1);
+        testArtWorkImageSet(artWorks1,"작품1",true);
+        testArtWorkImageSet(artWorks2,"작품2",true);
+        testArtWorkImageSet(artWorks3,"작품3",true);
+        testArtWorkImageSet(artWorks4,"작품4",true);
+        testLikeSet(artWorks3,account1);
+        testLikeSet(artWorks3,account1);
+        testLikeSet(artWorks3,account1);
+        testLikeSet(artWorks2,account1);
+        testLikeSet(artWorks2,account1);
+        testLikeSet(artWorks1,account1);
+        Pageable paging = PageRequest.of(0,10);
+        //when
+        List<ArtWorkResponseDto.ArtworkMain> fetch = queryFactory
+                .select(Projections.constructor(ArtWorkResponseDto.ArtworkMain.class,
+                        artWorks.id,
+                        account.id,
+                        account.nickname,
+                        account.profileImg,
+                        artWorkImage.artworkImg,
+                        artWorks.view,
+                        artWorkLikes.count(),
+                        artWorks.category,
+                        artWorks.created
+                ))
+                .from(artWorks)
+                .join(account).on(account.id.eq(artWorks.account.id))
+                .join(artWorkImage).on(artWorkImage.artWorks.eq(artWorks).and(artWorkImage.thumbnail.isTrue()))
+                .leftJoin(artWorkLikes).on(artWorkLikes.artWorks.eq(artWorks))
+                .offset(paging.getOffset())
+                .limit(paging.getPageSize())
+                .where(isLastArtworkId(100L),
+                        isCategory(""),
+                        artWorks.scope.isTrue())
+                .groupBy(artWorks.id)
+                .orderBy(isArtWorkSort(2))
+                .fetch();
+        //then
+        assertThat(fetch.size()).isEqualTo(4);
+        assertThat(fetch.get(0).getArtwork_id()).isEqualTo(artWorks3.getId());
+        assertThat(fetch.get(0).getLike_count()).isEqualTo(3);
+        assertThat(fetch.get(1).getArtwork_id()).isEqualTo(artWorks2.getId());
+        assertThat(fetch.get(1).getLike_count()).isEqualTo(2);
+        assertThat(fetch.get(2).getArtwork_id()).isEqualTo(artWorks1.getId());
+        assertThat(fetch.get(2).getLike_count()).isEqualTo(1);
+        assertThat(fetch.get(3).getArtwork_id()).isEqualTo(artWorks4.getId());
+        assertThat(fetch.get(3).getLike_count()).isEqualTo(0);
+    }
+    private OrderSpecifier<?> isArtWorkSort(int sortSign) {
+        return sortSign == 1 ? artWorks.created.desc() : artWorkLikes.count().desc();
+    }
+    private BooleanExpression isLastArtworkId(Long lastArtWorkId) {
+        return lastArtWorkId != 0 ? artWorks.id.lt(lastArtWorkId) : null;
+    }
+    private BooleanExpression isCategory(String category) {
+        return category.isEmpty() ? null : artWorks.category.eq(category);
+    }
+    private Follow followSet(Long followingId, Long followerId) {
+        Follow follow1 = Follow.builder().followingId(followingId).followerId(followerId).build();
+        Follow save = followRepository.save(follow1);
+        em.flush();
+        em.clear();
+        return save;
     }
 
 

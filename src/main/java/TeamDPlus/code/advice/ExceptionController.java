@@ -18,7 +18,7 @@ public class ExceptionController {
     }
 
     @ExceptionHandler(value = {IllegalArgumentException.class})
-    public ResponseEntity<Fail> badRequestHandle(IllegalStateException ex) {
+    public ResponseEntity<Fail> badRequestHandle(IllegalArgumentException ex) {
         Fail notFoundException = new Fail(ex.getMessage());
         return new ResponseEntity<>(notFoundException, HttpStatus.OK);
     }

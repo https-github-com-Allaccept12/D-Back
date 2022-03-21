@@ -42,6 +42,9 @@ public class ArtWorks extends BaseEntity {
     @Column(nullable = false)
     private String category;
 
+    @Column(nullable = false)
+    private String copyright;
+
     @Column(columnDefinition = "BIGINT default 0")
     private Long view;
 
@@ -56,13 +59,14 @@ public class ArtWorks extends BaseEntity {
     @JoinColumn(name = "account_id")
     private Account account;
 
+
     @Embedded
     private Specialty specialty;
 
     @Builder
     public ArtWorks(final boolean scope,final String title,final String content,final String category,
                     final Long view,final String workStart,final String workEnd,final Account account,
-                    final boolean isMaster, final Specialty specialty) {
+                    final boolean isMaster, final Specialty specialty,final String copyright) {
         this.scope = scope;
         this.title = title;
         this.content = content;
@@ -73,6 +77,7 @@ public class ArtWorks extends BaseEntity {
         this.account = account;
         this.isMaster = isMaster;
         this.specialty = specialty;
+        this.copyright = copyright;
     }
 
     public void addViewCount() {
@@ -87,9 +92,10 @@ public class ArtWorks extends BaseEntity {
         this.workStart = dto.getWork_start();
         this.workEnd = dto.getWork_end();
         this.isMaster = dto.isMaster();
+        this.copyright = dto.getCopyright();
     }
-    public void updateArtWorkIsMaster(boolean isScope) {
-        this.isMaster = isScope;
+    public void updateArtWorkIsMaster(boolean isMaster) {
+        this.isMaster = isMaster;
     }
     public void updateArtWorkIsScope(boolean isScope) {
         this.scope = isScope;
@@ -106,6 +112,7 @@ public class ArtWorks extends BaseEntity {
                 .workEnd(dto.getWork_end())
                 .isMaster(dto.isMaster())
                 .specialty(dto.getSpecialty())
+                .copyright(dto.getCopyright())
                 .build();
     }
 
