@@ -71,7 +71,6 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
         return artWorkList;
     }
 
-
     @Transactional
     public ArtWorkResponseDto.ArtWorkDetail detailArtWork(Long accountId, Long artWorkId) {
         //작품 게시글 존재여부
@@ -105,31 +104,18 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
         return ArtWorkResponseDto.ArtWorkDetail.from(imgList,commentList,similarList,artWorksSub,isLike,isBookmark,isFollow);
     }
 
-
     @Transactional
     public int createArtwork(Long accountId, ArtWorkCreateAndUpdate dto, List<MultipartFile> multipartFiles) {
         Account account = accountRepository.findById(accountId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
         if (account.getArtWorkCreateCount() >= 5) {
             throw new ApiRequestException("일일 작성 가능한 게시글분을 다 사용하셨습니다.");
         }
-        // 아트웍 저장
         ArtWorks artWorks = ArtWorks.of(account, dto);
         ArtWorks saveArtwork = artWorkRepository.save(artWorks);
-
-        if(multipartFiles != null){
-            for (int i = 0; i < multipartFiles.size(); i++) {
-                String saveFile = fileProcessService.uploadImage(multipartFiles.get(i));
-                ArtWorkImage img = ArtWorkImage.builder().artWorks(saveArtwork).artworkImg(saveFile).thumbnail(false).build();
-                if (i == 0) {
-                    img.updateThumbnail();
-                }
-                artWorkImageRepository.save(img);
-            }
-        }
+        s3ImageUpload(multipartFiles, saveArtwork);
         account.upArtworkCountCreate();
         return 5 - account.getArtWorkCreateCount();
     }
-
 
     @Transactional
     public Long updateArtwork(Long accountId, Long artworkId, ArtWorkCreateAndUpdate dto, List<MultipartFile> multipartFiles) {
@@ -175,13 +161,24 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
             setIsLike(accountId,artWorkList);
         return artWorkList;
     }
+    private void s3ImageUpload(List<MultipartFile> multipartFiles, ArtWorks saveArtwork) {
+        if(multipartFiles != null){
+            for (int i = 0; i < multipartFiles.size(); i++) {
+                String saveFile = fileProcessService.uploadImage(multipartFiles.get(i));
+                ArtWorkImage img = ArtWorkImage.builder().artWorks(saveArtwork).artworkImg(saveFile).thumbnail(false).build();
+                if (i == 0) {
+                    img.updateThumbnail();
+                }
+                artWorkImageRepository.save(img);
+            }
+        }
+    }
 
     private void updateImg( List<MultipartFile> multipartFiles, ArtWorks findArtWork, ArtWorkCreateAndUpdate dto) {
         dto.getImg().forEach((img) -> {
             fileProcessService.deleteImage(img.getImg_url());
             artWorkImageRepository.deleteByArtworkImg(img.getImg_url());
         });
-
         multipartFiles.forEach((file) -> {
             String imgUrl = fileProcessService.uploadImage(file);
             ArtWorkImage img = ArtWorkImage.builder().artWorks(findArtWork).artworkImg(imgUrl).build();
