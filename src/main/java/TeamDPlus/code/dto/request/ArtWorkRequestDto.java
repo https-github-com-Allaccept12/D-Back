@@ -34,6 +34,8 @@ public class ArtWorkRequestDto {
 
         private Specialty specialty;
 
+        private String copyright;
+
     }
 
     @Getter

@@ -1,5 +1,6 @@
 package TeamDPlus.code.service.account;
 
+import TeamDPlus.code.advice.ApiRequestException;
 import TeamDPlus.code.domain.account.Account;
 import TeamDPlus.code.domain.account.AccountRepository;
 import TeamDPlus.code.domain.account.follow.FollowRepository;
@@ -103,6 +104,7 @@ public class AccountMyPageServiceImpl implements AccountMyPageService {
         ArtWorks artWorks = getArtWorks(artWorkId);
         createrValid(account, artWorks);
         artWorks.updateArtWorkIsMaster(false);
+        artWorks.updateArtWorkIsScope(false);
     }
 
     //작품 보이기
@@ -132,6 +134,13 @@ public class AccountMyPageServiceImpl implements AccountMyPageService {
     public List<ArtWorkResponseDto.ArtWorkBookMark> showAccountArtWorkBookMark(Long lastArtWorkId,final Long accountId) {
         Pageable pageable = PageRequest.of(0,10);
         return artWorkRepository.findArtWorkBookMarkByAccountId(lastArtWorkId,pageable,accountId);
+    }
+
+    //마이페이지 대표작품 설정/수정
+    @Transactional
+    public void setAccountMasterPiece(final Long accountId, final AccountRequestDto.setAccountMasterPiece materPiece) {
+        Account account = getAccount(accountId);
+        account.setBestArtWork(materPiece.getImg_url_fir(),materPiece.getImg_url_sec());
     }
 
     private Account getAccount(Long accountId) {

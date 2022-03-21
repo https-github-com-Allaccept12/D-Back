@@ -1,18 +1,13 @@
 spring:
-  mvc:
-    pathmatch:
-      matching-strategy: ant_path_matcher
-
   profiles:
     include:
-      - aws
-      - credentials
-      - db
       - secret
+      - db
+      - credentials
 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
     properties:
       hibernate:
         format_sql: true
@@ -20,8 +15,12 @@ spring:
     open-in-view: false
 
 
+
+
 logging.level:
   org.hibernate.SQL: debug
+
+
 
 server:
   port: 8081

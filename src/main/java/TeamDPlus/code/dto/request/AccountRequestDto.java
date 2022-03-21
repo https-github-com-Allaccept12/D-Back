@@ -70,8 +70,10 @@ public class AccountRequestDto {
         private String interest;
     }
 
-
-
-
-
+    @Getter
+    @NoArgsConstructor
+    public static class setAccountMasterPiece {
+        private String img_url_fir;
+        private String img_url_sec;
+    }
 }
