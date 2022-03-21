@@ -227,10 +227,12 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
         return  queryFactory
                 .select(Projections.constructor(ArtWorkResponseDto.ArtWorkSimilarWork.class,
                         artWorks.id,
+                        artWorks.title,
                         artWorkImage.artworkImg))
                 .from(artWorks)
                 .join(artWorkImage).on(artWorkImage.artWorks.eq(artWorks)
                         .and(artWorkImage.thumbnail.isTrue()))
+                .join(artWorks.account, account)
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .where(artWorks.account.id.eq(accountId).and(artWorks.id.ne(artWorkId)))

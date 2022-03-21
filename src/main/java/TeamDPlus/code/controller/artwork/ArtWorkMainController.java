@@ -83,14 +83,19 @@ public class ArtWorkMainController {
 
     }
 
+    //대표작품설정
+    public static class testDto {
+        private List<MultipartFile> imgFile;
+        private ArtWorkCreateAndUpdate data;
+    }
+
 
     @PostMapping("/api/artwork")
     public ResponseEntity<Success> createArtWork(@AuthenticationPrincipal UserDetailsImpl user,
                                                  @RequestPart ArtWorkCreateAndUpdate data,
                                                  @RequestPart List<MultipartFile> imgFile) {
-
         return new ResponseEntity<>(new Success("작품 등록 완료"
-                ,artworkMainService.createArtwork(user.getUser(),data, imgFile)),HttpStatus.OK);
+                ,artworkMainService.createArtwork(user.getUser().getId(),data, imgFile)),HttpStatus.OK);
     }
 
     @PatchMapping("/api/artwork/{artwork_id}")
@@ -99,7 +104,7 @@ public class ArtWorkMainController {
                                                  @RequestPart ArtWorkCreateAndUpdate data,
                                                  @RequestPart List<MultipartFile> imgFile) {
         return new ResponseEntity<>(new Success("작품 수정 완료",
-                artworkMainService.updateArtwork(user.getUser(),artwork_id,data, imgFile)),HttpStatus.OK);
+                artworkMainService.updateArtwork(user.getUser().getId(),artwork_id,data, imgFile)),HttpStatus.OK);
     }
 
     @DeleteMapping("/api/artwork/{artwork_id}")
