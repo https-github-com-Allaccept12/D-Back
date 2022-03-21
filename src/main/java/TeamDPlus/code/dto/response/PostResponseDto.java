@@ -37,7 +37,8 @@ public class PostResponseDto {
         public PostPageMain(final Long post_id, final Long account_id, final String account_nickname,
                             final String account_profile_img, final String title,
                             final String content, final String category,
-                            final Timestamp create_time, final List<CommonDto.PostTagDto> hash_tag, final boolean is_selected) {
+                            final Timestamp create_time, final List<CommonDto.PostTagDto> hash_tag, final boolean is_selected,
+                            final Long like_count) {
 
             this.post_id = post_id;
             this.account_id = account_id;
@@ -49,10 +50,10 @@ public class PostResponseDto {
             this.create_time = create_time;
             this.hash_tag = hash_tag;
             this.is_selected = is_selected;
-        }
-        public void setCountList(Long bookmark_count, Long like_count, Long comment_count){
-            this.bookmark_count = bookmark_count;
             this.like_count = like_count;
+        }
+        public void setCountList(Long bookmark_count, Long comment_count){
+            this.bookmark_count = bookmark_count;
             this.comment_count = comment_count;
         }
     }

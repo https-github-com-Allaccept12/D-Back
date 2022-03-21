@@ -12,10 +12,10 @@ import java.util.List;
 public class PostMainResponseDto {
 
     private List<PostResponseDto.PostPageMain> postRecommendationFeed;
-    private Page<PostResponseDto.PostPageMain> postMainPage;
+    private List<PostResponseDto.PostPageMain> postMainPage;
 
     @Builder
-    public PostMainResponseDto(List<PostResponseDto.PostPageMain> postRecommendationFeed, Page<PostResponseDto.PostPageMain> postMainPage) {
+    public PostMainResponseDto(List<PostResponseDto.PostPageMain> postRecommendationFeed, List<PostResponseDto.PostPageMain> postMainPage) {
         this.postRecommendationFeed = postRecommendationFeed;
         this.postMainPage = postMainPage;
     }

@@ -59,17 +59,12 @@ public class PostMainPageServiceImpl implements PostMainPageService{
 
         // 메인 페이지 전체 피드
         Pageable pageable = PageRequest.of(0,12);
-        Page<PostResponseDto.PostPageMain> postList = postRepository.findAllPostOrderByCreatedDesc(lastPostId, pageable, board);
+        List<PostResponseDto.PostPageMain> postList = postRepository.findAllPostOrderByCreatedDesc(lastPostId, pageable, board);
         setCountList(postList);
 
         // 메인페이지 추천피드
         List<PostResponseDto.PostPageMain> postRecommendation = postRepository.findPostByMostViewAndMostLike();
-        postList.forEach((post) -> {
-            Long bookmark_count = postBookMarkRepository.countByPostId(post.getPost_id());
-            Long comment_count = postCommentRepository.countByPostId(post.getPost_id());
-            Long like_count = postLikesRepository.countByPostId(post.getPost_id());
-            post.setCountList(bookmark_count, comment_count, like_count);
-        });
+        setCountList(postRecommendation);
         return PostMainResponseDto.builder().postMainPage(postList).postRecommendationFeed(postRecommendation).build();
     }
 
@@ -78,17 +73,12 @@ public class PostMainPageServiceImpl implements PostMainPageService{
     public PostMainResponseDto showPostMainByLikes(Long accountId, Long lastPostId, PostBoard board) {
 
         Pageable pageable = PageRequest.of(0,12);
-        Page<PostResponseDto.PostPageMain> postList = postRepository.findAllPostOrderByPostLikes(lastPostId, pageable, board);
+        List<PostResponseDto.PostPageMain> postList = postRepository.findAllPostOrderByPostLikes(lastPostId, pageable, board);
         setCountList(postList);
 
         // 메인페이지 추천피드
         List<PostResponseDto.PostPageMain> postRecommendation = postRepository.findPostByMostViewAndMostLike();
-        postList.forEach((post) -> {
-            Long bookmark_count = postBookMarkRepository.countByPostId(post.getPost_id());
-            Long comment_count = postCommentRepository.countByPostId(post.getPost_id());
-            Long like_count = postLikesRepository.countByPostId(post.getPost_id());
-            post.setCountList(bookmark_count, comment_count, like_count);
-        });
+        setCountList(postRecommendation);
         return PostMainResponseDto.builder().postMainPage(postList).postRecommendationFeed(postRecommendation).build();
     }
 
@@ -185,12 +175,11 @@ public class PostMainPageServiceImpl implements PostMainPageService{
         return postRepository.findPostBySearchKeyWord(keyword,lastArtWorkId,pageable);
     }
 
-    private void setCountList(Page<PostResponseDto.PostPageMain> postList){
+    private void setCountList(List<PostResponseDto.PostPageMain> postList){
         postList.forEach((post) -> {
             Long bookmark_count = postBookMarkRepository.countByPostId(post.getPost_id());
             Long comment_count = postCommentRepository.countByPostId(post.getPost_id());
-            Long like_count = postLikesRepository.countByPostId(post.getPost_id());
-            post.setCountList(bookmark_count, comment_count, like_count);
+            post.setCountList(bookmark_count, comment_count);
         });
     }
 

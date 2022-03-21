@@ -28,8 +28,8 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
 
     // 전체 페이지
     @Override
-    public Page<PostResponseDto.PostPageMain> findAllPostOrderByCreatedDesc(Long lastPostId, Pageable pageable, PostBoard board) {
-        List<PostResponseDto.PostPageMain> fetch = queryFactory
+    public List<PostResponseDto.PostPageMain> findAllPostOrderByCreatedDesc(Long lastPostId, Pageable pageable, PostBoard board) {
+        return queryFactory
                 .select(Projections.constructor(PostResponseDto.PostPageMain.class,
                         post.id,
                         account.id,
@@ -49,14 +49,12 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                 .groupBy(post.id)
                 .orderBy(post.created.desc())
                 .fetch();
-
-        return new PageImpl<>(fetch, pageable, fetch.size());
     }
 
     // 전체 페이지 (좋아요 순)
     @Override
-    public Page<PostResponseDto.PostPageMain> findAllPostOrderByPostLikes(Long lastPostId, Pageable pageable, PostBoard board) {
-        List<PostResponseDto.PostPageMain> fetch = queryFactory
+    public List<PostResponseDto.PostPageMain> findAllPostOrderByPostLikes(Long lastPostId, Pageable pageable, PostBoard board) {
+        return queryFactory
                 .select(Projections.constructor(PostResponseDto.PostPageMain.class,
                         post.id,
                         account.id,
@@ -76,8 +74,6 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                 .where(isLastPostId(lastPostId), post.board.eq(board))
                 .orderBy(postLikes.count().desc())
                 .fetch();
-
-        return new PageImpl<>(fetch, pageable, fetch.size());
     }
 
     // 상세페이지 서브 정보
@@ -150,7 +146,8 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                         post.created,
                         account.id,
                         account.nickname,
-                        account.profileImg
+                        account.profileImg,
+                        postLikes.count()
                 ))
                 .from(post)
                 .join(post.account, account)
