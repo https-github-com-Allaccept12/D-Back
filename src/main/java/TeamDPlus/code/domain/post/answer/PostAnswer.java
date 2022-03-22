@@ -32,18 +32,14 @@ public class PostAnswer extends BaseEntity {
     @Column(nullable = false)
     private String content;
 
-    @Column(columnDefinition = "BIGINT default 0")
-    private Long view;
-
     @Column(columnDefinition = "TINYINT default 0")
     private boolean isSelected;
 
     @Builder
-    public PostAnswer(final Account account, final Post post, final String content, final Long view, final boolean isSelected) {
+    public PostAnswer(final Account account, final Post post, final String content, final boolean isSelected) {
         this.account = account;
         this.post = post;
         this.content = content;
-        this.view = view;
         this.isSelected = isSelected;
     }
 
@@ -51,7 +47,7 @@ public class PostAnswer extends BaseEntity {
         this.content = content;
     }
 
-    public void doIsSelected(final boolean isSElected) {
+    public void doIsSelected(final boolean isSelected) {
         this.isSelected = isSelected;
     }
 }

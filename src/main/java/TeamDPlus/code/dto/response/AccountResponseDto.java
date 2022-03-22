@@ -127,15 +127,13 @@ public class AccountResponseDto {
         private String profileImg;
 
         @Builder
-        public MyPost(final Long post_id, final String title, final String content, final Long answer_count,
-                          final Long like_count, final Long bookmark_count, final Timestamp create_time,
+        public MyPost(final Long post_id, final String title, final String content,
+                          final Long like_count, final Timestamp create_time,
                           final Timestamp modify_time, final String profileImg) {
             this.post_id = post_id;
             this.title = title;
             this.content = content;
-            this.answer_count = answer_count;
             this.like_count = like_count;
-            this.bookmark_count = bookmark_count;
             this.create_time = create_time;
             this.modify_time = modify_time;
             this.profileImg = profileImg;

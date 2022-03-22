@@ -48,9 +48,9 @@ public class PostCommentRepositoryImpl implements PostCommentRepositoryCustom{
                 .select(Projections.constructor(AccountResponseDto.MyComment.class,
                         postComment.id,
                         postComment.content,
+                        postCommentLikes.count(),
                         postComment.created,
                         postComment.modified,
-                        postCommentLikes.count(),
                         account.profileImg
                 ))
                 .from(postComment)

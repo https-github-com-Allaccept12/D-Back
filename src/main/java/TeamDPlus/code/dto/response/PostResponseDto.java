@@ -36,7 +36,7 @@ public class PostResponseDto {
         public PostPageMain(final Long post_id, final Long account_id, final String account_nickname,
                             final String account_profile_img, final String title,
                             final String content, final String category,
-                            final Timestamp create_time, final List<CommonDto.PostTagDto> hash_tag, final boolean is_selected) {
+                            final Timestamp create_time, final boolean is_selected) {
             this.post_id = post_id;
             this.account_id = account_id;
             this.account_nickname = account_nickname;
@@ -45,7 +45,6 @@ public class PostResponseDto {
             this.content = content;
             this.category = category;
             this.create_time = create_time;
-            this.hash_tag = hash_tag;
             this.is_selected = is_selected;
         }
         public void setCountList(Long bookmark_count, Long like_count, Long comment_count){
@@ -112,7 +111,7 @@ public class PostResponseDto {
     public static class PostSubDetail {
         private Long post_id;
         private Long account_id;
-        private Long account_nickname;
+        private String account_nickname;
         private String account_profile_img;
         private String title;
         private String content;
@@ -124,7 +123,7 @@ public class PostResponseDto {
         private Long like_count;
 
         @Builder
-        public PostSubDetail(final Long post_id, final Long account_id, final Long account_nickname,
+        public PostSubDetail(final Long post_id, final Long account_id, final String account_nickname,
                              final String account_profile_img, final String title,
                              final String content, final Long view_count, final String category,
                              final Timestamp create_time, final Timestamp modify_time,
@@ -256,7 +255,7 @@ public class PostResponseDto {
     public static class PostAnswerSubDetail {
         private Long post_id;
         private Long account_id;
-        private Long account_nickname;
+        private String account_nickname;
         private String account_profile_img;
         private String title;
         private String content;
@@ -269,7 +268,7 @@ public class PostResponseDto {
         private boolean isSelected;
 
         @Builder
-        public PostAnswerSubDetail(final Long post_id, final Long account_id, final Long account_nickname,
+        public PostAnswerSubDetail(final Long post_id, final Long account_id, final String account_nickname,
                              final String account_profile_img, final String title, final String content,
                              final Long view_count, final Long like_count, final String category,
                              final Timestamp create_time, final Timestamp modify_time, final boolean isSelected) {
@@ -294,29 +293,28 @@ public class PostResponseDto {
     @Getter
     @NoArgsConstructor
     public static class PostAnswer {
-        private Long account_id;
         private Long answer_id;
+        private Long account_id;
+        private String account_nickname;
+        private String account_profile_img;
         private String content;
         private Timestamp modify_time;
-        private int is_selected;
+        private boolean is_selected;
         private Long like_count;
-        private Long view_count;
         private boolean is_like;
         private boolean is_follow;
 
         @Builder
-        public PostAnswer(final Long account_id, final Long answer_id, final String content, final Timestamp modify_time,
-                          final int is_selected, final Long like_count, final Long view_count,
-                          final boolean is_like, final boolean is_follow) {
-            this.account_id = account_id;
+        public PostAnswer(final Long answer_id, final Long account_id, final String account_nickname, final String account_profile_img,
+                          final String content, final Timestamp modify_time, final boolean is_selected, final Long like_count) {
             this.answer_id = answer_id;
+            this.account_id = account_id;
+            this.account_nickname = account_nickname;
+            this.account_profile_img = account_profile_img;
             this.content = content;
             this.modify_time = modify_time;
             this.is_selected = is_selected;
             this.like_count = like_count;
-            this.view_count = view_count;
-            this.is_like = is_like;
-            this.is_follow = is_follow;
         }
 
         public void setLikeCountAndIsLike(boolean is_like) {
@@ -347,24 +345,18 @@ public class PostResponseDto {
         private List<CommonDto.PostTagDto> hash_tag;
 
         @Builder
-        public PostSimilarQuestion(final Long post_id, final Long account_id, final String account_profile_img, final String title, final String content,
-                                   final Long answer_count, final Long like_count, final Long bookmark_count, final String category,
-                                   final Timestamp create_time, final Timestamp modify_time, final boolean is_like, final boolean is_bookmark,
-                                   final List<CommonDto.PostTagDto> hash_tag) {
+        public PostSimilarQuestion(final Long post_id, final Long account_id, final String account_profile_img,
+                                   final String title, final String content, final Long like_count, final String category,
+                                   final Timestamp create_time, final Timestamp modify_time) {
             this.post_id = post_id;
             this.account_id = account_id;
             this.account_profile_img = account_profile_img;
             this.title = title;
             this.content = content;
-            this.answer_count = answer_count;
             this.like_count = like_count;
-            this.bookmark_count = bookmark_count;
             this.category = category;
             this.create_time = create_time;
             this.modify_time = modify_time;
-            this.is_like = is_like;
-            this.is_bookmark = is_bookmark;
-            this.hash_tag = hash_tag;
         }
 
         public void setLikeCountAndIsLike(boolean is_like) {

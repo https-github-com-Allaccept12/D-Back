@@ -23,10 +23,10 @@ public class PostAnswerRepositoryImpl implements PostAnswerRepositoryCustom {
     public List<PostResponseDto.PostAnswer> findPostAnswerByPostId(Long postId) {
         return jpaQueryFactory
                 .select(Projections.constructor(PostResponseDto.PostAnswer.class,
+                        postAnswer.id,
                         postAnswer.account.id,
                         postAnswer.account.nickname,
                         postAnswer.account.profileImg,
-                        postAnswer.id,
                         postAnswer.content,
                         postAnswer.modified,
                         postAnswer.isSelected,
@@ -40,15 +40,16 @@ public class PostAnswerRepositoryImpl implements PostAnswerRepositoryCustom {
                 .fetch();
     }
 
+    // 나의 답글
     @Override
     public List<AccountResponseDto.MyAnswer> findPostAnswerByAccountId(Long accountId, Pageable pageable) {
         return jpaQueryFactory
                 .select(Projections.constructor(AccountResponseDto.MyAnswer.class,
                         postAnswer.id,
                         postAnswer.content,
+                        postAnswerLikes.count(),
                         postAnswer.created,
                         postAnswer.modified,
-                        postAnswerLikes.count(),
                         account.profileImg
                 ))
                 .from(postAnswer)

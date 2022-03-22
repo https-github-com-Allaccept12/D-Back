@@ -28,7 +28,9 @@ public class FileServiceImpl implements FileService{
 
     @Override
     public void deleteFile(String fileName) {
-        amazonS3Client.deleteObject(new DeleteObjectRequest(amazonS3Component.getBucket(), fileName));
+        int separator = fileName.lastIndexOf("/") + 1; //uuid 인덱스 번호 확인
+        String substring = fileName.substring(separator);
+        amazonS3Client.deleteObject(new DeleteObjectRequest(amazonS3Component.getBucket(), substring));
     }
 
     @Override

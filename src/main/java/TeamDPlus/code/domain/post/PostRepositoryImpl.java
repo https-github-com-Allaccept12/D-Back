@@ -3,7 +3,6 @@ package TeamDPlus.code.domain.post;
 import TeamDPlus.code.domain.post.tag.PostTag;
 import TeamDPlus.code.domain.post.tag.QPostTag;
 import TeamDPlus.code.dto.response.AccountResponseDto;
-import TeamDPlus.code.dto.response.ArtWorkResponseDto;
 import TeamDPlus.code.dto.response.PostResponseDto;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -17,10 +16,6 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 import static TeamDPlus.code.domain.account.QAccount.account;
-import static TeamDPlus.code.domain.artwork.QArtWorks.artWorks;
-import static TeamDPlus.code.domain.artwork.bookmark.QArtWorkBookMark.artWorkBookMark;
-import static TeamDPlus.code.domain.artwork.image.QArtWorkImage.artWorkImage;
-import static TeamDPlus.code.domain.artwork.like.QArtWorkLikes.artWorkLikes;
 import static TeamDPlus.code.domain.post.QPost.post;
 import static TeamDPlus.code.domain.post.bookmark.QPostBookMark.postBookMark;
 import static TeamDPlus.code.domain.post.like.QPostLikes.postLikes;
@@ -117,17 +112,17 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
         return queryFactory
                 .select(Projections.constructor(PostResponseDto.PostAnswerSubDetail.class,
                         post.id,
+                        account.id,
+                        account.profileImg,
+                        account.nickname,
                         post.title,
                         post.content,
                         post.view,
+                        postLikes.count(),
                         post.category,
                         post.created,
                         post.modified,
-                        post.isSelected,
-                        postLikes.count(),
-                        account.id,
-                        account.profileImg,
-                        account.nickname
+                        post.isSelected
                 ))
                 .from(post)
                 .innerJoin(post.account, account)
@@ -204,15 +199,14 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
         List<PostResponseDto.PostSimilarQuestion> result = queryFactory
                 .select(Projections.constructor(PostResponseDto.PostSimilarQuestion.class,
                         post.id,
+                        account.id,
+                        account.profileImg,
                         post.title,
                         post.content,
-                        post.view,
+                        postLikes.count(),
                         post.category,
                         post.created,
-                        post.modified,
-                        postLikes.count(),
-                        account.id,
-                        account.profileImg
+                        post.modified
                 ))
                 .from(post)
                 .join(post.account, account)
@@ -234,9 +228,9 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                         post.id,
                         post.title,
                         post.content,
+                        postLikes.count(),
                         post.created,
                         post.modified,
-                        postLikes.count(),
                         account.profileImg
                 ))
                 .from(post)
@@ -257,17 +251,17 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
         return queryFactory
                 .select(Projections.constructor(AccountResponseDto.MyPost.class,
                         post.id,
-                        post.account.profileImg,
                         post.title,
                         post.content,
+                        postLikes.count(),
                         post.created,
                         post.modified,
-                        postLikes.count()
+                        post.account.profileImg
                 ))
                 .from(post)
                 .join(postBookMark).on(postBookMark.post.eq(post))
                 .leftJoin(postLikes).on(postLikes.post.eq(post))
-                .where(artWorkBookMark.account.id.eq(accountId), post.board.eq(PostBoard.valueOf(board)))
+                .where(postBookMark.account.id.eq(accountId), post.board.eq(PostBoard.valueOf(board)))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .groupBy(post.id)
