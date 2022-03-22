@@ -7,7 +7,6 @@ import TeamDPlus.code.domain.account.Account;
 import TeamDPlus.code.domain.account.AccountRepository;
 import TeamDPlus.code.domain.account.follow.Follow;
 import TeamDPlus.code.domain.account.follow.FollowRepository;
-import TeamDPlus.code.domain.account.rank.Rank;
 import TeamDPlus.code.domain.account.rank.RankRepository;
 import TeamDPlus.code.dto.request.AccountRequestDto;
 import TeamDPlus.code.dto.response.FollowResponseDto;

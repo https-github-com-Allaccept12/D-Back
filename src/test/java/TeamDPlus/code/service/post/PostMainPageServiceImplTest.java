@@ -117,7 +117,7 @@ public class PostMainPageServiceImplTest {
         assertThat(result.get(0).getContent()).isEqualTo(post1.getContent());
 
     }
-    
+
 
     private Account testAccountSet() {
         Account testAccount = Account.builder()
