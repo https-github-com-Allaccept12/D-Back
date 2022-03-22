@@ -1,9 +1,7 @@
 package TeamDPlus.code.domain.artwork;
 
-import TeamDPlus.code.domain.account.follow.QFollow;
 import TeamDPlus.code.dto.response.ArtWorkResponseDto;
 import TeamDPlus.code.dto.response.ArtWorkResponseDto.ArtworkMain;
-import TeamDPlus.code.dto.response.FollowResponseDto;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -76,6 +74,7 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
     //개선 필요
     @Override
     public List<ArtworkMain> findArtWorkByMostViewAndMostLike(String interest, Pageable pageable) {
+
         List<ArtworkMain> fetch = queryFactory
                 .select(
                         Projections.constructor(ArtworkMain.class,
@@ -87,8 +86,7 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
                                 artWorks.view,
                                 artWorkLikes.count(),
                                 artWorks.category,
-                                artWorks.created
-                        ))
+                                artWorks.created))
                 .from(artWorks)
                 .join(artWorks.account, account)
                 .join(artWorkImage).on(artWorkImage.artWorks.eq(artWorks).and(artWorkImage.thumbnail.isTrue()))
@@ -127,7 +125,6 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
         return fetch;
 
     }
-
 
     @Override
     public List<ArtworkMain> findAllArtWork(Long lastArtworkId, String category, Pageable paging,int sortSign) {
@@ -230,10 +227,12 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
         return  queryFactory
                 .select(Projections.constructor(ArtWorkResponseDto.ArtWorkSimilarWork.class,
                         artWorks.id,
+                        artWorks.title,
                         artWorkImage.artworkImg))
                 .from(artWorks)
                 .join(artWorkImage).on(artWorkImage.artWorks.eq(artWorks)
                         .and(artWorkImage.thumbnail.isTrue()))
+                .join(artWorks.account, account)
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .where(artWorks.account.id.eq(accountId).and(artWorks.id.ne(artWorkId)))
@@ -263,9 +262,9 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .where(isLastArtworkId(lastArtWorkId),
-                        artWorks.title.contains(keyword)
-                                .or(artWorks.title.contains(keyword))
-                                .or(artWorks.account.nickname.eq(keyword)))
+                        artWorks.title.contains(keyword),
+                        artWorks.content.contains(keyword),
+                        artWorks.account.nickname.contains(keyword))
                 .groupBy(artWorks.id)
                 .orderBy(artWorks.created.desc())
                 .fetch();

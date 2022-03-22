@@ -5,6 +5,7 @@ import TeamDPlus.code.domain.artwork.QArtWorks;
 import TeamDPlus.code.domain.artwork.image.QArtWorkImage;
 import TeamDPlus.code.dto.response.AccountResponseDto;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -24,13 +25,9 @@ public class AccountRepositoryImpl implements AccountRepositoryCustom{
 
     private final JPAQueryFactory queryFactory;
 
-    /***
-     *
-     *
-     */
 
     @Override
-    public List<AccountResponseDto.TopArtist> findTopArtist(Pageable pageable) {
+    public List<AccountResponseDto.TopArtist> findTopArtist(Pageable pageable,String interest) {
         return queryFactory
                 .select(
                         Projections.constructor(AccountResponseDto.TopArtist.class,
@@ -57,6 +54,9 @@ public class AccountRepositoryImpl implements AccountRepositoryCustom{
                 .set(account.postCreateCount, 0)
                 .execute();
     }
+
+
+
 }
 
 

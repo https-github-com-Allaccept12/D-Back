@@ -2,6 +2,8 @@ package TeamDPlus.code.service.artwork.bookmark;
 
 
 import TeamDPlus.code.advice.ApiRequestException;
+import TeamDPlus.code.advice.BadArgumentsValidException;
+import TeamDPlus.code.advice.ErrorCode;
 import TeamDPlus.code.domain.account.Account;
 import TeamDPlus.code.domain.artwork.ArtWorkRepository;
 import TeamDPlus.code.domain.artwork.ArtWorks;
@@ -22,7 +24,10 @@ public class ArtWorkBookMarkService {
     public void doBookMark(Account account, Long artWorkId) {
         ArtWorks artWorks = getArtWorks(artWorkId);
         if (artWorkBookMarkRepository.existByAccountIdAndArtWorkId(account.getId(), artWorkId)) {
-            throw new ApiRequestException("이미 북마크한 게시글 입니다.");
+            throw new ApiRequestException(ErrorCode.ALREADY_BOOKMARK_ERROR);
+        }
+        if (artWorks.getAccount().getId().equals(account.getId())) {
+            throw new BadArgumentsValidException(ErrorCode.NO_BOOKMARK_MY_POST_ERROR);
         }
         artWorks.getAccount().getRank().upRankScore();
         ArtWorkBookMark artWorkBookMark = ArtWorkBookMark.builder().artWorks(artWorks).account(account).build();
@@ -33,13 +38,13 @@ public class ArtWorkBookMarkService {
     public void unBookMark(Account account, Long artWorkId) {
         ArtWorks artWorks = getArtWorks(artWorkId);
         if (!artWorkBookMarkRepository.existByAccountIdAndArtWorkId(account.getId(), artWorkId)) {
-            throw new ApiRequestException("이미 북마크를 해지한 게시글 입니다.");
+            throw new ApiRequestException(ErrorCode.ALREADY_BOOKMARK_ERROR);
         }
         artWorks.getAccount().getRank().downRankScore();
         artWorkBookMarkRepository.deleteByArtWorksIdAndAccountId(artWorkId,account.getId());
     }
 
     private ArtWorks getArtWorks(Long artWorkId) {
-        return artWorkRepository.findById(artWorkId).orElseThrow(() -> new ApiRequestException("존재하지 않는 게시글 입니다."));
+        return artWorkRepository.findById(artWorkId).orElseThrow(() -> new ApiRequestException(ErrorCode.NONEXISTENT_ERROR));
     }
 }
