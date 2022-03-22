@@ -9,6 +9,8 @@ import TeamDPlus.code.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 
 @Service
@@ -19,10 +21,10 @@ public class SecurityService {
     private final JwtTokenProvider jwtTokenProvider;
 
     @Transactional
-    public TokenResponseDto refresh(String refreshToken) {
+    public TokenResponseDto refresh(String refreshToken, HttpServletRequest request) {
         // 리프레시 토큰 기간 만료 에러
-        if (jwtTokenProvider.validateToken(refreshToken)) {
-            throw new IllegalStateException("리프레시 토큰 기간 만료");
+        if (!jwtTokenProvider.validateToken(request, refreshToken)) {
+            throw new ApiRequestException(ErrorCode.TOKEN_EXPIRATION_ERROR);
         }
 
         Long userPk = Long.parseLong(jwtTokenProvider.getUserPk(refreshToken));
@@ -32,7 +34,7 @@ public class SecurityService {
         String getRefreshToken = account.getRefreshToken();
         
         if (!refreshToken.equals(getRefreshToken)) {
-            throw new IllegalStateException("리프레시 토큰이 일치하지 않습니다.");
+            throw new ApiRequestException(ErrorCode.NO_MATCH_ITEM_ERROR);
         }
 
         String updateToken = jwtTokenProvider.createToken(Long.toString(account.getId()), account.getEmail());
