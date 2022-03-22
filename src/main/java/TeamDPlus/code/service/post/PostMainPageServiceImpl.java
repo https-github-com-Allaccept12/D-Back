@@ -23,6 +23,7 @@ import TeamDPlus.code.dto.request.ArtWorkRequestDto;
 import TeamDPlus.code.dto.request.PostRequestDto;
 import TeamDPlus.code.dto.response.PostMainResponseDto;
 import TeamDPlus.code.dto.response.PostResponseDto;
+import TeamDPlus.code.dto.response.PostResponseDto.PostPageMain;
 import TeamDPlus.code.service.file.FileProcessService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -57,11 +58,11 @@ public class PostMainPageServiceImpl implements PostMainPageService{
 
         // 메인 페이지 전체 피드
         Pageable pageable = PageRequest.of(0,12);
-        Page<PostResponseDto.PostPageMain> postList = postRepository.findAllPostOrderByCreatedDesc(lastPostId, pageable, board);
+        Page<PostPageMain> postList = postRepository.findAllPostOrderByCreatedDesc(lastPostId, pageable, board);
         setCountList(postList);
 
         // 메인페이지 추천피드
-        List<PostResponseDto.PostPageMain> postRecommendation = postRepository.findPostByMostViewAndMostLike();
+        List<PostPageMain> postRecommendation = postRepository.findPostByMostViewAndMostLike();
         postList.forEach((post) -> {
             Long bookmark_count = postBookMarkRepository.countByPostId(post.getPost_id());
             Long comment_count = postCommentRepository.countByPostId(post.getPost_id());
@@ -76,11 +77,11 @@ public class PostMainPageServiceImpl implements PostMainPageService{
     public PostMainResponseDto showPostMainByLikes(Long accountId, Long lastPostId, PostBoard board) {
 
         Pageable pageable = PageRequest.of(0,12);
-        Page<PostResponseDto.PostPageMain> postList = postRepository.findAllPostOrderByPostLikes(lastPostId, pageable, board);
+        Page<PostPageMain> postList = postRepository.findAllPostOrderByPostLikes(lastPostId, pageable, board);
         setCountList(postList);
 
         // 메인페이지 추천피드
-        List<PostResponseDto.PostPageMain> postRecommendation = postRepository.findPostByMostViewAndMostLike();
+        List<PostPageMain> postRecommendation = postRepository.findPostByMostViewAndMostLike();
         postList.forEach((post) -> {
             Long bookmark_count = postBookMarkRepository.countByPostId(post.getPost_id());
             Long comment_count = postCommentRepository.countByPostId(post.getPost_id());
@@ -181,12 +182,12 @@ public class PostMainPageServiceImpl implements PostMainPageService{
 
     // 게시글 검색
     @Transactional(readOnly = true)
-    public Page<PostResponseDto.PostPageMain> findBySearchKeyWord(String keyword, Long lastArtWorkId) {
+    public Page<PostPageMain> findBySearchKeyWord(String keyword, Long lastArtWorkId) {
         Pageable pageable = PageRequest.of(0,5);
         return postRepository.findPostBySearchKeyWord(keyword,lastArtWorkId,pageable);
     }
 
-    private void setCountList(Page<PostResponseDto.PostPageMain> postList){
+    private void setCountList(Page<PostPageMain> postList){
         postList.forEach((post) -> {
             Long bookmark_count = postBookMarkRepository.countByPostId(post.getPost_id());
             Long comment_count = postCommentRepository.countByPostId(post.getPost_id());

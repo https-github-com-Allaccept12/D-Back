@@ -38,6 +38,10 @@ public class ArtWorkImage {
         this.thumbnail = thumbnail;
     }
 
+    public void updateThumbnail() {
+        this.thumbnail = true;
+    }
+
 
 }
 

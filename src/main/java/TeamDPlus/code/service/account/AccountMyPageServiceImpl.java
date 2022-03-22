@@ -1,6 +1,8 @@
 package TeamDPlus.code.service.account;
 
 import TeamDPlus.code.advice.ApiRequestException;
+import TeamDPlus.code.advice.BadArgumentsValidException;
+import TeamDPlus.code.advice.ErrorCode;
 import TeamDPlus.code.domain.account.Account;
 import TeamDPlus.code.domain.account.AccountRepository;
 import TeamDPlus.code.domain.account.follow.FollowRepository;
@@ -9,8 +11,12 @@ import TeamDPlus.code.domain.account.history.HistoryRepository;
 import TeamDPlus.code.domain.artwork.ArtWorkRepository;
 import TeamDPlus.code.domain.artwork.ArtWorks;
 import TeamDPlus.code.dto.request.AccountRequestDto;
+import TeamDPlus.code.dto.request.AccountRequestDto.UpdateAccountIntro;
+import TeamDPlus.code.dto.request.AccountRequestDto.UpdateSpecialty;
 import TeamDPlus.code.dto.request.ArtWorkRequestDto;
+import TeamDPlus.code.dto.request.ArtWorkRequestDto.ArtWorkPortFolioUpdate;
 import TeamDPlus.code.dto.request.HistoryRequestDto;
+import TeamDPlus.code.dto.request.HistoryRequestDto.HistoryUpdateList;
 import TeamDPlus.code.dto.response.AccountResponseDto;
 import TeamDPlus.code.dto.response.ArtWorkResponseDto;
 import TeamDPlus.code.dto.response.HistoryResponseDto;
@@ -38,7 +44,7 @@ public class AccountMyPageServiceImpl implements AccountMyPageService {
     //마이페이지
     @Transactional(readOnly = true)
     public AccountResponseDto.AccountInfo showAccountInfo(final Long visitAccountId, final Long accountId) {
-        final Account findAccount = accountRepository.findById(visitAccountId).orElseThrow(() -> new IllegalStateException("존재 하지않는 사용자 입니다."));
+        final Account findAccount = getAccount(visitAccountId);
         final Long follower = followRepository.countByFollowerId(findAccount.getId());
         final Long following = followRepository.countByFollowingId(findAccount.getId());
         final boolean isFollow= followRepository.existsByFollowerIdAndFollowingId(visitAccountId,accountId);
@@ -60,20 +66,20 @@ public class AccountMyPageServiceImpl implements AccountMyPageService {
     }
     //포트폴리오 - 기본 소개 수정
     @Transactional
-    public void updateAccountIntro(AccountRequestDto.UpdateAccountIntro dto, Long accountId) {
+    public void updateAccountIntro(UpdateAccountIntro dto, Long accountId) {
         Account account = getAccount(accountId);
         account.updateIntro(dto);
     }
 
     //포트폴리오 - 스킬셋 수정
     @Transactional
-    public void updateAccountSpecialty(AccountRequestDto.UpdateSpecialty dto, Long accountId) {
+    public void updateAccountSpecialty(UpdateSpecialty dto, Long accountId) {
         Account account = getAccount(accountId);
         account.updateSpecialty(dto);
     }
 
     @Transactional
-    public void updateAccountHistory(HistoryRequestDto.HistoryUpdateList dto, Long accountId) {
+    public void updateAccountHistory(HistoryUpdateList dto, Long accountId) {
         //히스토리 전체 삭제 벌크
         Account account = getAccount(accountId);
         historyRepository.deleteAllByAccountId(account.getId());
@@ -86,7 +92,7 @@ public class AccountMyPageServiceImpl implements AccountMyPageService {
 
     //포트폴리오에서 올리기 한방에 다건
     @Transactional
-    public void updateAccountCareerFeedList(ArtWorkRequestDto.ArtWorkPortFolioUpdate dto) {
+    public void updateAccountCareerFeedList(ArtWorkPortFolioUpdate dto) {
         //유저가 원하는 작품들 Is_Master를 True로 벌크
         artWorkRepository.updateAllArtWorkIsMasterToTrue(dto.getArtwork_feed());
     }
@@ -95,14 +101,14 @@ public class AccountMyPageServiceImpl implements AccountMyPageService {
     @Transactional
     public void masterAccountCareerFeed(Long artWorkId,Account account) {
         ArtWorks artWorks = getArtWorks(artWorkId);
-        createrValid(account, artWorks);
+        createValid(account, artWorks);
         artWorks.updateArtWorkIsMaster(true);
     }
     //내 작품탭에서 내리기
     @Transactional
     public void nonMasterAccountCareerFeed(Long artWorkId,Account account) {
         ArtWorks artWorks = getArtWorks(artWorkId);
-        createrValid(account, artWorks);
+        createValid(account, artWorks);
         artWorks.updateArtWorkIsMaster(false);
         artWorks.updateArtWorkIsScope(false);
     }
@@ -111,14 +117,14 @@ public class AccountMyPageServiceImpl implements AccountMyPageService {
     @Transactional
     public void nonHideArtWorkScope(Long artWorkId, Account account) {
         ArtWorks artWorks = getArtWorks(artWorkId);
-        createrValid(account,artWorks);
+        createValid(account,artWorks);
         artWorks.updateArtWorkIsScope(true);
     }
     //작품 숨김
     @Transactional
     public void hideArtWorkScope(Long artWorkId, Account account) {
         ArtWorks artWorks = getArtWorks(artWorkId);
-        createrValid(account,artWorks);
+        createValid(account,artWorks);
         artWorks.updateArtWorkIsScope(false);
     }
 
@@ -144,15 +150,15 @@ public class AccountMyPageServiceImpl implements AccountMyPageService {
     }
 
     private Account getAccount(Long accountId) {
-        return accountRepository.findById(accountId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+        return accountRepository.findById(accountId).orElseThrow(() -> new ApiRequestException(ErrorCode.NO_USER_ERROR));
     }
 
     private ArtWorks getArtWorks(Long artWorkId) {
-        return artWorkRepository.findById(artWorkId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글입니다."));
+        return artWorkRepository.findById(artWorkId).orElseThrow(() -> new ApiRequestException(ErrorCode.NONEXISTENT_ERROR));
     }
-    private void createrValid(Account account, ArtWorks artWorks) {
+    private void createValid(Account account, ArtWorks artWorks) {
         if(account.getId().equals(artWorks.getId())){
-            throw new IllegalStateException("게시글 작성자가 아닙니다.");
+            throw new BadArgumentsValidException(ErrorCode.NO_AUTHORIZATION_ERROR);
         }
     }
 
