@@ -1,6 +1,8 @@
 package TeamDPlus.code.service.artwork;
 
 import TeamDPlus.code.advice.ApiRequestException;
+import TeamDPlus.code.advice.BadArgumentsValidException;
+import TeamDPlus.code.advice.ErrorCode;
 import TeamDPlus.code.domain.account.Account;
 import TeamDPlus.code.domain.account.AccountRepository;
 import TeamDPlus.code.domain.account.follow.FollowRepository;
@@ -11,8 +13,6 @@ import TeamDPlus.code.domain.artwork.comment.ArtWorkCommentRepository;
 import TeamDPlus.code.domain.artwork.image.ArtWorkImage;
 import TeamDPlus.code.domain.artwork.image.ArtWorkImageRepository;
 import TeamDPlus.code.domain.artwork.like.ArtWorkLikesRepository;
-import TeamDPlus.code.dto.common.CommonDto;
-import TeamDPlus.code.dto.request.ArtWorkRequestDto;
 import TeamDPlus.code.dto.request.ArtWorkRequestDto.ArtWorkCreateAndUpdate;
 import TeamDPlus.code.dto.response.AccountResponseDto;
 import TeamDPlus.code.dto.response.ArtWorkResponseDto;
@@ -27,7 +27,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -50,7 +49,7 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
     public MainResponseDto mostPopularArtWork(Long accountId) {
         //회원인지 비회원인지
         if (accountId != null) {
-            Account account = accountRepository.findById(accountId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+            Account account = accountRepository.findById(accountId).orElseThrow(() -> new ApiRequestException(ErrorCode.NO_USER_ERROR));
             List<ArtworkMain> artWorkList = getArtworkList(account.getInterest());
             List<AccountResponseDto.TopArtist> topArtist = getTopArtist(account.getInterest());
             isFollow(accountId,topArtist);
@@ -75,7 +74,7 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
     public ArtWorkResponseDto.ArtWorkDetail detailArtWork(Long accountId, Long artWorkId) {
         //작품 게시글 존재여부
         ArtWorks artWorks = artWorkRepository.findById(artWorkId)
-                .orElseThrow(() -> new ApiRequestException("해당 게시글은 존재하지 않습니다."));
+                .orElseThrow(() -> new ApiRequestException(ErrorCode.NONEXISTENT_ERROR));
         //조회수
         artWorks.addViewCount();
         //작품 좋아요개수와 작품 기본정보 가져오기
@@ -106,9 +105,9 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
 
     @Transactional
     public int createArtwork(Long accountId, ArtWorkCreateAndUpdate dto, List<MultipartFile> multipartFiles) {
-        Account account = accountRepository.findById(accountId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+        Account account = accountRepository.findById(accountId).orElseThrow(() -> new ApiRequestException(ErrorCode.NO_USER_ERROR));
         if (account.getArtWorkCreateCount() >= 5) {
-            throw new ApiRequestException("일일 작성 가능한 게시글분을 다 사용하셨습니다.");
+            throw new ApiRequestException(ErrorCode.DAILY_WRITE_UP_BURN_ERROR);
         }
         ArtWorks artWorks = ArtWorks.of(account, dto);
         ArtWorks saveArtwork = artWorkRepository.save(artWorks);
@@ -126,7 +125,7 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
             artWorks.updateArtWork(dto);
             return artWorks.getId();
         }
-        throw new IllegalStateException("사진을 업로드 해주세요");
+        throw new ApiRequestException(ErrorCode.PHOTO_UPLOAD_ERROR);
     }
 
     @Transactional
@@ -205,9 +204,9 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
     }
 
     private ArtWorks artworkValidation(Long accountId, Long artworkId){
-        ArtWorks artWorks = artWorkRepository.findById(artworkId).orElseThrow(() -> new ApiRequestException("해당 게시글은 존재하지 않습니다."));
+        ArtWorks artWorks = artWorkRepository.findById(artworkId).orElseThrow(() -> new ApiRequestException(ErrorCode.NONEXISTENT_ERROR));
         if(!artWorks.getAccount().getId().equals(accountId)){
-            throw new ApiRequestException("권한이 없습니다.");
+            throw new BadArgumentsValidException(ErrorCode.NO_AUTHORIZATION_ERROR);
         }
         return artWorks;
     }

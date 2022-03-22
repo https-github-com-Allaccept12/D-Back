@@ -1,6 +1,8 @@
 package TeamDPlus.code.service.file;
 
 
+import TeamDPlus.code.advice.BadArgumentsValidException;
+import TeamDPlus.code.advice.ErrorCode;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +30,7 @@ public class FileProcessService {
         try (InputStream inputStream = file.getInputStream()) {
             amazonS3Service.uploadFile(inputStream, objectMetadata, fileName);
         } catch (IOException ioe) {
-            throw new IllegalArgumentException(String.format("파일 변환 중 에러가 발생했습니다 (%s)", file.getOriginalFilename()));
+            throw new BadArgumentsValidException(ErrorCode.CONVERTING_FILE_ERROR);
         }
         return amazonS3Service.getFileUrl(fileName);
     }
@@ -44,8 +46,5 @@ public class FileProcessService {
         return fileName.substring(fileName.lastIndexOf("."));
     }
 
-//    private String getFileName(String url) {
-//        String[] paths = url.split("/");
-//        return paths[paths.length-2] + "/" + paths[paths.length-1];
-//    }
+
 }

@@ -1,6 +1,8 @@
 package TeamDPlus.code.controller.artwork;
 
 
+import TeamDPlus.code.advice.BadArgumentsValidException;
+import TeamDPlus.code.advice.ErrorCode;
 import TeamDPlus.code.dto.Success;
 import TeamDPlus.code.dto.common.CommonDto.ArtWorkKeyword;
 import TeamDPlus.code.dto.request.ArtWorkRequestDto.ArtWorkCreateAndUpdate;
@@ -79,30 +81,27 @@ public class ArtWorkMainController {
             return new ResponseEntity<>(new Success("팔로우한 작가 작업물",
                     artworkMainService.findByFollowerArtWork(user.getUser().getId(),category,last_artwork_id)),HttpStatus.OK);
         }
-        throw new IllegalStateException("로그인을 안했거나, 로그인이 만료되었습니다.");
+        throw new BadArgumentsValidException(ErrorCode.NO_AUTHENTICATION_ERROR);
 
     }
-
-    //대표작품설정
-    public static class testDto {
-        private List<MultipartFile> imgFile;
-        private ArtWorkCreateAndUpdate data;
-    }
-
 
     @PostMapping("/api/artwork")
     public ResponseEntity<Success> createArtWork(@AuthenticationPrincipal UserDetailsImpl user,
                                                  @RequestPart ArtWorkCreateAndUpdate data,
                                                  @RequestPart List<MultipartFile> imgFile) {
+        loginValid(user);
         return new ResponseEntity<>(new Success("작품 등록 완료"
                 ,artworkMainService.createArtwork(user.getUser().getId(),data, imgFile)),HttpStatus.OK);
     }
+
+
 
     @PatchMapping("/api/artwork/{artwork_id}")
     public ResponseEntity<Success> updateArtWork(@AuthenticationPrincipal UserDetailsImpl user,
                                                  @PathVariable Long artwork_id,
                                                  @RequestPart ArtWorkCreateAndUpdate data,
                                                  @RequestPart List<MultipartFile> imgFile) {
+        loginValid(user);
         return new ResponseEntity<>(new Success("작품 수정 완료",
                 artworkMainService.updateArtwork(user.getUser().getId(),artwork_id,data, imgFile)),HttpStatus.OK);
     }
@@ -110,6 +109,7 @@ public class ArtWorkMainController {
     @DeleteMapping("/api/artwork/{artwork_id}")
     public ResponseEntity<Success> deleteArtWork(@AuthenticationPrincipal UserDetailsImpl user,
                                                  @PathVariable Long artwork_id) {
+        loginValid(user);
         artworkMainService.deleteArtwork(user.getUser().getId(), artwork_id);
         return new ResponseEntity<>(new Success("작품 삭제",""),HttpStatus.OK);
     }
@@ -138,6 +138,11 @@ public class ArtWorkMainController {
         }
         return new ResponseEntity<>(new Success("작품 검색 완료",
                 artworkMainService.findBySearchKeyWord(keyword,last_artwork_id,user.getUser().getId())),HttpStatus.OK);
+    }
+    private void loginValid(UserDetailsImpl user) {
+        if (user == null) {
+            throw new BadArgumentsValidException(ErrorCode.NO_AUTHENTICATION_ERROR);
+        }
     }
 
 }
