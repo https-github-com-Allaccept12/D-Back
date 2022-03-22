@@ -1,6 +1,8 @@
 package TeamDPlus.code.service.post.comment;
 
 import TeamDPlus.code.advice.ApiRequestException;
+import TeamDPlus.code.advice.BadArgumentsValidException;
+import TeamDPlus.code.advice.ErrorCode;
 import TeamDPlus.code.domain.account.Account;
 import TeamDPlus.code.domain.post.Post;
 import TeamDPlus.code.domain.post.PostRepository;
@@ -19,7 +21,7 @@ public class PostCommentService {
     private final PostCommentLikesRepository postCommentLikesRepository;
 
     public Long createComment(Account account, Long postId, PostRequestDto.PostComment dto) {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new ApiRequestException("게시글이 존재하지 않습니다."));
+        Post post = postRepository.findById(postId).orElseThrow(() -> new ApiRequestException(ErrorCode.NONEXISTENT_ERROR));
         PostComment postComment = PostComment.builder().post(post).account(account).content(dto.getContent()).build();
         PostComment save = postCommentRepository.save(postComment);
         return save.getId();
@@ -32,7 +34,7 @@ public class PostCommentService {
     }
 
     public void deleteComment(Long accountId, Long postCommentId) {
-        PostComment postComment = commentValidation(accountId, postCommentId);
+        commentValidation(accountId, postCommentId);
         postCommentLikesRepository.deleteAllByPostCommentId(postCommentId);
         postCommentRepository.deleteById(postCommentId);
     }
@@ -40,10 +42,10 @@ public class PostCommentService {
     // 코멘트 수정삭제 권한 확인
     public PostComment commentValidation(Long accountId, Long commentId) {
         PostComment postComment = postCommentRepository.findById(commentId).orElseThrow(
-                () -> new IllegalStateException("존재하지 않는 게시글이거나, 댓글입니다.")
+                () -> new ApiRequestException(ErrorCode.NONEXISTENT_ERROR)
         );
         if (!postComment.getAccount().getId().equals(accountId)) {
-            throw new ApiRequestException("댓글 작성자가 아닙니다");
+            throw new BadArgumentsValidException(ErrorCode.NO_AUTHORIZATION_ERROR);
         }
         return postComment;
     }

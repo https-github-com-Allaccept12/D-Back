@@ -30,6 +30,8 @@ public class ArtWorkRequestDto {
 
         private List<CommonDto.ImgUrlDto> img = new ArrayList<>();
 
+        private String thumbnail;
+
         @NotEmpty(message = "카테고리를 설정해주세요.")
         private String category;
 

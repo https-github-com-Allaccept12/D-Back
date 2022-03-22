@@ -27,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.management.StringValueExp;
 import java.util.List;
 
 @Service
@@ -111,14 +112,18 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
         }
         ArtWorks artWorks = ArtWorks.of(account, dto);
         ArtWorks saveArtwork = artWorkRepository.save(artWorks);
+
         s3ImageUpload(multipartFiles, saveArtwork);
         account.upArtworkCountCreate();
         return 5 - account.getArtWorkCreateCount();
     }
 
+    //지금 현재 문제
     @Transactional
     public Long updateArtwork(Long accountId, Long artworkId, ArtWorkCreateAndUpdate dto, List<MultipartFile> multipartFiles) {
         ArtWorks artWorks = artworkValidation(accountId, artworkId);
+        ArtWorkImage thumbNail = artWorkImageRepository.findByArtworkImg(dto.getThumbnail());
+
         updateImg(multipartFiles, artWorks, dto);
         artWorks.updateArtWork(dto);
         return artWorks.getId();
@@ -156,6 +161,7 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
             setIsLike(accountId,artWorkList);
         return artWorkList;
     }
+
     private void s3ImageUpload(List<MultipartFile> multipartFiles, ArtWorks saveArtwork) {
         if(multipartFiles != null){
             for (int i = 0; i < multipartFiles.size(); i++) {
@@ -166,8 +172,10 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
                 }
                 artWorkImageRepository.save(img);
             }
+        }else{
+            throw new ApiRequestException(ErrorCode.PHOTO_UPLOAD_ERROR);
         }
-        throw new ApiRequestException(ErrorCode.PHOTO_UPLOAD_ERROR);
+
     }
 
     private void updateImg( List<MultipartFile> multipartFiles, ArtWorks findArtWork, ArtWorkCreateAndUpdate dto) {
