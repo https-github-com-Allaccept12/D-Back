@@ -1,6 +1,7 @@
 package TeamDPlus.code.jwt;
 
 import TeamDPlus.code.advice.ApiRequestException;
+import TeamDPlus.code.advice.ErrorCode;
 import TeamDPlus.code.domain.account.Account;
 import TeamDPlus.code.domain.account.AccountRepository;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +18,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     public UserDetails loadUserByUsername(String userPk) throws UsernameNotFoundException {
         Account user = accountRepository.findById(Long.parseLong(userPk))
-                .orElseThrow(() -> new ApiRequestException("존재하지 않거나 로그인 하지 않았습니다"));
+                .orElseThrow(() -> new ApiRequestException(ErrorCode.NO_USER_ERROR));
         return new UserDetailsImpl(user);
     }
 }

@@ -1,6 +1,7 @@
 package TeamDPlus.code.service.post.comment.like;
 
 import TeamDPlus.code.advice.ApiRequestException;
+import TeamDPlus.code.advice.ErrorCode;
 import TeamDPlus.code.domain.account.Account;
 import TeamDPlus.code.domain.post.Post;
 import TeamDPlus.code.domain.post.PostRepository;
@@ -20,9 +21,9 @@ public class PostCommentLikeService {
     private final PostCommentRepository postCommentRepository;
 
     public void doLike(Account account, Long postCommentId) {
-        PostComment postComment = postCommentRepository.findById(postCommentId).orElseThrow(() -> new ApiRequestException("존재하지 않는 게시글 입니다."));
+        PostComment postComment = postCommentRepository.findById(postCommentId).orElseThrow(() -> new ApiRequestException(ErrorCode.NONEXISTENT_ERROR));
         if (postCommentLikesRepository.existByAccountIdAndPostCommentId(account.getId(), postCommentId)) {
-            throw new ApiRequestException("이미 좋아요한 코멘트 입니다.");
+            throw new ApiRequestException(ErrorCode.ALREADY_LIKE_ERROR);
         }
         PostCommentLikes postCommentLikes = PostCommentLikes.builder().postComment(postComment).account(account).build();
         postCommentLikesRepository.save(postCommentLikes);

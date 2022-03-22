@@ -1,5 +1,7 @@
 package TeamDPlus.code.service.account;
 
+import TeamDPlus.code.advice.ApiRequestException;
+import TeamDPlus.code.advice.ErrorCode;
 import TeamDPlus.code.domain.account.Account;
 import TeamDPlus.code.domain.account.AccountRepository;
 import TeamDPlus.code.dto.response.TokenResponseDto;
@@ -25,7 +27,7 @@ public class SecurityService {
 
         Long userPk = Long.parseLong(jwtTokenProvider.getUserPk(refreshToken));
         Account account = accountRepository.findById(userPk)
-                .orElseThrow(() -> new IllegalStateException("존재하지 않는 회원입니다."));
+                .orElseThrow(() -> new ApiRequestException(ErrorCode.NO_USER_ERROR));
 
         String getRefreshToken = account.getRefreshToken();
         

@@ -1,6 +1,7 @@
 package TeamDPlus.code.service.post;
 
 import TeamDPlus.code.advice.ApiRequestException;
+import TeamDPlus.code.advice.ErrorCode;
 import TeamDPlus.code.domain.account.Account;
 import TeamDPlus.code.domain.account.follow.FollowRepository;
 import TeamDPlus.code.domain.artwork.ArtWorks;
@@ -99,7 +100,7 @@ public class PostMainPageServiceImpl implements PostMainPageService{
     // 상세 게시글 (디플 - 꿀팁)
     @Transactional(readOnly = true)
     public PostResponseDto.PostDetailPage showPostDetail(Long accountId, Long postId){
-        Post post = postRepository.findById(postId).orElseThrow(() -> new ApiRequestException("해당 게시글은 존재하지 않습니다."));
+        Post post = postRepository.findById(postId).orElseThrow(() -> new ApiRequestException(ErrorCode.NONEXISTENT_ERROR));
         post.addViewCount();
         PostResponseDto.PostSubDetail postSubDetail = postRepository.findByPostSubDetail(postId);
         List<PostImage> postImageList = postImageRepository.findByPostId(postId);
@@ -116,7 +117,6 @@ public class PostMainPageServiceImpl implements PostMainPageService{
     // 게시글 작성
     @Transactional
     public Long createPost(Account account, PostRequestDto.PostCreate dto, List<MultipartFile> imgFile) {
-        postWriteValidation(dto);
         Post post = Post.of(account, dto);
         Post savedPost = postRepository.save(post);
 //        for(int i =0; i <dto.getImg().size(); i++){
@@ -142,7 +142,6 @@ public class PostMainPageServiceImpl implements PostMainPageService{
     // 게시물 수정
     @Transactional
     public Long updatePost(Account account, Long postId, PostRequestDto.PostUpdate dto, List<MultipartFile> imgFile){
-        postUpdateValidation(dto);
         Post post = postAuthValidation(account.getId(), postId);
         List<PostImage> postImages = postImageRepository.findByPostId(post.getId());
         if(imgFile!=null){
@@ -224,9 +223,9 @@ public class PostMainPageServiceImpl implements PostMainPageService{
 
     // post 수정, 삭제 권한 확인
     private Post postAuthValidation(Long accountId, Long postId){
-        Post post = postRepository.findById(postId).orElseThrow(() -> new ApiRequestException("해당 게시글은 존재하지 않습니다."));
+        Post post = postRepository.findById(postId).orElseThrow(() -> new ApiRequestException(ErrorCode.NONEXISTENT_ERROR));
         if(!post.getAccount().getId().equals(accountId)){
-            throw new ApiRequestException("권한이 없습니다.");
+            throw new ApiRequestException(ErrorCode.NO_AUTHORIZATION_ERROR);
         }
         return post;
     }
@@ -236,7 +235,7 @@ public class PostMainPageServiceImpl implements PostMainPageService{
     public PostResponseDto.PostAnswerDetailPage detailAnswer(Long accountId, Long postId) {
         // 작품 게시글 존재여부
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new ApiRequestException("해당 게시글은 존재하지 않습니다."));
+                .orElseThrow(() -> new ApiRequestException(ErrorCode.NONEXISTENT_ERROR));
         // 조회수 + 1
         post.addViewCount();
         // QnA 좋아요 개수와 QnA 기본정보 가져오기
@@ -320,35 +319,6 @@ public class PostMainPageServiceImpl implements PostMainPageService{
 
         });
         return postSimilarList;
-    }
-
-    // 게시글작성 필수요소 validation
-    private void postWriteValidation(PostRequestDto.PostCreate dto){
-        if(Objects.equals(dto.getTitle(), "")){
-            throw new ApiRequestException("제목을 입력하세요");
-        }
-        if(Objects.equals(dto.getContent(), "")){
-            throw new ApiRequestException("내용을 입력하세요");
-        }
-        if(Objects.equals(dto.getCategory(), "")){
-            throw new ApiRequestException("카테고리를 입력하세요");
-        }
-        if(Objects.equals(dto.getBoard(), "")){
-            throw new ApiRequestException("디모 게시판 종류를 선택하세요");
-        }
-    }
-
-    // 게시글수정 필수요소 validation
-    private void postUpdateValidation(PostRequestDto.PostUpdate dto){
-        if(Objects.equals(dto.getTitle(), "")){
-            throw new ApiRequestException("제목을 입력하세요");
-        }
-        if(Objects.equals(dto.getContent(), "")){
-            throw new ApiRequestException("내용을 입력하세요");
-        }
-        if(Objects.equals(dto.getCategory(), "")){
-            throw new ApiRequestException("카테고리를 입력하세요");
-        }
     }
 
 }
