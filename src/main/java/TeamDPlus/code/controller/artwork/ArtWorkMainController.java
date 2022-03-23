@@ -24,7 +24,6 @@ import java.util.List;
 public class ArtWorkMainController {
 
     private final int SORT_SIGN_LATEST = 1;
-    private final int SORT_SIGN_LIKE = 2;
     private final ArtworkMainService artworkMainService;
 
     @GetMapping("/")
@@ -50,8 +49,8 @@ public class ArtWorkMainController {
 
     @GetMapping("/api/artwork/category/{category}/{last_artwork_id}/")
     public ResponseEntity<Success> artWorkCategory(@AuthenticationPrincipal UserDetailsImpl user,
-                                               @PathVariable String category,
-                                               @PathVariable Long last_artwork_id) {
+                                                   @PathVariable String category,
+                                                   @PathVariable Long last_artwork_id) {
         if (user == null) {
             return new ResponseEntity<>(new Success("카테고리별 작업물",
                     artworkMainService.showArtworkMain(null,last_artwork_id,category,SORT_SIGN_LATEST)),HttpStatus.OK);
@@ -75,8 +74,8 @@ public class ArtWorkMainController {
 
     @GetMapping("/api/artwork/sort-follow/{category}/{last_artwork_id}")
     public ResponseEntity<Success> artWorkSortFollow(@AuthenticationPrincipal UserDetailsImpl user,
-                                               @PathVariable Long last_artwork_id,
-                                               @PathVariable String category) {
+                                                     @PathVariable Long last_artwork_id,
+                                                     @PathVariable String category) {
         if (user != null){
             return new ResponseEntity<>(new Success("팔로우한 작가 작업물",
                     artworkMainService.findByFollowerArtWork(user.getUser().getId(),category,last_artwork_id)),HttpStatus.OK);
@@ -85,8 +84,7 @@ public class ArtWorkMainController {
 
     }
 
-    //@PostMapping("/api/artwork")
-    @RequestMapping(value = "/api/artwork",method = RequestMethod.POST)
+    @PostMapping("/api/artwork")
     public ResponseEntity<Success> createArtWork(@AuthenticationPrincipal UserDetailsImpl user,
                                                  @RequestPart ArtWorkCreate data,
                                                  @RequestPart List<MultipartFile> imgFile) {
