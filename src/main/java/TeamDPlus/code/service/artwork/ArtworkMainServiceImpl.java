@@ -13,7 +13,10 @@ import TeamDPlus.code.domain.artwork.comment.ArtWorkCommentRepository;
 import TeamDPlus.code.domain.artwork.image.ArtWorkImage;
 import TeamDPlus.code.domain.artwork.image.ArtWorkImageRepository;
 import TeamDPlus.code.domain.artwork.like.ArtWorkLikesRepository;
+import TeamDPlus.code.dto.request.ArtWorkRequestDto;
+import TeamDPlus.code.dto.request.ArtWorkRequestDto.ArtWorkCreate;
 import TeamDPlus.code.dto.request.ArtWorkRequestDto.ArtWorkCreateAndUpdate;
+import TeamDPlus.code.dto.request.ArtWorkRequestDto.ArtWorkUpdate;
 import TeamDPlus.code.dto.response.AccountResponseDto;
 import TeamDPlus.code.dto.response.ArtWorkResponseDto;
 import TeamDPlus.code.dto.response.ArtWorkResponseDto.ArtworkMain;
@@ -107,7 +110,7 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
     }
 
     @Transactional
-    public int createArtwork(Long accountId, ArtWorkCreateAndUpdate dto, List<MultipartFile> multipartFiles) {
+    public int createArtwork(Long accountId, ArtWorkCreate dto, List<MultipartFile> multipartFiles) {
         Account account = accountRepository.findById(accountId).orElseThrow(() -> new ApiRequestException(ErrorCode.NO_USER_ERROR));
         if (account.getArtWorkCreateCount() >= 5) {
             throw new ApiRequestException(ErrorCode.DAILY_WRITE_UP_BURN_ERROR);
@@ -122,7 +125,7 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
 
     //지금 현재 문제
     @Transactional
-    public Long updateArtwork(Long accountId, Long artworkId, ArtWorkCreateAndUpdate dto, List<MultipartFile> multipartFiles) {
+    public Long updateArtwork(Long accountId, Long artworkId, ArtWorkUpdate dto, List<MultipartFile> multipartFiles) {
         ArtWorks artWorks = artworkValidation(accountId, artworkId);
         ArtWorkImage thumbNail = artWorkImageRepository.findByArtworkImg(dto.getThumbnail());
 
