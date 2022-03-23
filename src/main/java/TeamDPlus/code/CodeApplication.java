@@ -24,11 +24,6 @@ public class CodeApplication {
 		return new JPAQueryFactory(entityManager);
 	}
 
-	@Bean
-	public MultipartResolver multipartResolver() {
-		CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver();
-		multipartResolver.setMaxUploadSizePerFile(2000000000);
-		return multipartResolver;
-	}
+
 
 }
