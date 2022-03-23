@@ -31,10 +31,5 @@ public class AmazonConfig {
                 .build();
     }
 
-    @Bean
-    public MultipartResolver multipartResolver() {
-        CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver();
-        multipartResolver.setMaxUploadSizePerFile(2000000000);
-        return multipartResolver;
-    }
+
 }

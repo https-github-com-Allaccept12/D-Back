@@ -6,6 +6,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.web.multipart.MultipartResolver;
+import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
 import javax.persistence.EntityManager;
 
@@ -20,6 +22,13 @@ public class CodeApplication {
 	@Bean
 	JPAQueryFactory jpaQueryFactory(EntityManager entityManager) {
 		return new JPAQueryFactory(entityManager);
+	}
+
+	@Bean
+	public MultipartResolver multipartResolver() {
+		CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver();
+		multipartResolver.setMaxUploadSizePerFile(2000000000);
+		return multipartResolver;
 	}
 
 }
