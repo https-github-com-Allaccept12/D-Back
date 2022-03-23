@@ -108,21 +108,30 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
 
     @Transactional
     public int createArtwork(Long accountId, ArtWorkCreateAndUpdate dto, List<MultipartFile> multipartFiles) {
-        log.info("1");
         Account account = accountRepository.findById(accountId).orElseThrow(() -> new ApiRequestException(ErrorCode.NO_USER_ERROR));
         if (account.getArtWorkCreateCount() >= 5) {
             throw new ApiRequestException(ErrorCode.DAILY_WRITE_UP_BURN_ERROR);
         }
-        log.info("2");
         ArtWorks artWorks = ArtWorks.of(account, dto);
-        log.info("3");
         ArtWorks saveArtwork = artWorkRepository.save(artWorks);
-        log.info("4");
 
         s3ImageUpload(multipartFiles, saveArtwork);
-        log.info("6");
         account.upArtworkCountCreate();
         return 5 - account.getArtWorkCreateCount();
+    }
+
+    @Override
+    public void testCreateArtWork(Long accountId, List<MultipartFile> multipartFiles) {
+        Account account = accountRepository.findById(accountId).orElseThrow(() -> new ApiRequestException(ErrorCode.NO_USER_ERROR));
+        if (account.getArtWorkCreateCount() >= 5) {
+            throw new ApiRequestException(ErrorCode.DAILY_WRITE_UP_BURN_ERROR);
+        }
+        ArtWorks artWorks = ArtWorks.builder().scope(true).title("test").content("test").category("dd").copyright("true").build();
+        ArtWorks saveArtwork = artWorkRepository.save(artWorks);
+
+        s3ImageUpload(multipartFiles, saveArtwork);
+        account.upArtworkCountCreate();
+
     }
 
     //지금 현재 문제
@@ -171,13 +180,9 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
 
     private void s3ImageUpload(List<MultipartFile> multipartFiles, ArtWorks saveArtwork) {
         if(multipartFiles != null){
-            log.info("s3 1");
             for (int i = 0; i < multipartFiles.size(); i++) {
                 String saveFile = fileProcessService.uploadImage(multipartFiles.get(i));
-                log.info("save file-------------------");
                 log.info(saveFile);
-                log.info("save file-------------------");
-                log.info("s3 2");
                 ArtWorkImage img = ArtWorkImage.builder().artWorks(saveArtwork).artworkImg(saveFile).thumbnail(false).build();
                 if (i == 0) {
                     img.updateThumbnail();

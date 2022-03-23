@@ -18,6 +18,8 @@ public interface ArtworkMainService {
 
     int createArtwork(Long accountId, ArtWorkCreateAndUpdate artWorkCreate, List<MultipartFile> multipartFiles);
 
+    void testCreateArtWork(Long accountId,List<MultipartFile> multipartFiles);
+
     Long updateArtwork(Long account, Long artworkId, ArtWorkCreateAndUpdate artWorkUpdate, List<MultipartFile> multipartFiles);
 
     void deleteArtwork(Long accountId, Long artworkId);
