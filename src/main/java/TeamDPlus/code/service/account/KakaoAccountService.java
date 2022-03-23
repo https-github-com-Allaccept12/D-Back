@@ -30,9 +30,10 @@ import javax.transaction.Transactional;
 public class KakaoAccountService {
 
     private final AccountRepository accountRepository;
-    private final OtherRepository otherRepository;
+
     private final RankRepository rankRepository;
     private final JwtTokenProvider jwtTokenProvider;
+    private final OtherRepository otherRepository;
 
     @Transactional
     public LoginResponseDto kakaoLogin(String code) throws JsonProcessingException {
@@ -103,16 +104,18 @@ public class KakaoAccountService {
                 .get("profile_image").asText();
         String email = jsonNode.get("kakao_account")
                 .get("email").asText();
+        String username = id + email;
 
-        System.out.println("카카오 사용자 정보: " + id + ", " + nickname + ", " + profileImage + ", " + email);
-        return new KakaoUserInfoDto(id, nickname, profileImage, email);
+        System.out.println("카카오 사용자 정보: " + id + ", " + username + ", " + nickname + ", " + profileImage + ", " + email);
+        return new KakaoUserInfoDto(id, nickname, profileImage, email, username);
     }
 
     private LoginResponseDto registerKakaoUserIfNeeded(KakaoUserInfoDto kakaoUserInfo) {
         // DB 에 중복된 Kakao Id 가 있는지 확인
         String email = kakaoUserInfo.getEmail();
+        String username = kakaoUserInfo.getUsername();
 
-        Account kakaoUser = accountRepository.findByEmail(email)
+        Account kakaoUser = accountRepository.findByAccountName(username)
                 .orElse(null);
 
         boolean isSignUp = false;
@@ -127,15 +130,15 @@ public class KakaoAccountService {
             Rank rank = Rank.builder().rankScore(0L).build();
             Rank saveRank = rankRepository.save(rank);
             Specialty specialty = new Specialty();
-            Other other = Other.builder().specialty(specialty).build();
-            Other saveOther = otherRepository.save(other);
+            Other saveOther = otherRepository.save(Other.builder().specialty(specialty).build());
             kakaoUser = Account.builder()
+                    .accountName(username)
                     .nickname(nickname)
                     .profileImg(profileImg)
                     .email(email)
                     .rank(saveRank)
-                    .specialty(specialty)
                     .other(saveOther)
+                    .specialty(specialty)
                     .build();
             accountRepository.save(kakaoUser);
         }

@@ -1,6 +1,7 @@
 package TeamDPlus.code.service.post.like;
 
 import TeamDPlus.code.advice.ApiRequestException;
+import TeamDPlus.code.advice.ErrorCode;
 import TeamDPlus.code.domain.account.Account;
 import TeamDPlus.code.domain.artwork.ArtWorks;
 import TeamDPlus.code.domain.post.answer.PostAnswer;
@@ -21,9 +22,9 @@ public class PostAnswerLikeService {
 
     public void answerDoLike(Account account, Long postAnswerId) {
         PostAnswer postAnswer = postAnswerRepository.findById(postAnswerId)
-                .orElseThrow(() -> new ApiRequestException("존재하지 않는 게시글 입니다."));
+                .orElseThrow(() -> new ApiRequestException(ErrorCode.NONEXISTENT_ERROR));
         if (postAnswerLikesRepository.existByAccountIdAndPostAnswerId(account.getId(), postAnswerId)) {
-            throw new ApiRequestException("이미 좋아요한 게시글 입니다.");
+            throw new ApiRequestException(ErrorCode.ALREADY_LIKE_ERROR);
         }
         PostAnswerLikes postAnswerLikes = PostAnswerLikes.builder().postAnswer(postAnswer).account(account).build();
         postAnswerLikesRepository.save(postAnswerLikes);
@@ -33,9 +34,9 @@ public class PostAnswerLikeService {
     @Transactional
     public void answerUnLike(Account account, Long postAnswerId) {
         PostAnswer postAnswer = postAnswerRepository.findById(postAnswerId)
-                .orElseThrow(() -> new ApiRequestException("존재하지 않는 게시글 입니다."));
+                .orElseThrow(() -> new ApiRequestException(ErrorCode.NONEXISTENT_ERROR));
         if (!postAnswerLikesRepository.existByAccountIdAndPostAnswerId(account.getId(), postAnswerId)) {
-            throw new ApiRequestException("이미 좋아요한 게시글 입니다.");
+            throw new ApiRequestException(ErrorCode.ALREADY_LIKE_ERROR);
         }
         postAnswerLikesRepository.deleteByPostAnswerIdAndAccountId(postAnswerId, account.getId());
     }

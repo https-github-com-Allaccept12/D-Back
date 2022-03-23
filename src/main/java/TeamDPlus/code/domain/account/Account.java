@@ -24,6 +24,9 @@ public class Account extends BaseEntity {
     @Column(name = "account_id")
     private Long id;
 
+    @Column(nullable = false, unique = true)
+    private String accountName;
+
     @Column(nullable = false)
     private String email;
 
@@ -79,12 +82,12 @@ public class Account extends BaseEntity {
     private Other other;
 
     @Builder
-    public Account(final String email, final String nickname, final String subContent, final String titleContent, final String profileImg,
+    public Account(final String accountName, final String email, final String nickname, final String subContent, final String titleContent, final String profileImg,
                    final int career, final String phoneNumber, final String workTime,
                    final String workEmail, final String tendency, final Long exp, final String refreshToken,
                    final String linkedIn, final String brunch, final String instagram,final Other other,
-                   final String interest, final Rank rank, final String job, final Specialty specialty) {
-
+                   final String interest, final Rank rank, final String job, final Specialty specialty)  {
+        this.accountName = accountName;
         this.email = email;
         this.nickname = nickname;
         this.titleContent = titleContent;
