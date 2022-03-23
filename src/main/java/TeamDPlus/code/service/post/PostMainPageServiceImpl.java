@@ -24,10 +24,8 @@ import TeamDPlus.code.domain.post.like.PostLikesRepository;
 import TeamDPlus.code.domain.post.tag.PostTag;
 import TeamDPlus.code.domain.post.tag.PostTagRepository;
 import TeamDPlus.code.dto.common.CommonDto;
-import TeamDPlus.code.dto.request.ArtWorkRequestDto;
 import TeamDPlus.code.dto.request.PostRequestDto;
 import TeamDPlus.code.dto.response.AccountResponseDto;
-import TeamDPlus.code.dto.response.ArtWorkResponseDto;
 import TeamDPlus.code.dto.response.PostMainResponseDto;
 import TeamDPlus.code.dto.response.PostResponseDto;
 import TeamDPlus.code.dto.response.PostResponseDto.PostPageMain;
@@ -118,7 +116,6 @@ public class PostMainPageServiceImpl implements PostMainPageService{
     // 게시글 작성
     @Transactional
     public Long createPost(Account account, PostRequestDto.PostCreate dto, List<MultipartFile> imgFile) {
-        //postWriteValidation(dto);
         Post post = Post.of(account, dto);
         Post savedPost = postRepository.save(post);
 
@@ -141,7 +138,6 @@ public class PostMainPageServiceImpl implements PostMainPageService{
     // 게시물 수정
     @Transactional
     public Long updatePost(Account account, Long postId, PostRequestDto.PostUpdate dto, List<MultipartFile> imgFile){
-        //postUpdateValidation(dto);
         Post post = postAuthValidation(account.getId(), postId);
         List<PostImage> postImages = postImageRepository.findByPostId(post.getId());
         if(imgFile!=null){
@@ -310,35 +306,5 @@ public class PostMainPageServiceImpl implements PostMainPageService{
         });
         return postSimilarList;
     }
-
-//     // 게시글작성 필수요소 validation
-//     private void postWriteValidation(PostRequestDto.PostCreate dto){
-//         if(Objects.equals(dto.getTitle(), "")){
-//             throw new ApiRequestException("제목을 입력하세요");
-//         }
-//         if(Objects.equals(dto.getContent(), "")){
-//             throw new ApiRequestException("내용을 입력하세요");
-//         }
-//         if(Objects.equals(dto.getCategory(), "")){
-//             throw new ApiRequestException("카테고리를 입력하세요");
-//         }
-//         if(Objects.equals(dto.getBoard(), "")){
-//             throw new ApiRequestException("디모 게시판 종류를 선택하세요");
-//         }
-//     }
-
-//     // 게시글수정 필수요소 validation
-//     private void postUpdateValidation(PostRequestDto.PostUpdate dto){
-//         if(Objects.equals(dto.getTitle(), "")){
-//             throw new ApiRequestException("제목을 입력하세요");
-//         }
-//         if(Objects.equals(dto.getContent(), "")){
-//             throw new ApiRequestException("내용을 입력하세요");
-//         }
-//         if(Objects.equals(dto.getCategory(), "")){
-//             throw new ApiRequestException("카테고리를 입력하세요");
-//         }
-//     }
-// >>>>>>> dev
 
 }

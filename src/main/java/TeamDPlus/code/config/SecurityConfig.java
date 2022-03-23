@@ -1,5 +1,6 @@
 package TeamDPlus.code.config;
 
+import TeamDPlus.code.jwt.AuthenticationEntryPointHandler;
 import TeamDPlus.code.jwt.JwtAuthenticationFilter;
 import TeamDPlus.code.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.context.SecurityContextPersistenceFilter;
 import org.springframework.web.filter.CorsFilter;
@@ -26,6 +28,7 @@ import org.springframework.web.filter.CorsFilter;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final JwtTokenProvider jwtTokenProvider;
+    private final AuthenticationEntryPointHandler authenticationEntryPointHandler;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -39,7 +42,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .ignoring()
                 .antMatchers("/h2-console/**");
     }
-
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -55,9 +57,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .antMatchers("/").permitAll()
                     .antMatchers(HttpMethod.GET,"/api/artwork/**","/api/artwork/detail/**","/api/artwork/search/**","/profile").permitAll()
                     .anyRequest().authenticated() // 그외 나머지 요청은 사용권한 체크
-                    .and()
+                .and()
                     .exceptionHandling()
-                    .and()
+                    .authenticationEntryPoint(authenticationEntryPointHandler)
+                .and()
                     .apply(new JwtSecurityConfig(jwtTokenProvider));
     }
 
