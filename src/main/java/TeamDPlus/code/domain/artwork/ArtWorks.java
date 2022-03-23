@@ -60,7 +60,6 @@ public class ArtWorks extends BaseEntity {
 
     private String thumbnail;
 
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id")
     private Account account;

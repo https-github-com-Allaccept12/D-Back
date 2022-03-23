@@ -1,6 +1,7 @@
 package TeamDPlus.code.dto.request;
 import TeamDPlus.code.domain.account.Specialty;
 import TeamDPlus.code.dto.common.CommonDto;
+import TeamDPlus.code.dto.common.CommonDto.ImgUrlDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -51,6 +52,7 @@ public class ArtWorkRequestDto {
     @Getter
     @NoArgsConstructor
     public static class ArtWorkUpdate {
+
         private boolean scope;
 
         @NotEmpty(message = "작품 제목을 입력해주세요")
@@ -60,7 +62,7 @@ public class ArtWorkRequestDto {
         @NotEmpty(message = "작품 설명을 해주세요.")
         private String content;
 
-        private List<CommonDto.ImgUrlDto> delete_img = new ArrayList<>();
+        private List<ImgUrlDto> delete_img;
 
         private String thumbnail;
 
@@ -79,6 +81,7 @@ public class ArtWorkRequestDto {
 
         @NotEmpty(message = "작품 판권 설정을 해주세요.")
         private String copyright;
+
 
     }
 

@@ -6,6 +6,7 @@ import TeamDPlus.code.advice.ErrorCode;
 import TeamDPlus.code.domain.account.Account;
 import TeamDPlus.code.domain.account.AccountRepository;
 import TeamDPlus.code.domain.account.follow.FollowRepository;
+import TeamDPlus.code.domain.account.orthers.OtherRepository;
 import TeamDPlus.code.domain.artwork.ArtWorkRepository;
 import TeamDPlus.code.domain.artwork.ArtWorks;
 import TeamDPlus.code.domain.artwork.bookmark.ArtWorkBookMarkRepository;
@@ -114,8 +115,7 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
         if (multipartFiles == null) {
             throw new ApiRequestException(ErrorCode.PHOTO_UPLOAD_ERROR);
         }
-        ArtWorks artWorks = ArtWorks.of(account, dto);
-        ArtWorks saveArtwork = artWorkRepository.save(artWorks);
+        ArtWorks saveArtwork = artWorkRepository.save(ArtWorks.of(account, dto));
         s3ImageUpload(multipartFiles,dto,saveArtwork);
         account.upArtworkCountCreate();
         return 5 - account.getArtWorkCreateCount();
