@@ -1,6 +1,8 @@
 package TeamDPlus.code.service.artwork;
 
 import TeamDPlus.code.advice.ApiRequestException;
+import TeamDPlus.code.advice.BadArgumentsValidException;
+import TeamDPlus.code.advice.ErrorCode;
 import TeamDPlus.code.domain.account.Account;
 import TeamDPlus.code.domain.account.AccountRepository;
 import TeamDPlus.code.domain.account.follow.FollowRepository;
@@ -11,19 +13,22 @@ import TeamDPlus.code.domain.artwork.comment.ArtWorkCommentRepository;
 import TeamDPlus.code.domain.artwork.image.ArtWorkImage;
 import TeamDPlus.code.domain.artwork.image.ArtWorkImageRepository;
 import TeamDPlus.code.domain.artwork.like.ArtWorkLikesRepository;
-import TeamDPlus.code.dto.common.CommonDto;
-import TeamDPlus.code.dto.request.ArtWorkRequestDto;
+import TeamDPlus.code.dto.request.ArtWorkRequestDto.ArtWorkCreateAndUpdate;
 import TeamDPlus.code.dto.response.AccountResponseDto;
 import TeamDPlus.code.dto.response.ArtWorkResponseDto;
+import TeamDPlus.code.dto.response.ArtWorkResponseDto.ArtworkMain;
 import TeamDPlus.code.dto.response.MainResponseDto;
 import TeamDPlus.code.service.file.FileProcessService;
+//import jdk.jfr.internal.tool.Main;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.management.StringValueExp;
 import java.util.List;
 
 @Service
@@ -45,23 +50,22 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
     public MainResponseDto mostPopularArtWork(Long accountId) {
         //회원인지 비회원인지
         if (accountId != null) {
-            Account account = accountRepository.findById(accountId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
-            List<ArtWorkResponseDto.ArtworkMain> artWorkList = getArtworkList(account.getInterest());
-            List<AccountResponseDto.TopArtist> topArtist = getTopArtist();
+            Account account = accountRepository.findById(accountId).orElseThrow(() -> new ApiRequestException(ErrorCode.NO_USER_ERROR));
+            List<ArtworkMain> artWorkList = getArtworkList(account.getInterest());
+            List<AccountResponseDto.TopArtist> topArtist = getTopArtist(account.getInterest());
             isFollow(accountId,topArtist);
             setIsLike(accountId,artWorkList);
             return MainResponseDto.builder().artwork(artWorkList).top_artist(topArtist).build();
-
         }
-        List<ArtWorkResponseDto.ArtworkMain> artworkList = getArtworkList(null);
-        List<AccountResponseDto.TopArtist> topArtist = getTopArtist();
+        List<ArtworkMain> artworkList = getArtworkList(null);
+        List<AccountResponseDto.TopArtist> topArtist = getTopArtist("");
         return MainResponseDto.builder().artwork(artworkList).top_artist(topArtist).build();
     }
     //둘러보기
     @Transactional(readOnly = true)
-    public List<ArtWorkResponseDto.ArtworkMain> showArtworkMain(Long accountId,Long lastArtWorkId){
+    public List<ArtworkMain> showArtworkMain(Long accountId, Long lastArtWorkId,String category,int sortSign){
         Pageable pageable = PageRequest.of(0,10);
-        List<ArtWorkResponseDto.ArtworkMain> artWorkList = artWorkRepository.findAllArtWork(lastArtWorkId, pageable);
+        List<ArtworkMain> artWorkList = artWorkRepository.findAllArtWork(lastArtWorkId,category,pageable,sortSign);
         if (accountId != null)
             setIsLike(accountId, artWorkList);
         return artWorkList;
@@ -71,7 +75,7 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
     public ArtWorkResponseDto.ArtWorkDetail detailArtWork(Long accountId, Long artWorkId) {
         //작품 게시글 존재여부
         ArtWorks artWorks = artWorkRepository.findById(artWorkId)
-                .orElseThrow(() -> new ApiRequestException("해당 게시글은 존재하지 않습니다."));
+                .orElseThrow(() -> new ApiRequestException(ErrorCode.NONEXISTENT_ERROR));
         //조회수
         artWorks.addViewCount();
         //작품 좋아요개수와 작품 기본정보 가져오기
@@ -101,28 +105,37 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
     }
 
     @Transactional
-    public Long createArtwork(Account account, ArtWorkRequestDto.ArtWorkCreateAndUpdate dto) {
+    public int createArtwork(Long accountId, ArtWorkCreateAndUpdate dto, List<MultipartFile> multipartFiles) {
+        Account account = accountRepository.findById(accountId).orElseThrow(() -> new ApiRequestException(ErrorCode.NO_USER_ERROR));
+        if (account.getArtWorkCreateCount() >= 5) {
+            throw new ApiRequestException(ErrorCode.DAILY_WRITE_UP_BURN_ERROR);
+        }
         ArtWorks artWorks = ArtWorks.of(account, dto);
-        ArtWorks saveArtWork = artWorkRepository.save(artWorks);
-        setImgUrl(dto.getImg(), saveArtWork);
-        return saveArtWork.getId();
+        ArtWorks saveArtwork = artWorkRepository.save(artWorks);
+
+        s3ImageUpload(multipartFiles, saveArtwork);
+        account.upArtworkCountCreate();
+        return 5 - account.getArtWorkCreateCount();
     }
 
-
+    //지금 현재 문제
     @Transactional
-    public Long updateArtwork(Account account, Long artworkId, ArtWorkRequestDto.ArtWorkCreateAndUpdate dto) {
-        ArtWorks findArtWork = artWorkRepository.findById(artworkId).orElseThrow(() -> new ApiRequestException("게시글이 존재하지 않습니다."));
-        artWorkImageRepository.deleteAllByArtWorksId(artworkId);
-        //s3에서도 삭제
-        setImgUrl(dto.getImg(), findArtWork);
-        findArtWork.updateArtWork(dto);
-        return findArtWork.getId();
+    public Long updateArtwork(Long accountId, Long artworkId, ArtWorkCreateAndUpdate dto, List<MultipartFile> multipartFiles) {
+        ArtWorks artWorks = artworkValidation(accountId, artworkId);
+        ArtWorkImage thumbNail = artWorkImageRepository.findByArtworkImg(dto.getThumbnail());
+
+        updateImg(multipartFiles, artWorks, dto);
+        artWorks.updateArtWork(dto);
+        return artWorks.getId();
     }
 
-    // 작품을 ManyToOne하고 있는 모든 엔티티 삭제 - s3에서도 삭제
     @Transactional
     public void deleteArtwork(Long accountId, Long artworkId) {
         ArtWorks artWorks = artworkValidation(accountId, artworkId);
+        List<ArtWorkImage> artWorkImages = artWorkImageRepository.findByArtWorksId(artWorks.getId());
+        artWorkImages.forEach((img) -> {
+            fileProcessService.deleteImage(img.getArtworkImg());
+        });
         artWorkImageRepository.deleteAllByArtWorksId(artworkId);
         artWorkLikesRepository.deleteAllByArtWorksId(artworkId);
         artWorkBookMarkRepository.deleteAllByArtWorksId(artworkId);
@@ -132,14 +145,74 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
 
     //작품 검색
     @Transactional(readOnly = true)
-    public List<ArtWorkResponseDto.ArtworkMain> findBySearchKeyWord(String keyword, Long lastArtWorkId,Long accountId) {
+    public List<ArtworkMain> findBySearchKeyWord(String keyword, Long lastArtWorkId, Long accountId) {
         Pageable pageable = PageRequest.of(0,10);
-        List<ArtWorkResponseDto.ArtworkMain> artWorkList = artWorkRepository.findBySearchKeyWord(keyword, lastArtWorkId, pageable);
+        List<ArtworkMain> artWorkList = artWorkRepository.findBySearchKeyWord(keyword, lastArtWorkId, pageable);
         if(accountId != null)
             setIsLike(accountId,artWorkList);
         return artWorkList;
     }
 
+    @Transactional(readOnly = true)
+    public List<ArtworkMain> findByFollowerArtWork(Long accountId, String category, Long lastArtWorkId) {
+        Pageable pageable = PageRequest.of(0,10);
+        List<ArtworkMain> artWorkList = artWorkRepository.findByFollowerArtWork(accountId, category, lastArtWorkId, pageable);
+        if(accountId != null)
+            setIsLike(accountId,artWorkList);
+        return artWorkList;
+    }
+
+    private void s3ImageUpload(List<MultipartFile> multipartFiles, ArtWorks saveArtwork) {
+        if(multipartFiles != null){
+            for (int i = 0; i < multipartFiles.size(); i++) {
+                String saveFile = fileProcessService.uploadImage(multipartFiles.get(i));
+                ArtWorkImage img = ArtWorkImage.builder().artWorks(saveArtwork).artworkImg(saveFile).thumbnail(false).build();
+                if (i == 0) {
+                    img.updateThumbnail();
+                }
+                artWorkImageRepository.save(img);
+            }
+        }else{
+            throw new ApiRequestException(ErrorCode.PHOTO_UPLOAD_ERROR);
+        }
+
+    }
+
+    private void updateImg( List<MultipartFile> multipartFiles, ArtWorks findArtWork, ArtWorkCreateAndUpdate dto) {
+       if(dto.getImg().size() != 0){
+           dto.getImg().forEach((img) -> {
+               artWorkImageRepository.deleteByArtworkImg(img.getImg_url());
+               fileProcessService.deleteImage(img.getImg_url());
+           });
+       }
+
+       if (multipartFiles != null) {
+            multipartFiles.forEach((file) -> {
+                String imgUrl = fileProcessService.uploadImage(file);
+                ArtWorkImage img = ArtWorkImage.builder().artWorks(findArtWork).artworkImg(imgUrl).build();
+                artWorkImageRepository.save(img);
+            });
+       }
+
+    }
+
+    private List<AccountResponseDto.TopArtist> getTopArtist(String interest) {
+        Pageable pageable = PageRequest.of(0,10);
+        return accountRepository.findTopArtist(pageable,interest);
+    }
+
+    private List<ArtworkMain> getArtworkList(String interest) {
+        Pageable pageable = PageRequest.of(0,10);
+        return artWorkRepository.findArtWorkByMostViewAndMostLike(interest,pageable);
+    }
+
+    private ArtWorks artworkValidation(Long accountId, Long artworkId){
+        ArtWorks artWorks = artWorkRepository.findById(artworkId).orElseThrow(() -> new ApiRequestException(ErrorCode.NONEXISTENT_ERROR));
+        if(!artWorks.getAccount().getId().equals(accountId)){
+            throw new BadArgumentsValidException(ErrorCode.NO_AUTHORIZATION_ERROR);
+        }
+        return artWorks;
+    }
     private void isFollow(Long accountId, List<AccountResponseDto.TopArtist> topArtist) {
         topArtist.forEach((artist) -> {
             boolean isFollow = followRepository.existsByFollowerIdAndFollowingId(accountId, artist.getAccount_id());
@@ -148,42 +221,10 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
         });
     }
 
-    private List<AccountResponseDto.TopArtist> getTopArtist() {
-        Pageable pageable = PageRequest.of(0,10);
-        return accountRepository.findTopArtist(pageable);
-    }
-
-    private List<ArtWorkResponseDto.ArtworkMain> getArtworkList(String interest) {
-        Pageable pageable = PageRequest.of(0,10);
-        return artWorkRepository.findArtWorkByMostViewAndMostLike(interest,pageable);
-    }
-
-    //이미지 s3에서도 업로드
-    private void setImgUrl(List<CommonDto.ImgUrlDto> dto, ArtWorks artWork) {
-        dto.forEach((img) -> {
-            ArtWorkImage artWorkImage = ArtWorkImage.builder()
-                    .artWorks(artWork)
-                    .artworkImg(img.getImg_url())
-                    .thumbnail(img.isThumbnail())
-                    .build();
-            artWorkImageRepository.save(artWorkImage);
-        });
-    }
-
-    private ArtWorks artworkValidation(Long accountId, Long artworkId){
-        ArtWorks artWorks = artWorkRepository.findById(artworkId).orElseThrow(() -> new ApiRequestException("해당 게시글은 존재하지 않습니다."));
-        if(!artWorks.getAccount().getId().equals(accountId)){
-            throw new ApiRequestException("권한이 없습니다.");
-        }
-        return artWorks;
-    }
-
-    private void setIsLike(Long accountId, List<ArtWorkResponseDto.ArtworkMain> artWorkList) {
+    private void setIsLike(Long accountId, List<ArtworkMain> artWorkList) {
         artWorkList.forEach((artWork) -> {
-            artWork.setLikeCountAndIsLike(false);
-            if(artWorkLikesRepository.existByAccountIdAndArtWorkId(accountId,artWork.getArtwork_id())) {
-                artWork.setLikeCountAndIsLike(true);
-            }
+            artWork.setLikeCountAndIsLike(artWorkLikesRepository.
+                    existByAccountIdAndArtWorkId(accountId, artWork.getArtwork_id()));
         });
     }
 }

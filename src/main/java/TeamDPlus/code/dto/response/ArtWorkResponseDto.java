@@ -1,5 +1,4 @@
 package TeamDPlus.code.dto.response;
-import TeamDPlus.code.domain.account.QSpecialty;
 import TeamDPlus.code.domain.account.Specialty;
 import TeamDPlus.code.domain.artwork.ArtWorks;
 import TeamDPlus.code.domain.artwork.comment.ArtWorkComment;
@@ -110,12 +109,14 @@ public class ArtWorkResponseDto {
         private String category;
         private Timestamp create_time;
         private Timestamp modify_time;
+        private String copyright;
         private Specialty specialty;
 
         @Builder
         public ArtWorkSubDetail(final Long artwork_id,final Long account_id,final String title,final String content,final Long view_count,
                                 final Long like_count,final String category,final Timestamp create_time,
-                                final Timestamp modify_time,final Specialty specialty,final String account_nickname,final String account_profile_img) {
+                                final Timestamp modify_time,final Specialty specialty,final String account_nickname,
+                                final String account_profile_img,final String copyright) {
             this.artwork_id = artwork_id;
             this.account_id = account_id;
             this.title = title;
@@ -128,6 +129,7 @@ public class ArtWorkResponseDto {
             this.specialty = specialty;
             this.account_nickname = account_nickname;
             this.account_profile_img = account_profile_img;
+            this.copyright = copyright;
         }
         public void setComment_count(Long comment_count) {
             this.comment_count =comment_count;
@@ -160,10 +162,18 @@ public class ArtWorkResponseDto {
     @NoArgsConstructor
     public static class ArtWorkSimilarWork {
         private Long artwork_id;
+        private String artwork_title;
+        private String account_nickname;
+        private String acccount_tendency;
+        private String linkedIn;
+        private String brunch;
+        private String instagram;
+
         private String img;
 
-        public ArtWorkSimilarWork(final Long artwork_id,final String img) {
+        public ArtWorkSimilarWork(final Long artwork_id,final String artwork_title,final String img) {
             this.artwork_id = artwork_id;
+            this.artwork_title = artwork_title;
             this.img = img;
         }
     }

@@ -1,6 +1,8 @@
 package TeamDPlus.code.service.artwork.comment;
 
 
+import TeamDPlus.code.advice.BadArgumentsValidException;
+import TeamDPlus.code.advice.ErrorCode;
 import TeamDPlus.code.domain.account.Account;
 import TeamDPlus.code.domain.artwork.ArtWorkRepository;
 import TeamDPlus.code.domain.artwork.ArtWorks;
@@ -20,28 +22,29 @@ public class ArtWorkCommentService {
 
 
     public Long createComment(ArtWorkRequestDto.ArtWorkComment dto, Long artWorkId, Account account) {
-        ArtWorks artWorks = artWorkRepository.findById(artWorkId).orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다."));
+        ArtWorks artWorks = artWorkRepository.findById(artWorkId).orElseThrow(() -> new BadArgumentsValidException(ErrorCode.NONEXISTENT_ERROR));
         ArtWorkComment artWorkComment = ArtWorkComment.builder().artWorks(artWorks).account(account).content(dto.getContent()).build();
         ArtWorkComment save = artWorkCommentRepository.save(artWorkComment);
         return save.getId();
     }
 
     public void updateComment(Long commentId, ArtWorkRequestDto.ArtWorkComment dto,Long accountId) {
-        ArtWorkComment artWorkComment = artWorkCommentRepository.findById(commentId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글이거나, 댓글입니다."));
-        if (!artWorkComment.getAccount().getId().equals(accountId)) {
-            throw new IllegalStateException("댓글 작성자가 아닙니다.");
-        }
+        ArtWorkComment artWorkComment = commentValid(commentId, accountId);
         artWorkComment.updateComment(dto.getContent());
     }
 
     public void deleteComment(Long commentId,Long accountId) {
-        ArtWorkComment artWorkComment = artWorkCommentRepository.findById(commentId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글이거나, 댓글입니다."));
-        if (!artWorkComment.getAccount().getId().equals(accountId)) {
-            throw new IllegalStateException("댓글 작성자가 아닙니다.");
-        }
+        commentValid(commentId, accountId);
         artWorkCommentRepository.deleteById(commentId);
+    }
+
+    private ArtWorkComment commentValid(Long commentId, Long accountId) {
+        ArtWorkComment artWorkComment = artWorkCommentRepository.findById(commentId)
+                .orElseThrow(() -> new BadArgumentsValidException(ErrorCode.NONEXISTENT_ERROR));
+        if (!artWorkComment.getAccount().getId().equals(accountId)) {
+            throw new BadArgumentsValidException(ErrorCode.NO_AUTHORIZATION_ERROR);
+        }
+        return artWorkComment;
     }
 
 

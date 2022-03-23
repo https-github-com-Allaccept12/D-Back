@@ -7,5 +7,7 @@ import java.util.List;
 
 public interface AccountRepositoryCustom {
 
-    List<AccountResponseDto.TopArtist> findTopArtist(Pageable pageable);
+    List<AccountResponseDto.TopArtist> findTopArtist(Pageable pageable,String interest);
+    void accountCreateCountInitialization();
+
 }

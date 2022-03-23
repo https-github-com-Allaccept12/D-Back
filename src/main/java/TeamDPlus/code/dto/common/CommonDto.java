@@ -1,9 +1,11 @@
 package TeamDPlus.code.dto.common;
 
 import TeamDPlus.code.domain.artwork.image.ArtWorkImage;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotEmpty;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
@@ -15,10 +17,11 @@ public class CommonDto {
     public static class CommentDto {
         private Long account_id;
         private Long comment_id;
+        @NotEmpty(message = "내용을 입력해주세요.")
         private String content;
         private Timestamp modify_time;
 
-        public CommentDto(Long account_id, Long comment_id, String content, Timestamp modify_time) {
+        public CommentDto(final Long account_id, final Long comment_id, final String content, final Timestamp modify_time) {
             this.account_id = account_id;
             this.comment_id = comment_id;
             this.content = content;
@@ -56,6 +59,8 @@ public class CommonDto {
     @Getter
     @NoArgsConstructor
     public static class ArtWorkKeyword {
+
+        @NotEmpty(message = "내용을 입력해주세요.")
         private String keyword;
     }
 

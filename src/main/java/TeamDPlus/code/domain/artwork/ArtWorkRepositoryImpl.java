@@ -1,26 +1,22 @@
 package TeamDPlus.code.domain.artwork;
 
-import TeamDPlus.code.domain.artwork.comment.QArtWorkComment;
-import TeamDPlus.code.domain.artwork.like.QArtWorkLikes;
 import TeamDPlus.code.dto.response.ArtWorkResponseDto;
+import TeamDPlus.code.dto.response.ArtWorkResponseDto.ArtworkMain;
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
 import static TeamDPlus.code.domain.account.QAccount.account;
+import static TeamDPlus.code.domain.account.follow.QFollow.follow;
 import static TeamDPlus.code.domain.artwork.QArtWorks.artWorks;
 import static TeamDPlus.code.domain.artwork.bookmark.QArtWorkBookMark.artWorkBookMark;
-import static TeamDPlus.code.domain.artwork.comment.QArtWorkComment.artWorkComment;
 import static TeamDPlus.code.domain.artwork.image.QArtWorkImage.artWorkImage;
 import static TeamDPlus.code.domain.artwork.like.QArtWorkLikes.artWorkLikes;
-import static TeamDPlus.code.domain.post.QPost.post;
 
 @RequiredArgsConstructor
 public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
@@ -75,11 +71,13 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
                 .fetch();
     }
 
+    //개선 필요
     @Override
-    public List<ArtWorkResponseDto.ArtworkMain> findArtWorkByMostViewAndMostLike(String interest, Pageable pageable) {
-        return queryFactory
+    public List<ArtworkMain> findArtWorkByMostViewAndMostLike(String interest, Pageable pageable) {
+
+        List<ArtworkMain> fetch = queryFactory
                 .select(
-                        Projections.constructor(ArtWorkResponseDto.ArtworkMain.class,
+                        Projections.constructor(ArtworkMain.class,
                                 artWorks.id,
                                 account.id,
                                 account.nickname,
@@ -88,26 +86,50 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
                                 artWorks.view,
                                 artWorkLikes.count(),
                                 artWorks.category,
-                                artWorks.created
-                        ))
+                                artWorks.created))
                 .from(artWorks)
                 .join(artWorks.account, account)
+                .join(artWorkImage).on(artWorkImage.artWorks.eq(artWorks).and(artWorkImage.thumbnail.isTrue()))
                 .leftJoin(artWorkLikes).on(artWorkLikes.artWorks.eq(artWorks))
-                .leftJoin(artWorkImage).on(artWorkImage.artWorks.eq(artWorks).and(artWorkImage.thumbnail.isTrue()))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
-                .groupBy(artWorks.id)
-                .orderBy(artWorkLikes.count().desc(),artWorks.view.desc())
                 .where(isInterest(interest))
+                .groupBy(artWorks.id)
+                .orderBy(artWorkLikes.count().desc(), artWorks.view.desc())
                 .fetch();
-//        return new PageImpl<>(result,pageable,result.size());
+
+        if (fetch.size() < 10) {
+            return queryFactory
+                    .select(
+                            Projections.constructor(ArtworkMain.class,
+                                    artWorks.id,
+                                    account.id,
+                                    account.nickname,
+                                    account.profileImg,
+                                    artWorkImage.artworkImg,
+                                    artWorks.view,
+                                    artWorkLikes.count(),
+                                    artWorks.category,
+                                    artWorks.created
+                            ))
+                    .from(artWorks)
+                    .join(artWorks.account, account)
+                    .join(artWorkImage).on(artWorkImage.artWorks.eq(artWorks).and(artWorkImage.thumbnail.isTrue()))
+                    .leftJoin(artWorkLikes).on(artWorkLikes.artWorks.eq(artWorks))
+                    .offset(pageable.getOffset())
+                    .limit(pageable.getPageSize())
+                    .groupBy(artWorks.id)
+                    .orderBy(artWorkLikes.count().desc(), artWorks.view.desc())
+                    .fetch();
+        }
+        return fetch;
+
     }
 
     @Override
-    public List<ArtWorkResponseDto.ArtworkMain> findAllArtWork(Long lastArtworkId, Pageable paging) {
-
+    public List<ArtworkMain> findAllArtWork(Long lastArtworkId, String category, Pageable paging,int sortSign) {
         return queryFactory
-                .select(Projections.constructor(ArtWorkResponseDto.ArtworkMain.class,
+                .select(Projections.constructor(ArtworkMain.class,
                         artWorks.id,
                         account.id,
                         account.nickname,
@@ -124,11 +146,51 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
                 .leftJoin(artWorkLikes).on(artWorkLikes.artWorks.eq(artWorks))
                 .offset(paging.getOffset())
                 .limit(paging.getPageSize())
-                .where(isLastArtworkId(lastArtworkId),artWorks.scope.isTrue())
+                .where(isLastArtworkId(lastArtworkId),
+                        isCategory(category),
+                        artWorks.scope.isTrue())
+                .groupBy(artWorks.id)
+                .orderBy(isArtWorkSort(sortSign))
+                .fetch();
+    }
+
+
+
+    @Override
+    public List<ArtworkMain> findByFollowerArtWork(Long accountId,String category, Long lastArtWorkId, Pageable paging) {
+         //accountId가 팔로우한 사람 아이디들이 나옴.
+        List<Long> followingId = queryFactory
+                .select(follow.followingId)
+                .from(follow)
+                .join(account).on(account.id.eq(follow.followingId))
+                .where(follow.followerId.eq(accountId))
+                .fetch();
+        //현재 카테고리를 확인하고, in절을 이용해 팔로우한 아이디들의 artwork만 뽑아내기
+        return queryFactory
+                .select(Projections.constructor(ArtworkMain.class,
+                        artWorks.id,
+                        account.id,
+                        account.nickname,
+                        account.profileImg,
+                        artWorkImage.artworkImg,
+                        artWorks.view,
+                        artWorkLikes.count(),
+                        artWorks.category,
+                        artWorks.created
+                ))
+                .from(artWorks)
+                .join(artWorks.account,account)
+                .join(artWorkImage).on(artWorkImage.artWorks.eq(artWorks).and(artWorkImage.thumbnail.isTrue()))
+                .leftJoin(artWorkLikes).on(artWorkLikes.artWorks.eq(artWorks))
+                .offset(paging.getOffset())
+                .limit(paging.getPageSize())
+                .where(isLastArtworkId(lastArtWorkId),
+                        isCategory(category),
+                        artWorks.scope.isTrue(),
+                        artWorks.account.id.in(followingId))
                 .groupBy(artWorks.id)
                 .orderBy(artWorks.created.desc())
                 .fetch();
-
     }
 
     @Override
@@ -147,7 +209,8 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
                         artWorks.modified,
                         artWorks.specialty,
                         account.nickname,
-                        account.profileImg
+                        account.profileImg,
+                        artWorks.copyright
                 ))
                 .from(artWorks)
                 .innerJoin(artWorks.account, account)
@@ -157,15 +220,19 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
                 .fetchOne();
     }
 
+
+
     @Override
     public List<ArtWorkResponseDto.ArtWorkSimilarWork> findSimilarArtWork(Long accountId,Long artWorkId, Pageable pageable) {
         return  queryFactory
                 .select(Projections.constructor(ArtWorkResponseDto.ArtWorkSimilarWork.class,
                         artWorks.id,
+                        artWorks.title,
                         artWorkImage.artworkImg))
                 .from(artWorks)
                 .join(artWorkImage).on(artWorkImage.artWorks.eq(artWorks)
                         .and(artWorkImage.thumbnail.isTrue()))
+                .join(artWorks.account, account)
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .where(artWorks.account.id.eq(accountId).and(artWorks.id.ne(artWorkId)))
@@ -176,9 +243,9 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
     }
 
     @Override
-    public List<ArtWorkResponseDto.ArtworkMain> findBySearchKeyWord(String keyword,Long lastArtWorkId, Pageable pageable) {
+    public List<ArtworkMain> findBySearchKeyWord(String keyword, Long lastArtWorkId, Pageable pageable) {
         return queryFactory
-                .select(Projections.constructor(ArtWorkResponseDto.ArtworkMain.class,
+                .select(Projections.constructor(ArtworkMain.class,
                         artWorks.id,
                         account.id,
                         account.nickname,
@@ -195,9 +262,9 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .where(isLastArtworkId(lastArtWorkId),
-                        artWorks.title.contains(keyword)
-                                .or(artWorks.title.contains(keyword))
-                                .or(artWorks.account.nickname.eq(keyword)))
+                        artWorks.title.contains(keyword),
+                        artWorks.content.contains(keyword),
+                        artWorks.account.nickname.contains(keyword))
                 .groupBy(artWorks.id)
                 .orderBy(artWorks.created.desc())
                 .fetch();
@@ -225,21 +292,29 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
                 .execute();
     }
 
+    private OrderSpecifier<?> isArtWorkSort(int sortSign) {
+        return sortSign == 1 ? artWorks.created.desc() : artWorkLikes.count().desc();
+    }
+
+    private BooleanExpression isCategory(String category) {
+        return category.isEmpty() ? null : artWorks.category.eq(category);
+    }
+
     //account의 interest를 확인하고 메인페이지에 뿌려줄 top10
-    public BooleanExpression isInterest(String interest) {
+    private BooleanExpression isInterest(String interest) {
         return interest != null ? artWorks.category.eq(interest) : null;
     }
 
-    public BooleanExpression isLastArtworkId(Long lastArtWorkId) {
+    private BooleanExpression isLastArtworkId(Long lastArtWorkId) {
         return lastArtWorkId != 0 ? artWorks.id.lt(lastArtWorkId) : null;
     }
 
     //방문자가 로그인을 안했거나, 로그인은 했지만 다른사람 마이페이지에 온사람 이면 scope가 public인 작품만 보여줘라
-    public BooleanExpression isVisitor(Long visitAccountId, Long accountId) {
+    private BooleanExpression isVisitor(Long visitAccountId, Long accountId) {
         return visitAccountId.equals(accountId) ? null : artWorks.scope.isTrue();
     }
 
-    public BooleanExpression isPortfolio(boolean isPortfolio) {
+    private BooleanExpression isPortfolio(boolean isPortfolio) {
         return isPortfolio ? artWorks.isMaster.isTrue() : null;
     }
 

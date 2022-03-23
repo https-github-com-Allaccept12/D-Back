@@ -19,7 +19,7 @@ public class SecurityService {
     @Transactional
     public TokenResponseDto refresh(String refreshToken) {
         // 리프레시 토큰 기간 만료 에러
-        if (!jwtTokenProvider.validateToken(refreshToken)) {
+        if (jwtTokenProvider.validateToken(refreshToken)) {
             throw new IllegalStateException("리프레시 토큰 기간 만료");
         }
 

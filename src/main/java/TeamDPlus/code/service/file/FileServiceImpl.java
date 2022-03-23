@@ -8,12 +8,14 @@ import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.io.InputStream;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class FileServiceImpl implements FileService{
 
     private final AmazonS3Client amazonS3Client;
@@ -28,7 +30,9 @@ public class FileServiceImpl implements FileService{
 
     @Override
     public void deleteFile(String fileName) {
-        amazonS3Client.deleteObject(new DeleteObjectRequest(amazonS3Component.getBucket(), fileName));
+        int separator = fileName.lastIndexOf("/") + 1; //uuid 인덱스 번호 확인
+        String substring = fileName.substring(separator);
+        amazonS3Client.deleteObject(new DeleteObjectRequest(amazonS3Component.getBucket(), substring));
     }
 
     @Override

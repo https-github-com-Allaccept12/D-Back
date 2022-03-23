@@ -19,11 +19,10 @@ public class AmazonConfig {
     @Value("${cloud.aws.credentials.secret-key}")
     private String secretKey;
 
-
     @Bean
     public AmazonS3Client amazonS3Client() {
-        String region = "ap-northeast-2";
         BasicAWSCredentials awsCreds = new BasicAWSCredentials(accessKey, secretKey);
+        String region = "ap-northeast-2";
         return (AmazonS3Client) AmazonS3ClientBuilder.standard()
                 .withRegion(region)
                 .withCredentials(new AWSStaticCredentialsProvider(awsCreds))
