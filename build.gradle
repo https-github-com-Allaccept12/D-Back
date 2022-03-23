@@ -41,8 +41,10 @@ dependencies {
 	implementation 'org.projectlombok:lombok:1.18.22'
 
 	implementation 'io.awspring.cloud:spring-cloud-starter-aws:2.4.0'
+	implementation group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1'
+	implementation 'net.minidev:minidev-parent:2.4.4'
 
-    annotationProcessor "com.querydsl:querydsl-apt:${queryDslVersion}"
+	annotationProcessor "com.querydsl:querydsl-apt:${queryDslVersion}"
 
 	compileOnly 'org.projectlombok:lombok'
 
