@@ -1,5 +1,6 @@
 package TeamDPlus.code.dto.response;
 
+import TeamDPlus.code.domain.post.Post;
 import TeamDPlus.code.domain.post.PostBoard;
 import TeamDPlus.code.domain.post.image.PostImage;
 import TeamDPlus.code.domain.post.tag.PostTag;
@@ -30,13 +31,17 @@ public class PostResponseDto {
         private String category;
         private Timestamp create_time;
         private boolean is_selected;
-        private List<CommonDto.PostTagDto> hash_tag;
+        private boolean is_like;
+        private boolean is_bookmarked;
+        private List<PostTag> hash_tag;
 
         @Builder
         public PostPageMain(final Long post_id, final Long account_id, final String account_nickname,
                             final String account_profile_img, final String title,
                             final String content, final String category,
-                            final Timestamp create_time, final boolean is_selected) {
+                            final Timestamp create_time, final boolean is_selected,
+                            final Long like_count) {
+
             this.post_id = post_id;
             this.account_id = account_id;
             this.account_nickname = account_nickname;
@@ -46,16 +51,26 @@ public class PostResponseDto {
             this.category = category;
             this.create_time = create_time;
             this.is_selected = is_selected;
-        }
-        public void setCountList(Long bookmark_count, Long like_count, Long comment_count){
-            this.bookmark_count = bookmark_count;
             this.like_count = like_count;
+        }
+
+        public void setCountList(Long bookmark_count, Long comment_count){
+            this.bookmark_count = bookmark_count;
             this.comment_count = comment_count;
+        }
+
+        public void setHash_tag(List<PostTag> hash_tag){
+            this.hash_tag = hash_tag;
+        }
+
+        public void setLikeAndBookmarkStatus(boolean is_like, boolean is_bookmarked){
+            this.is_like = is_like;
+            this.is_bookmarked = is_bookmarked;
         }
     }
 
 
-    // 디모 - 꿀팁
+   // 디모 - 꿀팁
     @Getter
     @NoArgsConstructor
     public static class PostDetailPage {
@@ -67,13 +82,16 @@ public class PostResponseDto {
         private PostSubDetail postSubDetail;
         private List<CommonDto.ImgUrlDto> img;
         private List<CommonDto.PostTagDto> hash_tag;
+        private List<CommonDto.IsCommentsLiked> is_comments_likes;
         private List<PostResponseDto.PostComment> comment;
         private PostBoard board;
+        private static Long bookmark_count;
 
         @Builder
         public PostDetailPage(final boolean is_like, final boolean is_bookmark, final boolean is_follow,
                               final PostSubDetail postSubDetail, final List<CommonDto.ImgUrlDto> img, final PostBoard board,
-                              final List<CommonDto.PostTagDto> hash_tag, final List<PostComment> comment, final Long comment_count) {
+                              final List<CommonDto.PostTagDto> hash_tag, final List<PostComment> comment, final Long comment_count,
+                              final List<CommonDto.IsCommentsLiked> is_comments_likes, final Long bookmark_count) {
             this.is_like = is_like;
             this.is_bookmark = is_bookmark;
             this.is_follow = is_follow;
@@ -83,13 +101,15 @@ public class PostResponseDto {
             this.comment = comment;
             this.comment_count = comment_count;
             this.board = board;
+            this.is_comments_likes = is_comments_likes;
+            this.bookmark_count = bookmark_count;
         }
 
         public static PostDetailPage from(final List<PostImage> postImageList, final List<PostComment> commentList,
                                           final List<PostTag> postTagsList, final PostSubDetail postSubDetail,
                                           final boolean is_like, final boolean is_bookmark, final boolean is_follow,
-                                          final Long comment_count
-        ){
+                                          final Long comment_count, final List<CommonDto.IsCommentsLiked> isCommentLikeList,
+                                          final Long bookmark_count){
             return PostDetailPage.builder()
                     .postSubDetail(postSubDetail)
                     .img(postImageList.stream()
@@ -101,6 +121,9 @@ public class PostResponseDto {
                     .comment_count(comment_count)
                     .hash_tag(postTagsList.stream()
                             .map(i -> new CommonDto.PostTagDto(i.getHashTag())).collect(Collectors.toList()))
+                    .is_comments_likes(isCommentLikeList.stream()
+                            .map(i -> new CommonDto.IsCommentsLiked()).collect(Collectors.toList()))
+                    .bookmark_count(bookmark_count)
                     .build();
         }
 
@@ -119,15 +142,13 @@ public class PostResponseDto {
         private String category;
         private Timestamp create_time;
         private Timestamp modify_time;
-        private Long bookmark_count;
         private Long like_count;
 
         @Builder
         public PostSubDetail(final Long post_id, final Long account_id, final String account_nickname,
                              final String account_profile_img, final String title,
                              final String content, final Long view_count, final String category,
-                             final Timestamp create_time, final Timestamp modify_time,
-                             final Long bookmark_count, final Long like_count) {
+                             final Timestamp create_time, final Timestamp modify_time, final Long like_count) {
             this.post_id = post_id;
             this.account_id = account_id;
             this.account_nickname = account_nickname;
@@ -138,7 +159,6 @@ public class PostResponseDto {
             this.category = category;
             this.create_time = create_time;
             this.modify_time = modify_time;
-            this.bookmark_count = bookmark_count;
             this.like_count = like_count;
         }
     }

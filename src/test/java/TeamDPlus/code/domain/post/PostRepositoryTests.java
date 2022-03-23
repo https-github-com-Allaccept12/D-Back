@@ -13,16 +13,19 @@ import TeamDPlus.code.domain.post.bookmark.PostBookMarkRepository;
 import TeamDPlus.code.domain.post.bookmark.QPostBookMark;
 import TeamDPlus.code.domain.post.comment.PostComment;
 import TeamDPlus.code.domain.post.comment.PostCommentRepository;
-import TeamDPlus.code.domain.post.comment.QPostComment;
+
 import TeamDPlus.code.domain.post.comment.like.PostCommentLikes;
 import TeamDPlus.code.domain.post.comment.like.PostCommentLikesRepository;
 import TeamDPlus.code.domain.post.image.PostImage;
 import TeamDPlus.code.domain.post.image.PostImageRepository;
 import TeamDPlus.code.domain.post.like.*;
 import TeamDPlus.code.domain.post.tag.PostTagRepository;
+
 import TeamDPlus.code.dto.response.AccountResponseDto;
 import TeamDPlus.code.dto.response.PostResponseDto;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
@@ -78,6 +81,9 @@ public class PostRepositoryTests {
     PostCommentRepository postCommentRepository;
 
     @Autowired
+    RankRepository rankRepository;
+
+    @Autowired
     PostCommentLikesRepository postCommentLikesRepository;
 
     @Autowired
@@ -92,18 +98,15 @@ public class PostRepositoryTests {
     @Autowired
     PostAnswerLikesRepository postAnswerLikesRepository;
 
-    @Autowired
-    RankRepository rankRepository;
-
     @Test
     @Commit
     public void 전체포스트_목록() throws Exception {
         //given account,artwork,
         Account testAccount = testAccountSet();
-        Post post1 = testPostSet(testAccount);
-        Post post2 = testPostSet(testAccount);
+        Post post1 = testPostSet(testAccount, PostBoard.QNA);
+        Post post2 = testPostSet(testAccount, PostBoard.QNA);
 
-        Pageable pageable = PageRequest.of(0,3);
+        Pageable pageable = PageRequest.of(0, 3);
         // when
         List<PostResponseDto.PostPageMain> fetch = queryFactory
                 .select(Projections.constructor(PostResponseDto.PostPageMain.class,
@@ -140,7 +143,7 @@ public class PostRepositoryTests {
     public void 답글_서브_디테일() throws Exception {
         //given account,artwork,
         Account testAccount = testAccountSet();
-        Post post1 = testPostSet(testAccount);
+        Post post1 = testPostSet(testAccount, PostBoard.QNA);
 
         testPostAnswer(post1, testAccount, "testcontent");
         testPostAnswer(post1, testAccount, "testcontent");
@@ -182,9 +185,9 @@ public class PostRepositoryTests {
     public void 카테고리로_찾기() throws Exception {
         //given account,artwork,
         Account testAccount = testAccountSet();
-        Post post1 = testPostSet(testAccount);
-        Post post2 = testPostSet(testAccount);
-        Post post3 = testPostSet(testAccount);
+        Post post1 = testPostSet(testAccount, PostBoard.QNA);
+        Post post2 = testPostSet(testAccount, PostBoard.QNA);
+        Post post3 = testPostSet(testAccount, PostBoard.QNA);
 
         testPostAnswer(post1, testAccount, "testcontent");
         testPostAnswer(post1, testAccount, "testcontent");
@@ -227,10 +230,10 @@ public class PostRepositoryTests {
         Account testAccount = testAccountSet();
         Account testAccount2 = testAccountSet();
 
-        Post post1 = testPostSet(testAccount);
-        Post post2 = testPostSet(testAccount);
-        Post post3 = testPostSet(testAccount);
-        Post post4 = testPostSet(testAccount2);
+        Post post1 = testPostSet(testAccount, PostBoard.QNA);
+        Post post2 = testPostSet(testAccount, PostBoard.QNA);
+        Post post3 = testPostSet(testAccount, PostBoard.QNA);
+        Post post4 = testPostSet(testAccount2, PostBoard.QNA);
 
         testPostAnswer(post1, testAccount, "testcontent");
         testPostAnswer(post1, testAccount, "testcontent");
@@ -281,10 +284,10 @@ public class PostRepositoryTests {
         Account testAccount = testAccountSet();
         Account testAccount2 = testAccountSet();
 
-        Post post1 = testPostSet(testAccount);
-        Post post2 = testPostSet(testAccount);
-        Post post3 = testPostSet(testAccount);
-        Post post4 = testPostSet(testAccount2);
+        Post post1 = testPostSet(testAccount,PostBoard.QNA);
+        Post post2 = testPostSet(testAccount, PostBoard.QNA);
+        Post post3 = testPostSet(testAccount, PostBoard.QNA);
+        Post post4 = testPostSet(testAccount2, PostBoard.QNA);
 
         testPostAnswer(post1, testAccount, "testcontent");
         testPostAnswer(post1, testAccount, "testcontent");
@@ -334,8 +337,8 @@ public class PostRepositoryTests {
     public void 답글불러오기() throws Exception {
         //given account,artwork,
         Account testAccount = testAccountSet();
-        Post post1 = testPostSet(testAccount);
-        Post post2 = testPostSet(testAccount);
+        Post post1 = testPostSet(testAccount, PostBoard.QNA);
+        Post post2 = testPostSet(testAccount, PostBoard.QNA);
 
         PostAnswer answer1 = testPostAnswer(post1, testAccount, "testcontent");
         testPostAnswer(post1, testAccount, "testcontent");
@@ -379,8 +382,8 @@ public class PostRepositoryTests {
         //given account,artwork,
         Account testAccount = testAccountSet();
         Account testAccount2 = testAccountSet();
-        Post post1 = testPostSet(testAccount);
-        Post post2 = testPostSet(testAccount);
+        Post post1 = testPostSet(testAccount, PostBoard.QNA);
+        Post post2 = testPostSet(testAccount, PostBoard.QNA);
 
         PostAnswer answer1 = testPostAnswer(post1, testAccount, "testcontent");
         testPostAnswer(post1, testAccount, "testcontent");
@@ -427,11 +430,11 @@ public class PostRepositoryTests {
         Post post1 = testInfoSet(testAccount);
         Post post2 = testInfoSet(testAccount);
 
-        PostComment comment1 = testPostComment(post1, testAccount, "testcontent");
-        testPostComment(post1, testAccount, "testcontent");
-        testPostComment(post1, testAccount2, "testcontent");
-        testPostComment(post2, testAccount, "testcontent");
-        testPostComment(post2, testAccount2, "testcontent");
+        PostComment comment1 = testPostComment(post1, testAccount);
+        testPostComment(post1, testAccount);
+        testPostComment(post1, testAccount2);
+        testPostComment(post2, testAccount);
+        testPostComment(post2, testAccount2);
         testPostCommentLikes(comment1, testAccount);
         testPostCommentLikes(comment1, testAccount);
         testPostCommentLikes(comment1, testAccount);
@@ -473,6 +476,7 @@ public class PostRepositoryTests {
                 .subContent("test")
                 .career(1)
                 .tendency("무슨무슨형")
+                .interest("test")
                 .rank(saveRank)
                 .build();
         Account save = accountRepository.save(testAccount);
@@ -481,11 +485,12 @@ public class PostRepositoryTests {
         return save;
     }
 
-    private Post testPostSet(Account account) {
+    private Post testPostSet(Account account, PostBoard board) {
         Post post = Post.builder()
                 .title("test")
                 .category("test")
                 .content("test")
+                .board(board)
                 .account(account)
                 .board(PostBoard.QNA)
                 .build();
@@ -521,7 +526,7 @@ public class PostRepositoryTests {
         return save;
     }
 
-    private PostBookMark testPostBookMark(Post post, Account account){
+    private PostBookMark testPostBookMark(Post post, Account account) {
         PostBookMark testPostBookmark = PostBookMark.builder()
                 .post(post)
                 .account(account)
@@ -532,11 +537,11 @@ public class PostRepositoryTests {
         return save;
     }
 
-    private PostComment testPostComment(Post post, Account account, String content){
+    private PostComment testPostComment(Post post, Account account) {
         PostComment comment = PostComment.builder()
                 .account(account)
                 .post(post)
-                .content(content)
+                .content("test1")
                 .build();
         PostComment save = postCommentRepository.save(comment);
         em.flush();
@@ -568,26 +573,229 @@ public class PostRepositoryTests {
         return save;
     }
 
+    private PostCommentLikes testPostCommentLikes(PostComment comment, Account account) {
+        PostCommentLikes likes = PostCommentLikes.builder()
+                .postComment(comment)
+                .account(account)
+                .build();
+        PostCommentLikes save = postCommentLikesRepository.save(likes);
+        return save;
+    }
     private PostAnswerLikes testPostAnswerLikes(PostAnswer postAnswer, Account account){
         PostAnswerLikes answerLikes = PostAnswerLikes.builder()
                 .postAnswer(postAnswer)
                 .account(account)
                 .build();
         PostAnswerLikes save = postAnswerLikesRepository.save(answerLikes);
+
         em.flush();
         em.clear();
         return save;
     }
 
-    private PostCommentLikes testPostCommentLikes(PostComment postComment, Account account){
-        PostCommentLikes commentLikes = PostCommentLikes.builder()
-                .postComment(postComment)
-                .account(account)
-                .build();
-        PostCommentLikes save = postCommentLikesRepository.save(commentLikes);
-        em.flush();
-        em.clear();
-        return save;
+    @Test
+    public void 상세페이지() throws Exception {
+
+        // given
+        Account testAccount = testAccountSet();
+        Account testAccount2 = testAccountSet();
+        Account testAccount3 = testAccountSet();
+        Post post1 = testPostSet(testAccount, PostBoard.QNA);
+
+        PostLikes postLikes = testPostLikes(post1, testAccount2);
+        PostLikes postLikes1 = testPostLikes(post1, testAccount3);
+        PostBookMark bookMark1 = testPostBookMark(post1, testAccount2);
+        PostBookMark bookMark2 = testPostBookMark(post1, testAccount3);
+
+        PostResponseDto.PostSubDetail subDetail = queryFactory
+                .select(Projections.constructor(PostResponseDto.PostSubDetail.class,
+                        Expressions.asNumber(post1.getId()).as("post_id"),
+                        account.id,
+                        account.profileImg,
+                        account.nickname,
+                        post.title,
+                        post.content,
+                        post.view,
+                        post.category,
+                        post.created,
+                        post.modified,
+                        QPostLikes.postLikes.count()
+                ))
+                .from(post)
+                .groupBy(post.id)
+                .innerJoin(post.account, account)
+                .leftJoin(QPostLikes.postLikes).on(QPostLikes.postLikes.post.eq(post))
+                .where(post.id.eq(post1.getId()))
+                .fetchOne();
+
+        assertThat(subDetail.getLike_count()).isEqualTo(2);
+
+    }
+
+    @Test
+    // 좋아요, 조회수가 많은 게시물 상위 10개
+    public void 추천피드() throws Exception {
+        Account testAccount = testAccountSet();
+        Account testAccount2 = testAccountSet();
+        Account testAccount3 = testAccountSet();
+        Account testAccount4 = testAccountSet();
+        Post post1 = testPostSet(testAccount4, PostBoard.QNA);
+        Post post2 = testPostSet(testAccount4, PostBoard.QNA);
+        Post post3 = testPostSet(testAccount4, PostBoard.QNA);
+        Post post4 = testPostSet(testAccount4, PostBoard.QNA);
+        Post post5 = testPostSet(testAccount4, PostBoard.QNA);
+        Post post6 = testPostSet(testAccount4, PostBoard.QNA);
+        Post post7 = testPostSet(testAccount4, PostBoard.QNA);
+        Post post8 = testPostSet(testAccount4, PostBoard.QNA);
+        Post post9 = testPostSet(testAccount4, PostBoard.QNA);
+        testPostLikes(post1, testAccount);
+        testPostLikes(post1, testAccount2);
+        testPostLikes(post1, testAccount3);
+        testPostLikes(post1, testAccount4);
+        testPostLikes(post2, testAccount2);
+        testPostLikes(post2, testAccount3);
+        testPostLikes(post2, testAccount4);
+        testPostLikes(post4, testAccount3);
+        testPostLikes(post4, testAccount4);
+        testPostLikes(post3, testAccount4);
+        Pageable pageable = PageRequest.of(0,12);
+
+        List<PostResponseDto.PostPageMain> result = queryFactory
+                .select(
+                        Projections.constructor(PostResponseDto.PostPageMain.class,
+                                post.id,
+                                account.id,
+                                account.nickname,
+                                account.profileImg,
+                                post.title,
+                                post.content,
+                                post.category,
+                                post.created,
+                                post.isSelected,
+                                postLikes.id.count()
+                                ))
+                .from(post)
+                .join(post.account, account)
+                .leftJoin(postLikes).on(postLikes.post.eq(post))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .groupBy(post.id)
+                .orderBy(postLikes.id.count().desc(), post.view.desc())
+                .fetch();
+
+        assertThat(result.get(0).getPost_id()).isEqualTo(post1.getId());
+        assertThat(result.get(1).getPost_id()).isEqualTo(post2.getId());
+        assertThat(result.get(2).getPost_id()).isEqualTo(post4.getId());
+        assertThat(result.get(3).getPost_id()).isEqualTo(post3.getId());
+    }
+
+    @Test
+    public void 전체최신순() throws Exception {
+        Account testAccount = testAccountSet();
+        Account testAccount2 = testAccountSet();
+        Account testAccount3 = testAccountSet();
+        Account testAccount4 = testAccountSet();
+        Post post1 = testPostSet(testAccount2, PostBoard.QNA);
+        Post post2 = testPostSet(testAccount2, PostBoard.QNA);
+        Post post3 = testPostSet(testAccount2, PostBoard.QNA);
+        Post post4 = testPostSet(testAccount2, PostBoard.QNA);
+        Post post5 = testPostSet(testAccount2, PostBoard.QNA);
+        Post post6 = testPostSet(testAccount2, PostBoard.QNA);
+        Post post7 = testPostSet(testAccount2, PostBoard.QNA);
+        Post post8 = testPostSet(testAccount2, PostBoard.INFO);
+        Post post9 = testPostSet(testAccount2, PostBoard.INFO);
+        Post post10 = testPostSet(testAccount2, PostBoard.INFO);
+
+        Pageable pageable = PageRequest.of(0,12);
+        List<PostResponseDto.PostPageMain> list = queryFactory
+                .select(Projections.constructor(PostResponseDto.PostPageMain.class,
+                        post.id,
+                        account.id,
+                        account.nickname,
+                        account.profileImg,
+                        post.title,
+                        post.content,
+                        post.category,
+                        post.created,
+                        post.isSelected,
+                        postLikes.count()
+                ))
+                .from(post)
+                .join(account).on(account.id.eq(post.account.id))
+                .leftJoin(postLikes).on(postLikes.post.eq(post))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .where(isLastPostId(50L), post.board.eq(PostBoard.QNA))
+                .groupBy(post.id)
+                .orderBy(post.created.desc())
+                .fetch();
+
+        for(int i = 0 ; i<list.size(); i++){
+            System.out.println("post"+i+" : "+ list.get(i).getPost_id());
+        }
+        assertThat(list.get(6).getPost_id()).isEqualTo(post1.getId());
+        assertThat(list.get(0).getPost_id()).isEqualTo(post7.getId());
+        assertThat(list.get(3).getPost_id()).isNotEqualTo(post8.getId());
+    }
+
+    @Test
+    public void 전체좋아요순() throws Exception {
+        Account testAccount = testAccountSet();
+        Account testAccount2 = testAccountSet();
+        Account testAccount3 = testAccountSet();
+        Account testAccount4 = testAccountSet();
+        Post post1 = testPostSet(testAccount2, PostBoard.QNA);
+        Post post2 = testPostSet(testAccount2, PostBoard.QNA);
+        Post post3 = testPostSet(testAccount2, PostBoard.QNA);
+        Post post4 = testPostSet(testAccount2, PostBoard.QNA);
+        Post post5 = testPostSet(testAccount2, PostBoard.QNA);
+        Post post6 = testPostSet(testAccount2, PostBoard.QNA);
+        Post post7 = testPostSet(testAccount2, PostBoard.QNA);
+        Post post8 = testPostSet(testAccount2, PostBoard.INFO);
+        Post post9 = testPostSet(testAccount2, PostBoard.INFO);
+        Post post10 = testPostSet(testAccount2, PostBoard.INFO);
+        testPostLikes(post1, testAccount);
+        testPostLikes(post1, testAccount2);
+        testPostLikes(post1, testAccount3);
+        testPostLikes(post1, testAccount4);
+        testPostLikes(post2, testAccount2);
+        testPostLikes(post3, testAccount3);
+        testPostLikes(post4, testAccount4);
+
+        Pageable pageable = PageRequest.of(0,12);
+        List<PostResponseDto.PostPageMain> list = queryFactory
+                .select(Projections.constructor(PostResponseDto.PostPageMain.class,
+                        post.id,
+                        account.id,
+                        account.nickname,
+                        account.profileImg,
+                        post.title,
+                        post.content,
+                        post.category,
+                        post.created,
+                        post.isSelected,
+                        postLikes.count()
+                ))
+                .from(post)
+                .join(account).on(account.id.eq(post.account.id))
+                .leftJoin(postLikes).on(postLikes.post.eq(post))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .where(isLastPostId(50L), post.board.eq(PostBoard.QNA))
+                .groupBy(post.id)
+                .orderBy(postLikes.count().desc())
+                .fetch();
+
+        for(int i = 0 ; i<list.size(); i++){
+            System.out.println("post"+i+" : "+ list.get(i).getPost_id());
+        }
+        assertThat(list.get(0).getPost_id()).isEqualTo(post1.getId());
+        assertThat(list.get(3).getPost_id()).isEqualTo(post4.getId());
+        assertThat(list.get(6).getPost_id()).isEqualTo(post7.getId());
+    }
+
+    private BooleanExpression isLastPostId(Long isLastPostId) {
+        return isLastPostId != 0 ? post.id.lt(isLastPostId) : null;
     }
 
 }
