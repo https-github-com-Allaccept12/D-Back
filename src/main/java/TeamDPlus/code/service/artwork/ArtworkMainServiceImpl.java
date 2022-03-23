@@ -6,7 +6,6 @@ import TeamDPlus.code.advice.ErrorCode;
 import TeamDPlus.code.domain.account.Account;
 import TeamDPlus.code.domain.account.AccountRepository;
 import TeamDPlus.code.domain.account.follow.FollowRepository;
-import TeamDPlus.code.domain.account.orthers.OtherRepository;
 import TeamDPlus.code.domain.artwork.ArtWorkRepository;
 import TeamDPlus.code.domain.artwork.ArtWorks;
 import TeamDPlus.code.domain.artwork.bookmark.ArtWorkBookMarkRepository;
@@ -170,7 +169,7 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
             ArtWorkImage img = ArtWorkImage.builder().artWorks(saveArtwork).artworkImg(imgUrl).build();
             artWorkImageRepository.save(img);
             if (thumbnail) {
-                saveArtwork.updateArtoWorkThumbnail(imgUrl);
+                saveArtwork.updateArtWorkThumbnail(imgUrl);
             }
         });
     }
@@ -189,7 +188,7 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
                 ArtWorkImage img = ArtWorkImage.builder().artWorks(findArtWork).artworkImg(imgUrl).build();
                 artWorkImageRepository.save(img);
                 if (thumbnail) {
-                    findArtWork.updateArtoWorkThumbnail(imgUrl);
+                    findArtWork.updateArtWorkThumbnail(imgUrl);
                 }
             });
         }
@@ -199,7 +198,7 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
             List<String> allImgUrl = artWorkImageRepository.findByAllImageUrl(artworkId);
             allImgUrl.forEach((url) -> {
                 if(dto.getThumbnail().equals(url))
-                    artWorks.updateArtoWorkThumbnail(url);
+                    artWorks.updateArtWorkThumbnail(url);
             });
         }
     }

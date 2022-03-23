@@ -106,7 +106,7 @@ public class ArtWorks extends BaseEntity {
         this.thumbnail = thumbnail;
     }
 
-    public void updateArtoWorkThumbnail(String thumbnail) {
+    public void updateArtWorkThumbnail(String thumbnail) {
         this.thumbnail = thumbnail;
     }
 
