@@ -1,5 +1,6 @@
 package TeamDPlus.code.domain.post;
 
+import TeamDPlus.code.dto.response.AccountResponseDto;
 import TeamDPlus.code.dto.response.ArtWorkResponseDto;
 import TeamDPlus.code.dto.response.PostResponseDto;
 import org.springframework.data.domain.Page;
@@ -24,5 +25,11 @@ public interface PostRepositoryCustom {
     // 검색
     Page<PostResponseDto.PostPageMain> findPostBySearchKeyWord(String keyword, Long lastPostId, Pageable pageable);
 
+    PostResponseDto.PostAnswerSubDetail findByPostAnswerSubDetail(Long postId);
 
+    List<PostResponseDto.PostSimilarQuestion> findByCategory(String category);
+
+    List<AccountResponseDto.MyPost> findPostByAccountIdAndBoard(Long accountId, String board, Pageable pageable);
+
+    List<AccountResponseDto.MyPost> findPostBookMarkByAccountId(Long accountId, String board, Pageable pageable);
 }

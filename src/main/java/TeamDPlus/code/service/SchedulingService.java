@@ -17,7 +17,6 @@ public class SchedulingService {
     private final RankRepository rankRepository;
     private final AccountRepository accountRepository;
 
-
     @Scheduled(cron = "0 0 0/1 * * *")
     @Transactional
     public void rankRepositoryInitialization() {

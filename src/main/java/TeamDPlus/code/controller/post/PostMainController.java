@@ -20,7 +20,7 @@ import java.util.List;
 @RequestMapping("/api/post")
 public class PostMainController {
 
-    private PostMainPageService postMainPageService;
+    private final PostMainPageService postMainPageService;
 
     // 전체 목록
     @GetMapping("/{last_post_id}/{board}/latest")
@@ -52,6 +52,7 @@ public class PostMainController {
     public ResponseEntity<Success> createPost(@AuthenticationPrincipal UserDetailsImpl user,
                                               @RequestPart PostRequestDto.PostCreate data,
                                               @RequestPart List<MultipartFile> imgFile) {
+        System.out.println(user.getUser());
         return new ResponseEntity<>(new Success("디플 게시물 등록",
                 postMainPageService.createPost(user.getUser(), data, imgFile)), HttpStatus.OK);
     }
@@ -72,6 +73,22 @@ public class PostMainController {
                                               @PathVariable Long post_id) {
         postMainPageService.deletePost(user.getUser().getId(), post_id);
         return new ResponseEntity<>(new Success("디플 게시물 삭제",""), HttpStatus.OK);
+    }
+
+    // 질문글 상세 조회
+    @PostMapping("/question/{post_id}")
+    public ResponseEntity<Success> postQuestionDetail(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                      @PathVariable Long post_id) {
+        return new ResponseEntity<>(new Success("디플 질문 상세페이지 조회",
+                postMainPageService.detailAnswer(userDetails.getUser().getId(), post_id)), HttpStatus.OK);
+    }
+
+    // 유사한 질문 조회
+    @GetMapping("/question/similar/{category}")
+    public ResponseEntity<Success> similarQuestion(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                   @PathVariable String category) {
+        return new ResponseEntity<>(new Success("유사한 질문 리스트",
+                postMainPageService.similarQuestion(category, userDetails.getUser().getId())), HttpStatus.OK);
     }
 
 }

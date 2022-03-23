@@ -39,11 +39,9 @@ public class GoogleAccountService {
         // 2. 토큰으로 구글 API 호출
         GoogleUserInfoDto googleUserInfo = getGoogleUserInfo(accessToken);
 
-        // 3. 필요시에 회원가입
-        Account googleUser = registerGoogleUserIfNeeded(googleUserInfo);
+        // 3. 필요시에 회원가입, JWT 토큰 발행
+        return registerGoogleUserIfNeeded(googleUserInfo);
 
-        // 4. 강제 로그인 처리
-        return forceLogin(googleUser);
     }
 
     private String getAccessToken(String code) throws JsonProcessingException {
@@ -105,7 +103,7 @@ public class GoogleAccountService {
         return new GoogleUserInfoDto(id, name, profileImage, email);
     }
 
-    private Account registerGoogleUserIfNeeded(GoogleUserInfoDto googleUserInfo) {
+    private LoginResponseDto registerGoogleUserIfNeeded(GoogleUserInfoDto googleUserInfo) {
         // DB 에 중복된 Google Id 가 있는지 확인
         String email = googleUserInfo.getEmail();
 
@@ -115,16 +113,15 @@ public class GoogleAccountService {
             // 회원가입
             String name = googleUserInfo.getName();
             String profileImg = googleUserInfo.getProfile_img();
-            Rank rank = Rank.builder().build();
+
+            Rank rank = Rank.builder().rankScore(0L).build();
             Rank saveRank = rankRepository.save(rank);
+
             Specialty specialty = new Specialty();
             googleUser = Account.builder().nickname(name).profileImg(profileImg).email(email).specialty(specialty).rank(saveRank).build();
             accountRepository.save(googleUser);
         }
-        return googleUser;
-    }
 
-    private LoginResponseDto forceLogin(Account googleUser) {
         String accessToken = jwtTokenProvider.createToken(Long.toString(googleUser.getId()), googleUser.getEmail());
         String refreshToken = jwtTokenProvider.createRefreshToken(Long.toString(googleUser.getId()));
         googleUser.refreshToken(refreshToken);
@@ -134,6 +131,7 @@ public class GoogleAccountService {
                 .access_token(accessToken)
                 .refresh_token(refreshToken)
                 .build();
+
     }
 
 }

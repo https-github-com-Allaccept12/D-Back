@@ -1,8 +1,10 @@
 package TeamDPlus.code.domain.post.answer;
 
 import TeamDPlus.code.domain.BaseEntity;
+import TeamDPlus.code.domain.account.Account;
 import TeamDPlus.code.domain.post.Post;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -18,6 +20,10 @@ public class PostAnswer extends BaseEntity {
     @Column(name = "post_answer_id")
     private Long id;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "account_id")
+    private Account account;
+
     @ManyToOne(fetch= FetchType.LAZY)
     @JoinColumn(name = "post_id")
     private Post post;
@@ -26,4 +32,22 @@ public class PostAnswer extends BaseEntity {
     @Column(nullable = false)
     private String content;
 
+    @Column(columnDefinition = "TINYINT default 0")
+    private boolean isSelected;
+
+    @Builder
+    public PostAnswer(final Account account, final Post post, final String content, final boolean isSelected) {
+        this.account = account;
+        this.post = post;
+        this.content = content;
+        this.isSelected = isSelected;
+    }
+
+    public void updateAnswer(final String content) {
+        this.content = content;
+    }
+
+    public void doIsSelected(final boolean isSelected) {
+        this.isSelected = isSelected;
+    }
 }

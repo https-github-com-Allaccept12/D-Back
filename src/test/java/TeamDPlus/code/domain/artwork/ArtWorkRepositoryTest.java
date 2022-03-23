@@ -551,6 +551,7 @@ class ArtWorkRepositoryTest {
                 .content("test")
                 .view(1L)
                 .category("test")
+                .copyright("test")
                 .account(account)
                 .build();
         testArtWorks.updateArtWorkIsMaster(true);
@@ -573,4 +574,3 @@ class ArtWorkRepositoryTest {
         return save;
     }
 }
-

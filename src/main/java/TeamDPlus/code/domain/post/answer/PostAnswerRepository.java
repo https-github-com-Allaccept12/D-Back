@@ -1,4 +1,7 @@
 package TeamDPlus.code.domain.post.answer;
 
-public interface PostAnswerRepository {
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface PostAnswerRepository extends JpaRepository<PostAnswer, Long>, PostAnswerRepositoryCustom {
+    Long countByPostId(Long postId);
 }
