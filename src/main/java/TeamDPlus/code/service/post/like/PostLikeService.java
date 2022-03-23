@@ -1,6 +1,7 @@
 package TeamDPlus.code.service.post.like;
 
 import TeamDPlus.code.advice.ApiRequestException;
+import TeamDPlus.code.advice.ErrorCode;
 import TeamDPlus.code.domain.account.Account;
 import TeamDPlus.code.domain.post.Post;
 import TeamDPlus.code.domain.post.PostRepository;
@@ -17,9 +18,9 @@ public class PostLikeService {
     private final PostRepository postRepository;
 
     public void doLike(Account account, Long postId) {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new ApiRequestException("존재하지 않는 게시글 입니다."));
+        Post post = postRepository.findById(postId).orElseThrow(() -> new ApiRequestException(ErrorCode.NONEXISTENT_ERROR));
         if (postLikesRepository.existByAccountIdAndPostId(account.getId(), postId)) {
-            throw new ApiRequestException("이미 좋아요한 게시글 입니다.");
+            throw new ApiRequestException(ErrorCode.ALREADY_LIKE_ERROR);
         }
         PostLikes postLikes = PostLikes.builder().post(post).account(account).build();
         postLikesRepository.save(postLikes);

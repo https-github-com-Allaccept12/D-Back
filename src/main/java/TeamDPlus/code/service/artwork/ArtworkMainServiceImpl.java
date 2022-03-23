@@ -28,6 +28,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.management.StringValueExp;
 import java.util.List;
 
 @Service
@@ -112,21 +113,21 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
         }
         ArtWorks artWorks = ArtWorks.of(account, dto);
         ArtWorks saveArtwork = artWorkRepository.save(artWorks);
+
         s3ImageUpload(multipartFiles, saveArtwork);
         account.upArtworkCountCreate();
         return 5 - account.getArtWorkCreateCount();
     }
 
+    //지금 현재 문제
     @Transactional
     public Long updateArtwork(Long accountId, Long artworkId, ArtWorkCreateAndUpdate dto, List<MultipartFile> multipartFiles) {
         ArtWorks artWorks = artworkValidation(accountId, artworkId);
-        // 작품 이미지가 들어온 경우
-        if(multipartFiles!=null){
-            updateImg(multipartFiles, artWorks, dto);
-            artWorks.updateArtWork(dto);
-            return artWorks.getId();
-        }
-        throw new ApiRequestException(ErrorCode.PHOTO_UPLOAD_ERROR);
+        ArtWorkImage thumbNail = artWorkImageRepository.findByArtworkImg(dto.getThumbnail());
+
+        updateImg(multipartFiles, artWorks, dto);
+        artWorks.updateArtWork(dto);
+        return artWorks.getId();
     }
 
     @Transactional
@@ -161,6 +162,7 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
             setIsLike(accountId,artWorkList);
         return artWorkList;
     }
+
     private void s3ImageUpload(List<MultipartFile> multipartFiles, ArtWorks saveArtwork) {
         if(multipartFiles != null){
             for (int i = 0; i < multipartFiles.size(); i++) {
@@ -171,27 +173,28 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
                 }
                 artWorkImageRepository.save(img);
             }
+        }else{
+            throw new ApiRequestException(ErrorCode.PHOTO_UPLOAD_ERROR);
         }
+
     }
 
     private void updateImg( List<MultipartFile> multipartFiles, ArtWorks findArtWork, ArtWorkCreateAndUpdate dto) {
-        dto.getImg().forEach((img) -> {
-            fileProcessService.deleteImage(img.getImg_url());
-            artWorkImageRepository.deleteByArtworkImg(img.getImg_url());
-        });
-        multipartFiles.forEach((file) -> {
-            String imgUrl = fileProcessService.uploadImage(file);
-            ArtWorkImage img = ArtWorkImage.builder().artWorks(findArtWork).artworkImg(imgUrl).build();
-            artWorkImageRepository.save(img);
-        });
-    }
+       if(dto.getImg().size() != 0){
+           dto.getImg().forEach((img) -> {
+               artWorkImageRepository.deleteByArtworkImg(img.getImg_url());
+               fileProcessService.deleteImage(img.getImg_url());
+           });
+       }
 
-    private void isFollow(Long accountId, List<AccountResponseDto.TopArtist> topArtist) {
-        topArtist.forEach((artist) -> {
-            boolean isFollow = followRepository.existsByFollowerIdAndFollowingId(accountId, artist.getAccount_id());
-            if (isFollow)
-                artist.setIsFollow();
-        });
+       if (multipartFiles != null) {
+            multipartFiles.forEach((file) -> {
+                String imgUrl = fileProcessService.uploadImage(file);
+                ArtWorkImage img = ArtWorkImage.builder().artWorks(findArtWork).artworkImg(imgUrl).build();
+                artWorkImageRepository.save(img);
+            });
+       }
+
     }
 
     private List<AccountResponseDto.TopArtist> getTopArtist(String interest) {
@@ -210,6 +213,13 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
             throw new BadArgumentsValidException(ErrorCode.NO_AUTHORIZATION_ERROR);
         }
         return artWorks;
+    }
+    private void isFollow(Long accountId, List<AccountResponseDto.TopArtist> topArtist) {
+        topArtist.forEach((artist) -> {
+            boolean isFollow = followRepository.existsByFollowerIdAndFollowingId(accountId, artist.getAccount_id());
+            if (isFollow)
+                artist.setIsFollow();
+        });
     }
 
     private void setIsLike(Long accountId, List<ArtworkMain> artWorkList) {

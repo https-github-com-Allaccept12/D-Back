@@ -22,7 +22,8 @@ public enum ErrorCode {
     NO_AUTHORIZATION_ERROR("접근 권한이 없습니다."),
     EXIST_FOLLOW_ERROR("이미 팔로우/언팔로우한 사람입니다."),
     BAD_CONDITION_NICKNAME_ERROR("닉네임 조건에 맞지않습니다."),
-    CONVERTING_FILE_ERROR("파일 변환 에러");
+    CONVERTING_FILE_ERROR("파일 변환 에러"),
+    ALREADY_LIKE_ERROR("이미 좋아요/좋아요 해지한 글입니다.");
 
     private final String message;
 }
