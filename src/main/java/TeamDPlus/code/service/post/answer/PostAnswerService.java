@@ -64,7 +64,7 @@ public class PostAnswerService {
         }
 
         if (postAnswer.isSelected()) {
-            throw new IllegalStateException("이미 채택된 게시글입니다.");
+            throw new ApiRequestException(ErrorCode.ALREADY_SELECTED_ERROR);
         }
 
         postAnswer.doIsSelected(true);

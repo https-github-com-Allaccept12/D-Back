@@ -12,6 +12,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -22,6 +24,9 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import javax.transaction.Transactional;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 @Service
 @RequiredArgsConstructor
@@ -94,20 +99,22 @@ public class GoogleAccountService {
         String responseBody = response.getBody();
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode jsonNode = objectMapper.readTree(responseBody);
-        Long id = jsonNode.get("sub").asLong();
+        String id = jsonNode.get("sub").asText();
         String name = jsonNode.get("name").asText();
         String profileImage = jsonNode.get("picture").asText();
         String email = jsonNode.get("email").asText();
+        String username = id + email;
 
-        System.out.println("구글 사용자 정보: " + id + ", " + name + ", " + profileImage + ", " + email);
-        return new GoogleUserInfoDto(id, name, profileImage, email);
+        System.out.println("구글 사용자 정보: " + id + ", " + username + ", " + name + ", " + profileImage + ", " + email);
+        return new GoogleUserInfoDto(id, name, profileImage, email, username);
     }
 
     private LoginResponseDto registerGoogleUserIfNeeded(GoogleUserInfoDto googleUserInfo) {
         // DB 에 중복된 Google Id 가 있는지 확인
         String email = googleUserInfo.getEmail();
+        String username = googleUserInfo.getEmail();
 
-        Account googleUser = accountRepository.findByEmail(email)
+        Account googleUser = accountRepository.findByUsername(username)
                 .orElse(null);
         if (googleUser == null) {
             // 회원가입
@@ -118,7 +125,7 @@ public class GoogleAccountService {
             Rank saveRank = rankRepository.save(rank);
 
             Specialty specialty = new Specialty();
-            googleUser = Account.builder().nickname(name).profileImg(profileImg).email(email).specialty(specialty).rank(saveRank).build();
+            googleUser = Account.builder().username(username).nickname(name).profileImg(profileImg).email(email).specialty(specialty).rank(saveRank).build();
             accountRepository.save(googleUser);
         }
 
