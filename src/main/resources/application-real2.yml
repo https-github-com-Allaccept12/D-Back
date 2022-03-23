@@ -5,18 +5,9 @@ spring:
 
 
   datasource:
-    #h2 setting
-    #    driver-class-name: org.h2.Driver
-    #    url: jdbc:h2:tcp://localhost/~/testdb
-    #    username: sa
-    #    password:
-    #mysql setting
     driver-class-name: com.mysql.cj.jdbc.Driver
-    # DB Source
     url: ${rds.host}
-    # DB username
     username: ${rds.username}
-    # DB password
     password: ${rds.password}
 
   jpa:

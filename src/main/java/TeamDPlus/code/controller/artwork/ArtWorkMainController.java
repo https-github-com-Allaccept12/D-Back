@@ -94,14 +94,6 @@ public class ArtWorkMainController {
         return new ResponseEntity<>(new Success("작품 등록 완료"
                 ,artworkMainService.createArtwork(user.getUser().getId(),data, imgFile)),HttpStatus.OK);
     }
-    @PostMapping("/api/test/artwork")
-    public ResponseEntity<Success> testCreateArtWork(@AuthenticationPrincipal UserDetailsImpl user,
-                                                 @RequestPart MultipartFile imgFile) {
-        loginValid(user);
-        artworkMainService.testCreateArtWork(user.getUser().getId(), imgFile);
-        return new ResponseEntity<>(new Success("작품 test 등록 완료"
-                ,"성공?"),HttpStatus.OK);
-    }
 
     @PatchMapping("/api/artwork/{artwork_id}")
     public ResponseEntity<Success> updateArtWork(@AuthenticationPrincipal UserDetailsImpl user,

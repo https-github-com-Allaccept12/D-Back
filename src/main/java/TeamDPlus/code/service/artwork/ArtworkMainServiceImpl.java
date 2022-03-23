@@ -120,21 +120,6 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
         return 5 - account.getArtWorkCreateCount();
     }
 
-    @Override
-    public void testCreateArtWork(Long accountId, MultipartFile multipartFiles) {
-        Account account = accountRepository.findById(accountId).orElseThrow(() -> new ApiRequestException(ErrorCode.NO_USER_ERROR));
-        if (account.getArtWorkCreateCount() >= 5) {
-            throw new ApiRequestException(ErrorCode.DAILY_WRITE_UP_BURN_ERROR);
-        }
-        ArtWorks artWorks = ArtWorks.builder().scope(true).title("test").content("test").category("dd").copyright("true").build();
-        ArtWorks saveArtwork = artWorkRepository.save(artWorks);
-
-        String saveFile = fileProcessService.uploadImage(multipartFiles);
-        log.info(saveFile);
-        account.upArtworkCountCreate();
-
-    }
-
     //지금 현재 문제
     @Transactional
     public Long updateArtwork(Long accountId, Long artworkId, ArtWorkCreateAndUpdate dto, List<MultipartFile> multipartFiles) {
