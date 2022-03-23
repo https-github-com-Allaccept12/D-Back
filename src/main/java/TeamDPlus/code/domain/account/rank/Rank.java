@@ -1,7 +1,6 @@
 package TeamDPlus.code.domain.account.rank;
 
 
-import TeamDPlus.code.domain.account.Account;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;

@@ -39,7 +39,7 @@ public class Post extends BaseEntity {
     private Long view;
 
     @Column(columnDefinition = "TINYINT default 0")
-    private Boolean isSelected;
+    private boolean isSelected;
 
     @Enumerated
     private PostBoard board;
@@ -47,7 +47,7 @@ public class Post extends BaseEntity {
 
     @Builder
     public Post(final String title, final String content, final String category,
-                final Account account, final Long view, final Boolean isSelected, final PostBoard board) {
+                final Account account, final Long view, final boolean isSelected, final PostBoard board) {
         this.title = title;
         this.content = content;
         this.category = category;
@@ -76,5 +76,9 @@ public class Post extends BaseEntity {
                 .board(dto.getBoard())
                 .isSelected(dto.is_selected())
                 .build();
+    }
+
+    public void doIsSelected(final boolean isSelected) {
+        this.isSelected = isSelected;
     }
 }

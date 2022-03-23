@@ -1,6 +1,8 @@
 package TeamDPlus.code.service.post;
 
 import TeamDPlus.code.advice.ApiRequestException;
+import TeamDPlus.code.advice.BadArgumentsValidException;
+import TeamDPlus.code.advice.ErrorCode;
 import TeamDPlus.code.domain.account.Account;
 import TeamDPlus.code.domain.account.AccountRepository;
 import TeamDPlus.code.domain.account.follow.FollowRepository;
@@ -9,6 +11,9 @@ import TeamDPlus.code.domain.artwork.image.ArtWorkImage;
 import TeamDPlus.code.domain.post.Post;
 import TeamDPlus.code.domain.post.PostBoard;
 import TeamDPlus.code.domain.post.PostRepository;
+import TeamDPlus.code.domain.post.answer.PostAnswer;
+import TeamDPlus.code.domain.post.answer.PostAnswerRepository;
+import TeamDPlus.code.domain.post.bookmark.PostBookMark;
 import TeamDPlus.code.domain.post.bookmark.PostBookMarkRepository;
 import TeamDPlus.code.domain.post.comment.PostComment;
 import TeamDPlus.code.domain.post.comment.PostCommentRepository;
@@ -16,15 +21,15 @@ import TeamDPlus.code.domain.post.comment.like.PostCommentLikes;
 import TeamDPlus.code.domain.post.comment.like.PostCommentLikesRepository;
 import TeamDPlus.code.domain.post.image.PostImage;
 import TeamDPlus.code.domain.post.image.PostImageRepository;
+import TeamDPlus.code.domain.post.like.PostAnswerLikesRepository;
 import TeamDPlus.code.domain.post.like.PostLikesRepository;
 import TeamDPlus.code.domain.post.tag.PostTag;
 import TeamDPlus.code.domain.post.tag.PostTagRepository;
 import TeamDPlus.code.dto.common.CommonDto;
-import TeamDPlus.code.dto.request.ArtWorkRequestDto;
 import TeamDPlus.code.dto.request.PostRequestDto;
-import TeamDPlus.code.dto.response.ArtWorkResponseDto;
 import TeamDPlus.code.dto.response.PostMainResponseDto;
 import TeamDPlus.code.dto.response.PostResponseDto;
+import TeamDPlus.code.dto.response.PostResponseDto.PostPageMain;
 import TeamDPlus.code.service.file.FileProcessService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j;
@@ -52,9 +57,10 @@ public class PostMainPageServiceImpl implements PostMainPageService{
     private final PostImageRepository postImageRepository;
     private final PostBookMarkRepository postBookMarkRepository;
     private final PostTagRepository postTagRepository;
+    private final PostAnswerRepository postAnswerRepository;
     private final FollowRepository followRepository;
     private final PostCommentLikesRepository postCommentLikesRepository;
-
+    private final PostAnswerLikesRepository postAnswerLikesRepository;
     private final FileProcessService fileProcessService;
     private final AccountRepository accountRepository;
 
@@ -66,11 +72,10 @@ public class PostMainPageServiceImpl implements PostMainPageService{
         // 회원이면
         if (accountId != null){
             // 메인 페이지 전체 피드
-            Account account = accountRepository.findById(accountId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
             Pageable pageable = PageRequest.of(0,12);
             List<PostResponseDto.PostPageMain> postList = postRepository.findAllPostOrderByCreatedDesc(lastPostId, pageable, board, sortSign, category);
             setCountList(postList);
-            setIsLike(accountId, postList);
+            setIsLikePost(accountId, postList);
             for(int i = 0; i< postList.size(); i++) {
                 List<PostTag> tags =postTagRepository.findPostTagsByPostId(postList.get(i).getPost_id());
                 postList.get(i).setHash_tag(tags);
@@ -79,7 +84,7 @@ public class PostMainPageServiceImpl implements PostMainPageService{
             // 메인페이지 추천피드
             List<PostResponseDto.PostPageMain> postRecommendation = postRepository.findPostByMostViewAndMostLike();
             setCountList(postRecommendation);
-            setIsLike(accountId, postRecommendation);
+            setIsLikePost(accountId, postRecommendation);
             for(int i = 0; i< postList.size(); i++) {
                 List<PostTag> tags =postTagRepository.findPostTagsByPostId(postList.get(i).getPost_id());
                 postList.get(i).setHash_tag(tags);
@@ -88,6 +93,7 @@ public class PostMainPageServiceImpl implements PostMainPageService{
 
         // 메인 페이지 전체 피드
         Pageable pageable = PageRequest.of(0,12);
+
         List<PostResponseDto.PostPageMain> postList = postRepository.findAllPostOrderByCreatedDesc(lastPostId, pageable, board, sortSign, category);
         setCountList(postList);
         for(int i = 0; i< postList.size(); i++) {
@@ -102,16 +108,18 @@ public class PostMainPageServiceImpl implements PostMainPageService{
             List<PostTag> tags =postTagRepository.findPostTagsByPostId(postList.get(i).getPost_id());
             postList.get(i).setHash_tag(tags);
         }
+
         return PostMainResponseDto.builder().postMainPage(postList).postRecommendationFeed(postRecommendation).build();
     }
 
     // 상세 게시글 (디플 - 꿀팁)
     @Transactional(readOnly = true)
     public PostResponseDto.PostDetailPage showPostDetail(Long accountId, Long postId){
-        Post post = postRepository.findById(postId).orElseThrow(() -> new ApiRequestException("해당 게시글은 존재하지 않습니다."));
+        Post post = postRepository.findById(postId).orElseThrow(() -> new ApiRequestException(ErrorCode.NONEXISTENT_ERROR));
         post.addViewCount();
         PostResponseDto.PostSubDetail postSubDetail = postRepository.findByPostSubDetail(postId);
         List<PostImage> postImageList = postImageRepository.findByPostId(postId);
+        List<PostBookMark> bookmarks = postBookMarkRepository.findByPostId(postId);
         List<PostResponseDto.PostComment> postComments = postCommentRepository.findPostCommentByPostId(postId);
         List<PostTag> postTags = postTagRepository.findPostTagsByPostId(postId);
 
@@ -134,17 +142,16 @@ public class PostMainPageServiceImpl implements PostMainPageService{
         }
 
         Long comment_count = (long) postComments.size();
+        Long bookmark_count = (long) bookmarks.size();
 
         return PostResponseDto.PostDetailPage.from(postImageList, postComments,
-                postTags, postSubDetail, isLike, isBookmark, isFollow, comment_count, isCommentsLikes);
+                postTags, postSubDetail, isLike, isBookmark, isFollow, comment_count, isCommentsLikes, bookmark_count);
     }
 
     // 게시글 작성
     @Transactional
     public int createPost(Account account, PostRequestDto.PostCreate dto, List<MultipartFile> imgFile) {
-        if (account.getPostCreateCount() >= 5) {
-            throw new ApiRequestException("일일 작성 가능한 게시글분을 다 사용하셨습니다.");
-        }
+
         Post post = Post.of(account, dto);
         Post savedPost = postRepository.save(post);
 
@@ -152,7 +159,6 @@ public class PostMainPageServiceImpl implements PostMainPageService{
             String img_url = fileProcessService.uploadImage(imgFile.get(i));
             PostImage postImage = PostImage.builder().post(savedPost).postImg(img_url).build();
             postImageRepository.save(postImage);
-            log.info(postImage.getPostImg());
         }
         setPostTag(dto.getHashTag(), savedPost);
         account.upArtworkCountCreate();
@@ -163,8 +169,6 @@ public class PostMainPageServiceImpl implements PostMainPageService{
     @Transactional
     public Long updatePost(Account account, Long postId, PostRequestDto.PostUpdate dto, List<MultipartFile> imgFile){
 
-        // dto 필드 비었는지 확인
-        // 수정할 어카운트, 게시물 번호로 권한 확인
         Post post = postAuthValidation(account.getId(), postId);
 
         // 삭제할 이미지가 있다면, 이미지 주소를 직접 하나씩 지운다
@@ -229,32 +233,122 @@ public class PostMainPageServiceImpl implements PostMainPageService{
         });
     }
 
-    // #단위로 끊어서 해쉬태그 들어옴 (dto -> 받을 때)
-    private void setPostTag(List<CommonDto.PostTagDto> dto, Post post){
-        dto.forEach((tag) -> {
-            PostTag postTag = PostTag.builder()
-                    .post(post)
-                    .hashTag(tag.getHashTag())
-                    .build();
-            postTagRepository.save(postTag);
-        });
+    // 디모 QnA 상세페이지
+    @Transactional(readOnly = true)
+    public PostResponseDto.PostAnswerDetailPage detailAnswer(Long accountId, Long postId) {
+        // 작품 게시글 존재여부
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new ApiRequestException(ErrorCode.NONEXISTENT_ERROR));
+        // 조회수 + 1
+        post.addViewCount();
+        // QnA 좋아요 개수와 QnA 기본정보 가져오기
+        PostResponseDto.PostAnswerSubDetail postAnswerSubDetail = postRepository.findByPostAnswerSubDetail(postId);
+        // 작품 이미지들 가져오기
+        List<PostImage> imgList = postImageRepository.findByPostId(postId);
+        // 질문 답변 가져오기
+        List<PostResponseDto.PostAnswer> postAnswerList = postAnswerRepository.findPostAnswerByPostId(postId);
+        // 태그 리스트 가져오기
+        List<PostTag> postTagList = postTagRepository.findPostTagsByPostId(postId);
+        // 북마크 수
+        Long bookMarkCount = postBookMarkRepository.countByPostId(postId);
+
+        boolean isLike = false;
+        boolean isBookmark = false;
+        boolean isFollow = false;
+
+        if (accountId != null) {
+            // 지금 상세페이지를 보고있는 사람이 좋아요를 했는지
+            isLike = postLikesRepository.existByAccountIdAndPostId(accountId, postId);
+            // 지금 상세페이지를 보고있는 사람이 북마크를 했는지
+            isBookmark = postBookMarkRepository.existByAccountIdAndPostId(accountId, postId);
+            // 지금 상세페이지를 보고있는 사람이 팔로우를 했는지
+            isFollow = followRepository.existsByFollowerIdAndFollowingId(accountId, postAnswerSubDetail.getAccount_id());
+            // 지금 상세페이지를 보고있는 사람이 답글 좋아요를 했는지
+            setIsLike(accountId, postAnswerList);
+            // 지금 상세페이지를 보고있는 사람이 답글 팔로우를 했는지
+            isFollow(accountId, postAnswerList);
+        }
+
+        //상세페이지의 답글 개수
+        postAnswerSubDetail.setAnswer_count((long) postAnswerList.size());
+        return PostResponseDto.PostAnswerDetailPage.from(imgList, postAnswerList, postTagList, postAnswerSubDetail, isLike, isBookmark, isFollow, bookMarkCount);
     }
+
+    // 디모 QnA 유사한질문 조회
+    @Transactional(readOnly = true)
+    public List<PostResponseDto.PostSimilarQuestion> similarQuestion(String category, Long accountId) {
+        List<PostResponseDto.PostSimilarQuestion> postSimilarList = postRepository.findByCategory(category);
+        postSimilarList.forEach((postSimilar) -> {
+            // 좋아요 여부
+            postSimilar.setLikeCountAndIsLike(false);
+            if (postLikesRepository.existByAccountIdAndPostId(accountId, postSimilar.getPost_id())) {
+                postSimilar.setLikeCountAndIsLike(true);
+            }
+
+            // 북마크 여부
+            postSimilar.setIsBookmark(false);
+            if (postBookMarkRepository.existByAccountIdAndPostId(accountId, postSimilar.getPost_id())) {
+                postSimilar.setIsBookmark(true);
+            }
+
+            // 질문 답변 가져오기
+            Long answerCount = postAnswerRepository.countByPostId(postSimilar.getPost_id());
+            postSimilar.setAnswer_count(answerCount);
+
+            Long bookMarkCount = postBookMarkRepository.countByPostId(postSimilar.getPost_id());
+            postSimilar.setBookmark_count(bookMarkCount);
+
+            // 태그 리스트 가져오기
+            List<PostTag> postTagList = postTagRepository.findPostTagsByPostId(postSimilar.getPost_id());
+            postSimilar.setHash_tag(postTagList);
+
+        });
+        return postSimilarList;
+    }
+
+        // #단위로 끊어서 해쉬태그 들어옴 (dto -> 받을 때)
+        private void setPostTag(List<CommonDto.PostTagDto> dto, Post post){
+            dto.forEach((tag) -> {
+                PostTag postTag = PostTag.builder()
+                        .post(post)
+                        .hashTag(tag.getHashTag())
+                        .build();
+                postTagRepository.save(postTag);
+            });
+        }
 
     // post 수정, 삭제 권한 확인
     private Post postAuthValidation(Long accountId, Long postId){
-        Post post = postRepository.findById(postId).orElseThrow(() -> new ApiRequestException("해당 게시글은 존재하지 않습니다."));
+        Post post = postRepository.findById(postId).orElseThrow(() -> new ApiRequestException(ErrorCode.NONEXISTENT_ERROR));
         if(!post.getAccount().getId().equals(accountId)){
-            throw new ApiRequestException("권한이 없습니다.");
+            throw new BadArgumentsValidException(ErrorCode.NO_AUTHORIZATION_ERROR);
         }
         return post;
     }
-
-    private void setIsLike(Long accountId, List<PostResponseDto.PostPageMain> postList) {
-        postList.forEach((post) -> {
-            post.setLikeAndBookmarkStatus(postLikesRepository.
-                    existByAccountIdAndPostId(accountId, post.getPost_id()),
-                    postBookMarkRepository.existByAccountIdAndPostId(accountId, post.getPost_id()));
+    private void isFollow(Long accountId, List<PostResponseDto.PostAnswer> postAnswerList) {
+        postAnswerList.forEach((postAnswer) -> {
+            postAnswer.setIsFollow(false);
+            boolean isFollow = followRepository.existsByFollowerIdAndFollowingId(accountId, postAnswer.getAccount_id());
+            if (isFollow)
+                postAnswer.setIsFollow(true);
         });
     }
 
+    private void setIsLike(Long accountId, List<PostResponseDto.PostAnswer> postAnswerList) {
+        postAnswerList.forEach((postAnswer) -> {
+            postAnswer.setLikeCountAndIsLike(false);
+            if(postAnswerLikesRepository.existByAccountIdAndPostAnswerId(accountId, postAnswer.getAnswer_id())) {
+                postAnswer.setLikeCountAndIsLike(true);
+            }
+        });
+    }
+
+    private void setIsLikePost(Long accountId, List<PostResponseDto.PostPageMain> postList) {
+        postList.forEach((post) -> {
+            post.setLikeAndBookmarkStatus(postLikesRepository.
+                            existByAccountIdAndPostId(accountId, post.getPost_id()),
+                    postBookMarkRepository.existByAccountIdAndPostId(accountId, post.getPost_id()));
+        });
+
+    }
 }

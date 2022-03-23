@@ -3,7 +3,7 @@ package TeamDPlus.code.domain.post;
 import TeamDPlus.code.domain.post.like.QPostLikes;
 import TeamDPlus.code.domain.post.tag.PostTag;
 import TeamDPlus.code.domain.post.tag.QPostTag;
-import TeamDPlus.code.dto.response.ArtWorkResponseDto;
+import TeamDPlus.code.dto.response.AccountResponseDto;
 import TeamDPlus.code.dto.response.PostResponseDto;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
@@ -83,6 +83,32 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                 .fetchOne();
     }
 
+    // 질문 상세페이지 정보
+    @Override
+    public PostResponseDto.PostAnswerSubDetail findByPostAnswerSubDetail(Long postId) {
+        return queryFactory
+                .select(Projections.constructor(PostResponseDto.PostAnswerSubDetail.class,
+                        post.id,
+                        account.id,
+                        account.profileImg,
+                        account.nickname,
+                        post.title,
+                        post.content,
+                        post.view,
+                        postLikes.count(),
+                        post.category,
+                        post.created,
+                        post.modified,
+                        post.isSelected
+                ))
+                .from(post)
+                .innerJoin(post.account, account)
+                .leftJoin(postLikes).on(postLikes.post.eq(post))
+                .where(post.id.eq(postId))
+                .groupBy(post.id)
+                .fetchOne();
+    }
+
     @Override
     public List<PostResponseDto.PostPageMain> findPostBySearchKeyWord(String keyword, Long lastPostId, Pageable pageable, PostBoard board) {
         return queryFactory
@@ -102,46 +128,118 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                 .leftJoin(postTag).on(postTag.post.eq(post))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
-                .where(isLastPostId(lastPostId), post.board.eq(board),
-                        post.title.contains(keyword)
-                                .or(post.title.contains(keyword))
-                                .or(post.account.nickname.contains(keyword))
-                                .or(post.content.contains(keyword))
-                                .or(postTag.hashTag.contains(keyword)))
+                .where(isLastPostId(lastPostId),post.board.eq(board),
+                        post.title.contains(keyword),
+                        post.account.nickname.contains(keyword),
+                        post.content.contains(keyword),
+                        postTag.hashTag.contains(keyword))
                 .orderBy(post.created.desc())
                 .fetch();
     }
 
-
     // 좋아요 + 조회수 탑 10
-   @Override
+    @Override
     public List<PostResponseDto.PostPageMain> findPostByMostViewAndMostLike() {
-        List<PostResponseDto.PostPageMain> result = queryFactory
-                .select(Projections.constructor(PostResponseDto.PostPageMain.class,
+        return queryFactory
+               .select(Projections.constructor(PostResponseDto.PostPageMain.class,
+                       post.id,
+                       post.title,
+                       post.content,
+                       post.view,
+                       post.category,
+                       post.created,
+                       account.id,
+                       account.nickname,
+                       account.profileImg
+               ))
+               .from(post)
+               .join(post.account, account)
+               .leftJoin(postLikes).on(postLikes.post.eq(post))
+               .offset(0)
+               .limit(10)
+               .groupBy(post.id)
+               .orderBy(postLikes.count().desc(), post.view.desc())
+               .fetch();
+    }
+
+    public BooleanExpression isLastPostId(Long lastPostId){
+        return lastPostId != 0 ? post.id.lt(lastPostId) : null;
+    }
+
+    // 유사한 질문
+    @Override
+    public List<PostResponseDto.PostSimilarQuestion> findByCategory(String category) {
+        List<PostResponseDto.PostSimilarQuestion> result = queryFactory
+                .select(Projections.constructor(PostResponseDto.PostSimilarQuestion.class,
                         post.id,
                         account.id,
-                        account.nickname,
                         account.profileImg,
                         post.title,
                         post.content,
+                        postLikes.count(),
                         post.category,
                         post.created,
-                        post.isSelected,
-                        postLikes.id.count()
+                        post.modified
                 ))
                 .from(post)
                 .join(post.account, account)
                 .leftJoin(postLikes).on(postLikes.post.eq(post))
+                .where(post.category.eq(category))
                 .offset(0)
-                .limit(10)
+                .limit(5)
                 .groupBy(post.id)
                 .orderBy(postLikes.count().desc(), post.view.desc())
                 .fetch();
         return result;
     }
 
-    public BooleanExpression isLastPostId(Long lastPostId){
-        return lastPostId != 0 ? post.id.lt(lastPostId) : null;
+    // 나의 질문
+    @Override
+    public List<AccountResponseDto.MyPost> findPostByAccountIdAndBoard(Long accountId, String board, Pageable pageable) {
+        List<AccountResponseDto.MyPost> result = queryFactory
+                .select(Projections.constructor(AccountResponseDto.MyPost.class,
+                        post.id,
+                        post.title,
+                        post.content,
+                        postLikes.count(),
+                        post.created,
+                        post.modified,
+                        account.profileImg
+                ))
+                .from(post)
+                .join(post.account, account).on(account.id.eq(accountId))
+                .leftJoin(postLikes).on(postLikes.post.eq(post))
+                .where(post.board.eq(PostBoard.valueOf(board)))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .groupBy(post.id)
+                .orderBy(postLikes.count().desc(), post.view.desc())
+                .fetch();
+        return result;
+    }
+
+    // 내가 스크랩한 글
+    @Override
+    public List<AccountResponseDto.MyPost> findPostBookMarkByAccountId(Long accountId, String board, Pageable pageable) {
+        return queryFactory
+                .select(Projections.constructor(AccountResponseDto.MyPost.class,
+                        post.id,
+                        post.title,
+                        post.content,
+                        postLikes.count(),
+                        post.created,
+                        post.modified,
+                        post.account.profileImg
+                ))
+                .from(post)
+                .join(postBookMark).on(postBookMark.post.eq(post))
+                .leftJoin(postLikes).on(postLikes.post.eq(post))
+                .where(postBookMark.account.id.eq(accountId), post.board.eq(PostBoard.valueOf(board)))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .groupBy(post.id)
+                .orderBy(post.created.desc())
+                .fetch();
     }
     private OrderSpecifier<?> isPostSort(int sortSign) {
         return sortSign == 1 ? post.created.desc() : postLikes.count().desc();

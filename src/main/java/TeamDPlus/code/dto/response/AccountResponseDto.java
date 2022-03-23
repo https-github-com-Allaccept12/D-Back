@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -112,6 +113,85 @@ public class AccountResponseDto {
 
     }
 
+    @Getter
+    @NoArgsConstructor
+    public static class MyPost {
+        private Long post_id;
+        private String title;
+        private String content;
+        private Long answer_count;
+        private Long like_count;
+        private Long bookmark_count;
+        private Timestamp create_time;
+        private Timestamp modify_time;
+        private String profileImg;
+
+        @Builder
+        public MyPost(final Long post_id, final String title, final String content,
+                          final Long like_count, final Timestamp create_time,
+                          final Timestamp modify_time, final String profileImg) {
+            this.post_id = post_id;
+            this.title = title;
+            this.content = content;
+            this.like_count = like_count;
+            this.create_time = create_time;
+            this.modify_time = modify_time;
+            this.profileImg = profileImg;
+        }
+
+        public void setAnswer_count(Long answer_count) {
+            this.answer_count = answer_count;
+        }
+
+        public void setBookmark_count(Long bookmark_count) {
+            this.bookmark_count = bookmark_count;
+        }
+    }
+
+    @Getter
+    @NoArgsConstructor
+    public static class MyAnswer {
+        private Long post_answer_id;
+        private String content;
+        private Long like_count;
+        private Timestamp create_time;
+        private Timestamp modify_time;
+        private String profileImg;
+
+        @Builder
+        public MyAnswer(final Long post_answer_id, final String content, final Long like_count,
+                        final Timestamp create_time, final Timestamp modify_time, final String profileImg) {
+            this.post_answer_id = post_answer_id;
+            this.content = content;
+            this.like_count = like_count;
+            this.create_time = create_time;
+            this.modify_time = modify_time;
+            this.profileImg = profileImg;
+        }
+
+    }
+
+    @Getter
+    @NoArgsConstructor
+    public static class MyComment {
+        private Long post_comment_id;
+        private String content;
+        private Long like_count;
+        private Timestamp create_time;
+        private Timestamp modify_time;
+        private String profileImg;
+
+        @Builder
+        public MyComment(final Long post_comment_id, final String content, final Long like_count,
+                         final Timestamp create_time, final Timestamp modify_time, final String profileImg) {
+            this.post_comment_id = post_comment_id;
+            this.content = content;
+            this.like_count = like_count;
+            this.create_time = create_time;
+            this.modify_time = modify_time;
+            this.profileImg = profileImg;
+        }
+    }
 
 }
 

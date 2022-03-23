@@ -2,11 +2,11 @@ package TeamDPlus.code.service.account.follow;
 
 
 import TeamDPlus.code.advice.ApiRequestException;
+import TeamDPlus.code.advice.ErrorCode;
 import TeamDPlus.code.domain.account.Account;
 import TeamDPlus.code.domain.account.AccountRepository;
 import TeamDPlus.code.domain.account.follow.Follow;
 import TeamDPlus.code.domain.account.follow.FollowRepository;
-import TeamDPlus.code.domain.account.rank.Rank;
 import TeamDPlus.code.domain.account.rank.RankRepository;
 import TeamDPlus.code.dto.request.AccountRequestDto;
 import TeamDPlus.code.dto.response.FollowResponseDto;
@@ -23,13 +23,12 @@ public class FollowService {
 
     private final FollowRepository followRepository;
     private final AccountRepository accountRepository;
-    private final RankRepository rankRepository;
 
     @Transactional
     public void follow(Long following_id, Long accountId) {
         Account account = getAccount(accountId);
         if (followRepository.existsByFollowerIdAndFollowingId(account.getId(),following_id)) {
-            throw new ApiRequestException("이미 팔로우한 사람 입니다.");
+            throw new ApiRequestException(ErrorCode.EXIST_FOLLOW_ERROR);
         }
         account.getRank().upRankScore();
         final Follow follow = Follow.builder().followerId(account.getId()).followingId(following_id).build();
@@ -40,7 +39,7 @@ public class FollowService {
     public void unFollow(Long unFollowing_id, Long accountId) {
         Account account = getAccount(accountId);
         if (!followRepository.existsByFollowerIdAndFollowingId(account.getId(), unFollowing_id)) {
-          throw new ApiRequestException("이미 언팔로우한 사람 입니다.");
+          throw new ApiRequestException(ErrorCode.EXIST_FOLLOW_ERROR);
         }
         account.getRank().downRankScore();
         followRepository.deleteByFollowerIdAndFollowingId(account.getId(),unFollowing_id);
@@ -59,7 +58,7 @@ public class FollowService {
     }
 
     private Account getAccount(Long accountId) {
-        return accountRepository.findById(accountId).orElseThrow(() -> new ApiRequestException("존재 하지않는 유저입니다."));
+        return accountRepository.findById(accountId).orElseThrow(() -> new ApiRequestException(ErrorCode.NO_USER_ERROR));
     }
 
 }

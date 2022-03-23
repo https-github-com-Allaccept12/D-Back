@@ -3,6 +3,7 @@ package TeamDPlus.code.controller.post;
 import TeamDPlus.code.dto.Success;
 import TeamDPlus.code.jwt.UserDetailsImpl;
 import TeamDPlus.code.service.post.comment.like.PostCommentLikeService;
+import TeamDPlus.code.service.post.like.PostAnswerLikeService;
 import TeamDPlus.code.service.post.like.PostLikeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,6 +18,7 @@ public class PostLikeController {
 
     private final PostLikeService postLikeService;
     private final PostCommentLikeService postCommentLikeService;
+    private final PostAnswerLikeService postAnswerLikeService;
 
     @PostMapping("/{post_id}")
     public ResponseEntity<Success> doLike(@PathVariable Long post_id,
@@ -45,5 +47,19 @@ public class PostLikeController {
                                           @AuthenticationPrincipal UserDetailsImpl user) {
         postCommentLikeService.unLike(user.getUser(), postComment_id);
         return new ResponseEntity<>(new Success("작품 코멘트 좋아요 취소",""), HttpStatus.OK);
+    }
+
+    @PostMapping("/{postAnswer_id}")
+    public ResponseEntity<Success> answerDoLike(@PathVariable Long postAnswer_id,
+                                                @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        postAnswerLikeService.answerDoLike(userDetails.getUser(), postAnswer_id);
+        return new ResponseEntity<>(new Success("작품 QnA 답글 좋아요 완료",""), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{postAnswer_id}")
+    public ResponseEntity<Success> answerUnLike(@PathVariable Long postAnswer_id,
+                                                @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        postAnswerLikeService.answerUnLike(userDetails.getUser(), postAnswer_id);
+        return new ResponseEntity<>(new Success("작품 QnA 답글 좋아요 취소 완료",""), HttpStatus.OK);
     }
 }

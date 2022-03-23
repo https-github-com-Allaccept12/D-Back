@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotEmpty;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
@@ -16,6 +17,7 @@ public class CommonDto {
     public static class CommentDto {
         private Long account_id;
         private Long comment_id;
+        @NotEmpty(message = "내용을 입력해주세요.")
         private String content;
         private Timestamp modify_time;
 
@@ -72,6 +74,8 @@ public class CommonDto {
     @Getter
     @NoArgsConstructor
     public static class ArtWorkKeyword {
+
+        @NotEmpty(message = "내용을 입력해주세요.")
         private String keyword;
     }
 

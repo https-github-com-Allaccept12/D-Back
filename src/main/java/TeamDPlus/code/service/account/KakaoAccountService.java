@@ -40,11 +40,9 @@ public class KakaoAccountService {
         // 2. 토큰으로 카카오 API 호출
         KakaoUserInfoDto kakaoUserInfo = getKakaoUserInfo(accessToken);
 
-        // 3. 필요시에 회원가입
-        Account kakaoUser = registerKakaoUserIfNeeded(kakaoUserInfo);
+        // 3. 필요시에 회원가입, JWT 토큰 발행
+        return registerKakaoUserIfNeeded(kakaoUserInfo);
 
-        // 4. 강제 로그인 처리
-        return forceLogin(kakaoUser);
     }
 
     private String getAccessToken(String code) throws JsonProcessingException {
@@ -56,7 +54,7 @@ public class KakaoAccountService {
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("grant_type", "authorization_code");
         body.add("client_id", "5c2af632e5eb943eadbf20d0c4006bdb");
-        body.add("redirect_uri", "http://localhost:8081/user/kakao/callback");
+        body.add("redirect_uri", "http://localhost:3000/user/kakao/callback");
         body.add("code", code);
 
         // HTTP 요청 보내기
@@ -103,32 +101,37 @@ public class KakaoAccountService {
                 .get("profile_image").asText();
         String email = jsonNode.get("kakao_account")
                 .get("email").asText();
+        String username = id + email;
 
-        System.out.println("카카오 사용자 정보: " + id + ", " + nickname + ", " + profileImage + ", " + email);
-        return new KakaoUserInfoDto(id, nickname, profileImage, email);
+        System.out.println("카카오 사용자 정보: " + id + ", " + username + ", " + nickname + ", " + profileImage + ", " + email);
+        return new KakaoUserInfoDto(id, nickname, profileImage, email, username);
     }
 
-    private Account registerKakaoUserIfNeeded(KakaoUserInfoDto kakaoUserInfo) {
+    private LoginResponseDto registerKakaoUserIfNeeded(KakaoUserInfoDto kakaoUserInfo) {
         // DB 에 중복된 Kakao Id 가 있는지 확인
         String email = kakaoUserInfo.getEmail();
+        String username = kakaoUserInfo.getUsername();
 
-        Account kakaoUser = accountRepository.findByEmail(email)
+        Account kakaoUser = accountRepository.findByUsername(username)
                 .orElse(null);
+
+        boolean isSignUp = false;
+
         if (kakaoUser == null) {
             // 회원가입
+            isSignUp = true;
             String nickname = kakaoUserInfo.getNickname();
 
             String profileImg = kakaoUserInfo.getProfile_img();
-            Rank rank = Rank.builder().build();
+
+            Rank rank = Rank.builder().rankScore(0L).build();
             Rank saveRank = rankRepository.save(rank);
+
             Specialty specialty = new Specialty();
-            kakaoUser = Account.builder().nickname(nickname).profileImg(profileImg).email(email).rank(saveRank).specialty(specialty).build();
+            kakaoUser = Account.builder().username(username).nickname(nickname).profileImg(profileImg).email(email).rank(saveRank).specialty(specialty).build();
             accountRepository.save(kakaoUser);
         }
-        return kakaoUser;
-    }
 
-    private LoginResponseDto forceLogin(Account kakaoUser) {
         String accessToken = jwtTokenProvider.createToken(Long.toString(kakaoUser.getId()), kakaoUser.getEmail());
         String refreshToken = jwtTokenProvider.createRefreshToken(Long.toString(kakaoUser.getId()));
         kakaoUser.refreshToken(refreshToken);
@@ -137,6 +140,7 @@ public class KakaoAccountService {
                 .profile_img(kakaoUser.getProfileImg())
                 .access_token(accessToken)
                 .refresh_token(refreshToken)
+                .isSignUp(isSignUp)
                 .build();
     }
 

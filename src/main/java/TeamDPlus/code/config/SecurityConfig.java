@@ -1,5 +1,6 @@
 package TeamDPlus.code.config;
 
+import TeamDPlus.code.jwt.AuthenticationEntryPointHandler;
 import TeamDPlus.code.jwt.JwtAuthenticationFilter;
 import TeamDPlus.code.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.context.SecurityContextPersistenceFilter;
 import org.springframework.web.filter.CorsFilter;
@@ -26,7 +28,7 @@ import org.springframework.web.filter.CorsFilter;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final JwtTokenProvider jwtTokenProvider;
-    private final CorsFilter corsFilter;
+    private final AuthenticationEntryPointHandler authenticationEntryPointHandler;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -41,25 +43,27 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/h2-console/**");
     }
 
-
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http
+            http
                     .httpBasic().disable() // rest api 만을 고려하여 기본 설정은 해제하겠습니다.
                     .csrf().disable() // csrf 보안 토큰 disable처리.
-                    .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // 토큰 기반 인증이므로 세션 역시 사용하지 않습니다.
+                    .cors()
                 .and()
+                    .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // 토큰 기반 인증이므로 세션 역시 사용하지 않습니다.
+                    .and()
                     .authorizeRequests() // 요청에 대한 사용권한 체크
-                    .antMatchers("/oauth2/**").permitAll()
                     .antMatchers("/user/**").permitAll()
                     .antMatchers("/").permitAll()
-                    .antMatchers(HttpMethod.GET,"/api/artwork/**","/api/artwork/detail/**","/api/artwork/search/**").permitAll()
+                    .antMatchers(HttpMethod.GET,"/api/artwork/**","/api/artwork/detail/**","/api/artwork/search/**","/profile").permitAll()
                     .anyRequest().authenticated() // 그외 나머지 요청은 사용권한 체크
                 .and()
+                    .exceptionHandling()
+                    .authenticationEntryPoint(authenticationEntryPointHandler)
+                .and()
                     .apply(new JwtSecurityConfig(jwtTokenProvider));
-        http.addFilterBefore(corsFilter,
-                UsernamePasswordAuthenticationFilter.class);
     }
+
 
     @Bean
     @Override

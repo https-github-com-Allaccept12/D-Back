@@ -28,4 +28,14 @@ public class ArtWorkImageRepositoryImpl implements ArtworkImageRepositoryCustom{
                 .orderBy(artWorks.view.desc())
                 .fetch();
     }
+
+    @Override
+    public ArtWorkImage findByThumbnail(Long artWorksId) {
+        return queryFactory
+                .selectFrom(artWorkImage)
+                .where(artWorkImage.artWorks.id.eq(artWorksId).and(artWorkImage.thumbnail.isTrue()))
+                .fetchOne();
+
+
+    }
 }

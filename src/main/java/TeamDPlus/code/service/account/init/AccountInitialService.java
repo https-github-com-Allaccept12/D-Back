@@ -2,6 +2,8 @@ package TeamDPlus.code.service.account.init;
 
 
 import TeamDPlus.code.advice.ApiRequestException;
+import TeamDPlus.code.advice.ErrorCode;
+import TeamDPlus.code.advice.BadArgumentsValidException;
 import TeamDPlus.code.domain.account.Account;
 import TeamDPlus.code.domain.account.AccountRepository;
 import TeamDPlus.code.dto.request.AccountRequestDto;
@@ -44,15 +46,15 @@ public class AccountInitialService {
     public void getNickNameValidation(String nickname) {
         Account account = accountRepository.findByNickname(nickname).orElse(null);
         if (account != null){
-            throw new IllegalStateException("이미 존재하는 닉네임 입니다.");
+            throw new BadArgumentsValidException(ErrorCode.ALREADY_NICKNAME_ERROR);
         }
         if (!Pattern.matches("^[A-Za-z0-9]{3,}$", nickname)){
-            throw new ApiRequestException("닉네임 조건에 맞지 않음"); //닉네임 조건에 맞지않음
+            throw new BadArgumentsValidException(ErrorCode.BAD_CONDITION_NICKNAME_ERROR); //닉네임 조건에 맞지않음
         }
     }
 
     private Account getAccount(Long accountId) {
-        return accountRepository.findById(accountId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 아이디 입니다."));
+        return accountRepository.findById(accountId).orElseThrow(() -> new ApiRequestException(ErrorCode.NO_USER_ERROR));
     }
 
 }

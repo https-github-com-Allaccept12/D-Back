@@ -17,9 +17,9 @@ public interface ArtworkMainService {
 
     List<ArtworkMain> showArtworkMain(Long accountId, Long artworkId,String category, int sort);
 
-    int createArtwork(Account account, ArtWorkCreateAndUpdate artWorkCreate, List<MultipartFile> multipartFiles);
+    int createArtwork(Long accountId, ArtWorkCreateAndUpdate artWorkCreate, List<MultipartFile> multipartFiles);
 
-    Long updateArtwork(Account account, Long artworkId, ArtWorkCreateAndUpdate artWorkUpdate, List<MultipartFile> multipartFiles);
+    Long updateArtwork(Long account, Long artworkId, ArtWorkCreateAndUpdate artWorkUpdate, List<MultipartFile> multipartFiles);
 
     void deleteArtwork(Long accountId, Long artworkId);
 

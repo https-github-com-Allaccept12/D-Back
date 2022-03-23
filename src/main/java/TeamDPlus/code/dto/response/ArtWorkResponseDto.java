@@ -162,10 +162,18 @@ public class ArtWorkResponseDto {
     @NoArgsConstructor
     public static class ArtWorkSimilarWork {
         private Long artwork_id;
+        private String artwork_title;
+        private String account_nickname;
+        private String acccount_tendency;
+        private String linkedIn;
+        private String brunch;
+        private String instagram;
+
         private String img;
 
-        public ArtWorkSimilarWork(final Long artwork_id,final String img) {
+        public ArtWorkSimilarWork(final Long artwork_id,final String artwork_title,final String img) {
             this.artwork_id = artwork_id;
+            this.artwork_title = artwork_title;
             this.img = img;
         }
     }

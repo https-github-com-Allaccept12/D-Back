@@ -1,7 +1,8 @@
 package TeamDPlus.code.service.artwork.like;
 
 
-import TeamDPlus.code.advice.ApiRequestException;
+import TeamDPlus.code.advice.BadArgumentsValidException;
+import TeamDPlus.code.advice.ErrorCode;
 import TeamDPlus.code.domain.account.Account;
 import TeamDPlus.code.domain.artwork.ArtWorkRepository;
 import TeamDPlus.code.domain.artwork.ArtWorks;
@@ -22,7 +23,7 @@ public class ArtworkLikeService {
     public void doLike(Account account, Long artWorkId) {
         ArtWorks artWorks = getArtWorks(artWorkId);
         if (artWorkLikesRepository.existByAccountIdAndArtWorkId(account.getId(), artWorkId)) {
-            throw new ApiRequestException("이미 좋아요한 게시글 입니다.");
+            throw new BadArgumentsValidException(ErrorCode.ALREADY_LIKE_ERROR);
         }
         artWorks.getAccount().getRank().upRankScore();
         ArtWorkLikes artWorkLikes = ArtWorkLikes.builder().artWorks(artWorks).account(account).build();
@@ -33,14 +34,14 @@ public class ArtworkLikeService {
     public void unLike(Account account, Long artWorkId) {
         ArtWorks artWorks = getArtWorks(artWorkId);
         if (!artWorkLikesRepository.existByAccountIdAndArtWorkId(account.getId(), artWorkId)) {
-            throw new ApiRequestException("이미 좋아요 해지한 게시글 입니다.");
+            throw new BadArgumentsValidException(ErrorCode.ALREADY_LIKE_ERROR);
         }
         artWorks.getAccount().getRank().downRankScore();
         artWorkLikesRepository.deleteByArtWorksIdAndAccountId(artWorkId,account.getId());
     }
 
     private ArtWorks getArtWorks(Long artWorkId) {
-        return artWorkRepository.findById(artWorkId).orElseThrow(() -> new ApiRequestException("존재하지 않는 게시글 입니다."));
+        return artWorkRepository.findById(artWorkId).orElseThrow(() -> new BadArgumentsValidException(ErrorCode.NONEXISTENT_ERROR));
     }
 
 
