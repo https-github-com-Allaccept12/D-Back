@@ -2,6 +2,7 @@ package TeamDPlus.code.service.post;
 
 import TeamDPlus.code.advice.ApiRequestException;
 import TeamDPlus.code.domain.account.Account;
+import TeamDPlus.code.domain.account.AccountRepository;
 import TeamDPlus.code.domain.account.follow.FollowRepository;
 import TeamDPlus.code.domain.artwork.ArtWorks;
 import TeamDPlus.code.domain.artwork.image.ArtWorkImage;
@@ -21,6 +22,7 @@ import TeamDPlus.code.domain.post.tag.PostTagRepository;
 import TeamDPlus.code.dto.common.CommonDto;
 import TeamDPlus.code.dto.request.ArtWorkRequestDto;
 import TeamDPlus.code.dto.request.PostRequestDto;
+import TeamDPlus.code.dto.response.ArtWorkResponseDto;
 import TeamDPlus.code.dto.response.PostMainResponseDto;
 import TeamDPlus.code.dto.response.PostResponseDto;
 import TeamDPlus.code.service.file.FileProcessService;
@@ -54,34 +56,52 @@ public class PostMainPageServiceImpl implements PostMainPageService{
     private final PostCommentLikesRepository postCommentLikesRepository;
 
     private final FileProcessService fileProcessService;
+    private final AccountRepository accountRepository;
 
 
-    // 메인 페이지 (최신순)
+    // 메인 페이지 (최신순, 좋아요순)
     @Transactional(readOnly = true)
-    public PostMainResponseDto showPostMain(Long accountId, Long lastPostId, PostBoard board){
+    public PostMainResponseDto showPostMain(Long accountId, Long lastPostId, PostBoard board, String category, int sortSign) {
+
+        // 회원이면
+        if (accountId != null){
+            // 메인 페이지 전체 피드
+            Account account = accountRepository.findById(accountId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+            Pageable pageable = PageRequest.of(0,12);
+            List<PostResponseDto.PostPageMain> postList = postRepository.findAllPostOrderByCreatedDesc(lastPostId, pageable, board, sortSign, category);
+            setCountList(postList);
+            setIsLike(accountId, postList);
+            for(int i = 0; i< postList.size(); i++) {
+                List<PostTag> tags =postTagRepository.findPostTagsByPostId(postList.get(i).getPost_id());
+                postList.get(i).setHash_tag(tags);
+            }
+
+            // 메인페이지 추천피드
+            List<PostResponseDto.PostPageMain> postRecommendation = postRepository.findPostByMostViewAndMostLike();
+            setCountList(postRecommendation);
+            setIsLike(accountId, postRecommendation);
+            for(int i = 0; i< postList.size(); i++) {
+                List<PostTag> tags =postTagRepository.findPostTagsByPostId(postList.get(i).getPost_id());
+                postList.get(i).setHash_tag(tags);
+            }
+        }
 
         // 메인 페이지 전체 피드
         Pageable pageable = PageRequest.of(0,12);
-        List<PostResponseDto.PostPageMain> postList = postRepository.findAllPostOrderByCreatedDesc(lastPostId, pageable, board);
+        List<PostResponseDto.PostPageMain> postList = postRepository.findAllPostOrderByCreatedDesc(lastPostId, pageable, board, sortSign, category);
         setCountList(postList);
+        for(int i = 0; i< postList.size(); i++) {
+            List<PostTag> tags =postTagRepository.findPostTagsByPostId(postList.get(i).getPost_id());
+            postList.get(i).setHash_tag(tags);
+        }
 
         // 메인페이지 추천피드
         List<PostResponseDto.PostPageMain> postRecommendation = postRepository.findPostByMostViewAndMostLike();
         setCountList(postRecommendation);
-        return PostMainResponseDto.builder().postMainPage(postList).postRecommendationFeed(postRecommendation).build();
-    }
-
-    // 메인 페이지 (좋아요 순)
-    @Transactional(readOnly = true)
-    public PostMainResponseDto showPostMainByLikes(Long accountId, Long lastPostId, PostBoard board) {
-
-        Pageable pageable = PageRequest.of(0,12);
-        List<PostResponseDto.PostPageMain> postList = postRepository.findAllPostOrderByPostLikes(lastPostId, pageable, board);
-        setCountList(postList);
-
-        // 메인페이지 추천피드
-        List<PostResponseDto.PostPageMain> postRecommendation = postRepository.findPostByMostViewAndMostLike();
-        setCountList(postRecommendation);
+        for(int i = 0; i< postList.size(); i++) {
+            List<PostTag> tags =postTagRepository.findPostTagsByPostId(postList.get(i).getPost_id());
+            postList.get(i).setHash_tag(tags);
+        }
         return PostMainResponseDto.builder().postMainPage(postList).postRecommendationFeed(postRecommendation).build();
     }
 
@@ -94,19 +114,27 @@ public class PostMainPageServiceImpl implements PostMainPageService{
         List<PostImage> postImageList = postImageRepository.findByPostId(postId);
         List<PostResponseDto.PostComment> postComments = postCommentRepository.findPostCommentByPostId(postId);
         List<PostTag> postTags = postTagRepository.findPostTagsByPostId(postId);
-        boolean isLike = postLikesRepository.existByAccountIdAndPostId(accountId, postId);
-        boolean isBookmark = postBookMarkRepository.existByAccountIdAndPostId(accountId, postId);
-        boolean isFollow = followRepository.existsByFollowerIdAndFollowingId(accountId, postSubDetail.getAccount_id());
-        Long comment_count = (long) postComments.size();
 
+        boolean isLike = false;
+        boolean isBookmark = false;
+        boolean isFollow = false;
         // 코멘트 좋아요 담을 리스트 생성
         List<CommonDto.IsCommentsLiked> isCommentsLikes = new ArrayList<>();
 
-        // 코멘트 당 좋아요 눌렀는지 체크
-        for (int i = 0; i < postComments.size(); i++) {
-            boolean isCommentLike = postCommentLikesRepository.existByAccountIdAndPostCommentId(accountId, postComments.get(i).getComment_id());
-            isCommentsLikes.get(i).setIsCommentsLiked(isCommentLike);
+        if(accountId != null){
+            isLike = postLikesRepository.existByAccountIdAndPostId(accountId, postId);
+            isBookmark = postBookMarkRepository.existByAccountIdAndPostId(accountId, postId);
+            isFollow = followRepository.existsByFollowerIdAndFollowingId(accountId, postSubDetail.getAccount_id());
+
+            // 코멘트 당 좋아요 눌렀는지 체크
+            for (int i = 0; i < postComments.size(); i++) {
+                boolean isCommentLike = postCommentLikesRepository.existByAccountIdAndPostCommentId(accountId, postComments.get(i).getComment_id());
+                isCommentsLikes.get(i).setIsCommentsLiked(isCommentLike);
+            }
         }
+
+        Long comment_count = (long) postComments.size();
+
         return PostResponseDto.PostDetailPage.from(postImageList, postComments,
                 postTags, postSubDetail, isLike, isBookmark, isFollow, comment_count, isCommentsLikes);
     }
@@ -117,7 +145,6 @@ public class PostMainPageServiceImpl implements PostMainPageService{
         if (account.getPostCreateCount() >= 5) {
             throw new ApiRequestException("일일 작성 가능한 게시글분을 다 사용하셨습니다.");
         }
-        postWriteValidation(dto);
         Post post = Post.of(account, dto);
         Post savedPost = postRepository.save(post);
 
@@ -128,6 +155,7 @@ public class PostMainPageServiceImpl implements PostMainPageService{
             log.info(postImage.getPostImg());
         }
         setPostTag(dto.getHashTag(), savedPost);
+        account.upArtworkCountCreate();
         return 5 - account.getArtWorkCreateCount();
     }
 
@@ -136,8 +164,6 @@ public class PostMainPageServiceImpl implements PostMainPageService{
     public Long updatePost(Account account, Long postId, PostRequestDto.PostUpdate dto, List<MultipartFile> imgFile){
 
         // dto 필드 비었는지 확인
-        postUpdateValidation(dto);
-
         // 수정할 어카운트, 게시물 번호로 권한 확인
         Post post = postAuthValidation(account.getId(), postId);
 
@@ -190,9 +216,9 @@ public class PostMainPageServiceImpl implements PostMainPageService{
 
     // 게시글 검색
     @Transactional(readOnly = true)
-    public Page<PostResponseDto.PostPageMain> findBySearchKeyWord(String keyword, Long lastArtWorkId) {
+    public List<PostResponseDto.PostPageMain> findBySearchKeyWord(String keyword, Long lastArtWorkId, Long accountId, PostBoard board) {
         Pageable pageable = PageRequest.of(0,5);
-        return postRepository.findPostBySearchKeyWord(keyword,lastArtWorkId,pageable);
+        return postRepository.findPostBySearchKeyWord(keyword,lastArtWorkId,pageable,board);
     }
 
     private void setCountList(List<PostResponseDto.PostPageMain> postList){
@@ -203,7 +229,7 @@ public class PostMainPageServiceImpl implements PostMainPageService{
         });
     }
 
-    // #단위로 끊어서 해쉬태그 들어옴
+    // #단위로 끊어서 해쉬태그 들어옴 (dto -> 받을 때)
     private void setPostTag(List<CommonDto.PostTagDto> dto, Post post){
         dto.forEach((tag) -> {
             PostTag postTag = PostTag.builder()
@@ -223,33 +249,12 @@ public class PostMainPageServiceImpl implements PostMainPageService{
         return post;
     }
 
-    // 게시글작성 필수요소 validation
-    private void postWriteValidation(PostRequestDto.PostCreate dto){
-        if(Objects.equals(dto.getTitle(), "")){
-            throw new ApiRequestException("제목을 입력하세요");
-        }
-        if(Objects.equals(dto.getContent(), "")){
-            throw new ApiRequestException("내용을 입력하세요");
-        }
-        if(Objects.equals(dto.getCategory(), "")){
-            throw new ApiRequestException("카테고리를 입력하세요");
-        }
-        if(Objects.equals(dto.getBoard(), "")){
-            throw new ApiRequestException("디모 게시판 종류를 선택하세요");
-        }
-    }
-
-    // 게시글수정 필수요소 validation
-    private void postUpdateValidation(PostRequestDto.PostUpdate dto){
-        if(Objects.equals(dto.getTitle(), "")){
-            throw new ApiRequestException("제목을 입력하세요");
-        }
-        if(Objects.equals(dto.getContent(), "")){
-            throw new ApiRequestException("내용을 입력하세요");
-        }
-        if(Objects.equals(dto.getCategory(), "")){
-            throw new ApiRequestException("카테고리를 입력하세요");
-        }
+    private void setIsLike(Long accountId, List<PostResponseDto.PostPageMain> postList) {
+        postList.forEach((post) -> {
+            post.setLikeAndBookmarkStatus(postLikesRepository.
+                    existByAccountIdAndPostId(accountId, post.getPost_id()),
+                    postBookMarkRepository.existByAccountIdAndPostId(accountId, post.getPost_id()));
+        });
     }
 
 }

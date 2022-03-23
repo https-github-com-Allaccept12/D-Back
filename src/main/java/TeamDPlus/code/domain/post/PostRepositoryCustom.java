@@ -9,11 +9,8 @@ import java.util.List;
 
 public interface PostRepositoryCustom {
 
-    // 포스트 메인페이지 출력 (최신순)
-    List<PostResponseDto.PostPageMain> findAllPostOrderByCreatedDesc(Long lastPostId, Pageable pageable, PostBoard board);
-
-    // 포스트 메인페이지 출력 (좋아요)
-    List<PostResponseDto.PostPageMain> findAllPostOrderByPostLikes(Long lastPostId, Pageable pageable, PostBoard board);
+    // 포스트 메인페이지 출력 (최신순, 좋아요)
+    List<PostResponseDto.PostPageMain> findAllPostOrderByCreatedDesc(Long lastPostId, Pageable pageable, PostBoard board, int sortSign, String category);
 
     // 상세페이지 서브
     PostResponseDto.PostSubDetail findByPostSubDetail (Long postId);
@@ -22,7 +19,7 @@ public interface PostRepositoryCustom {
     List<PostResponseDto.PostPageMain> findPostByMostViewAndMostLike();
 
     // 검색
-    Page<PostResponseDto.PostPageMain> findPostBySearchKeyWord(String keyword, Long lastPostId, Pageable pageable);
+    List<PostResponseDto.PostPageMain> findPostBySearchKeyWord(String keyword, Long lastPostId, Pageable pageable, PostBoard board);
 
 
 }
