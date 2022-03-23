@@ -7,6 +7,7 @@ import TeamDPlus.code.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 
 @Service
@@ -17,9 +18,9 @@ public class SecurityService {
     private final JwtTokenProvider jwtTokenProvider;
 
     @Transactional
-    public TokenResponseDto refresh(String refreshToken) {
+    public TokenResponseDto refresh(HttpServletRequest request, String refreshToken) {
         // 리프레시 토큰 기간 만료 에러
-        if (jwtTokenProvider.validateToken(refreshToken)) {
+        if (jwtTokenProvider.validateToken(request,refreshToken)) {
             throw new IllegalStateException("리프레시 토큰 기간 만료");
         }
 

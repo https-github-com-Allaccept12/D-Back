@@ -14,7 +14,7 @@ import javax.persistence.EntityManager;
 
 @EnableJpaAuditing
 @EnableScheduling
-@SpringBootApplication(exclude = {MultipartAutoConfiguration.class})
+@SpringBootApplication
 public class CodeApplication {
 
 	public static void main(String[] args) {

@@ -10,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+
 @RestController
 @RequiredArgsConstructor
 public class AccountController {
@@ -31,9 +33,9 @@ public class AccountController {
     }
 
     @PostMapping("/user/refresh")
-    public ResponseEntity<Success> refresh(@RequestHeader(value = "Authorization") String refreshToken) {
+    public ResponseEntity<Success> refresh(@RequestHeader(value = "Authorization") String refreshToken, HttpServletRequest request) {
         return new ResponseEntity<>(new Success<>(
-                "토큰 재발급 성공", securityService.refresh(refreshToken)), HttpStatus.OK);
+                "토큰 재발급 성공", securityService.refresh(request,refreshToken)), HttpStatus.OK);
     }
 
 }
