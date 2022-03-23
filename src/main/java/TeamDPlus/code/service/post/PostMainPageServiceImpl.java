@@ -161,8 +161,8 @@ public class PostMainPageServiceImpl implements PostMainPageService{
             postImageRepository.save(postImage);
         }
         setPostTag(dto.getHashTag(), savedPost);
-        account.upArtworkCountCreate();
-        return 5 - account.getArtWorkCreateCount();
+        account.upPostCountCreate();
+        return 5 - account.getPostCreateCount();
     }
 
     // 게시물 수정

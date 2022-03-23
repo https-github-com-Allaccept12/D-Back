@@ -18,7 +18,6 @@ public class CorsConfig implements WebMvcConfigurer {
                 .allowedMethods("GET","POST","DELETE","PUT","PATCH");
     }
 
-    // 기윤님껄로 변경필요
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
