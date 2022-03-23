@@ -95,7 +95,7 @@ public class ArtWorkMainController {
     }
     @PostMapping("/api/test/artwork")
     public ResponseEntity<Success> testCreateArtWork(@AuthenticationPrincipal UserDetailsImpl user,
-                                                 @RequestPart List<MultipartFile> imgFile) {
+                                                 @RequestPart MultipartFile imgFile) {
         loginValid(user);
         artworkMainService.testCreateArtWork(user.getUser().getId(), imgFile);
         return new ResponseEntity<>(new Success("작품 test 등록 완료"
