@@ -10,6 +10,7 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.NotEmpty;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ArtWorkRequestDto {
@@ -27,7 +28,9 @@ public class ArtWorkRequestDto {
         @NotEmpty(message = "작품 설명을 해주세요.")
         private String content;
 
-        private List<CommonDto.ImgUrlDto> img;
+        private List<CommonDto.ImgUrlDto> img = new ArrayList<>();
+
+        private String thumbnail;
 
         @NotEmpty(message = "카테고리를 설정해주세요.")
         private String category;

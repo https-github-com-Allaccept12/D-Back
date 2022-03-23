@@ -1,7 +1,7 @@
 package TeamDPlus.code.service.artwork.like;
 
 
-import TeamDPlus.code.advice.ApiRequestException;
+import TeamDPlus.code.advice.BadArgumentsValidException;
 import TeamDPlus.code.advice.ErrorCode;
 import TeamDPlus.code.domain.account.Account;
 import TeamDPlus.code.domain.artwork.ArtWorkRepository;
@@ -23,7 +23,7 @@ public class ArtworkLikeService {
     public void doLike(Account account, Long artWorkId) {
         ArtWorks artWorks = getArtWorks(artWorkId);
         if (artWorkLikesRepository.existByAccountIdAndArtWorkId(account.getId(), artWorkId)) {
-            throw new ApiRequestException(ErrorCode.ALREADY_LIKE_ERROR);
+            throw new BadArgumentsValidException(ErrorCode.ALREADY_LIKE_ERROR);
         }
         artWorks.getAccount().getRank().upRankScore();
         ArtWorkLikes artWorkLikes = ArtWorkLikes.builder().artWorks(artWorks).account(account).build();
@@ -34,14 +34,14 @@ public class ArtworkLikeService {
     public void unLike(Account account, Long artWorkId) {
         ArtWorks artWorks = getArtWorks(artWorkId);
         if (!artWorkLikesRepository.existByAccountIdAndArtWorkId(account.getId(), artWorkId)) {
-            throw new ApiRequestException(ErrorCode.ALREADY_LIKE_ERROR);
+            throw new BadArgumentsValidException(ErrorCode.ALREADY_LIKE_ERROR);
         }
         artWorks.getAccount().getRank().downRankScore();
         artWorkLikesRepository.deleteByArtWorksIdAndAccountId(artWorkId,account.getId());
     }
 
     private ArtWorks getArtWorks(Long artWorkId) {
-        return artWorkRepository.findById(artWorkId).orElseThrow(() -> new ApiRequestException(ErrorCode.NONEXISTENT_ERROR));
+        return artWorkRepository.findById(artWorkId).orElseThrow(() -> new BadArgumentsValidException(ErrorCode.NONEXISTENT_ERROR));
     }
 
 

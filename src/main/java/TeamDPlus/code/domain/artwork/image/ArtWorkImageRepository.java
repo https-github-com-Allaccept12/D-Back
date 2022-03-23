@@ -8,8 +8,10 @@ import java.util.List;
 public interface ArtWorkImageRepository extends JpaRepository<ArtWorkImage, Long>,ArtworkImageRepositoryCustom {
 
     List<ArtWorkImage> findByArtWorksId(Long artWorkId);
-
     void deleteAllByArtWorksId(Long artWorkId);
-
     void deleteByArtworkImg(String artWorkImg);
+
+    ArtWorkImage findByArtworkImg(String artworkImg);
+
+
 }

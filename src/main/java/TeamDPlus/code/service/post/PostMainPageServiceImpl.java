@@ -1,6 +1,7 @@
 package TeamDPlus.code.service.post;
 
 import TeamDPlus.code.advice.ApiRequestException;
+import TeamDPlus.code.advice.BadArgumentsValidException;
 import TeamDPlus.code.advice.ErrorCode;
 import TeamDPlus.code.domain.account.Account;
 import TeamDPlus.code.domain.account.follow.FollowRepository;
@@ -23,10 +24,8 @@ import TeamDPlus.code.domain.post.like.PostLikesRepository;
 import TeamDPlus.code.domain.post.tag.PostTag;
 import TeamDPlus.code.domain.post.tag.PostTagRepository;
 import TeamDPlus.code.dto.common.CommonDto;
-import TeamDPlus.code.dto.request.ArtWorkRequestDto;
 import TeamDPlus.code.dto.request.PostRequestDto;
 import TeamDPlus.code.dto.response.AccountResponseDto;
-import TeamDPlus.code.dto.response.ArtWorkResponseDto;
 import TeamDPlus.code.dto.response.PostMainResponseDto;
 import TeamDPlus.code.dto.response.PostResponseDto;
 import TeamDPlus.code.dto.response.PostResponseDto.PostPageMain;
@@ -119,10 +118,7 @@ public class PostMainPageServiceImpl implements PostMainPageService{
     public Long createPost(Account account, PostRequestDto.PostCreate dto, List<MultipartFile> imgFile) {
         Post post = Post.of(account, dto);
         Post savedPost = postRepository.save(post);
-//        for(int i =0; i <dto.getImg().size(); i++){
-//            boolean thumbnail = dto.getImg().get(i).getThumbnail();
-//            String s = fileProcessService.uploadImage(imgFile.get(i));
-//        }
+
 
         if(imgFile!=null){
             imgFile.forEach((img) -> {
@@ -200,15 +196,6 @@ public class PostMainPageServiceImpl implements PostMainPageService{
         });
     }
 
-//    private void setImgUrl(List<CommonDto.ImgUrlDto> dto, Post post) {
-//        dto.forEach((img) -> {
-//            PostImage postImage = PostImage.builder()
-//                    .post(post)
-//                    .postImg(img.getFilename())
-//                    .build();
-//            postImageRepository.save(postImage);
-//        });
-//    }
 
     // #단위로 끊어서 해쉬태그 들어옴
     private void setPostTag(List<CommonDto.PostTagDto> dto, Post post){
@@ -225,11 +212,10 @@ public class PostMainPageServiceImpl implements PostMainPageService{
     private Post postAuthValidation(Long accountId, Long postId){
         Post post = postRepository.findById(postId).orElseThrow(() -> new ApiRequestException(ErrorCode.NONEXISTENT_ERROR));
         if(!post.getAccount().getId().equals(accountId)){
-            throw new ApiRequestException(ErrorCode.NO_AUTHORIZATION_ERROR);
+            throw new BadArgumentsValidException(ErrorCode.NO_AUTHORIZATION_ERROR);
         }
         return post;
     }
-
     // 디모 QnA 상세페이지
     @Transactional(readOnly = true)
     public PostResponseDto.PostAnswerDetailPage detailAnswer(Long accountId, Long postId) {

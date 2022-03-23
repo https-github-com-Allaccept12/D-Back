@@ -1,6 +1,7 @@
 package TeamDPlus.code.service.post.comment;
 
 import TeamDPlus.code.advice.ApiRequestException;
+import TeamDPlus.code.advice.BadArgumentsValidException;
 import TeamDPlus.code.advice.ErrorCode;
 import TeamDPlus.code.domain.account.Account;
 import TeamDPlus.code.domain.post.Post;
@@ -33,7 +34,7 @@ public class PostCommentService {
     }
 
     public void deleteComment(Long accountId, Long postCommentId) {
-        PostComment postComment = commentValidation(accountId, postCommentId);
+        commentValidation(accountId, postCommentId);
         postCommentLikesRepository.deleteAllByPostCommentId(postCommentId);
         postCommentRepository.deleteById(postCommentId);
     }
@@ -44,7 +45,7 @@ public class PostCommentService {
                 () -> new ApiRequestException(ErrorCode.NONEXISTENT_ERROR)
         );
         if (!postComment.getAccount().getId().equals(accountId)) {
-            throw new ApiRequestException(ErrorCode.NO_AUTHORIZATION_ERROR);
+            throw new BadArgumentsValidException(ErrorCode.NO_AUTHORIZATION_ERROR);
         }
         return postComment;
     }

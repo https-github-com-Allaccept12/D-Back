@@ -1,6 +1,7 @@
 package TeamDPlus.code.service.post.comment.like;
 
 import TeamDPlus.code.advice.ApiRequestException;
+import TeamDPlus.code.advice.BadArgumentsValidException;
 import TeamDPlus.code.advice.ErrorCode;
 import TeamDPlus.code.domain.account.Account;
 import TeamDPlus.code.domain.post.Post;
@@ -23,7 +24,7 @@ public class PostCommentLikeService {
     public void doLike(Account account, Long postCommentId) {
         PostComment postComment = postCommentRepository.findById(postCommentId).orElseThrow(() -> new ApiRequestException(ErrorCode.NONEXISTENT_ERROR));
         if (postCommentLikesRepository.existByAccountIdAndPostCommentId(account.getId(), postCommentId)) {
-            throw new ApiRequestException(ErrorCode.ALREADY_LIKE_ERROR);
+            throw new BadArgumentsValidException(ErrorCode.ALREADY_LIKE_ERROR);
         }
         PostCommentLikes postCommentLikes = PostCommentLikes.builder().postComment(postComment).account(account).build();
         postCommentLikesRepository.save(postCommentLikes);

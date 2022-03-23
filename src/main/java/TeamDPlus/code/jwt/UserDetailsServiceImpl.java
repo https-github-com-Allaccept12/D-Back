@@ -18,7 +18,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     public UserDetails loadUserByUsername(String userPk) throws UsernameNotFoundException {
         Account user = accountRepository.findById(Long.parseLong(userPk))
-                .orElseThrow(() -> new ApiRequestException(ErrorCode.NO_USER_ERROR));
+                .orElseThrow(() -> new ApiRequestException(ErrorCode.NO_AUTHENTICATION_ERROR));
         return new UserDetailsImpl(user);
     }
 }
