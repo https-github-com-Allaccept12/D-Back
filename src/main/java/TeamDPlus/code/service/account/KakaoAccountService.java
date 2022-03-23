@@ -3,6 +3,8 @@ package TeamDPlus.code.service.account;
 import TeamDPlus.code.domain.account.Account;
 import TeamDPlus.code.domain.account.AccountRepository;
 import TeamDPlus.code.domain.account.Specialty;
+import TeamDPlus.code.domain.account.orthers.Other;
+import TeamDPlus.code.domain.account.orthers.OtherRepository;
 import TeamDPlus.code.domain.account.rank.Rank;
 import TeamDPlus.code.domain.account.rank.RankRepository;
 import TeamDPlus.code.dto.KakaoUserInfoDto;
@@ -31,6 +33,7 @@ public class KakaoAccountService {
 
     private final RankRepository rankRepository;
     private final JwtTokenProvider jwtTokenProvider;
+    private final OtherRepository otherRepository;
 
     @Transactional
     public LoginResponseDto kakaoLogin(String code) throws JsonProcessingException {
@@ -54,7 +57,7 @@ public class KakaoAccountService {
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("grant_type", "authorization_code");
         body.add("client_id", "5c2af632e5eb943eadbf20d0c4006bdb");
-        body.add("redirect_uri", "http://localhost:3000/user/kakao/callback");
+        body.add("redirect_uri", "http://localhost:8081/user/kakao/callback");
         body.add("code", code);
 
         // HTTP 요청 보내기
@@ -101,16 +104,18 @@ public class KakaoAccountService {
                 .get("profile_image").asText();
         String email = jsonNode.get("kakao_account")
                 .get("email").asText();
+        String username = id + email;
 
-        System.out.println("카카오 사용자 정보: " + id + ", " + nickname + ", " + profileImage + ", " + email);
-        return new KakaoUserInfoDto(id, nickname, profileImage, email);
+        System.out.println("카카오 사용자 정보: " + id + ", " + username + ", " + nickname + ", " + profileImage + ", " + email);
+        return new KakaoUserInfoDto(id, nickname, profileImage, email, username);
     }
 
     private LoginResponseDto registerKakaoUserIfNeeded(KakaoUserInfoDto kakaoUserInfo) {
         // DB 에 중복된 Kakao Id 가 있는지 확인
         String email = kakaoUserInfo.getEmail();
+        String username = kakaoUserInfo.getUsername();
 
-        Account kakaoUser = accountRepository.findByEmail(email)
+        Account kakaoUser = accountRepository.findByAccountName(username)
                 .orElse(null);
 
         boolean isSignUp = false;
@@ -124,9 +129,17 @@ public class KakaoAccountService {
 
             Rank rank = Rank.builder().rankScore(0L).build();
             Rank saveRank = rankRepository.save(rank);
-
             Specialty specialty = new Specialty();
-            kakaoUser = Account.builder().nickname(nickname).profileImg(profileImg).email(email).rank(saveRank).specialty(specialty).build();
+            Other saveOther = otherRepository.save(Other.builder().specialty(specialty).build());
+            kakaoUser = Account.builder()
+                    .accountName(username)
+                    .nickname(nickname)
+                    .profileImg(profileImg)
+                    .email(email)
+                    .rank(saveRank)
+                    .other(saveOther)
+                    .specialty(specialty)
+                    .build();
             accountRepository.save(kakaoUser);
         }
 

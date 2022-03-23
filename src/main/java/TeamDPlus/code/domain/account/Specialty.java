@@ -35,5 +35,4 @@ public class Specialty {
         this.miro = false;
     }
 
-
 }

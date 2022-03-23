@@ -23,7 +23,8 @@ public enum ErrorCode {
     EXIST_FOLLOW_ERROR("이미 팔로우/언팔로우한 사람입니다."),
     BAD_CONDITION_NICKNAME_ERROR("닉네임 조건에 맞지않습니다."),
     CONVERTING_FILE_ERROR("파일 변환 에러"),
-    ALREADY_LIKE_ERROR("이미 좋아요/좋아요 해지한 글입니다.");
+    ALREADY_LIKE_ERROR("이미 좋아요/좋아요 해지한 글입니다."),
+    ALREADY_SELECTED_ERROR("이미 채택된 글입니다.");
 
     private final String message;
 }

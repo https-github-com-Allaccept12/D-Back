@@ -1,7 +1,6 @@
 package TeamDPlus.code.service.artwork.like;
 
 
-import TeamDPlus.code.advice.ApiRequestException;
 import TeamDPlus.code.advice.BadArgumentsValidException;
 import TeamDPlus.code.advice.ErrorCode;
 import TeamDPlus.code.domain.account.Account;

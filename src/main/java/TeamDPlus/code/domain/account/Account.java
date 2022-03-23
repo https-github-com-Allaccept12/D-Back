@@ -2,8 +2,12 @@ package TeamDPlus.code.domain.account;
 
 
 import TeamDPlus.code.domain.BaseEntity;
+import TeamDPlus.code.domain.account.orthers.Other;
 import TeamDPlus.code.domain.account.rank.Rank;
 import TeamDPlus.code.dto.request.AccountRequestDto;
+import TeamDPlus.code.dto.request.AccountRequestDto.InitProfileSetting;
+import TeamDPlus.code.dto.request.AccountRequestDto.UpdateAccountIntro;
+import TeamDPlus.code.dto.request.AccountRequestDto.UpdateSpecialty;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -22,6 +26,9 @@ public class Account extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.SEQUENCE) // h2는 auto, mysql는 IDENTITY
     @Column(name = "account_id")
     private Long id;
+
+    @Column(nullable = false, unique = true)
+    private String accountName;
 
     @Column(nullable = false)
     private String email;
@@ -73,12 +80,17 @@ public class Account extends BaseEntity {
     @JoinColumn(name = "rank_id",nullable = false)
     private Rank rank;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "other_id",nullable = false)
+    private Other other;
+
     @Builder
-    public Account(final String email, final String nickname, final String subContent, final String titleContent, final String profileImg,
+    public Account(final String accountName, final String email, final String nickname, final String subContent, final String titleContent, final String profileImg,
                    final int career, final String phoneNumber, final String workTime,
                    final String workEmail, final String tendency, final Long exp, final String refreshToken,
-                   final String linkedIn, final String brunch, final String instagram,
+                   final String linkedIn, final String brunch, final String instagram,final Other other,
                    final String interest, final Rank rank, final String job, final Specialty specialty)  {
+        this.accountName = accountName;
         this.email = email;
         this.nickname = nickname;
         this.titleContent = titleContent;
@@ -98,6 +110,7 @@ public class Account extends BaseEntity {
         this.rank = rank;
         this.job = job;
         this.specialty = specialty;
+        this.other = other;
     }
 
     public void refreshToken(final String refreshToken) {
@@ -111,7 +124,6 @@ public class Account extends BaseEntity {
     public void updateExp(final int score) {
         this.exp += (long) score;
     }
-
     public void updateInterest(final String interest) {
         this.interest = interest;
     }
@@ -127,7 +139,7 @@ public class Account extends BaseEntity {
         this.bestArtWorkTwo = bestArtWorkTwo;
     }
 
-    public void setInitProfile(final AccountRequestDto.InitProfileSetting dto) {
+    public void setInitProfile(final InitProfileSetting dto) {
         this.nickname = dto.getNickname();
         this.job = dto.getJob();
         this.profileImg = dto.getProfile_img();
@@ -139,12 +151,13 @@ public class Account extends BaseEntity {
         this.instagram = dto.getInsta();
         this.phoneNumber =dto.getPhone_number();
     }
-    public void updateIntro(final AccountRequestDto.UpdateAccountIntro dto) {
+    public void updateIntro(final UpdateAccountIntro dto) {
         this.titleContent = dto.getTitle_content();
         this.subContent = dto.getSub_content();
     }
-    public void updateSpecialty(final AccountRequestDto.UpdateSpecialty dto) {
+    public void updateSpecialty(final UpdateSpecialty dto) {
         this.specialty = dto.getSpecialty();
+        this.other.updateOther(dto.getOther_specialty());
     }
 
 

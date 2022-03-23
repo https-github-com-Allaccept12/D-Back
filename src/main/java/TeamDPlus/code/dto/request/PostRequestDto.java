@@ -7,6 +7,8 @@ import TeamDPlus.code.dto.common.CommonDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.NotEmpty;
 import java.util.List;
 
 public class PostRequestDto {
@@ -16,10 +18,14 @@ public class PostRequestDto {
     @NoArgsConstructor
     public static class PostCreate {
 
+        @NotEmpty(message = "제목을 입력해주세요.")
+        @Max(value = 20, message = "제목은 20자리 이내로 작성해주세요")
         private String title;
 
+        @NotEmpty(message = "카테고리를 설정해주세요.")
         private String category;
 
+        @NotEmpty(message = "내용을 입력해주세요.")
         private String content;
 
         private List<CommonDto.ImgUrlDto> img; // null
@@ -36,10 +42,14 @@ public class PostRequestDto {
     @NoArgsConstructor
     public static class PostUpdate {
 
+        @NotEmpty(message = "제목을 입력해주세요.")
+        @Max(value = 20, message = "제목은 20자리 이내로 작성해주세요")
         private String title;
 
+        @NotEmpty(message = "카테고리를 설정해주세요.")
         private String category;
 
+        @NotEmpty(message = "내용을 입력해주세요.")
         private String content;
 
         private List<CommonDto.ImgUrlDto> img;
@@ -54,6 +64,7 @@ public class PostRequestDto {
     @NoArgsConstructor
     public static class PostComment {
 
+        @NotEmpty(message = "댓글 내용을 입력해주세요.")
         private String content;
 
     }
@@ -62,16 +73,10 @@ public class PostRequestDto {
     @NoArgsConstructor
     public static class PostAnswer {
 
+        @NotEmpty(message = "답글 내용을 입력해주세요.")
         private String content;
 
     }
 
-    @Getter
-    @NoArgsConstructor
-    public static class PostAnswerComment {
-
-        private String content;
-
-    }
 }
 

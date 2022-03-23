@@ -29,6 +29,7 @@ public interface ArtWorkRepositoryCustom {
 
     List<ArtworkMain> findByFollowerArtWork(Long accountId,String category, Long lastArtWorkId, Pageable pageable);
 
+
     void updateArtWorkIdMasterToFalse(Long artWorkId);
 
     void updateAllArtWorkIsMasterToTrue(List<Long> artWorkId);

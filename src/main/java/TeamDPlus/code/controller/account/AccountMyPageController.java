@@ -140,4 +140,5 @@ public class AccountMyPageController {
     public ResponseEntity<Success> getMyComment(@AuthenticationPrincipal UserDetailsImpl user) {
         return new ResponseEntity<>(new Success("나의 댓글",accountMyPageService.getMyComment(user.getUser().getId())),HttpStatus.OK);
     }
+    
 }

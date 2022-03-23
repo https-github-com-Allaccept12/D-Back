@@ -11,7 +11,5 @@ public interface ArtWorkImageRepository extends JpaRepository<ArtWorkImage, Long
     void deleteAllByArtWorksId(Long artWorkId);
     void deleteByArtworkImg(String artWorkImg);
 
-    ArtWorkImage findByArtworkImg(String artworkImg);
-
 
 }
