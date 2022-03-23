@@ -37,7 +37,7 @@ public class ExceptionController {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Fail> defaultException(Exception ex) {
-        Fail apiException = new Fail("알 수 없는 오류 입니다. 관리자에게 문의 바랍니다.");
+        Fail apiException = new Fail(ex.getMessage());
         return new  ResponseEntity<>(apiException, HttpStatus.OK);
     }
 }
