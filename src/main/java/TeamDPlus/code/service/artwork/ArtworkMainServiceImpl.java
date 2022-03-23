@@ -121,7 +121,7 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
     }
 
     @Override
-    public void testCreateArtWork(Long accountId, List<MultipartFile> multipartFiles) {
+    public void testCreateArtWork(Long accountId, MultipartFile multipartFiles) {
         Account account = accountRepository.findById(accountId).orElseThrow(() -> new ApiRequestException(ErrorCode.NO_USER_ERROR));
         if (account.getArtWorkCreateCount() >= 5) {
             throw new ApiRequestException(ErrorCode.DAILY_WRITE_UP_BURN_ERROR);
@@ -129,7 +129,8 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
         ArtWorks artWorks = ArtWorks.builder().scope(true).title("test").content("test").category("dd").copyright("true").build();
         ArtWorks saveArtwork = artWorkRepository.save(artWorks);
 
-        s3ImageUpload(multipartFiles, saveArtwork);
+        String saveFile = fileProcessService.uploadImage(multipartFiles);
+        log.info(saveFile);
         account.upArtworkCountCreate();
 
     }
