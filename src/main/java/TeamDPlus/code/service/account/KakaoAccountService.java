@@ -3,6 +3,8 @@ package TeamDPlus.code.service.account;
 import TeamDPlus.code.domain.account.Account;
 import TeamDPlus.code.domain.account.AccountRepository;
 import TeamDPlus.code.domain.account.Specialty;
+import TeamDPlus.code.domain.account.orthers.Other;
+import TeamDPlus.code.domain.account.orthers.OtherRepository;
 import TeamDPlus.code.domain.account.rank.Rank;
 import TeamDPlus.code.domain.account.rank.RankRepository;
 import TeamDPlus.code.dto.KakaoUserInfoDto;
@@ -28,7 +30,7 @@ import javax.transaction.Transactional;
 public class KakaoAccountService {
 
     private final AccountRepository accountRepository;
-
+    private final OtherRepository otherRepository;
     private final RankRepository rankRepository;
     private final JwtTokenProvider jwtTokenProvider;
 
@@ -124,9 +126,17 @@ public class KakaoAccountService {
 
             Rank rank = Rank.builder().rankScore(0L).build();
             Rank saveRank = rankRepository.save(rank);
-
             Specialty specialty = new Specialty();
-            kakaoUser = Account.builder().nickname(nickname).profileImg(profileImg).email(email).rank(saveRank).specialty(specialty).build();
+            Other other = Other.builder().specialty(specialty).build();
+            Other saveOther = otherRepository.save(other);
+            kakaoUser = Account.builder()
+                    .nickname(nickname)
+                    .profileImg(profileImg)
+                    .email(email)
+                    .rank(saveRank)
+                    .specialty(specialty)
+                    .other(saveOther)
+                    .build();
             accountRepository.save(kakaoUser);
         }
 

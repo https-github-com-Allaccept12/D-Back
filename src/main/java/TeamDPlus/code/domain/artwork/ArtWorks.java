@@ -59,7 +59,6 @@ public class ArtWorks extends BaseEntity {
     @JoinColumn(name = "account_id")
     private Account account;
 
-
     @Embedded
     private Specialty specialty;
 
