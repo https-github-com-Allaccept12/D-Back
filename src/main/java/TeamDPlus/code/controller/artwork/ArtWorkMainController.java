@@ -86,6 +86,7 @@ public class ArtWorkMainController {
     }
 
     @PostMapping("/api/artwork")
+    @RequestMapping(value = "/api/artwork",method = {RequestMethod.POST,RequestMethod.OPTIONS})
     public ResponseEntity<Success> createArtWork(@AuthenticationPrincipal UserDetailsImpl user,
                                                  @RequestPart ArtWorkCreateAndUpdate data,
                                                  @RequestPart List<MultipartFile> imgFile) {
