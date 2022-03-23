@@ -55,12 +55,15 @@ public class ArtWorks extends BaseEntity {
     @Column(columnDefinition = "TINYINT default 0")
     private Boolean isMaster;
 
+    @Embedded
+    private Specialty specialty;
+
+    private String thumbnail;
+
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id")
     private Account account;
-
-    @Embedded
-    private Specialty specialty;
 
     @Builder
     public ArtWorks(final boolean scope,final String title,final String content,final String category,
@@ -83,7 +86,7 @@ public class ArtWorks extends BaseEntity {
         this.view += 1L;
     }
 
-    public void updateArtWork(ArtWorkRequestDto.ArtWorkCreateAndUpdate dto) {
+    public void updateArtWork(ArtWorkRequestDto.ArtWorkUpdate dto) {
         this.scope = dto.isScope();
         this.title = dto.getTitle();
         this.content = dto.getContent();
@@ -100,7 +103,15 @@ public class ArtWorks extends BaseEntity {
         this.scope = isScope;
     }
 
-    public static ArtWorks of(Account account, ArtWorkRequestDto.ArtWorkCreateAndUpdate dto) {
+    public void setThumbnail(String thumbnail) {
+        this.thumbnail = thumbnail;
+    }
+
+    public void updateArtoWorkThumbnail(String thumbnail) {
+        this.thumbnail = thumbnail;
+    }
+
+    public static ArtWorks of(Account account, ArtWorkRequestDto.ArtWorkCreate dto) {
         return ArtWorks.builder()
                 .account(account)
                 .category(dto.getCategory())
