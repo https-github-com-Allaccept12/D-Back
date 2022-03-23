@@ -3,10 +3,7 @@ spring:
     activate:
       on-profile: real1
 
-  servlet:
-    multipart:
-      max-file-size: 30 #파일 최대 크기
-      max-request-size: 20 #요청 당 최대 파일 크기
+
 
   datasource:
     #h2 setting

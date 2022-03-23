@@ -102,8 +102,6 @@ public class ArtWorkMainController {
                 ,"성공?"),HttpStatus.OK);
     }
 
-
-
     @PatchMapping("/api/artwork/{artwork_id}")
     public ResponseEntity<Success> updateArtWork(@AuthenticationPrincipal UserDetailsImpl user,
                                                  @PathVariable Long artwork_id,
