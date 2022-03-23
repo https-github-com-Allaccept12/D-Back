@@ -26,7 +26,6 @@ import org.springframework.web.filter.CorsFilter;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final JwtTokenProvider jwtTokenProvider;
-    private final CorsFilter corsFilter;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
