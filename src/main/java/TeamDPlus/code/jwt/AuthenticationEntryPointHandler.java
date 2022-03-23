@@ -1,9 +1,8 @@
 package TeamDPlus.code.jwt;
 
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
-import org.json.JSONException;
-import org.json.JSONObject;
+import lombok.extern.slf4j.Slf4j;
+import net.minidev.json.JSONObject;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
@@ -15,9 +14,10 @@ import java.io.IOException;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class AuthenticationEntryPointHandler implements AuthenticationEntryPoint {
 
-    @SneakyThrows
+
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
         String exception = (String)request.getAttribute("exception");
@@ -37,7 +37,7 @@ public class AuthenticationEntryPointHandler implements AuthenticationEntryPoint
 
     }
     //한글 출력을 위해 getWriter() 사용
-    private void setResponse(HttpServletResponse response, JwtErrorCode errorCode) throws IOException, JSONException {
+    private void setResponse(HttpServletResponse response, JwtErrorCode errorCode) throws IOException {
         JSONObject json = new JSONObject();
         response.setContentType("application/json;charset=UTF-8");
         response.setCharacterEncoding("utf-8");

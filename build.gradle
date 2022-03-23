@@ -31,18 +31,17 @@ repositories {
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
-	// Thymeleaf (뷰 템플릿 엔진)
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation group: 'org.json', name: 'json', version: '20090211'
-	//implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity5'
+	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity5'
 	implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
 	implementation 'org.projectlombok:lombok:1.18.22'
-
+	implementation('com.h2database:h2')
+	implementation 'org.springframework.boot:spring-boot-starter-test'
 	implementation 'io.awspring.cloud:spring-cloud-starter-aws:2.4.0'
-	implementation group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1'
-	implementation 'net.minidev:minidev-parent:2.4.4'
+
 
 	annotationProcessor "com.querydsl:querydsl-apt:${queryDslVersion}"
 
@@ -50,17 +49,22 @@ dependencies {
 
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
-	//runtimeOnly 'com.h2database:h2'
+	runtimeOnly 'com.h2database:h2'
 	runtimeOnly 'mysql:mysql-connector-java'
 
 	annotationProcessor 'org.projectlombok:lombok'
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	//testImplementation 'org.springframework.security:spring-security-test'
+	testImplementation 'org.springframework.security:spring-security-test'
 
 	implementation group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.2'
 	runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.2'
 	runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.2'
+
+// Thymeleaf (뷰 템플릿 엔진)
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
 
 
