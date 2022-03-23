@@ -45,21 +45,22 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-                    .httpBasic().disable() // rest api 만을 고려하여 기본 설정은 해제하겠습니다.
-                    .csrf().disable() // csrf 보안 토큰 disable처리.
-                    .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // 토큰 기반 인증이므로 세션 역시 사용하지 않습니다.
+                .httpBasic().disable() // rest api 만을 고려하여 기본 설정은 해제하겠습니다.
+                .csrf().disable() // csrf 보안 토큰 disable처리.
+                .cors()
                 .and()
-                    .authorizeRequests() // 요청에 대한 사용권한 체크
-                    .antMatchers("/oauth2/**").permitAll()
-                    .antMatchers("/user/**").permitAll()
-                    .antMatchers("/").permitAll()
-                    .antMatchers(HttpMethod.GET,"/profile","/api/artwork/**","/api/artwork/detail/**","/api/artwork/search/**").permitAll()
-                    .antMatchers( "/configuration/**").permitAll()
-                    .anyRequest().authenticated() // 그외 나머지 요청은 사용권한 체크
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // 토큰 기반 인증이므로 세션 역시 사용하지 않습니다.
                 .and()
-                    .apply(new JwtSecurityConfig(jwtTokenProvider));
-        http.addFilterBefore(corsFilter,
-                UsernamePasswordAuthenticationFilter.class);
+                .authorizeRequests() // 요청에 대한 사용권한 체크
+                .antMatchers("/oauth2/**").permitAll()
+                .antMatchers("/user/**").permitAll()
+                .antMatchers("/").permitAll()
+                .antMatchers(HttpMethod.GET, "/profile", "/api/artwork/**", "/api/artwork/detail/**", "/api/artwork/search/**").permitAll()
+                .antMatchers("/configuration/**").permitAll()
+                .anyRequest().authenticated() // 그외 나머지 요청은 사용권한 체크
+                .and()
+                .apply(new JwtSecurityConfig(jwtTokenProvider));
+
     }
 
     @Bean
