@@ -44,6 +44,8 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
     private final FollowRepository followRepository;
     private final AccountRepository accountRepository;
 
+    private final FileProcessService fileProcessService;
+
     //비회원 일경우 모든작품 카테고리에서 탑10
     //회원 일경우 관심사 카테고리중에서 탑10
     @Transactional(readOnly = true)

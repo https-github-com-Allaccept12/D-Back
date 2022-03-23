@@ -7,7 +7,6 @@ import TeamDPlus.code.domain.account.Account;
 import TeamDPlus.code.domain.account.AccountRepository;
 import TeamDPlus.code.domain.account.follow.Follow;
 import TeamDPlus.code.domain.account.follow.FollowRepository;
-import TeamDPlus.code.domain.account.rank.RankRepository;
 import TeamDPlus.code.dto.response.FollowResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -28,7 +27,7 @@ public class FollowService {
         if (followRepository.existsByFollowerIdAndFollowingId(account.getId(),following_id)) {
             throw new ApiRequestException(ErrorCode.EXIST_FOLLOW_ERROR);
         }
-        account.getRanks().upRankScore();
+        account.getRank().upRankScore();
         final Follow follow = Follow.builder().followerId(account.getId()).followingId(following_id).build();
         followRepository.save(follow);
     }
@@ -39,7 +38,7 @@ public class FollowService {
         if (!followRepository.existsByFollowerIdAndFollowingId(account.getId(), unFollowing_id)) {
           throw new ApiRequestException(ErrorCode.EXIST_FOLLOW_ERROR);
         }
-        account.getRanks().downRankScore();
+        account.getRank().downRankScore();
         followRepository.deleteByFollowerIdAndFollowingId(account.getId(),unFollowing_id);
     }
 

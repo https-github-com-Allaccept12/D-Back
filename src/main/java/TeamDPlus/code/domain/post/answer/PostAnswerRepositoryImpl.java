@@ -10,7 +10,6 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 import static TeamDPlus.code.domain.account.QAccount.account;
-import static TeamDPlus.code.domain.post.QPost.post;
 import static TeamDPlus.code.domain.post.answer.QPostAnswer.postAnswer;
 import static TeamDPlus.code.domain.post.like.QPostAnswerLikes.postAnswerLikes;
 
