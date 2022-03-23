@@ -5,6 +5,9 @@ import TeamDPlus.code.domain.BaseEntity;
 import TeamDPlus.code.domain.account.orthers.Other;
 import TeamDPlus.code.domain.account.rank.Rank;
 import TeamDPlus.code.dto.request.AccountRequestDto;
+import TeamDPlus.code.dto.request.AccountRequestDto.InitProfileSetting;
+import TeamDPlus.code.dto.request.AccountRequestDto.UpdateAccountIntro;
+import TeamDPlus.code.dto.request.AccountRequestDto.UpdateSpecialty;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -121,7 +124,6 @@ public class Account extends BaseEntity {
     public void updateExp(final int score) {
         this.exp += (long) score;
     }
-
     public void updateInterest(final String interest) {
         this.interest = interest;
     }
@@ -137,7 +139,7 @@ public class Account extends BaseEntity {
         this.bestArtWorkTwo = bestArtWorkTwo;
     }
 
-    public void setInitProfile(final AccountRequestDto.InitProfileSetting dto) {
+    public void setInitProfile(final InitProfileSetting dto) {
         this.nickname = dto.getNickname();
         this.job = dto.getJob();
         this.profileImg = dto.getProfile_img();
@@ -149,12 +151,13 @@ public class Account extends BaseEntity {
         this.instagram = dto.getInsta();
         this.phoneNumber =dto.getPhone_number();
     }
-    public void updateIntro(final AccountRequestDto.UpdateAccountIntro dto) {
+    public void updateIntro(final UpdateAccountIntro dto) {
         this.titleContent = dto.getTitle_content();
         this.subContent = dto.getSub_content();
     }
-    public void updateSpecialty(final AccountRequestDto.UpdateSpecialty dto) {
+    public void updateSpecialty(final UpdateSpecialty dto) {
         this.specialty = dto.getSpecialty();
+        this.other.updateOther(dto.getOther_specialty());
     }
 
 
