@@ -31,11 +31,10 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
                         ArtWorkResponseDto.ArtWorkFeed.class,
                         artWorks.id,
                         artWorks.scope,
-                        artWorkImage.artworkImg,
+                        artWorks.thumbnail,
                         artWorks.isMaster
                 ))
                 .from(artWorks)
-                .leftJoin(artWorkImage).on(artWorkImage.artWorks.eq(artWorks).and(artWorkImage.thumbnail.isTrue()))
                 .offset(paging.getOffset())
                 .limit(paging.getPageSize())
                 .where(isPortfolio(isPortfolio),
@@ -82,14 +81,13 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
                                 account.id,
                                 account.nickname,
                                 account.profileImg,
-                                artWorkImage.artworkImg,
+                                artWorks.thumbnail,
                                 artWorks.view,
                                 artWorkLikes.count(),
                                 artWorks.category,
                                 artWorks.created))
                 .from(artWorks)
                 .join(artWorks.account, account)
-                .join(artWorkImage).on(artWorkImage.artWorks.eq(artWorks).and(artWorkImage.thumbnail.isTrue()))
                 .leftJoin(artWorkLikes).on(artWorkLikes.artWorks.eq(artWorks))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -106,7 +104,7 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
                                     account.id,
                                     account.nickname,
                                     account.profileImg,
-                                    artWorkImage.artworkImg,
+                                    artWorks.thumbnail,
                                     artWorks.view,
                                     artWorkLikes.count(),
                                     artWorks.category,
@@ -114,7 +112,6 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
                             ))
                     .from(artWorks)
                     .join(artWorks.account, account)
-                    .join(artWorkImage).on(artWorkImage.artWorks.eq(artWorks).and(artWorkImage.thumbnail.isTrue()))
                     .leftJoin(artWorkLikes).on(artWorkLikes.artWorks.eq(artWorks))
                     .offset(pageable.getOffset())
                     .limit(pageable.getPageSize())
@@ -134,7 +131,7 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
                         account.id,
                         account.nickname,
                         account.profileImg,
-                        artWorkImage.artworkImg,
+                        artWorks.thumbnail,
                         artWorks.view,
                         artWorkLikes.count(),
                         artWorks.category,
@@ -142,7 +139,6 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
                 ))
                 .from(artWorks)
                 .join(account).on(account.id.eq(artWorks.account.id))
-                .join(artWorkImage).on(artWorkImage.artWorks.eq(artWorks).and(artWorkImage.thumbnail.isTrue()))
                 .leftJoin(artWorkLikes).on(artWorkLikes.artWorks.eq(artWorks))
                 .offset(paging.getOffset())
                 .limit(paging.getPageSize())
@@ -172,7 +168,7 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
                         account.id,
                         account.nickname,
                         account.profileImg,
-                        artWorkImage.artworkImg,
+                        artWorks.thumbnail,
                         artWorks.view,
                         artWorkLikes.count(),
                         artWorks.category,
@@ -180,7 +176,6 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
                 ))
                 .from(artWorks)
                 .join(artWorks.account,account)
-                .join(artWorkImage).on(artWorkImage.artWorks.eq(artWorks).and(artWorkImage.thumbnail.isTrue()))
                 .leftJoin(artWorkLikes).on(artWorkLikes.artWorks.eq(artWorks))
                 .offset(paging.getOffset())
                 .limit(paging.getPageSize())
@@ -228,10 +223,8 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
                 .select(Projections.constructor(ArtWorkResponseDto.ArtWorkSimilarWork.class,
                         artWorks.id,
                         artWorks.title,
-                        artWorkImage.artworkImg))
+                        artWorks.thumbnail))
                 .from(artWorks)
-                .join(artWorkImage).on(artWorkImage.artWorks.eq(artWorks)
-                        .and(artWorkImage.thumbnail.isTrue()))
                 .join(artWorks.account, account)
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -250,14 +243,13 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
                         account.id,
                         account.nickname,
                         account.profileImg,
-                        artWorkImage.artworkImg,
+                        artWorks.thumbnail,
                         artWorks.view,
                         artWorkLikes.count(),
                         artWorks.category,
                         artWorks.created))
                 .from(artWorks)
                 .join(account).on(account.id.eq(artWorks.account.id))
-                .join(artWorkImage).on(artWorkImage.artWorks.eq(artWorks).and(artWorkImage.thumbnail.isTrue()))
                 .leftJoin(artWorkLikes).on(artWorkLikes.artWorks.eq(artWorks))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())

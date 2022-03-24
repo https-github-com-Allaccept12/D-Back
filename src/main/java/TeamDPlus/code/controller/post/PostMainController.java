@@ -23,7 +23,6 @@ import java.util.List;
 public class PostMainController {
 
     private final int SORT_SIGN_LATEST = 1;
-    private final int SORT_SIGN_LIKE = 2;
     private final PostMainPageService postMainPageService;
 
     // 전체 목록

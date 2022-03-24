@@ -10,8 +10,6 @@ import TeamDPlus.code.domain.account.history.History;
 import TeamDPlus.code.domain.account.history.HistoryRepository;
 import TeamDPlus.code.domain.artwork.ArtWorkRepository;
 import TeamDPlus.code.domain.artwork.ArtWorks;
-import TeamDPlus.code.domain.artwork.bookmark.ArtWorkBookMark;
-import TeamDPlus.code.domain.artwork.bookmark.ArtWorkBookMarkRepository;
 import TeamDPlus.code.domain.post.PostRepository;
 import TeamDPlus.code.domain.post.answer.PostAnswerRepository;
 import TeamDPlus.code.domain.post.bookmark.PostBookMarkRepository;
@@ -19,16 +17,14 @@ import TeamDPlus.code.domain.post.comment.PostCommentRepository;
 import TeamDPlus.code.dto.request.AccountRequestDto;
 import TeamDPlus.code.dto.request.AccountRequestDto.UpdateAccountIntro;
 import TeamDPlus.code.dto.request.AccountRequestDto.UpdateSpecialty;
-import TeamDPlus.code.dto.request.ArtWorkRequestDto;
 import TeamDPlus.code.dto.request.ArtWorkRequestDto.ArtWorkPortFolioUpdate;
-import TeamDPlus.code.dto.request.HistoryRequestDto;
 import TeamDPlus.code.dto.request.HistoryRequestDto.HistoryUpdateList;
 import TeamDPlus.code.dto.response.AccountResponseDto;
+import TeamDPlus.code.dto.response.AccountResponseDto.AccountInfo;
 import TeamDPlus.code.dto.response.ArtWorkResponseDto;
 import TeamDPlus.code.dto.response.HistoryResponseDto;
-import TeamDPlus.code.dto.response.PostResponseDto;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -40,6 +36,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AccountMyPageServiceImpl implements AccountMyPageService {
 
     private final AccountRepository accountRepository;
@@ -53,12 +50,12 @@ public class AccountMyPageServiceImpl implements AccountMyPageService {
 
     //마이페이지
     @Transactional(readOnly = true)
-    public AccountResponseDto.AccountInfo showAccountInfo(final Long visitAccountId, final Long accountId) {
+    public AccountInfo showAccountInfo(Long visitAccountId, Long accountId) {
         final Account findAccount = getAccount(visitAccountId);
         final Long follower = followRepository.countByFollowerId(findAccount.getId());
         final Long following = followRepository.countByFollowingId(findAccount.getId());
         final boolean isFollow= followRepository.existsByFollowerIdAndFollowingId(visitAccountId,accountId);
-        return AccountResponseDto.AccountInfo.from(findAccount,follower,following, isFollow,visitAccountId.equals(accountId));
+        return AccountInfo.from(findAccount,follower,following, isFollow,visitAccountId.equals(accountId));
     }
     //연혁
     @Transactional(readOnly = true)
@@ -70,10 +67,11 @@ public class AccountMyPageServiceImpl implements AccountMyPageService {
     }
     //작업물 - 포트폴리오
     @Transactional(readOnly = true)
-    public List<ArtWorkResponseDto.ArtWorkFeed> showAccountCareerFeed(Long lastArtWorkId, Long visitAccountId, Long accountId) {
-        final Pageable pageable = PageRequest.of(0,5);
-        return artWorkRepository.findByArtWorkImageAndAccountId(lastArtWorkId,pageable,visitAccountId,accountId,true);
+    public List<ArtWorkResponseDto.ArtWorkFeed> showAccountCareerFeed(Long LastArtWorkId,Long visitAccountId, Long accountId) {
+        Pageable pageable = PageRequest.of(0,10);
+        return artWorkRepository.findByArtWorkImageAndAccountId(LastArtWorkId,pageable,visitAccountId,accountId,true);
     }
+
     //포트폴리오 - 기본 소개 수정
     @Transactional
     public void updateAccountIntro(UpdateAccountIntro dto, Long accountId) {

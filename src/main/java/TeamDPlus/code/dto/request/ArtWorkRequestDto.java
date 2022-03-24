@@ -1,16 +1,12 @@
 package TeamDPlus.code.dto.request;
+
 import TeamDPlus.code.domain.account.Specialty;
-import TeamDPlus.code.dto.common.CommonDto;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
+import TeamDPlus.code.dto.common.CommonDto.ImgUrlDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.NotEmpty;
-import java.sql.Time;
-import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.List;
 
 public class ArtWorkRequestDto {
@@ -18,8 +14,8 @@ public class ArtWorkRequestDto {
 
     @Getter
     @NoArgsConstructor
-    public static class ArtWorkCreateAndUpdate {
-        private boolean scope;
+    public static class ArtWorkCreate {
+        private Boolean scope;
 
         @NotEmpty(message = "작품 제목을 입력해주세요")
         @Max(value = 20, message = "제목은 20자리 이내로 작성해주세요")
@@ -28,7 +24,40 @@ public class ArtWorkRequestDto {
         @NotEmpty(message = "작품 설명을 해주세요.")
         private String content;
 
-        private List<CommonDto.ImgUrlDto> img = new ArrayList<>();
+        @NotEmpty(message = "카테고리를 설정해주세요.")
+        private String category;
+
+        @NotEmpty(message = "작품의 작업시작 기간을 입력해주세요")
+        private String work_start;
+
+        @NotEmpty(message = "작품의 작업마무리 기간을 입력해주세요")
+        private String work_end;
+
+        private Boolean master;
+
+        private Specialty specialty;
+
+        @NotEmpty(message = "작품 판권 설정을 해주세요.")
+        private String copyright;
+
+        @NotEmpty(message = "작품 섬네일을 지정해주세요.")
+        private String thumbnail;
+
+    }
+    @Getter
+    @NoArgsConstructor
+    public static class ArtWorkUpdate {
+
+        private Boolean scope;
+
+        @NotEmpty(message = "작품 제목을 입력해주세요")
+        @Max(value = 20, message = "제목은 20자리 이내로 작성해주세요")
+        private String title;
+
+        @NotEmpty(message = "작품 설명을 해주세요.")
+        private String content;
+
+        private List<ImgUrlDto> delete_img;
 
         private String thumbnail;
 
@@ -41,12 +70,13 @@ public class ArtWorkRequestDto {
         @NotEmpty(message = "작품의 작업마무리 기간을 입력해주세요")
         private String work_end;
 
-        private boolean master;
+        private Boolean master;
 
         private Specialty specialty;
 
         @NotEmpty(message = "작품 판권 설정을 해주세요.")
         private String copyright;
+
 
     }
 

@@ -1,6 +1,8 @@
 package TeamDPlus.code.controller.artwork;
 
 
+import TeamDPlus.code.advice.BadArgumentsValidException;
+import TeamDPlus.code.advice.ErrorCode;
 import TeamDPlus.code.dto.Success;
 import TeamDPlus.code.dto.request.ArtWorkRequestDto;
 import TeamDPlus.code.dto.request.ArtWorkRequestDto.ArtWorkComment;
@@ -23,8 +25,11 @@ public class ArtWorkCommentController {
     public ResponseEntity<Success> createComment(@PathVariable Long artwork_id,
                                                  @RequestBody ArtWorkComment data,
                                                  @AuthenticationPrincipal UserDetailsImpl user) {
-        return new ResponseEntity<>(new Success("코멘트 등록 완료",
-                artWorkCommentService.createComment(data,artwork_id,user.getUser())), HttpStatus.OK);
+        if (user != null) {
+            return new ResponseEntity<>(new Success("코멘트 등록 완료",
+                    artWorkCommentService.createComment(data,artwork_id,user.getUser())), HttpStatus.OK);
+        }
+        throw new BadArgumentsValidException(ErrorCode.NO_AUTHENTICATION_ERROR);
     }
     @PatchMapping("{comment_id}")
     public ResponseEntity<Success> updateComment(@PathVariable Long comment_id,

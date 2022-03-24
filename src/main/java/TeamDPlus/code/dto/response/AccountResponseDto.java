@@ -35,14 +35,15 @@ public class AccountResponseDto {
         private Long following_count;
         private Boolean is_follow;
         private Specialty specialty;
+        private Specialty other_specialty;
         private Boolean is_mypage;
 
         @Builder
         public AccountInfo(final Long account_id,final String nickname,final String profile_img,final Long exp,
                                  final String tendency,final String title_content,final String sub_content,
                                  final String linked_in,final String brunch,final String insta, String work_email,
-                                 final String work_time,final Long follower_count,final Long following_count,final Boolean is_follow,
-                                 final Specialty specialty, final Boolean is_mypage) {
+                                 final String work_time,final Long follower_count,final Long following_count,final boolean is_follow,
+                                 final Specialty specialty, final boolean is_mypage, final Specialty other) {
             this.account_id = account_id;
             this.nickname = nickname;
             this.profile_img = profile_img;
@@ -60,6 +61,7 @@ public class AccountResponseDto {
             this.is_follow = is_follow;
             this.specialty = specialty;
             this.is_mypage = is_mypage;
+            this.other_specialty = other;
         }
         public static AccountInfo from(final Account account, final Long follower, final Long following,
                                        final Boolean is_follow,final Boolean is_mypage) {
@@ -81,6 +83,7 @@ public class AccountResponseDto {
                     .is_follow(is_follow)
                     .specialty(account.getSpecialty())
                     .is_mypage(is_mypage)
+                    .other(account.getOther().getOtherSpecialty())
                     .build();
         }
     }

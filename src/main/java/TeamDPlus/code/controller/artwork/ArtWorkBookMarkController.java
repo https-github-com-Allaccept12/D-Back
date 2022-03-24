@@ -1,6 +1,8 @@
 package TeamDPlus.code.controller.artwork;
 
 
+import TeamDPlus.code.advice.BadArgumentsValidException;
+import TeamDPlus.code.advice.ErrorCode;
 import TeamDPlus.code.dto.Success;
 import TeamDPlus.code.jwt.UserDetailsImpl;
 import TeamDPlus.code.service.artwork.ArtworkMainService;
@@ -21,14 +23,21 @@ public class ArtWorkBookMarkController {
     @PostMapping("/artwork/{artwork_id}")
     public ResponseEntity<Success> doBookmark(@PathVariable Long artwork_id,
                                             @AuthenticationPrincipal UserDetailsImpl user) {
-        artWorkBookMarkService.doBookMark(user.getUser(),artwork_id);
-        return new ResponseEntity<>(new Success("작품 북마크 성공",""), HttpStatus.OK);
+        if (user != null) {
+            artWorkBookMarkService.doBookMark(user.getUser(),artwork_id);
+            return new ResponseEntity<>(new Success("작품 북마크 성공",""), HttpStatus.OK);
+        }
+        throw new BadArgumentsValidException(ErrorCode.NO_AUTHENTICATION_ERROR);
+
     }
     @DeleteMapping("/artwork/{artwork_id}")
     public ResponseEntity<Success> unBookmark(@PathVariable Long artwork_id,
                                             @AuthenticationPrincipal UserDetailsImpl user) {
-        artWorkBookMarkService.unBookMark(user.getUser(),artwork_id);
-        return new ResponseEntity<>(new Success("작품 북마크 해지",""), HttpStatus.OK);
+        if (user != null) {
+            artWorkBookMarkService.unBookMark(user.getUser(),artwork_id);
+            return new ResponseEntity<>(new Success("작품 북마크 해지",""), HttpStatus.OK);
+        }
+        throw new BadArgumentsValidException(ErrorCode.NO_AUTHENTICATION_ERROR);
     }
 
 
