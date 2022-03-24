@@ -21,7 +21,7 @@ public class AccountInitController {
     private final AccountInitialService accountInitialService;
 
     //프로필 설정
-    @RequestMapping(value = "/profile",method = {RequestMethod.POST,RequestMethod.PATCH})
+    @PostMapping("/profile")
     public ResponseEntity<Success<Long>> initProfile(@RequestBody InitProfileSetting initProfile,
                                                      @AuthenticationPrincipal UserDetailsImpl user) {
         return new ResponseEntity<>(new Success<>("프로필 설정 완료",
@@ -29,7 +29,7 @@ public class AccountInitController {
     }
     //닉네임 중복검사
     @PostMapping("/profile/nickname/{nickname}")
-    public ResponseEntity<Success<String>> initNickNameValid(@PathVariable("nickname") String nickname) {
+    public ResponseEntity<Success<String>> initNickNameValid(@PathVariable String nickname) {
         accountInitialService.getNickNameValidation(nickname);
         return new ResponseEntity<>(new Success<>("사용 가능 닉네임",""),HttpStatus.OK);
     }
@@ -41,7 +41,7 @@ public class AccountInitController {
                 accountInitialService.setInitTendency(initTendency,user.getUser().getId())),HttpStatus.OK);
     }
     //관심사 설정
-    @RequestMapping(value = {"/profile/interest"},method = {RequestMethod.POST,RequestMethod.PATCH})
+    @PostMapping("/profile/interest")
     public ResponseEntity<Success<Long>> initInterest(@RequestBody InitInterestSetting initInterest,
                                                       @AuthenticationPrincipal UserDetailsImpl user) {
         return new ResponseEntity<>(new Success<>("관심사 설정 완료",
