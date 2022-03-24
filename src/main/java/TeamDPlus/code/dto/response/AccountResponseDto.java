@@ -33,16 +33,16 @@ public class AccountResponseDto {
         private String work_time;
         private Long follower_count;
         private Long following_count;
-        private boolean is_follow;
+        private Boolean is_follow;
         private Specialty specialty;
-        private boolean is_mypage;
+        private Boolean is_mypage;
 
         @Builder
         public AccountInfo(final Long account_id,final String nickname,final String profile_img,final Long exp,
                                  final String tendency,final String title_content,final String sub_content,
                                  final String linked_in,final String brunch,final String insta, String work_email,
-                                 final String work_time,final Long follower_count,final Long following_count,final boolean is_follow,
-                                 final Specialty specialty, final boolean is_mypage) {
+                                 final String work_time,final Long follower_count,final Long following_count,final Boolean is_follow,
+                                 final Specialty specialty, final Boolean is_mypage) {
             this.account_id = account_id;
             this.nickname = nickname;
             this.profile_img = profile_img;
@@ -62,7 +62,7 @@ public class AccountResponseDto {
             this.is_mypage = is_mypage;
         }
         public static AccountInfo from(final Account account, final Long follower, final Long following,
-                                       final boolean is_follow,final boolean is_mypage) {
+                                       final Boolean is_follow,final Boolean is_mypage) {
             return AccountInfo.builder()
                     .account_id(account.getId())
                     .nickname(account.getNickname())
@@ -95,7 +95,7 @@ public class AccountResponseDto {
         private String img_url_fir;
         private String img_url_sec;
         private String account_job;
-        private boolean is_follow = false;
+        private Boolean is_follow = false;
 
         @Builder
         public TopArtist(final Long account_id, final String account_nickname, final String account_profile,

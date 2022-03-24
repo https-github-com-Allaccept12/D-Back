@@ -119,24 +119,24 @@ public class AccountMyPageController {
         return new ResponseEntity<>(new Success("작품 숨기기",""),HttpStatus.OK);
     }
 
-    @GetMapping("community/myPost/{board}")
+    @GetMapping("/community/myPost/{board}")
     public ResponseEntity<Success> myPost(@PathVariable String board,
                                           @AuthenticationPrincipal UserDetailsImpl user) {
         return new ResponseEntity<>(new Success("나의 Post",accountMyPageService.getMyPost(user.getUser().getId(), board)),HttpStatus.OK);
     }
 
-    @GetMapping("community/post/bookmark/{board}")
+    @GetMapping("/community/post/bookmark/{board}")
     public ResponseEntity<Success> myMyBookMarkPost(@PathVariable String board,
                                                     @AuthenticationPrincipal UserDetailsImpl user) {
         return new ResponseEntity<>(new Success("내가 스크랩한 글",accountMyPageService.getMyBookMarkPost(user.getUser().getId(), board)),HttpStatus.OK);
     }
 
-    @GetMapping("community/myanswer")
+    @GetMapping("/community/myanswer")
     public ResponseEntity<Success> getMyAnswer(@AuthenticationPrincipal UserDetailsImpl user) {
         return new ResponseEntity<>(new Success("나의 답글",accountMyPageService.getMyAnswer(user.getUser().getId())),HttpStatus.OK);
     }
 
-    @GetMapping("community/mycomment")
+    @GetMapping("/community/mycomment")
     public ResponseEntity<Success> getMyComment(@AuthenticationPrincipal UserDetailsImpl user) {
         return new ResponseEntity<>(new Success("나의 댓글",accountMyPageService.getMyComment(user.getUser().getId())),HttpStatus.OK);
     }

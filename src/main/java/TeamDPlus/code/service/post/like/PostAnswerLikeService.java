@@ -38,7 +38,7 @@ public class PostAnswerLikeService {
         if (!postAnswerLikesRepository.existByAccountIdAndPostAnswerId(account.getId(), postAnswerId)) {
             throw new ApiRequestException(ErrorCode.ALREADY_LIKE_ERROR);
         }
-        postAnswerLikesRepository.deleteByPostAnswerIdAndAccountId(postAnswerId, account.getId());
+        postAnswerLikesRepository.deleteByPostAnswerIdAndAccountId(postAnswer.getId(), account.getId());
     }
 
 }

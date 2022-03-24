@@ -137,7 +137,6 @@ public class KakaoAccountService {
         String refreshToken = jwtTokenProvider.createRefreshToken(Long.toString(kakaoUser.getId()));
 //        kakaoUser.refreshToken(refreshToken);
         redisService.setValues(refreshToken, kakaoUser.getId());
-        System.out.println("3");
         return LoginResponseDto.builder()
                 .account_id(kakaoUser.getId())
                 .profile_img(kakaoUser.getProfileImg())

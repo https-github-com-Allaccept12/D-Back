@@ -34,6 +34,7 @@ import TeamDPlus.code.service.file.FileProcessService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -113,7 +114,7 @@ public class PostMainPageServiceImpl implements PostMainPageService{
     }
 
     // 상세 게시글 (디플 - 꿀팁)
-    @Transactional(readOnly = true)
+    @Transactional
     public PostResponseDto.PostDetailPage showPostDetail(Long accountId, Long postId){
         Post post = postRepository.findById(postId).orElseThrow(() -> new ApiRequestException(ErrorCode.NONEXISTENT_ERROR));
         post.addViewCount();
@@ -234,7 +235,8 @@ public class PostMainPageServiceImpl implements PostMainPageService{
     }
 
     // 디모 QnA 상세페이지
-    @Transactional(readOnly = true)
+    @Cacheable(value="menu", key="#postId")
+    @Transactional
     public PostResponseDto.PostAnswerDetailPage detailAnswer(Long accountId, Long postId) {
         // 작품 게시글 존재여부
         Post post = postRepository.findById(postId)
