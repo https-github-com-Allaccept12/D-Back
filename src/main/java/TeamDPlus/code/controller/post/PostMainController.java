@@ -23,7 +23,6 @@ import java.util.List;
 public class PostMainController {
 
     private final int SORT_SIGN_LATEST = 1;
-    private final int SORT_SIGN_LIKE = 2;
     private final PostMainPageService postMainPageService;
 
     // 전체 목록
@@ -90,7 +89,6 @@ public class PostMainController {
                                               @RequestPart PostRequestDto.PostCreate data,
                                               @RequestPart List<MultipartFile> imgFile) {
 
-        System.out.println(user.getUser());
         return new ResponseEntity<>(new Success("디플 게시물 등록",
                 postMainPageService.createPost(user.getUser(), data, imgFile)), HttpStatus.OK);
     }

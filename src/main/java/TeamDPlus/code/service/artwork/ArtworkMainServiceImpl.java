@@ -52,7 +52,7 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
     @Transactional(readOnly = true)
     public MainResponseDto mostPopularArtWork(Long accountId) {
         //회원인지 비회원인지
-        if (accountId != null) {
+        if (accountId != 0) {
             Account account = accountRepository.findById(accountId).orElseThrow(() -> new ApiRequestException(ErrorCode.NO_USER_ERROR));
             List<ArtworkMain> artWorkList = getArtworkList(account.getInterest());
             List<AccountResponseDto.TopArtist> topArtist = getTopArtist(account.getInterest());
@@ -60,7 +60,7 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
             setIsLike(accountId,artWorkList);
             return MainResponseDto.builder().artwork(artWorkList).top_artist(topArtist).build();
         }
-        List<ArtworkMain> artworkList = getArtworkList(null);
+        List<ArtworkMain> artworkList = getArtworkList("");
         List<AccountResponseDto.TopArtist> topArtist = getTopArtist("");
         return MainResponseDto.builder().artwork(artworkList).top_artist(topArtist).build();
     }
@@ -69,7 +69,7 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
     public List<ArtworkMain> showArtworkMain(Long accountId, Long lastArtWorkId,String category,int sortSign){
         Pageable pageable = PageRequest.of(0,10);
         List<ArtworkMain> artWorkList = artWorkRepository.findAllArtWork(lastArtWorkId,category,pageable,sortSign);
-        if (accountId != null)
+        if (accountId != 0)
             setIsLike(accountId, artWorkList);
         return artWorkList;
     }
@@ -94,7 +94,7 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
         boolean isLike = false;
         boolean isBookmark = false;
         boolean isFollow = false;
-        if (accountId != null) {
+        if (accountId != 0) {
             //지금 상세페이지를 보고있는사람이 좋아요를 했는지
             isLike = artWorkLikesRepository.existByAccountIdAndArtWorkId(accountId, artWorkId);
             //지금 상세페이지를 보고있는사람이 북마크를 했는지

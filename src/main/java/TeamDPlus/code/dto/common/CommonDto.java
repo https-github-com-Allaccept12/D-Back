@@ -63,7 +63,7 @@ public class CommonDto {
     @Getter
     @NoArgsConstructor
     public static class IsCommentsLiked {
-        private boolean is_comment_liked;
+        private Boolean is_comment_liked;
 
         public void setIsCommentsLiked(boolean is_comment_liked){
             this.is_comment_liked = is_comment_liked;

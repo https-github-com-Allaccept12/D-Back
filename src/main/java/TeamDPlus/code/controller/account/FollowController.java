@@ -36,15 +36,15 @@ public class FollowController {
     }
     //팔로워리스트
     @GetMapping("/follower")
-    public ResponseEntity<Success> followerList(@RequestBody AccountVisit accountId) {
+    public ResponseEntity<Success> followerList(@RequestBody AccountVisit dto) {
         return new ResponseEntity<>(new Success("팔로워 리스트",
-                followService.findFollowingList(accountId.getAccount_id())),HttpStatus.OK);
+                followService.findFollowingList(dto.getAccount_id())),HttpStatus.OK);
     }
     //팔로잉리스트
     @GetMapping("/following")
-    public ResponseEntity<Success> followingList(@RequestBody AccountVisit accountId) {
+    public ResponseEntity<Success> followingList(@RequestBody AccountVisit dto) {
         return new ResponseEntity<>(new Success("팔로잉 리스트",
-                followService.findFollowerList(accountId.getAccount_id())),HttpStatus.OK);
+                followService.findFollowerList(dto.getAccount_id())),HttpStatus.OK);
     }
 }
 

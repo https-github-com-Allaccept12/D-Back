@@ -15,7 +15,6 @@ public interface PostMainPageService {
     // 전체 게시물 조회 (최신순)
     PostMainResponseDto showPostMain(Long accountId, Long lastPostId, PostBoard board, String category, int sortSign);
 
-
     // 게시글 작성
     int createPost(Account account, PostRequestDto.PostCreate dto, List<MultipartFile> imageFile);
 
