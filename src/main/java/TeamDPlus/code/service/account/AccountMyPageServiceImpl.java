@@ -173,7 +173,11 @@ public class AccountMyPageServiceImpl implements AccountMyPageService {
     public List<AccountResponseDto.MyPost> getMyPost(Long accountId, String board) {
         Pageable pageable = PageRequest.of(0,5);
         List<AccountResponseDto.MyPost> myPosts = postRepository.findPostByAccountIdAndBoard(accountId, board, pageable);
-        setPostInfo(myPosts);
+        if (board.equals("QNA")) {
+            setQnaInfo(myPosts);
+        } else if (board.equals("INFO")) {
+            setPostInfo(myPosts);
+        }
         return myPosts;
     }
 
@@ -196,13 +200,23 @@ public class AccountMyPageServiceImpl implements AccountMyPageService {
         return myComments;
     }
 
-    private void setPostInfo(List<AccountResponseDto.MyPost> myPosts) {
+    private void setQnaInfo(List<AccountResponseDto.MyPost> myPosts) {
         myPosts.forEach((myPost) -> {
            Long answerCount = postAnswerRepository.countByPostId(myPost.getPost_id());
            myPost.setAnswer_count(answerCount);
 
            Long bookMarkCount = postBookMarkRepository.countByPostId(myPost.getPost_id());
            myPost.setBookmark_count(bookMarkCount);
+        });
+    }
+
+    private void setPostInfo(List<AccountResponseDto.MyPost> myPosts) {
+        myPosts.forEach((myPost) -> {
+            Long commentCount = postCommentRepository.countByPostId(myPost.getPost_id());
+            myPost.setAnswer_count(commentCount);
+
+            Long bookMarkCount = postBookMarkRepository.countByPostId(myPost.getPost_id());
+            myPost.setBookmark_count(bookMarkCount);
         });
     }
 

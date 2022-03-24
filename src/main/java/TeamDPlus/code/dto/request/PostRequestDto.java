@@ -32,7 +32,7 @@ public class PostRequestDto {
 
         private List<CommonDto.PostTagDto> hashTag;
 
-        private boolean is_selected;
+        private Boolean is_selected;
 
         private PostBoard board;
 
@@ -56,7 +56,7 @@ public class PostRequestDto {
 
         private List<CommonDto.PostTagDto> hashTag;
 
-        private boolean is_selected;
+        private Boolean is_selected;
 
     }
 

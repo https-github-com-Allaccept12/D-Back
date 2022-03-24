@@ -20,6 +20,7 @@ public class PostAnswerLikeService {
     private final PostAnswerLikesRepository postAnswerLikesRepository;
     private final PostAnswerRepository postAnswerRepository;
 
+    @Transactional
     public void answerDoLike(Account account, Long postAnswerId) {
         PostAnswer postAnswer = postAnswerRepository.findById(postAnswerId)
                 .orElseThrow(() -> new ApiRequestException(ErrorCode.NONEXISTENT_ERROR));

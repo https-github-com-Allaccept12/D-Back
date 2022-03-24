@@ -12,6 +12,7 @@ import TeamDPlus.code.domain.post.comment.like.PostCommentLikesRepository;
 import TeamDPlus.code.dto.request.PostRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -20,6 +21,7 @@ public class PostCommentService {
     private final PostRepository postRepository;
     private final PostCommentLikesRepository postCommentLikesRepository;
 
+    @Transactional
     public Long createComment(Account account, Long postId, PostRequestDto.PostComment dto) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new ApiRequestException(ErrorCode.NONEXISTENT_ERROR));
         PostComment postComment = PostComment.builder().post(post).account(account).content(dto.getContent()).build();
@@ -27,12 +29,14 @@ public class PostCommentService {
         return save.getId();
     }
 
+    @Transactional
     public Long updateComment(Long accountId, Long commentId, PostRequestDto.PostComment dto) {
         PostComment postComment = commentValidation(accountId, commentId);
         postComment.updateComment(dto);
         return postComment.getId();
     }
 
+    @Transactional
     public void deleteComment(Long accountId, Long postCommentId) {
         commentValidation(accountId, postCommentId);
         postCommentLikesRepository.deleteAllByPostCommentId(postCommentId);
