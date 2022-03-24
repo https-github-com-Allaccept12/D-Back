@@ -279,7 +279,7 @@ public class PostMainPageServiceImpl implements PostMainPageService{
     // 디모 QnA 유사한질문 조회
     @Transactional(readOnly = true)
     public List<PostResponseDto.PostSimilarQuestion> similarQuestion(String category, Long accountId) {
-        List<PostResponseDto.PostSimilarQuestion> postSimilarList = postRepository.findByCategory(category);
+        List<PostResponseDto.PostSimilarQuestion> postSimilarList = postRepository.findByCategory(category, "QNA");
         postSimilarList.forEach((postSimilar) -> {
             // 좋아요 여부
             postSimilar.setLikeCountAndIsLike(false);
