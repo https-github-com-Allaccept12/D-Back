@@ -6,7 +6,6 @@ import java.util.List;
 
 public interface ArtworkImageRepositoryCustom {
 
-    List<CommonDto.ImgUrlDto> findArtWorkImageByTopView(Long accountId);
 
-    ArtWorkImage findByThumbnail(Long artWorksId);
+    List<String> findByAllImageUrl(Long artworkId);
 }

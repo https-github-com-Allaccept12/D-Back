@@ -4,8 +4,8 @@ package TeamDPlus.code.controller.artwork;
 import TeamDPlus.code.advice.BadArgumentsValidException;
 import TeamDPlus.code.advice.ErrorCode;
 import TeamDPlus.code.dto.Success;
-import TeamDPlus.code.dto.common.CommonDto.ArtWorkKeyword;
-import TeamDPlus.code.dto.request.ArtWorkRequestDto.ArtWorkCreateAndUpdate;
+import TeamDPlus.code.dto.request.ArtWorkRequestDto.ArtWorkCreate;
+import TeamDPlus.code.dto.request.ArtWorkRequestDto.ArtWorkUpdate;
 import TeamDPlus.code.jwt.UserDetailsImpl;
 import TeamDPlus.code.service.artwork.ArtworkMainService;
 import lombok.RequiredArgsConstructor;
@@ -87,19 +87,17 @@ public class ArtWorkMainController {
 
     @PostMapping("/api/artwork")
     public ResponseEntity<Success> createArtWork(@AuthenticationPrincipal UserDetailsImpl user,
-                                                 @RequestPart ArtWorkCreateAndUpdate data,
+                                                 @RequestPart ArtWorkCreate data,
                                                  @RequestPart List<MultipartFile> imgFile) {
         loginValid(user);
         return new ResponseEntity<>(new Success("작품 등록 완료"
                 ,artworkMainService.createArtwork(user.getUser().getId(),data, imgFile)),HttpStatus.OK);
     }
 
-
-
     @PatchMapping("/api/artwork/{artwork_id}")
     public ResponseEntity<Success> updateArtWork(@AuthenticationPrincipal UserDetailsImpl user,
                                                  @PathVariable Long artwork_id,
-                                                 @RequestPart ArtWorkCreateAndUpdate data,
+                                                 @RequestPart ArtWorkUpdate data,
                                                  @RequestPart List<MultipartFile> imgFile) {
         loginValid(user);
         return new ResponseEntity<>(new Success("작품 수정 완료",

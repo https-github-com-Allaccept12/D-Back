@@ -50,6 +50,7 @@ public class AccountRequestDto {
     @NoArgsConstructor
     public static class UpdateSpecialty {
         private Specialty specialty;
+        private Specialty other_specialty;
     }
 
     @Getter
