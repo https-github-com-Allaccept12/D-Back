@@ -28,7 +28,7 @@ public class AccountInitController {
                 accountInitialService.setInitProfile(initProfile,user.getUser().getId())), HttpStatus.OK);
     }
     //닉네임 중복검사
-    @PostMapping("/profile/nickname/{nickname}")
+    @GetMapping("/profile/nickname/{nickname}")
     public ResponseEntity<Success<String>> initNickNameValid(@PathVariable("nickname") String nickname) {
         accountInitialService.getNickNameValidation(nickname);
         return new ResponseEntity<>(new Success<>("사용 가능 닉네임",""),HttpStatus.OK);
