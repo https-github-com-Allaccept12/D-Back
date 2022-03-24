@@ -39,3 +39,6 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### resource ###
+/resources/dplus-6acf6-firebase-adminsdk-5fs3v-a015ce698a.json
