@@ -59,9 +59,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET,"/api/artwork/**","/api/artwork/detail/**","/api/artwork/search/**","/profile").permitAll()
                 .anyRequest().authenticated() // 그외 나머지 요청은 사용권한 체크
                 .and()
-                .exceptionHandling()
-                .authenticationEntryPoint(authenticationEntryPointHandler)
-                .and()
+//                .exceptionHandling()
+//                .authenticationEntryPoint(authenticationEntryPointHandler)
+//                .and()
                 .apply(new JwtSecurityConfig(jwtTokenProvider));
     }
 
