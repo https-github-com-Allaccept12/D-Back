@@ -8,11 +8,13 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
 
 @Entity
 @Getter
+@DynamicInsert
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Post extends BaseEntity {
 
@@ -41,7 +43,7 @@ public class Post extends BaseEntity {
     @Column(columnDefinition = "TINYINT default 0")
     private boolean isSelected;
 
-    @Enumerated
+    @Enumerated(EnumType.STRING)
     private PostBoard board;
 
 
@@ -58,7 +60,7 @@ public class Post extends BaseEntity {
     }
 
     public void addViewCount() {
-        this.view += 1;
+        this.view += 1L;
     }
 
     public void updatePost(PostRequestDto.PostUpdate dto){

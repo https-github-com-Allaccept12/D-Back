@@ -10,6 +10,7 @@ import TeamDPlus.code.domain.account.rank.RankRepository;
 import TeamDPlus.code.dto.GoogleUserInfoDto;
 import TeamDPlus.code.dto.response.LoginResponseDto;
 import TeamDPlus.code.jwt.JwtTokenProvider;
+import TeamDPlus.code.service.RedisService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -32,6 +33,7 @@ public class GoogleAccountService {
     private final AccountRepository accountRepository;
     private final RankRepository rankRepository;
     private final JwtTokenProvider jwtTokenProvider;
+    private final RedisService redisService;
 
     private final OtherRepository otherRepository;
 
@@ -138,7 +140,8 @@ public class GoogleAccountService {
 
         String accessToken = jwtTokenProvider.createToken(Long.toString(googleUser.getId()), googleUser.getEmail());
         String refreshToken = jwtTokenProvider.createRefreshToken(Long.toString(googleUser.getId()));
-        googleUser.refreshToken(refreshToken);
+//        googleUser.refreshToken(refreshToken);
+        redisService.setValues(refreshToken, googleUser.getId());
         return LoginResponseDto.builder()
                 .account_id(googleUser.getId())
                 .profile_img(googleUser.getProfileImg())

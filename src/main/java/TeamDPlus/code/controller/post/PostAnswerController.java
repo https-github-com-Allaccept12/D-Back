@@ -31,26 +31,26 @@ public class PostAnswerController {
 
     @PatchMapping("/answer/{answer_id}")
     public ResponseEntity<Success> updatePostAnswer(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                                     @PathVariable Long post_answer_id,
+                                                     @PathVariable Long answer_id,
                                                      @RequestBody PostRequestDto.PostAnswer dto) {
         loginValid(userDetails);
         return new ResponseEntity<>(new Success("질문글 답변 수정 완료",
-                postAnswerService.updateAnswer(dto, post_answer_id, userDetails.getUser().getId())), HttpStatus.OK);
+                postAnswerService.updateAnswer(dto, answer_id, userDetails.getUser().getId())), HttpStatus.OK);
     }
 
     @DeleteMapping("/answer/{answer_id}")
     public ResponseEntity<Success> deletePostAnswer(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                                     @PathVariable Long post_answer_id) {
+                                                     @PathVariable Long answer_id) {
         loginValid(userDetails);
-        postAnswerService.deleteAnswer(userDetails.getUser().getId(), post_answer_id);
+        postAnswerService.deleteAnswer(answer_id, userDetails.getUser().getId());
         return new ResponseEntity<>(new Success("질문글 답변 삭제 완료",""), HttpStatus.OK);
     }
 
     @PatchMapping("/answer/select/{answer_id}")
     public ResponseEntity<Success> doIsSelected(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                                @PathVariable Long post_answer_id) {
+                                                @PathVariable Long answer_id) {
         loginValid(userDetails);
-        postAnswerService.doIsSelected(post_answer_id, userDetails.getUser().getId());
+        postAnswerService.doIsSelected(answer_id, userDetails.getUser().getId());
         return new ResponseEntity<>(new Success("채택 완료", ""), HttpStatus.OK);
     }
 

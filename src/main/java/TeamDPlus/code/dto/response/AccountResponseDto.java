@@ -64,7 +64,7 @@ public class AccountResponseDto {
             this.other_specialty = other;
         }
         public static AccountInfo from(final Account account, final Long follower, final Long following,
-                                       final boolean is_follow,final boolean is_mypage) {
+                                       final Boolean is_follow,final Boolean is_mypage) {
             return AccountInfo.builder()
                     .account_id(account.getId())
                     .nickname(account.getNickname())

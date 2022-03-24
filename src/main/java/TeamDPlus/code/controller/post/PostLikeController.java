@@ -49,14 +49,14 @@ public class PostLikeController {
         return new ResponseEntity<>(new Success("작품 코멘트 좋아요 취소",""), HttpStatus.OK);
     }
 
-    @PostMapping("/{postAnswer_id}")
+    @PostMapping("/answer/{postAnswer_id}")
     public ResponseEntity<Success> answerDoLike(@PathVariable Long postAnswer_id,
                                                 @AuthenticationPrincipal UserDetailsImpl userDetails) {
         postAnswerLikeService.answerDoLike(userDetails.getUser(), postAnswer_id);
         return new ResponseEntity<>(new Success("작품 QnA 답글 좋아요 완료",""), HttpStatus.OK);
     }
 
-    @DeleteMapping("/{postAnswer_id}")
+    @DeleteMapping("/answer/{postAnswer_id}")
     public ResponseEntity<Success> answerUnLike(@PathVariable Long postAnswer_id,
                                                 @AuthenticationPrincipal UserDetailsImpl userDetails) {
         postAnswerLikeService.answerUnLike(userDetails.getUser(), postAnswer_id);

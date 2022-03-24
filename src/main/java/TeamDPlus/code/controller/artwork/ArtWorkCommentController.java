@@ -25,7 +25,7 @@ public class ArtWorkCommentController {
     public ResponseEntity<Success> createComment(@PathVariable Long artwork_id,
                                                  @RequestBody ArtWorkComment data,
                                                  @AuthenticationPrincipal UserDetailsImpl user) {
-        if (null != null) {
+        if (user != null) {
             return new ResponseEntity<>(new Success("코멘트 등록 완료",
                     artWorkCommentService.createComment(data,artwork_id,user.getUser())), HttpStatus.OK);
         }

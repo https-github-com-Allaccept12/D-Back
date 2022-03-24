@@ -10,6 +10,7 @@ import TeamDPlus.code.domain.account.rank.RankRepository;
 import TeamDPlus.code.dto.KakaoUserInfoDto;
 import TeamDPlus.code.dto.response.LoginResponseDto;
 import TeamDPlus.code.jwt.JwtTokenProvider;
+import TeamDPlus.code.service.RedisService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -30,9 +31,9 @@ import javax.transaction.Transactional;
 public class KakaoAccountService {
 
     private final AccountRepository accountRepository;
-
     private final RankRepository rankRepository;
     private final JwtTokenProvider jwtTokenProvider;
+    private final RedisService redisService;
     private final OtherRepository otherRepository;
 
     @Transactional
@@ -145,7 +146,8 @@ public class KakaoAccountService {
 
         String accessToken = jwtTokenProvider.createToken(Long.toString(kakaoUser.getId()), kakaoUser.getEmail());
         String refreshToken = jwtTokenProvider.createRefreshToken(Long.toString(kakaoUser.getId()));
-        kakaoUser.refreshToken(refreshToken);
+//        kakaoUser.refreshToken(refreshToken);
+        redisService.setValues(refreshToken, kakaoUser.getId());
         return LoginResponseDto.builder()
                 .account_id(kakaoUser.getId())
                 .profile_img(kakaoUser.getProfileImg())
