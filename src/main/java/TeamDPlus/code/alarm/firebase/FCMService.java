@@ -14,6 +14,7 @@ import java.util.concurrent.ExecutionException;
 @Service
 public class FCMService {
 
+    // 맵형식으로 닉네임, 토큰 저장
     private static final Logger logger = LoggerFactory.getLogger(FCMService.class);
 
     public void send(final NotificationRequestDto notificationRequest) throws InterruptedException, ExecutionException {
