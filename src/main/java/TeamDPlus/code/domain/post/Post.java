@@ -67,7 +67,6 @@ public class Post extends BaseEntity {
         this.title = dto.getTitle();
         this.category = dto.getCategory();
         this.content = dto.getContent();
-        this.isSelected = dto.is_selected();
     }
     public static Post of(Account account, PostRequestDto.PostCreate dto) {
         return Post.builder()
@@ -76,7 +75,6 @@ public class Post extends BaseEntity {
                 .content(dto.getContent())
                 .title(dto.getTitle())
                 .board(dto.getBoard())
-                .isSelected(dto.is_selected())
                 .build();
     }
 

@@ -71,7 +71,7 @@ public class PostMainPageServiceImpl implements PostMainPageService{
     public PostMainResponseDto showPostMain(Long accountId, Long lastPostId, PostBoard board, String category, int sortSign) {
 
         // 회원이면
-        if (accountId != null){
+        if (accountId != 0){
             // 메인 페이지 전체 피드
             Pageable pageable = PageRequest.of(0,12);
             List<PostResponseDto.PostPageMain> postList = postRepository.findAllPostOrderByCreatedDesc(lastPostId, pageable, board, sortSign, category);
@@ -90,6 +90,8 @@ public class PostMainPageServiceImpl implements PostMainPageService{
                 List<PostTag> tags =postTagRepository.findPostTagsByPostId(postList.get(i).getPost_id());
                 postList.get(i).setHash_tag(tags);
             }
+
+            return PostMainResponseDto.builder().postMainPage(postList).postRecommendationFeed(postRecommendation).build();
         }
 
         // 메인 페이지 전체 피드
@@ -130,7 +132,7 @@ public class PostMainPageServiceImpl implements PostMainPageService{
         // 코멘트 좋아요 담을 리스트 생성
         List<CommonDto.IsCommentsLiked> isCommentsLikes = new ArrayList<>();
 
-        if(accountId != null){
+        if(accountId != 0){
             isLike = postLikesRepository.existByAccountIdAndPostId(accountId, postId);
             isBookmark = postBookMarkRepository.existByAccountIdAndPostId(accountId, postId);
             isFollow = followRepository.existsByFollowerIdAndFollowingId(accountId, postSubDetail.getAccount_id());
@@ -152,7 +154,6 @@ public class PostMainPageServiceImpl implements PostMainPageService{
     // 게시글 작성
     @Transactional
     public int createPost(Account account, PostRequestDto.PostCreate dto, List<MultipartFile> imgFile) {
-
         Post post = Post.of(account, dto);
         Post savedPost = postRepository.save(post);
 
@@ -258,7 +259,7 @@ public class PostMainPageServiceImpl implements PostMainPageService{
         boolean isBookmark = false;
         boolean isFollow = false;
 
-        if (accountId != null) {
+        if (accountId != 0) {
             // 지금 상세페이지를 보고있는 사람이 좋아요를 했는지
             isLike = postLikesRepository.existByAccountIdAndPostId(accountId, postId);
             // 지금 상세페이지를 보고있는 사람이 북마크를 했는지
@@ -280,19 +281,36 @@ public class PostMainPageServiceImpl implements PostMainPageService{
     @Transactional(readOnly = true)
     public List<PostResponseDto.PostSimilarQuestion> similarQuestion(String category, Long accountId) {
         List<PostResponseDto.PostSimilarQuestion> postSimilarList = postRepository.findByCategory(category, "QNA");
+        if (accountId != null) {
+            postSimilarList.forEach((postSimilar) -> {
+                // 좋아요 여부
+                postSimilar.setLikeCountAndIsLike(false);
+                if (postLikesRepository.existByAccountIdAndPostId(accountId, postSimilar.getPost_id())) {
+                    postSimilar.setLikeCountAndIsLike(true);
+                }
+
+                // 북마크 여부
+                postSimilar.setIsBookmark(false);
+                if (postBookMarkRepository.existByAccountIdAndPostId(accountId, postSimilar.getPost_id())) {
+                    postSimilar.setIsBookmark(true);
+                }
+
+                // 질문 답변 가져오기
+                Long answerCount = postAnswerRepository.countByPostId(postSimilar.getPost_id());
+                postSimilar.setAnswer_count(answerCount);
+
+                Long bookMarkCount = postBookMarkRepository.countByPostId(postSimilar.getPost_id());
+                postSimilar.setBookmark_count(bookMarkCount);
+
+                // 태그 리스트 가져오기
+                List<PostTag> postTagList = postTagRepository.findPostTagsByPostId(postSimilar.getPost_id());
+                postSimilar.setHash_tag(postTagList);
+
+            });
+            return postSimilarList;
+        }
+
         postSimilarList.forEach((postSimilar) -> {
-            // 좋아요 여부
-            postSimilar.setLikeCountAndIsLike(false);
-            if (postLikesRepository.existByAccountIdAndPostId(accountId, postSimilar.getPost_id())) {
-                postSimilar.setLikeCountAndIsLike(true);
-            }
-
-            // 북마크 여부
-            postSimilar.setIsBookmark(false);
-            if (postBookMarkRepository.existByAccountIdAndPostId(accountId, postSimilar.getPost_id())) {
-                postSimilar.setIsBookmark(true);
-            }
-
             // 질문 답변 가져오기
             Long answerCount = postAnswerRepository.countByPostId(postSimilar.getPost_id());
             postSimilar.setAnswer_count(answerCount);
