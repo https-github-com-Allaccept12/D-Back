@@ -42,7 +42,7 @@ public class ArtWorkMainController {
                 artworkMainService.showArtworkMain(dto.getAccount_id(),last_artwork_id,"",SORT_SIGN_LATEST)),HttpStatus.OK);
     }
 
-    @GetMapping("/api/artwork/category/{category}/{last_artwork_id}/")
+    @GetMapping("/api/artwork/category/{category}/{last_artwork_id}")
     public ResponseEntity<Success> artWorkCategory(@RequestBody AccountVisit dto,
                                                    @PathVariable String category,
                                                    @PathVariable Long last_artwork_id) {

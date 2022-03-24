@@ -118,6 +118,7 @@ public class ArtWorks extends BaseEntity {
                 .isMaster(dto.getMaster())
                 .specialty(dto.getSpecialty())
                 .copyright(dto.getCopyright())
+                .view(0L)
                 .build();
     }
 
