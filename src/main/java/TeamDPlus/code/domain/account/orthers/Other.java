@@ -16,7 +16,7 @@ import javax.persistence.*;
 public class Other {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "other_id")
     private Long id;
 

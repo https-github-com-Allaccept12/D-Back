@@ -16,7 +16,7 @@ import javax.persistence.*;
 public class PostAnswer extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "post_answer_id")
     private Long id;
 

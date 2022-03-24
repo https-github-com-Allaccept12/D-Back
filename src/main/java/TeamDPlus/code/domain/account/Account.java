@@ -23,7 +23,7 @@ import javax.persistence.*;
 public class Account extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE) // h2는 auto, mysql는 IDENTITY
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // h2는 auto, mysql는 IDENTITY
     @Column(name = "account_id")
     private Long id;
 
