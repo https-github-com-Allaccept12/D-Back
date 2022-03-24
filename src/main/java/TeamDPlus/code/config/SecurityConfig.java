@@ -56,7 +56,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests() // 요청에 대한 사용권한 체크
                 .antMatchers("/user/**").permitAll()
                 .antMatchers("/").permitAll()
-                .antMatchers(HttpMethod.GET,"/api/artwork/**","/api/artwork/detail/**","/api/artwork/search/**","/profile").permitAll()
+                .antMatchers(HttpMethod.GET,"/api/artwork/**","/api/artwork/detail/**","/api/artwork/search/**","/profile",
+                        "/api/profile/nickname/**").permitAll()
                 .anyRequest().authenticated() // 그외 나머지 요청은 사용권한 체크
                 .and()
 //                .exceptionHandling()
