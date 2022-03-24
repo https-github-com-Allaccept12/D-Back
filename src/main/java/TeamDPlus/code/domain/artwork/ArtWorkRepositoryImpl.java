@@ -91,7 +91,8 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
                 .leftJoin(artWorkLikes).on(artWorkLikes.artWorks.eq(artWorks))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
-                .where(isInterest(interest))
+                .where(isInterest(interest),
+                        artWorks.scope.isTrue())
                 .groupBy(artWorks.id)
                 .orderBy(artWorkLikes.count().desc(), artWorks.view.desc())
                 .fetch();
@@ -116,6 +117,7 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
                     .offset(pageable.getOffset())
                     .limit(pageable.getPageSize())
                     .groupBy(artWorks.id)
+                    .where(artWorks.scope.isTrue())
                     .orderBy(artWorkLikes.count().desc(), artWorks.view.desc())
                     .fetch();
         }
@@ -228,7 +230,8 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
                 .join(artWorks.account, account)
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
-                .where(artWorks.account.id.eq(accountId).and(artWorks.id.ne(artWorkId)))
+                .where(artWorks.account.id.eq(accountId).and(artWorks.id.ne(artWorkId)),
+                        artWorks.scope.isTrue())
                 .orderBy(artWorks.created.desc())
                 .fetch();
 
@@ -256,7 +259,8 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
                 .where(isLastArtworkId(lastArtWorkId),
                         artWorks.title.contains(keyword),
                         artWorks.content.contains(keyword),
-                        artWorks.account.nickname.contains(keyword))
+                        artWorks.account.nickname.contains(keyword),
+                        artWorks.scope.isTrue())
                 .groupBy(artWorks.id)
                 .orderBy(artWorks.created.desc())
                 .fetch();
