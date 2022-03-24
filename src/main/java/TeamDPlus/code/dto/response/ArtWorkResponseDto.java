@@ -29,7 +29,7 @@ public class ArtWorkResponseDto {
         private String img;
         private Long view_count;
         private Long like_count;
-        private boolean is_like;
+        private Boolean is_like;
         private Timestamp create_time;
 
         @Builder
@@ -54,9 +54,9 @@ public class ArtWorkResponseDto {
     @NoArgsConstructor
     public static class ArtWorkDetail {
 
-        private boolean is_like;
-        private boolean is_bookmark;
-        private boolean is_follow ;
+        private Boolean is_like;
+        private Boolean is_bookmark;
+        private Boolean is_follow ;
         private ArtWorkSubDetail artWorkSubDetail;
         private List<CommonDto.ImgUrlDto> img;
         private List<ArtWorkComment> comment;

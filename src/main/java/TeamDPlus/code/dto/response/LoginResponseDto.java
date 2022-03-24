@@ -12,7 +12,7 @@ public class LoginResponseDto {
     private String profile_img;
     private String access_token;
     private String refresh_token;
-    private boolean isSignUp;
+    private Boolean isSignUp;
 
     @Builder
     public LoginResponseDto(final Long account_id, final String profile_img, final String access_token, final String refresh_token, final boolean isSignUp) {

@@ -30,9 +30,9 @@ public class PostResponseDto {
         private Long comment_count;
         private String category;
         private Timestamp create_time;
-        private boolean is_selected;
-        private boolean is_like;
-        private boolean is_bookmarked;
+        private Boolean is_selected;
+        private Boolean is_like;
+        private Boolean is_bookmarked;
         private List<PostTag> hash_tag;
 
         @Builder

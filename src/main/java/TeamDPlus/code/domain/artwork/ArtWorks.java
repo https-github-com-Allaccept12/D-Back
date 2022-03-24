@@ -4,8 +4,8 @@ package TeamDPlus.code.domain.artwork;
 import TeamDPlus.code.domain.BaseEntity;
 import TeamDPlus.code.domain.account.Account;
 import TeamDPlus.code.domain.account.Specialty;
-import TeamDPlus.code.domain.artwork.image.ArtWorkImage;
 import TeamDPlus.code.dto.request.ArtWorkRequestDto;
+import TeamDPlus.code.dto.request.ArtWorkRequestDto.ArtWorkCreate;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,10 +13,6 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
-import java.math.BigInteger;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Getter
@@ -30,7 +26,7 @@ public class ArtWorks extends BaseEntity {
     private Long id;
 
     @Column(nullable = false)
-    private boolean scope;
+    private Boolean scope;
 
     @Column(nullable = false)
     private String title;
@@ -65,9 +61,9 @@ public class ArtWorks extends BaseEntity {
     private Account account;
 
     @Builder
-    public ArtWorks(final boolean scope,final String title,final String content,final String category,
+    public ArtWorks(final Boolean scope,final String title,final String content,final String category,
                     final Long view,final String workStart,final String workEnd,final Account account,
-                    final boolean isMaster, final Specialty specialty,final String copyright) {
+                    final Boolean isMaster, final Specialty specialty,final String copyright) {
         this.scope = scope;
         this.title = title;
         this.content = content;
@@ -86,13 +82,13 @@ public class ArtWorks extends BaseEntity {
     }
 
     public void updateArtWork(ArtWorkRequestDto.ArtWorkUpdate dto) {
-        this.scope = dto.isScope();
+        this.scope = dto.getScope();
         this.title = dto.getTitle();
         this.content = dto.getContent();
         this.category = dto.getCategory();
         this.workStart = dto.getWork_start();
         this.workEnd = dto.getWork_end();
-        this.isMaster = dto.isMaster();
+        this.isMaster = dto.getMaster();
         this.copyright = dto.getCopyright();
     }
     public void updateArtWorkIsMaster(boolean isMaster) {
@@ -110,16 +106,16 @@ public class ArtWorks extends BaseEntity {
         this.thumbnail = thumbnail;
     }
 
-    public static ArtWorks of(Account account, ArtWorkRequestDto.ArtWorkCreate dto) {
+    public static ArtWorks of(Account account, ArtWorkCreate dto) {
         return ArtWorks.builder()
                 .account(account)
                 .category(dto.getCategory())
                 .content(dto.getContent())
-                .scope(dto.isScope())
+                .scope(dto.getScope())
                 .title(dto.getTitle())
                 .workStart(dto.getWork_start())
                 .workEnd(dto.getWork_end())
-                .isMaster(dto.isMaster())
+                .isMaster(dto.getMaster())
                 .specialty(dto.getSpecialty())
                 .copyright(dto.getCopyright())
                 .build();

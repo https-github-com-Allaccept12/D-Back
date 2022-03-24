@@ -139,10 +139,13 @@ public class Account extends BaseEntity {
         this.bestArtWorkTwo = bestArtWorkTwo;
     }
 
+    public void updateProfileImg(String profileImg) {
+        this.profileImg = profileImg;
+    }
+
     public void setInitProfile(final InitProfileSetting dto) {
         this.nickname = dto.getNickname();
         this.job = dto.getJob();
-        this.profileImg = dto.getProfile_img();
         this.titleContent = dto.getIntro_content();
         this.workEmail = dto.getWork_email();
         this.workTime = dto.getWork_time();
