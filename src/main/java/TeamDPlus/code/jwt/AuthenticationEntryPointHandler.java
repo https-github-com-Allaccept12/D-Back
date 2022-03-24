@@ -1,8 +1,7 @@
 package TeamDPlus.code.jwt;
 
-import TeamDPlus.code.advice.ErrorCode;
 import lombok.RequiredArgsConstructor;
-import org.json.simple.JSONObject;
+import net.minidev.json.JSONObject;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;

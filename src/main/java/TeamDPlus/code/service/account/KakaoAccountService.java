@@ -8,6 +8,7 @@ import TeamDPlus.code.domain.account.rank.RankRepository;
 import TeamDPlus.code.dto.KakaoUserInfoDto;
 import TeamDPlus.code.dto.response.LoginResponseDto;
 import TeamDPlus.code.jwt.JwtTokenProvider;
+import TeamDPlus.code.service.RedisService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -28,9 +29,9 @@ import javax.transaction.Transactional;
 public class KakaoAccountService {
 
     private final AccountRepository accountRepository;
-
     private final RankRepository rankRepository;
     private final JwtTokenProvider jwtTokenProvider;
+    private final RedisService redisService;
 
     @Transactional
     public LoginResponseDto kakaoLogin(String code) throws JsonProcessingException {
@@ -54,7 +55,7 @@ public class KakaoAccountService {
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("grant_type", "authorization_code");
         body.add("client_id", "5c2af632e5eb943eadbf20d0c4006bdb");
-        body.add("redirect_uri", "http://localhost:3000/user/kakao/callback");
+        body.add("redirect_uri", "http://localhost:8081/user/kakao/callback");
         body.add("code", code);
 
         // HTTP 요청 보내기
@@ -134,7 +135,9 @@ public class KakaoAccountService {
 
         String accessToken = jwtTokenProvider.createToken(Long.toString(kakaoUser.getId()), kakaoUser.getEmail());
         String refreshToken = jwtTokenProvider.createRefreshToken(Long.toString(kakaoUser.getId()));
-        kakaoUser.refreshToken(refreshToken);
+//        kakaoUser.refreshToken(refreshToken);
+        redisService.setValues(refreshToken, kakaoUser.getId());
+        System.out.println("3");
         return LoginResponseDto.builder()
                 .account_id(kakaoUser.getId())
                 .profile_img(kakaoUser.getProfileImg())

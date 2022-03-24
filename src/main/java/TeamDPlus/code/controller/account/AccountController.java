@@ -1,6 +1,8 @@
 package TeamDPlus.code.controller.account;
 
 import TeamDPlus.code.dto.Success;
+import TeamDPlus.code.jwt.UserDetailsImpl;
+import TeamDPlus.code.service.RedisService;
 import TeamDPlus.code.service.account.GoogleAccountService;
 import TeamDPlus.code.service.account.KakaoAccountService;
 import TeamDPlus.code.service.account.SecurityService;
@@ -8,9 +10,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
 
 @RestController
 @RequiredArgsConstructor
@@ -36,6 +40,11 @@ public class AccountController {
     public ResponseEntity<Success> refresh(@RequestHeader(value = "Authorization") String refreshToken, HttpServletRequest request) {
         return new ResponseEntity<>(new Success<>(
                 "토큰 재발급 성공", securityService.refresh(refreshToken, request)), HttpStatus.OK);
+    }
+
+    @GetMapping("/loginTest")
+    public void loginTest(@AuthenticationPrincipal UserDetailsImpl user) {
+        System.out.println(user.getUser().getId());
     }
 
 }

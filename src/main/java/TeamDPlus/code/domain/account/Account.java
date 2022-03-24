@@ -52,7 +52,7 @@ public class Account extends BaseEntity {
     @Column(columnDefinition = "BIGINT default 0")
     private Long exp;
 
-    private String refreshToken;
+//    private String refreshToken;
 
     private String linkedIn;
 
@@ -79,7 +79,7 @@ public class Account extends BaseEntity {
     @Builder
     public Account(final String username, final String email, final String nickname, final String subContent, final String titleContent, final String profileImg,
                    final int career, final String phoneNumber, final String workTime,
-                   final String workEmail, final String tendency, final Long exp, final String refreshToken,
+                   final String workEmail, final String tendency, final Long exp,
                    final String linkedIn, final String brunch, final String instagram,
                    final String interest, final Rank rank, final String job, final Specialty specialty)  {
         this.username = username;
@@ -94,7 +94,6 @@ public class Account extends BaseEntity {
         this.workEmail = workEmail;
         this.tendency = tendency;
         this.exp = exp;
-        this.refreshToken = refreshToken;
         this.linkedIn = linkedIn;
         this.brunch = brunch;
         this.instagram = instagram;
@@ -104,9 +103,9 @@ public class Account extends BaseEntity {
         this.specialty = specialty;
     }
 
-    public void refreshToken(final String refreshToken) {
-        this.refreshToken = refreshToken;
-    }
+//    public void refreshToken(final String refreshToken) {
+//        this.refreshToken = refreshToken;
+//    }
 
     public void initTendency(final String requestTendency) {
         this.tendency = requestTendency;
