@@ -10,7 +10,6 @@ import TeamDPlus.code.service.RedisService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 
 @Service
@@ -22,9 +21,9 @@ public class SecurityService {
     private final RedisService redisService;
 
     @Transactional
-    public TokenResponseDto refresh(String refreshToken, HttpServletRequest request) {
+    public TokenResponseDto refresh(String accessToken, String refreshToken) {
         // 리프레시 토큰 기간 만료 에러
-        if (jwtTokenProvider.validateToken(request, refreshToken)) {
+        if (!jwtTokenProvider.validateRefreshToken(refreshToken)) {
             throw new ApiRequestException(ErrorCode.TOKEN_EXPIRATION_ERROR);
         }
 
@@ -32,6 +31,11 @@ public class SecurityService {
         String getRefreshToken = redisService.getValues(userPk);
         Account account = accountRepository.findById(userPk)
                 .orElseThrow(() -> new ApiRequestException(ErrorCode.NO_USER_ERROR));
+
+        if (jwtTokenProvider.validateRefreshToken(accessToken)) {
+            redisService.delValues(userPk);
+            throw new ApiRequestException(ErrorCode.TOKEN_EXPIRATION_ERROR);
+        }
 
 //        String getRefreshToken = account.getRefreshToken();
         

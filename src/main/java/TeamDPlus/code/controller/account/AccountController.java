@@ -37,9 +37,10 @@ public class AccountController {
     }
 
     @PostMapping("/user/refresh")
-    public ResponseEntity<Success> refresh(@RequestHeader(value = "Authorization") String refreshToken, HttpServletRequest request) {
+    public ResponseEntity<Success> refresh(@RequestHeader(value = "AccessAuthorization") String accessToken,
+                                           @RequestHeader(value = "RefreshAuthorization") String refreshToken) {
         return new ResponseEntity<>(new Success<>(
-                "토큰 재발급 성공", securityService.refresh(refreshToken, request)), HttpStatus.OK);
+                "토큰 재발급 성공", securityService.refresh(accessToken, refreshToken)), HttpStatus.OK);
     }
 
     @GetMapping("/loginTest")
