@@ -17,6 +17,7 @@ import TeamDPlus.code.dto.request.ArtWorkRequestDto.ArtWorkCreate;
 import TeamDPlus.code.dto.request.ArtWorkRequestDto.ArtWorkUpdate;
 import TeamDPlus.code.dto.response.AccountResponseDto.TopArtist;
 import TeamDPlus.code.dto.response.ArtWorkResponseDto;
+import TeamDPlus.code.dto.response.ArtWorkResponseDto.ArtWorkDetail;
 import TeamDPlus.code.dto.response.ArtWorkResponseDto.ArtworkMain;
 import TeamDPlus.code.dto.response.MainResponseDto;
 import TeamDPlus.code.service.file.FileProcessService;
@@ -73,7 +74,7 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
     }
 
     @Transactional
-    public ArtWorkResponseDto.ArtWorkDetail detailArtWork(Long accountId, Long artWorkId) {
+    public ArtWorkDetail detailArtWork(Long accountId, Long artWorkId) {
         //작품 게시글 존재여부
         ArtWorks artWorks = artWorkRepository.findById(artWorkId)
                 .orElseThrow(() -> new ApiRequestException(ErrorCode.NONEXISTENT_ERROR));
@@ -102,7 +103,7 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
         }
         //상세페이지의 코멘트 개수
         artWorksSub.setComment_count((long) commentList.size());
-        return ArtWorkResponseDto.ArtWorkDetail.from(imgList,commentList,similarList,artWorksSub,isLike,isBookmark,isFollow);
+        return ArtWorkDetail.from(imgList,commentList,similarList,artWorksSub,isLike,isBookmark,isFollow);
     }
 
     @Transactional
@@ -163,15 +164,17 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
     }
 
     private void s3ImageUpload(List<MultipartFile> multipartFiles,ArtWorkCreate dto, ArtWorks saveArtwork) {
-        multipartFiles.forEach((file) -> {
+        for (MultipartFile file : multipartFiles) {
             boolean thumbnail = Objects.equals(file.getOriginalFilename(), dto.getThumbnail());
             String imgUrl = fileProcessService.uploadImage(file);
-            ArtWorkImage img = ArtWorkImage.builder().artWorks(saveArtwork).artworkImg(imgUrl).build();
-            artWorkImageRepository.save(img);
             if (thumbnail) {
                 saveArtwork.updateArtWorkThumbnail(imgUrl);
+                continue;
             }
-        });
+            ArtWorkImage img = ArtWorkImage.builder().artWorks(saveArtwork).artworkImg(imgUrl).build();
+            artWorkImageRepository.save(img);
+
+        }
     }
 
     private void updateImg( List<MultipartFile> multipartFiles, ArtWorks findArtWork, ArtWorkUpdate dto) {
@@ -182,15 +185,18 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
             });
         }
         if (multipartFiles != null) {
-            multipartFiles.forEach((file) -> {
+            for (MultipartFile file : multipartFiles) {
                 boolean thumbnail = Objects.equals(file.getOriginalFilename(), dto.getThumbnail());
                 String imgUrl = fileProcessService.uploadImage(file);
+                if (thumbnail) {
+                    fileProcessService.deleteImage(findArtWork.getThumbnail());
+                    findArtWork.updateArtWorkThumbnail(imgUrl);
+                    continue;
+                }
                 ArtWorkImage img = ArtWorkImage.builder().artWorks(findArtWork).artworkImg(imgUrl).build();
                 artWorkImageRepository.save(img);
-                if (thumbnail) {
-                    findArtWork.updateArtWorkThumbnail(imgUrl);
-                }
-            });
+
+            }
         }
     }
     private void isThumbnailCheck(Long artworkId, ArtWorkUpdate dto, ArtWorks artWorks) {
