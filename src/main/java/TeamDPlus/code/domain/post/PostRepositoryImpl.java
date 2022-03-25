@@ -168,7 +168,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
 
     // 유사한 질문
     @Override
-    public List<PostResponseDto.PostSimilarQuestion> findByCategory(String category, String board) {
+    public List<PostResponseDto.PostSimilarQuestion> findByCategory(String category, String board, Long postId) {
         List<PostResponseDto.PostSimilarQuestion> result = queryFactory
                 .select(Projections.constructor(PostResponseDto.PostSimilarQuestion.class,
                         post.id,
@@ -184,7 +184,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                 .from(post)
                 .join(post.account, account)
                 .leftJoin(postLikes).on(postLikes.post.eq(post))
-                .where(post.category.eq(category), post.board.eq(PostBoard.valueOf(board)))
+                .where(post.category.eq(category), post.board.eq(PostBoard.valueOf(board)), post.id.ne(postId))
                 .offset(0)
                 .limit(5)
                 .groupBy(post.id)
