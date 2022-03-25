@@ -4,7 +4,6 @@ package TeamDPlus.code.controller.artwork;
 import TeamDPlus.code.advice.BadArgumentsValidException;
 import TeamDPlus.code.advice.ErrorCode;
 import TeamDPlus.code.dto.Success;
-import TeamDPlus.code.dto.request.AccountRequestDto.AccountVisit;
 import TeamDPlus.code.dto.request.ArtWorkRequestDto.ArtWorkCreate;
 import TeamDPlus.code.dto.request.ArtWorkRequestDto.ArtWorkUpdate;
 import TeamDPlus.code.jwt.UserDetailsImpl;
@@ -34,30 +33,30 @@ public class ArtWorkMainController {
     }
 
     @GetMapping("/api/artwork/{last_artwork_id}")
-    public ResponseEntity<Success> artWorkMain(@RequestBody AccountVisit dto,
+    public ResponseEntity<Success> artWorkMain(@RequestParam("account_id") Long account_id,
                                                @PathVariable Long last_artwork_id) {
 
         return new ResponseEntity<>(new Success("둘러보기",
-                artworkMainService.showArtworkMain(dto.getAccount_id(),last_artwork_id,"",SORT_SIGN_LATEST)),HttpStatus.OK);
+                artworkMainService.showArtworkMain(account_id,last_artwork_id,"",SORT_SIGN_LATEST)),HttpStatus.OK);
     }
 
     @GetMapping("/api/artwork/category/{category}/{last_artwork_id}")
-    public ResponseEntity<Success> artWorkCategory(@RequestBody AccountVisit dto,
+    public ResponseEntity<Success> artWorkCategory(@RequestParam("account_id") Long account_id,
                                                    @PathVariable String category,
                                                    @PathVariable Long last_artwork_id) {
 
         return new ResponseEntity<>(new Success("카테고리별 작업물",
-                artworkMainService.showArtworkMain(dto.getAccount_id(),last_artwork_id,category,SORT_SIGN_LATEST)),HttpStatus.OK);
+                artworkMainService.showArtworkMain(account_id,last_artwork_id,category,SORT_SIGN_LATEST)),HttpStatus.OK);
     }
 
     @GetMapping("/api/artwork/sort/{category}/{sortsign}/{last_artwork_id}")
-    public ResponseEntity<Success> artWorkSort(@RequestBody AccountVisit dto,
+    public ResponseEntity<Success> artWorkSort(@RequestParam("account_id") Long account_id,
                                                @PathVariable int sortsign,
                                                @PathVariable Long last_artwork_id,
                                                @PathVariable String category) {
 
         return new ResponseEntity<>(new Success("카테고리별 정렬한 작업물",
-                artworkMainService.showArtworkMain(dto.getAccount_id(),last_artwork_id,category,sortsign)),HttpStatus.OK);
+                artworkMainService.showArtworkMain(account_id,last_artwork_id,category,sortsign)),HttpStatus.OK);
     }
 
     @GetMapping("/api/artwork/sort-follow/{category}/{last_artwork_id}")
@@ -106,21 +105,21 @@ public class ArtWorkMainController {
     }
 
     @GetMapping("/api/artwork/detail/{artwork_id}")
-    public ResponseEntity<Success> artWorkDetail(@RequestBody AccountVisit dto,
+    public ResponseEntity<Success> artWorkDetail(@RequestParam("account_id") Long account_id,
                                                  @PathVariable Long artwork_id) {
         return new ResponseEntity<>(new Success("작품 상세",
-                artworkMainService.detailArtWork(dto.getAccount_id(),artwork_id)),HttpStatus.OK);
+                artworkMainService.detailArtWork(account_id,artwork_id)),HttpStatus.OK);
     }
 
     @GetMapping("/api/artwork/search/{last_artwork_id}/{keyword}")
-    public ResponseEntity<Success> artWorkSearch(@RequestBody AccountVisit dto,
+    public ResponseEntity<Success> artWorkSearch(@RequestParam("account_id") Long account_id,
                                                  @PathVariable Long last_artwork_id,
                                                  @PathVariable String keyword) {
         if (keyword == null) {
             throw new IllegalStateException("검색어를 입력 해주세요.");
         }
         return new ResponseEntity<>(new Success("작품 검색 완료",
-                artworkMainService.findBySearchKeyWord(keyword,last_artwork_id,dto.getAccount_id())),HttpStatus.OK);
+                artworkMainService.findBySearchKeyWord(keyword,last_artwork_id,account_id)),HttpStatus.OK);
     }
 
 }
