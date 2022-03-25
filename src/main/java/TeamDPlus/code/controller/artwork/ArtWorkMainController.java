@@ -28,9 +28,9 @@ public class ArtWorkMainController {
     private final ArtworkMainService artworkMainService;
 
     @RequestMapping(value = "/",method = RequestMethod.GET)
-    public ResponseEntity<Success> main(AccountVisit dto) {
+    public ResponseEntity<Success> main(@RequestParam("account_id") Long account_id) {
         return new ResponseEntity<>(new Success("메인 페이지",
-                artworkMainService.mostPopularArtWork(dto.getAccount_id())), HttpStatus.OK);
+                artworkMainService.mostPopularArtWork(account_id)), HttpStatus.OK);
     }
 
     @GetMapping("/api/artwork/{last_artwork_id}")
