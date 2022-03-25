@@ -56,7 +56,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/user/**").permitAll()
                 .antMatchers("/").permitAll()
                 .antMatchers(HttpMethod.GET,"/api/artwork/**","/api/artwork/detail/**","/api/artwork/search/**",
-                        "/api/profile/nickname/**","/api/follow/**","/api/my-page/**","/api/post/**").permitAll()
+                        "/api/profile/nickname/**","/api/follow/**","/api/my-page/**","/api/post/**","/profile").permitAll()
                 .anyRequest().authenticated() // 그외 나머지 요청은 사용권한 체크
                 .and()
                 .exceptionHandling()
