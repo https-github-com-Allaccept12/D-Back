@@ -30,7 +30,8 @@ public class ExceptionController {
     @ExceptionHandler(value = {MethodArgumentNotValidException.class})
     public ResponseEntity<Fail> handleApiRequestErrorException(MethodArgumentNotValidException ex) {
         String msg = Objects.requireNonNull(ex.getMessage());
-        Fail restApiException = new Fail(msg);
+
+        Fail restApiException = new Fail(msg  + " -----test-----" + ex.getLocalizedMessage() );
         return new ResponseEntity<>(restApiException, HttpStatus.BAD_REQUEST);
     }
 

@@ -15,6 +15,8 @@ public class ArtWorkRequestDto {
     @Getter
     @NoArgsConstructor
     public static class ArtWorkCreate {
+
+        @NotEmpty(message = "작품의 공개범위를 설정해주세요.")
         private Boolean scope;
 
         @NotEmpty(message = "작품 제목을 입력해주세요")
