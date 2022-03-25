@@ -25,7 +25,7 @@ public class FCMMessage {
     @Getter
     public static class Notification {
         private String title;
-        private String body;
+        private String message;
         private String img; // 프로필 이미지로
     }
 }

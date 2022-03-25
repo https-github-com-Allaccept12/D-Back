@@ -28,7 +28,7 @@ public class PostRequestDto {
         @NotEmpty(message = "내용을 입력해주세요.")
         private String content;
 
-        private List<CommonDto.uploadImgDto> img; // filename, thumbnail
+        private List<CommonDto.uploadImgDto> img; // filename
 
         private List<CommonDto.PostTagDto> hashTag;
 
@@ -52,7 +52,7 @@ public class PostRequestDto {
         @NotEmpty(message = "내용을 입력해주세요.")
         private String content;
 
-        private List<CommonDto.ImgUrlDto> img;
+        private List<CommonDto.uploadImgDto> delete_img;
 
         private List<CommonDto.PostTagDto> hashTag;
 

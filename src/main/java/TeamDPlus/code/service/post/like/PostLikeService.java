@@ -9,9 +9,11 @@ import TeamDPlus.code.domain.post.like.PostLikes;
 import TeamDPlus.code.domain.post.like.PostLikesRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class PostLikeService {
 
     private final PostLikesRepository postLikesRepository;

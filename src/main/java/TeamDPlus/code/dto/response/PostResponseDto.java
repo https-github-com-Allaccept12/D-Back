@@ -30,16 +30,16 @@ public class PostResponseDto {
         private Long comment_count;
         private String category;
         private Timestamp create_time;
-        private boolean is_selected;
-        private boolean is_like;
-        private boolean is_bookmarked;
-        private List<PostTag> hash_tag;
+        private Boolean is_selected;
+        private Boolean is_like;
+        private Boolean is_bookmarked;
+        private List<CommonDto.PostTagDto> hash_tag;
 
         @Builder
         public PostPageMain(final Long post_id, final Long account_id, final String account_nickname,
                             final String account_profile_img, final String title,
                             final String content, final String category,
-                            final Timestamp create_time, final boolean is_selected,
+                            final Timestamp create_time, final Boolean is_selected,
                             final Long like_count) {
 
             this.post_id = post_id;
@@ -59,7 +59,7 @@ public class PostResponseDto {
             this.comment_count = comment_count;
         }
 
-        public void setHash_tag(List<PostTag> hash_tag){
+        public void setHash_tag(List<CommonDto.PostTagDto> hash_tag){
             this.hash_tag = hash_tag;
         }
 
@@ -75,23 +75,21 @@ public class PostResponseDto {
     @NoArgsConstructor
     public static class PostDetailPage {
 
-        private boolean is_like;
-        private boolean is_bookmark;
-        private boolean is_follow;
+        private Boolean is_like;
+        private Boolean is_bookmark;
+        private Boolean is_follow;
         private Long comment_count;
         private PostSubDetail postSubDetail;
         private List<CommonDto.ImgUrlDto> img;
         private List<CommonDto.PostTagDto> hash_tag;
-        private List<CommonDto.IsCommentsLiked> is_comments_likes;
         private List<PostResponseDto.PostComment> comment;
-        private PostBoard board;
-        private static Long bookmark_count;
+        private Long bookmark_count;
 
         @Builder
-        public PostDetailPage(final boolean is_like, final boolean is_bookmark, final boolean is_follow,
-                              final PostSubDetail postSubDetail, final List<CommonDto.ImgUrlDto> img, final PostBoard board,
+        public PostDetailPage(final boolean is_like, final Boolean is_bookmark, final Boolean is_follow,
+                              final PostSubDetail postSubDetail, final List<CommonDto.ImgUrlDto> img,
                               final List<CommonDto.PostTagDto> hash_tag, final List<PostComment> comment, final Long comment_count,
-                              final List<CommonDto.IsCommentsLiked> is_comments_likes, final Long bookmark_count) {
+                              final Long bookmark_count) {
             this.is_like = is_like;
             this.is_bookmark = is_bookmark;
             this.is_follow = is_follow;
@@ -100,16 +98,15 @@ public class PostResponseDto {
             this.hash_tag = hash_tag;
             this.comment = comment;
             this.comment_count = comment_count;
-            this.board = board;
-            this.is_comments_likes = is_comments_likes;
             this.bookmark_count = bookmark_count;
         }
 
         public static PostDetailPage from(final List<PostImage> postImageList, final List<PostComment> commentList,
                                           final List<PostTag> postTagsList, final PostSubDetail postSubDetail,
-                                          final boolean is_like, final boolean is_bookmark, final boolean is_follow,
-                                          final Long comment_count, final List<CommonDto.IsCommentsLiked> isCommentLikeList,
+                                          final Boolean is_like, final Boolean is_bookmark, final Boolean is_follow,
+                                          final Long comment_count,
                                           final Long bookmark_count){
+
             return PostDetailPage.builder()
                     .postSubDetail(postSubDetail)
                     .img(postImageList.stream()
@@ -121,12 +118,9 @@ public class PostResponseDto {
                     .comment_count(comment_count)
                     .hash_tag(postTagsList.stream()
                             .map(i -> new CommonDto.PostTagDto(i.getHashTag())).collect(Collectors.toList()))
-                    .is_comments_likes(isCommentLikeList.stream()
-                            .map(i -> new CommonDto.IsCommentsLiked()).collect(Collectors.toList()))
                     .bookmark_count(bookmark_count)
                     .build();
         }
-
     }
 
     @Getter
@@ -202,19 +196,28 @@ public class PostResponseDto {
     @NoArgsConstructor
     public static class PostComment{
         private Long account_id;
+        private String nickname;
+        private String profile_img;
         private Long comment_id;
         private String content;
         private Timestamp modify_time;
         private Long like_count;
+        private Boolean is_comment_like;
 
         @Builder
-        public PostComment(final Long account_id, final Long comment_id,
+        public PostComment(final Long account_id, final String nickname,
+                           final String profile_img, final Long comment_id,
                            final String content, final Timestamp modify_time, final Long like_count) {
             this.account_id = account_id;
+            this.nickname = nickname;
+            this.profile_img = profile_img;
             this.comment_id = comment_id;
             this.content = content;
             this.modify_time = modify_time;
             this.like_count = like_count;
+        }
+        public void setIs_comment_like(Boolean is_comment_like){
+            this.is_comment_like = is_comment_like;
         }
     }
 

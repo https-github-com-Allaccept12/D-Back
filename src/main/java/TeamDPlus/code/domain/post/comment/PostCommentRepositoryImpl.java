@@ -1,6 +1,5 @@
 package TeamDPlus.code.domain.post.comment;
 
-import TeamDPlus.code.domain.post.PostBoard;
 import TeamDPlus.code.dto.response.AccountResponseDto;
 import TeamDPlus.code.dto.response.PostResponseDto;
 import com.querydsl.core.types.Projections;

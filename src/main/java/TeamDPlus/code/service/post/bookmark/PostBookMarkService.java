@@ -9,6 +9,7 @@ import TeamDPlus.code.domain.post.bookmark.PostBookMark;
 import TeamDPlus.code.domain.post.bookmark.PostBookMarkRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +27,7 @@ public class PostBookMarkService {
         postBookMarkRepository.save(postBookMark);
     }
 
+    @Transactional
     public void unBookMark(Account account, Long postId) {
         postBookMarkRepository.deleteByPostIdAndAccountId(postId,account.getId());
     }

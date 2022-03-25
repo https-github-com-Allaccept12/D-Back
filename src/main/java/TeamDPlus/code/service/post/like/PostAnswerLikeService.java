@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class PostAnswerLikeService {
 
     private final PostAnswerLikesRepository postAnswerLikesRepository;
@@ -31,7 +32,6 @@ public class PostAnswerLikeService {
 
     }
 
-    @Transactional
     public void answerUnLike(Account account, Long postAnswerId) {
         PostAnswer postAnswer = postAnswerRepository.findById(postAnswerId)
                 .orElseThrow(() -> new ApiRequestException(ErrorCode.NONEXISTENT_ERROR));

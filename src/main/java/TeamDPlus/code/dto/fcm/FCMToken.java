@@ -9,11 +9,11 @@ import lombok.NoArgsConstructor;
 @Getter
 public class FCMToken {
     private String username;
-    private String nickname;
+    private String token;
 
     @Builder
-    public FCMToken(String username, String nickname) {
+    public FCMToken(String username, String token) {
         this.username = username;
-        this.nickname = nickname;
+        this.token = token;
     }
 }

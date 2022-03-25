@@ -30,7 +30,7 @@ public class PostMainController {
     @GetMapping("/{last_post_id}/{board}")
     public ResponseEntity<Success> postMain(@AuthenticationPrincipal UserDetailsImpl user,
                                             @PathVariable Long last_post_id,
-                                            @PathVariable PostBoard board) {
+                                            @PathVariable String board) {
 
         if (user == null) {
             return new ResponseEntity<>(new Success("디플 메인 페이지",
@@ -46,7 +46,7 @@ public class PostMainController {
     public ResponseEntity<Success> postMainByCategory(@AuthenticationPrincipal UserDetailsImpl user,
                                                       @PathVariable String category,
                                                       @PathVariable Long last_post_id,
-                                                      @PathVariable PostBoard board) {
+                                                      @PathVariable String board) {
 
         if (user == null) {
             return new ResponseEntity<>(new Success("카테고리별 메인 페이지",
@@ -57,12 +57,12 @@ public class PostMainController {
                 postMainPageService.showPostMain(user.getUser().getId(), last_post_id, board, category, SORT_SIGN_LATEST)), HttpStatus.OK);
     }
 
-    // 카테고리별 정렬
+    // 카테고리별 정렬 + 좋아요
     @GetMapping("/sort/{category}/{sortsign}/{last_post_id}/{board}")
     public ResponseEntity<Success> postSortByCatetory(@AuthenticationPrincipal UserDetailsImpl user,
                                                       @PathVariable int sortsign,
                                                       @PathVariable Long last_post_id,
-                                                      @PathVariable PostBoard board,
+                                                      @PathVariable String board,
                                                       @PathVariable String category) {
         if (user == null) {
             return new ResponseEntity<>(new Success("카테고리별 정렬한 디플페이지",
@@ -88,9 +88,8 @@ public class PostMainController {
     @PostMapping("")
     public ResponseEntity<Success> createPost(@AuthenticationPrincipal UserDetailsImpl user,
                                               @RequestPart PostRequestDto.PostCreate data,
-                                              @RequestPart List<MultipartFile> imgFile) {
+                                              @RequestPart(required = false) List<MultipartFile> imgFile) {
 
-        System.out.println(user.getUser());
         return new ResponseEntity<>(new Success("디플 게시물 등록",
                 postMainPageService.createPost(user.getUser(), data, imgFile)), HttpStatus.OK);
     }
@@ -100,7 +99,9 @@ public class PostMainController {
     public ResponseEntity<Success> updatePost(@AuthenticationPrincipal UserDetailsImpl user,
                                               @PathVariable Long post_id,
                                               @RequestPart PostRequestDto.PostUpdate data,
-                                              @RequestPart(value = "file", required = false) List<MultipartFile> imgFile) {
+                                              @RequestPart(required = false) List<MultipartFile> imgFile) {
+
+
         return new ResponseEntity<>(new Success("디플 게시물 수정",
                 postMainPageService.updatePost(user.getUser(), post_id, data, imgFile)), HttpStatus.OK);
     }

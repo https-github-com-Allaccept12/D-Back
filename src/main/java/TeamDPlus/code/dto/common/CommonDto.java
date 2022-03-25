@@ -34,6 +34,9 @@ public class CommonDto {
     public static class uploadImgDto {
         private String filename;
 
+        public uploadImgDto(final String filename) {
+            this.filename = filename;
+        }
     }
 
     @Getter
@@ -42,7 +45,7 @@ public class CommonDto {
         private String img_url;
         private boolean thumbnail;
 
-        public ImgUrlDto(String img_url) {
+        public ImgUrlDto(final String img_url) {
             this.img_url = img_url;
         }
 
@@ -52,21 +55,22 @@ public class CommonDto {
     @Getter
     @NoArgsConstructor
     public static class PostTagDto {
-        private String hashTag;
+        private String tag;
 
-        public PostTagDto(String hashTag) {
-            this.hashTag = hashTag;
+        public PostTagDto(final String hashTag) {
+            this.tag = hashTag;
         }
-
 
     }
 
     @Getter
     @NoArgsConstructor
     public static class IsCommentsLiked {
+        private Long comment_id;
         private boolean is_comment_liked;
 
-        public void setIsCommentsLiked(boolean is_comment_liked){
+        public void setIsCommentsLiked(final Long comment_id, final boolean is_comment_liked){
+            this.comment_id = comment_id;
             this.is_comment_liked = is_comment_liked;
         }
     }

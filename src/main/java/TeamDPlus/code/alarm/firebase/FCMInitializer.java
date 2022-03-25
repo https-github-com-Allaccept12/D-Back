@@ -25,7 +25,7 @@ public class FCMInitializer {
     // path 전달
     private static final String FIREBASE_CONFIG_PATH = "dplus-6acf6-firebase-adminsdk.json";
 
-    // app 시작시 무조건 패스로 가서 할당
+    // app 시작시 무조건 패스로 가서 빈 할당, 의존성 주입
     @PostConstruct
     public void initialize() {
         try {

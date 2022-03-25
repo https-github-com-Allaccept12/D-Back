@@ -43,7 +43,7 @@ public class Post extends BaseEntity {
     @Column(columnDefinition = "TINYINT default 0")
     private boolean isSelected;
 
-    @Enumerated
+    @Enumerated(EnumType.STRING)
     private PostBoard board;
 
 
@@ -60,7 +60,7 @@ public class Post extends BaseEntity {
     }
 
     public void addViewCount() {
-        this.view += 1;
+        this.view += 1L;
     }
 
     public void updatePost(PostRequestDto.PostUpdate dto){
@@ -71,12 +71,12 @@ public class Post extends BaseEntity {
     }
     public static Post of(Account account, PostRequestDto.PostCreate dto) {
         return Post.builder()
-                .account(account)
-                .category(dto.getCategory())
-                .content(dto.getContent())
                 .title(dto.getTitle())
-                .board(dto.getBoard())
+                .content(dto.getContent())
+                .category(dto.getCategory())
+                .account(account)
                 .isSelected(dto.is_selected())
+                .board(dto.getBoard())
                 .build();
     }
 

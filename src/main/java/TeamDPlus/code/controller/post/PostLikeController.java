@@ -35,28 +35,28 @@ public class PostLikeController {
     }
 
     // 코멘트에 대한 like 처리.. postId를 따로 찾지 않아도 되지 않을까.. seq베이스면?
-    @PostMapping("/{postComment_id}")
+    @PostMapping("/comment/{postComment_id}")
     public ResponseEntity<Success> commentDoLike(@PathVariable Long postComment_id,
                                           @AuthenticationPrincipal UserDetailsImpl user) {
         postCommentLikeService.doLike(user.getUser(), postComment_id);
         return new ResponseEntity<>(new Success("작품 코멘트 좋아요 완료",""), HttpStatus.OK);
     }
 
-    @DeleteMapping("/{postComment_id}")
+    @DeleteMapping("/comment/{postComment_id}")
     public ResponseEntity<Success> commentUnLike(@PathVariable Long postComment_id,
                                           @AuthenticationPrincipal UserDetailsImpl user) {
         postCommentLikeService.unLike(user.getUser(), postComment_id);
         return new ResponseEntity<>(new Success("작품 코멘트 좋아요 취소",""), HttpStatus.OK);
     }
 
-    @PostMapping("/{postAnswer_id}")
+    @PostMapping("/answer/{postAnswer_id}")
     public ResponseEntity<Success> answerDoLike(@PathVariable Long postAnswer_id,
                                                 @AuthenticationPrincipal UserDetailsImpl userDetails) {
         postAnswerLikeService.answerDoLike(userDetails.getUser(), postAnswer_id);
         return new ResponseEntity<>(new Success("작품 QnA 답글 좋아요 완료",""), HttpStatus.OK);
     }
 
-    @DeleteMapping("/{postAnswer_id}")
+    @DeleteMapping("/answer/{postAnswer_id}")
     public ResponseEntity<Success> answerUnLike(@PathVariable Long postAnswer_id,
                                                 @AuthenticationPrincipal UserDetailsImpl userDetails) {
         postAnswerLikeService.answerUnLike(userDetails.getUser(), postAnswer_id);

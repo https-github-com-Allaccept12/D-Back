@@ -13,7 +13,7 @@ import java.util.List;
 
 public interface PostMainPageService {
     // 전체 게시물 조회 (최신순)
-    PostMainResponseDto showPostMain(Long accountId, Long lastPostId, PostBoard board, String category, int sortSign);
+    PostMainResponseDto showPostMain(Long accountId, Long lastPostId, String board, String category, int sortSign);
 
 
     // 게시글 작성
