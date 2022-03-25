@@ -1,17 +1,12 @@
 package TeamDPlus.code.dto.request;
+
 import TeamDPlus.code.domain.account.Specialty;
-import TeamDPlus.code.dto.common.CommonDto;
 import TeamDPlus.code.dto.common.CommonDto.ImgUrlDto;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.NotEmpty;
-import java.sql.Time;
-import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.List;
 
 public class ArtWorkRequestDto {
@@ -20,7 +15,7 @@ public class ArtWorkRequestDto {
     @Getter
     @NoArgsConstructor
     public static class ArtWorkCreate {
-        private boolean scope;
+        private Boolean scope;
 
         @NotEmpty(message = "작품 제목을 입력해주세요")
         @Max(value = 20, message = "제목은 20자리 이내로 작성해주세요")
@@ -38,7 +33,7 @@ public class ArtWorkRequestDto {
         @NotEmpty(message = "작품의 작업마무리 기간을 입력해주세요")
         private String work_end;
 
-        private boolean master;
+        private Boolean master;
 
         private Specialty specialty;
 
@@ -53,7 +48,7 @@ public class ArtWorkRequestDto {
     @NoArgsConstructor
     public static class ArtWorkUpdate {
 
-        private boolean scope;
+        private Boolean scope;
 
         @NotEmpty(message = "작품 제목을 입력해주세요")
         @Max(value = 20, message = "제목은 20자리 이내로 작성해주세요")
@@ -75,7 +70,7 @@ public class ArtWorkRequestDto {
         @NotEmpty(message = "작품의 작업마무리 기간을 입력해주세요")
         private String work_end;
 
-        private boolean master;
+        private Boolean master;
 
         private Specialty specialty;
 

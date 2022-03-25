@@ -1,9 +1,11 @@
 package TeamDPlus.code.domain.post;
 
+import TeamDPlus.code.domain.post.like.QPostLikes;
 import TeamDPlus.code.domain.post.tag.PostTag;
 import TeamDPlus.code.domain.post.tag.QPostTag;
 import TeamDPlus.code.dto.response.AccountResponseDto;
 import TeamDPlus.code.dto.response.PostResponseDto;
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
@@ -16,6 +18,8 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 import static TeamDPlus.code.domain.account.QAccount.account;
+import static TeamDPlus.code.domain.artwork.QArtWorks.artWorks;
+import static TeamDPlus.code.domain.artwork.like.QArtWorkLikes.artWorkLikes;
 import static TeamDPlus.code.domain.post.QPost.post;
 import static TeamDPlus.code.domain.post.bookmark.QPostBookMark.postBookMark;
 import static TeamDPlus.code.domain.post.like.QPostLikes.postLikes;
@@ -26,10 +30,10 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
 
     private final JPAQueryFactory queryFactory;
 
-    // 전체 페이지
+    // 전체 페이지 (최신순, 좋아요순)
     @Override
-    public Page<PostResponseDto.PostPageMain> findAllPostOrderByCreatedDesc(Long lastPostId, Pageable pageable, PostBoard board) {
-        List<PostResponseDto.PostPageMain> fetch = queryFactory
+    public List<PostResponseDto.PostPageMain> findAllPostOrderByCreatedDesc(Long lastPostId, Pageable pageable, PostBoard board, int sortSign, String category) {
+        return queryFactory
                 .select(Projections.constructor(PostResponseDto.PostPageMain.class,
                         post.id,
                         account.id,
@@ -39,45 +43,19 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                         post.category,
                         post.content,
                         post.created,
-                        post.isSelected
+                        post.isSelected,
+                        postLikes.count()
                 ))
                 .from(post)
                 .join(account).on(account.id.eq(post.account.id))
+                .leftJoin(postLikes).on(postLikes.post.eq(post))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
-                .where(isLastPostId(lastPostId), post.board.eq(board))
+                .where(isLastPostId(lastPostId), post.board.eq(board),
+                        isCategory(category))
                 .groupBy(post.id)
-                .orderBy(post.created.desc())
+                .orderBy(isPostSort(sortSign))
                 .fetch();
-
-        return new PageImpl<>(fetch, pageable, fetch.size());
-    }
-
-    // 전체 페이지 (좋아요 순)
-    @Override
-    public Page<PostResponseDto.PostPageMain> findAllPostOrderByPostLikes(Long lastPostId, Pageable pageable, PostBoard board) {
-        List<PostResponseDto.PostPageMain> fetch = queryFactory
-                .select(Projections.constructor(PostResponseDto.PostPageMain.class,
-                        post.id,
-                        account.id,
-                        account.nickname,
-                        account.profileImg,
-                        post.title,
-                        post.category,
-                        post.content,
-                        post.created,
-                        post.isSelected
-                ))
-                .from(post)
-                .join(account).on(account.id.eq(post.account.id))
-                .leftJoin(postLikes).on(postLikes.id.eq(postLikes.post.id))
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .where(isLastPostId(lastPostId), post.board.eq(board))
-                .orderBy(postLikes.count().desc())
-                .fetch();
-
-        return new PageImpl<>(fetch, pageable, fetch.size());
     }
 
     // 상세페이지 서브 정보
@@ -85,22 +63,21 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
     public PostResponseDto.PostSubDetail findByPostSubDetail(Long postId) {
         return queryFactory
                 .select(Projections.constructor(PostResponseDto.PostSubDetail.class,
-                        Expressions.asNumber(postId).as("post_id"),
+                        post.id,
+                        account.id,
+                        account.profileImg,
+                        account.nickname,
                         post.title,
                         post.content,
                         post.view,
                         post.category,
                         post.created,
                         post.modified,
-                        account.id,
-                        account.profileImg,
-                        account.nickname,
-                        postBookMark.count(),
                         postLikes.count()
                 ))
                 .from(post)
+                .groupBy(post.id)
                 .innerJoin(post.account, account)
-                .leftJoin(postBookMark).on(postBookMark.post.eq(post))
                 .leftJoin(postLikes).on(postLikes.post.eq(post))
                 .where(post.id.eq(postId))
                 .fetchOne();
@@ -133,8 +110,8 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
     }
 
     @Override
-    public Page<PostResponseDto.PostPageMain> findPostBySearchKeyWord(String keyword, Long lastPostId, Pageable pageable) {
-        List<PostResponseDto.PostPageMain> result = queryFactory
+    public List<PostResponseDto.PostPageMain> findPostBySearchKeyWord(String keyword, Long lastPostId, Pageable pageable, PostBoard board) {
+        return queryFactory
                 .select(Projections.constructor(PostResponseDto.PostPageMain.class,
                         post.id,
                         account.id,
@@ -151,14 +128,13 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                 .leftJoin(postTag).on(postTag.post.eq(post))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
-                .where(isLastPostId(lastPostId),
+                .where(isLastPostId(lastPostId),post.board.eq(board),
                         post.title.contains(keyword),
                         post.account.nickname.contains(keyword),
                         post.content.contains(keyword),
                         postTag.hashTag.contains(keyword))
                 .orderBy(post.created.desc())
                 .fetch();
-        return new PageImpl<>(result,pageable,result.size());
     }
 
     // 좋아요 + 조회수 탑 10
@@ -192,7 +168,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
 
     // 유사한 질문
     @Override
-    public List<PostResponseDto.PostSimilarQuestion> findByCategory(String category) {
+    public List<PostResponseDto.PostSimilarQuestion> findByCategory(String category, String board, Long postId) {
         List<PostResponseDto.PostSimilarQuestion> result = queryFactory
                 .select(Projections.constructor(PostResponseDto.PostSimilarQuestion.class,
                         post.id,
@@ -208,7 +184,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                 .from(post)
                 .join(post.account, account)
                 .leftJoin(postLikes).on(postLikes.post.eq(post))
-                .where(post.category.eq(category))
+                .where(post.category.eq(category), post.board.eq(PostBoard.valueOf(board)), post.id.ne(postId))
                 .offset(0)
                 .limit(5)
                 .groupBy(post.id)
@@ -264,5 +240,11 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                 .groupBy(post.id)
                 .orderBy(post.created.desc())
                 .fetch();
+    }
+    private OrderSpecifier<?> isPostSort(int sortSign) {
+        return sortSign == 1 ? post.created.desc() : postLikes.count().desc();
+    }
+    private BooleanExpression isCategory(String category) {
+        return category.isEmpty() ? null : post.category.eq(category);
     }
 }

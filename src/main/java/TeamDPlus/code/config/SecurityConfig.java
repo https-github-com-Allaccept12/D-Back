@@ -16,6 +16,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.context.SecurityContextPersistenceFilter;
 import org.springframework.web.filter.CorsFilter;
@@ -26,9 +27,8 @@ import org.springframework.web.filter.CorsFilter;
 @EnableGlobalMethodSecurity(securedEnabled = true) // @Secured 어노테이션 활성화
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private final AuthenticationEntryPointHandler authenticationEntryPointHandler;
-
     private final JwtTokenProvider jwtTokenProvider;
+    private final AuthenticationEntryPointHandler authenticationEntryPointHandler;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -43,7 +43,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/h2-console/**");
     }
 
-
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
@@ -56,13 +55,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests() // 요청에 대한 사용권한 체크
                 .antMatchers("/user/**").permitAll()
                 .antMatchers("/").permitAll()
-                .antMatchers(HttpMethod.GET,"/api/artwork/**","/api/artwork/detail/**","/api/artwork/search/**","/profile",
-                        "/api/profile/nickname/**").permitAll()
+                .antMatchers(HttpMethod.GET,"/api/artwork/**","/api/artwork/detail/**","/api/artwork/search/**",
+                        "/api/profile/nickname/**","/api/follow/**","/api/my-page/**","/api/post/**").permitAll()
                 .anyRequest().authenticated() // 그외 나머지 요청은 사용권한 체크
                 .and()
-//                .exceptionHandling()
-//                .authenticationEntryPoint(authenticationEntryPointHandler)
-//                .and()
+                .exceptionHandling()
+                .authenticationEntryPoint(authenticationEntryPointHandler)
+                .and()
                 .apply(new JwtSecurityConfig(jwtTokenProvider));
     }
 

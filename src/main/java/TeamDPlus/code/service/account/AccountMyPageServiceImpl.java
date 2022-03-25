@@ -24,6 +24,7 @@ import TeamDPlus.code.dto.response.AccountResponseDto.AccountInfo;
 import TeamDPlus.code.dto.response.ArtWorkResponseDto;
 import TeamDPlus.code.dto.response.HistoryResponseDto;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -35,6 +36,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AccountMyPageServiceImpl implements AccountMyPageService {
 
     private final AccountRepository accountRepository;
@@ -48,7 +50,7 @@ public class AccountMyPageServiceImpl implements AccountMyPageService {
 
     //마이페이지
     @Transactional(readOnly = true)
-    public AccountInfo showAccountInfo(final Long visitAccountId, final Long accountId) {
+    public AccountInfo showAccountInfo(Long visitAccountId, Long accountId) {
         final Account findAccount = getAccount(visitAccountId);
         final Long follower = followRepository.countByFollowerId(findAccount.getId());
         final Long following = followRepository.countByFollowingId(findAccount.getId());
@@ -65,10 +67,11 @@ public class AccountMyPageServiceImpl implements AccountMyPageService {
     }
     //작업물 - 포트폴리오
     @Transactional(readOnly = true)
-    public List<ArtWorkResponseDto.ArtWorkFeed> showAccountCareerFeed(Long lastArtWorkId, Long visitAccountId, Long accountId) {
-        final Pageable pageable = PageRequest.of(0,5);
-        return artWorkRepository.findByArtWorkImageAndAccountId(lastArtWorkId,pageable,visitAccountId,accountId,true);
+    public List<ArtWorkResponseDto.ArtWorkFeed> showAccountCareerFeed(Long LastArtWorkId,Long visitAccountId, Long accountId) {
+        Pageable pageable = PageRequest.of(0,10);
+        return artWorkRepository.findByArtWorkImageAndAccountId(LastArtWorkId,pageable,visitAccountId,accountId,true);
     }
+
     //포트폴리오 - 기본 소개 수정
     @Transactional
     public void updateAccountIntro(UpdateAccountIntro dto, Long accountId) {
@@ -170,7 +173,11 @@ public class AccountMyPageServiceImpl implements AccountMyPageService {
     public List<AccountResponseDto.MyPost> getMyPost(Long accountId, String board) {
         Pageable pageable = PageRequest.of(0,5);
         List<AccountResponseDto.MyPost> myPosts = postRepository.findPostByAccountIdAndBoard(accountId, board, pageable);
-        setPostInfo(myPosts);
+        if (board.equals("QNA")) {
+            setQnaInfo(myPosts);
+        } else if (board.equals("INFO")) {
+            setPostInfo(myPosts);
+        }
         return myPosts;
     }
 
@@ -193,13 +200,23 @@ public class AccountMyPageServiceImpl implements AccountMyPageService {
         return myComments;
     }
 
-    private void setPostInfo(List<AccountResponseDto.MyPost> myPosts) {
+    private void setQnaInfo(List<AccountResponseDto.MyPost> myPosts) {
         myPosts.forEach((myPost) -> {
            Long answerCount = postAnswerRepository.countByPostId(myPost.getPost_id());
            myPost.setAnswer_count(answerCount);
 
            Long bookMarkCount = postBookMarkRepository.countByPostId(myPost.getPost_id());
            myPost.setBookmark_count(bookMarkCount);
+        });
+    }
+
+    private void setPostInfo(List<AccountResponseDto.MyPost> myPosts) {
+        myPosts.forEach((myPost) -> {
+            Long commentCount = postCommentRepository.countByPostId(myPost.getPost_id());
+            myPost.setAnswer_count(commentCount);
+
+            Long bookMarkCount = postBookMarkRepository.countByPostId(myPost.getPost_id());
+            myPost.setBookmark_count(bookMarkCount);
         });
     }
 

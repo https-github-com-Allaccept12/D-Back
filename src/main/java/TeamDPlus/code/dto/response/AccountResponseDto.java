@@ -33,10 +33,10 @@ public class AccountResponseDto {
         private String work_time;
         private Long follower_count;
         private Long following_count;
-        private boolean is_follow;
+        private Boolean is_follow;
         private Specialty specialty;
         private Specialty other_specialty;
-        private boolean is_mypage;
+        private Boolean is_mypage;
 
         @Builder
         public AccountInfo(final Long account_id,final String nickname,final String profile_img,final Long exp,
@@ -64,7 +64,7 @@ public class AccountResponseDto {
             this.other_specialty = other;
         }
         public static AccountInfo from(final Account account, final Long follower, final Long following,
-                                       final boolean is_follow,final boolean is_mypage) {
+                                       final Boolean is_follow,final Boolean is_mypage) {
             return AccountInfo.builder()
                     .account_id(account.getId())
                     .nickname(account.getNickname())
@@ -98,7 +98,7 @@ public class AccountResponseDto {
         private String img_url_fir;
         private String img_url_sec;
         private String account_job;
-        private boolean is_follow = false;
+        private Boolean is_follow = false;
 
         @Builder
         public TopArtist(final Long account_id, final String account_nickname, final String account_profile,

@@ -15,6 +15,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Getter
@@ -56,7 +57,7 @@ public class Account extends BaseEntity {
     @Column(columnDefinition = "BIGINT default 0")
     private Long exp;
 
-    private String refreshToken;
+//    private String refreshToken;
 
     private String linkedIn;
 
@@ -87,7 +88,7 @@ public class Account extends BaseEntity {
     @Builder
     public Account(final String accountName, final String email, final String nickname, final String subContent, final String titleContent, final String profileImg,
                    final int career, final String phoneNumber, final String workTime,
-                   final String workEmail, final String tendency, final Long exp, final String refreshToken,
+                   final String workEmail, final String tendency, final Long exp,
                    final String linkedIn, final String brunch, final String instagram,final Other other,
                    final String interest, final Rank rank, final String job, final Specialty specialty)  {
         this.accountName = accountName;
@@ -102,7 +103,6 @@ public class Account extends BaseEntity {
         this.workEmail = workEmail;
         this.tendency = tendency;
         this.exp = exp;
-        this.refreshToken = refreshToken;
         this.linkedIn = linkedIn;
         this.brunch = brunch;
         this.instagram = instagram;
@@ -113,9 +113,9 @@ public class Account extends BaseEntity {
         this.other = other;
     }
 
-    public void refreshToken(final String refreshToken) {
-        this.refreshToken = refreshToken;
-    }
+//    public void refreshToken(final String refreshToken) {
+//        this.refreshToken = refreshToken;
+//    }
 
     public void initTendency(final String requestTendency) {
         this.tendency = requestTendency;
@@ -139,10 +139,13 @@ public class Account extends BaseEntity {
         this.bestArtWorkTwo = bestArtWorkTwo;
     }
 
+    public void updateProfileImg(String profileImg) {
+        this.profileImg = profileImg;
+    }
+
     public void setInitProfile(final InitProfileSetting dto) {
         this.nickname = dto.getNickname();
         this.job = dto.getJob();
-        this.profileImg = dto.getProfile_img();
         this.titleContent = dto.getIntro_content();
         this.workEmail = dto.getWork_email();
         this.workTime = dto.getWork_time();

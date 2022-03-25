@@ -4,6 +4,7 @@ import TeamDPlus.code.advice.ApiRequestException;
 import TeamDPlus.code.advice.BadArgumentsValidException;
 import TeamDPlus.code.advice.ErrorCode;
 import TeamDPlus.code.domain.account.Account;
+import TeamDPlus.code.domain.account.AccountRepository;
 import TeamDPlus.code.domain.post.Post;
 import TeamDPlus.code.domain.post.PostRepository;
 import TeamDPlus.code.domain.post.answer.PostAnswer;
@@ -20,9 +21,11 @@ public class PostAnswerService {
 
     private final PostRepository postRepository;
     private final PostAnswerRepository postAnswerRepository;
+    private final AccountRepository accountRepository;
 
     @Transactional
-    public Long createAnswer(PostRequestDto.PostAnswer dto, Long postId, Account account) {
+    public Long createAnswer(PostRequestDto.PostAnswer dto, Long postId, Long accountId) {
+        Account account = accountRepository.findById(accountId).orElseThrow(() -> new ApiRequestException(ErrorCode.NO_USER_ERROR));
         Post post = postRepository.findById(postId).orElseThrow(() -> new ApiRequestException(ErrorCode.NONEXISTENT_ERROR));
         PostAnswer postAnswer = PostAnswer.builder().post(post).account(account).content(dto.getContent()).build();
         PostAnswer save = postAnswerRepository.save(postAnswer);

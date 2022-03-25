@@ -15,6 +15,7 @@ public class AccountRequestDto {
     @Getter
     @NoArgsConstructor
     public static class AccountVisit {
+        private Long owner_account_id;
         private Long account_id;
     }
 
@@ -61,8 +62,8 @@ public class AccountRequestDto {
         @Max(value = 10, message = "닉네임은 10자리 이하로 입력해주세요")
         private String nickname;
         @NotEmpty(message = "직업을 선택해주세요")
+        private String delete_profile_img;
         private String job;
-        private String profile_img;
         private String intro_content;
         private String work_email;
         private String work_time;
@@ -71,6 +72,25 @@ public class AccountRequestDto {
         private String insta;
         private String phone_number;
     }
+    @Getter
+    @NoArgsConstructor
+    public static class updateProfile {
+
+        @NotEmpty(message = "닉네임을 입력해주세요.")
+        @Max(value = 10, message = "닉네임은 10자리 이하로 입력해주세요")
+        private String nickname;
+        @NotEmpty(message = "직업을 선택해주세요")
+
+        private String job;
+        private String intro_content;
+        private String work_email;
+        private String work_time;
+        private String linked_in;
+        private String brunch;
+        private String insta;
+        private String phone_number;
+    }
+
 
     @Getter
     @NoArgsConstructor

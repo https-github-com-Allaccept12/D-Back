@@ -20,6 +20,7 @@ public class PostAnswerLikeService {
     private final PostAnswerLikesRepository postAnswerLikesRepository;
     private final PostAnswerRepository postAnswerRepository;
 
+    @Transactional
     public void answerDoLike(Account account, Long postAnswerId) {
         PostAnswer postAnswer = postAnswerRepository.findById(postAnswerId)
                 .orElseThrow(() -> new ApiRequestException(ErrorCode.NONEXISTENT_ERROR));
@@ -38,7 +39,7 @@ public class PostAnswerLikeService {
         if (!postAnswerLikesRepository.existByAccountIdAndPostAnswerId(account.getId(), postAnswerId)) {
             throw new ApiRequestException(ErrorCode.ALREADY_LIKE_ERROR);
         }
-        postAnswerLikesRepository.deleteByPostAnswerIdAndAccountId(postAnswerId, account.getId());
+        postAnswerLikesRepository.deleteByPostAnswerIdAndAccountId(postAnswer.getId(), account.getId());
     }
 
 }

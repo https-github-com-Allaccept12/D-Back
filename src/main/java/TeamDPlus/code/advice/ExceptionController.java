@@ -16,7 +16,7 @@ public class ExceptionController {
 
 
     @ExceptionHandler(value = {BadArgumentsValidException.class})
-    public ResponseEntity<Fail> badRequestHandle(IllegalArgumentException ex) {
+    public ResponseEntity<Fail> badRequestHandle(BadArgumentsValidException ex) {
         Fail notFoundException = new Fail(ex.getMessage());
         return new ResponseEntity<>(notFoundException, HttpStatus.OK);
     }

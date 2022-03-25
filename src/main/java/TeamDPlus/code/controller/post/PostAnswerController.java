@@ -21,43 +21,45 @@ public class PostAnswerController {
     private final PostAnswerService postAnswerService;
 
     @PostMapping("/answer/{post_id}")
-    public ResponseEntity<Success> createPostAnswer(@AuthenticationPrincipal UserDetailsImpl userDetails,
+    public ResponseEntity<Success> createPostAnswer(@AuthenticationPrincipal UserDetailsImpl user,
                                                      @PathVariable Long post_id,
                                                      @RequestBody PostRequestDto.PostAnswer dto) {
-        loginValid(userDetails);
-        return new ResponseEntity<>(new Success("질문글 답변 등록 완료",
-                postAnswerService.createAnswer(dto, post_id, userDetails.getUser())), HttpStatus.OK);
+        if (user != null) {
+            return new ResponseEntity<>(new Success("질문글 답변 등록 완료",
+                    postAnswerService.createAnswer(dto, post_id, user.getUser().getId())), HttpStatus.OK);
+        }
+        throw new BadArgumentsValidException(ErrorCode.NO_AUTHENTICATION_ERROR);
     }
 
     @PatchMapping("/answer/{answer_id}")
-    public ResponseEntity<Success> updatePostAnswer(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                                     @PathVariable Long post_answer_id,
+    public ResponseEntity<Success> updatePostAnswer(@AuthenticationPrincipal UserDetailsImpl user,
+                                                     @PathVariable Long answer_id,
                                                      @RequestBody PostRequestDto.PostAnswer dto) {
-        loginValid(userDetails);
-        return new ResponseEntity<>(new Success("질문글 답변 수정 완료",
-                postAnswerService.updateAnswer(dto, post_answer_id, userDetails.getUser().getId())), HttpStatus.OK);
+        if (user != null) {
+            return new ResponseEntity<>(new Success("질문글 답변 수정 완료",
+                    postAnswerService.updateAnswer(dto, answer_id, user.getUser().getId())), HttpStatus.OK);
+        }
+        throw new BadArgumentsValidException(ErrorCode.NO_AUTHENTICATION_ERROR);
     }
 
     @DeleteMapping("/answer/{answer_id}")
-    public ResponseEntity<Success> deletePostAnswer(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                                     @PathVariable Long post_answer_id) {
-        loginValid(userDetails);
-        postAnswerService.deleteAnswer(userDetails.getUser().getId(), post_answer_id);
-        return new ResponseEntity<>(new Success("질문글 답변 삭제 완료",""), HttpStatus.OK);
+    public ResponseEntity<Success> deletePostAnswer(@AuthenticationPrincipal UserDetailsImpl user,
+                                                     @PathVariable Long answer_id) {
+        if (user != null) {
+            postAnswerService.deleteAnswer(answer_id, user.getUser().getId());
+            return new ResponseEntity<>(new Success("질문글 답변 삭제 완료", ""), HttpStatus.OK);
+        }
+        throw new BadArgumentsValidException(ErrorCode.NO_AUTHENTICATION_ERROR);
     }
 
     @PatchMapping("/answer/select/{answer_id}")
-    public ResponseEntity<Success> doIsSelected(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                                @PathVariable Long post_answer_id) {
-        loginValid(userDetails);
-        postAnswerService.doIsSelected(post_answer_id, userDetails.getUser().getId());
-        return new ResponseEntity<>(new Success("채택 완료", ""), HttpStatus.OK);
-    }
-
-    private void loginValid(UserDetailsImpl user) {
-        if (user == null) {
-            throw new BadArgumentsValidException(ErrorCode.NO_AUTHENTICATION_ERROR);
+    public ResponseEntity<Success> doIsSelected(@AuthenticationPrincipal UserDetailsImpl user,
+                                                @PathVariable Long answer_id) {
+        if (user != null) {
+            postAnswerService.doIsSelected(answer_id, user.getUser().getId());
+            return new ResponseEntity<>(new Success("채택 완료", ""), HttpStatus.OK);
         }
+        throw new BadArgumentsValidException(ErrorCode.NO_AUTHENTICATION_ERROR);
     }
 
 }

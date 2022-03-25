@@ -28,11 +28,11 @@ public class PostRequestDto {
         @NotEmpty(message = "내용을 입력해주세요.")
         private String content;
 
-        private List<CommonDto.ImgUrlDto> img; // null
+        private List<CommonDto.uploadImgDto> img; // filename, thumbnail
 
         private List<CommonDto.PostTagDto> hashTag;
 
-        private boolean is_selected;
+        private Boolean is_selected;
 
         private PostBoard board;
 
@@ -56,7 +56,7 @@ public class PostRequestDto {
 
         private List<CommonDto.PostTagDto> hashTag;
 
-        private boolean is_selected;
+        private Boolean is_selected;
 
     }
 

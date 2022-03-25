@@ -13,16 +13,13 @@ import java.util.List;
 
 public interface PostMainPageService {
     // 전체 게시물 조회 (최신순)
-    PostMainResponseDto showPostMain(Long accountId, Long lastPostId, PostBoard board);
-
-    // 전체 게시물 조회 (좋아요순)
-    PostMainResponseDto showPostMainByLikes(Long accountId, Long postId, PostBoard board);
+    PostMainResponseDto showPostMain(Long accountId, Long lastPostId, PostBoard board, String category, int sortSign);
 
     // 게시글 작성
-    Long createPost(Account account, PostRequestDto.PostCreate dto, List<MultipartFile> imageFile);
+    int createPost(Long accountId, PostRequestDto.PostCreate dto, List<MultipartFile> imageFile);
 
     // 게시글 검색
-    Page<PostResponseDto.PostPageMain> findBySearchKeyWord(String keyword, Long lastArtWorkId);
+    List<PostResponseDto.PostPageMain> findBySearchKeyWord(String keyword, Long lastArtWorkId, Long accountId, PostBoard board);
 
     // 상세 게시글
     PostResponseDto.PostDetailPage showPostDetail(Long accountId, Long postId);
@@ -37,6 +34,6 @@ public interface PostMainPageService {
     PostResponseDto.PostAnswerDetailPage detailAnswer(Long accountId, Long postId);
 
     // 유사한 질문 리스트
-    List<PostResponseDto.PostSimilarQuestion> similarQuestion(String category, Long accountId);
+    List<PostResponseDto.PostSimilarQuestion> similarQuestion(String category, Long accountId, Long postId);
 
 }

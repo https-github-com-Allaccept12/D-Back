@@ -14,6 +14,7 @@ import TeamDPlus.code.domain.post.like.PostLikes;
 import TeamDPlus.code.domain.post.like.PostLikesRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -21,6 +22,7 @@ public class PostCommentLikeService {
     private final PostCommentLikesRepository postCommentLikesRepository;
     private final PostCommentRepository postCommentRepository;
 
+    @Transactional
     public void doLike(Account account, Long postCommentId) {
         PostComment postComment = postCommentRepository.findById(postCommentId).orElseThrow(() -> new ApiRequestException(ErrorCode.NONEXISTENT_ERROR));
         if (postCommentLikesRepository.existByAccountIdAndPostCommentId(account.getId(), postCommentId)) {
@@ -30,7 +32,12 @@ public class PostCommentLikeService {
         postCommentLikesRepository.save(postCommentLikes);
     }
 
+    @Transactional
     public void unLike(Account account, Long postCommentId) {
-        postCommentLikesRepository.deleteByPostCommentIdAndAccountId(postCommentId,account.getId());
+        PostComment postComment = postCommentRepository.findById(postCommentId).orElseThrow(() -> new ApiRequestException(ErrorCode.NONEXISTENT_ERROR));
+        if (!postCommentLikesRepository.existByAccountIdAndPostCommentId(account.getId(), postCommentId)) {
+            throw new BadArgumentsValidException(ErrorCode.ALREADY_LIKE_ERROR);
+        }
+        postCommentLikesRepository.deleteByPostCommentIdAndAccountId(postComment.getId(),account.getId());
     }
 }

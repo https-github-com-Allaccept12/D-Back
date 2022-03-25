@@ -4,18 +4,15 @@ import TeamDPlus.code.advice.ApiRequestException;
 import TeamDPlus.code.advice.BadArgumentsValidException;
 import TeamDPlus.code.advice.ErrorCode;
 import TeamDPlus.code.domain.account.Account;
+import TeamDPlus.code.domain.account.AccountRepository;
 import TeamDPlus.code.domain.account.follow.FollowRepository;
-import TeamDPlus.code.domain.artwork.ArtWorks;
-import TeamDPlus.code.domain.artwork.image.ArtWorkImage;
 import TeamDPlus.code.domain.post.Post;
 import TeamDPlus.code.domain.post.PostBoard;
 import TeamDPlus.code.domain.post.PostRepository;
-import TeamDPlus.code.domain.post.answer.PostAnswer;
 import TeamDPlus.code.domain.post.answer.PostAnswerRepository;
+import TeamDPlus.code.domain.post.bookmark.PostBookMark;
 import TeamDPlus.code.domain.post.bookmark.PostBookMarkRepository;
-import TeamDPlus.code.domain.post.comment.PostComment;
 import TeamDPlus.code.domain.post.comment.PostCommentRepository;
-import TeamDPlus.code.domain.post.comment.like.PostCommentLikes;
 import TeamDPlus.code.domain.post.comment.like.PostCommentLikesRepository;
 import TeamDPlus.code.domain.post.image.PostImage;
 import TeamDPlus.code.domain.post.image.PostImageRepository;
@@ -25,25 +22,24 @@ import TeamDPlus.code.domain.post.tag.PostTag;
 import TeamDPlus.code.domain.post.tag.PostTagRepository;
 import TeamDPlus.code.dto.common.CommonDto;
 import TeamDPlus.code.dto.request.PostRequestDto;
-import TeamDPlus.code.dto.response.AccountResponseDto;
 import TeamDPlus.code.dto.response.PostMainResponseDto;
 import TeamDPlus.code.dto.response.PostResponseDto;
-import TeamDPlus.code.dto.response.PostResponseDto.PostPageMain;
+import TeamDPlus.code.dto.response.PostResponseDto.PostAnswerDetailPage;
 import TeamDPlus.code.service.file.FileProcessService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class PostMainPageServiceImpl implements PostMainPageService{
 
     private final PostRepository postRepository;
@@ -54,109 +50,149 @@ public class PostMainPageServiceImpl implements PostMainPageService{
     private final PostTagRepository postTagRepository;
     private final PostAnswerRepository postAnswerRepository;
     private final FollowRepository followRepository;
+    private final PostCommentLikesRepository postCommentLikesRepository;
     private final PostAnswerLikesRepository postAnswerLikesRepository;
     private final FileProcessService fileProcessService;
+    private final AccountRepository accountRepository;
 
-    // 메인 페이지 (최신순)
+
+    // 메인 페이지 (최신순, 좋아요순)
     @Transactional(readOnly = true)
-    public PostMainResponseDto showPostMain(Long accountId, Long lastPostId, PostBoard board){
+    public PostMainResponseDto showPostMain(Long accountId, Long lastPostId, PostBoard board, String category, int sortSign) {
+
+        // 회원이면
+        if (accountId != 0){
+            // 메인 페이지 전체 피드
+            Pageable pageable = PageRequest.of(0,12);
+            List<PostResponseDto.PostPageMain> postList = postRepository.findAllPostOrderByCreatedDesc(lastPostId, pageable, board, sortSign, category);
+            setCountList(postList);
+            setIsLikePost(accountId, postList);
+            for(int i = 0; i< postList.size(); i++) {
+                List<PostTag> tags =postTagRepository.findPostTagsByPostId(postList.get(i).getPost_id());
+                postList.get(i).setHash_tag(tags);
+            }
+
+            // 메인페이지 추천피드
+            List<PostResponseDto.PostPageMain> postRecommendation = postRepository.findPostByMostViewAndMostLike();
+            setCountList(postRecommendation);
+            setIsLikePost(accountId, postRecommendation);
+            for(int i = 0; i< postList.size(); i++) {
+                List<PostTag> tags =postTagRepository.findPostTagsByPostId(postList.get(i).getPost_id());
+                postList.get(i).setHash_tag(tags);
+            }
+
+            return PostMainResponseDto.builder().postMainPage(postList).postRecommendationFeed(postRecommendation).build();
+        }
 
         // 메인 페이지 전체 피드
         Pageable pageable = PageRequest.of(0,12);
-        Page<PostPageMain> postList = postRepository.findAllPostOrderByCreatedDesc(lastPostId, pageable, board);
+
+        List<PostResponseDto.PostPageMain> postList = postRepository.findAllPostOrderByCreatedDesc(lastPostId, pageable, board, sortSign, category);
         setCountList(postList);
+        for(int i = 0; i< postList.size(); i++) {
+            List<PostTag> tags =postTagRepository.findPostTagsByPostId(postList.get(i).getPost_id());
+            postList.get(i).setHash_tag(tags);
+        }
 
         // 메인페이지 추천피드
-        List<PostPageMain> postRecommendation = postRepository.findPostByMostViewAndMostLike();
-        postList.forEach((post) -> {
-            Long bookmark_count = postBookMarkRepository.countByPostId(post.getPost_id());
-            Long comment_count = postCommentRepository.countByPostId(post.getPost_id());
-            Long like_count = postLikesRepository.countByPostId(post.getPost_id());
-            post.setCountList(bookmark_count, comment_count, like_count);
-        });
-        return PostMainResponseDto.builder().postMainPage(postList).postRecommendationFeed(postRecommendation).build();
-    }
+        List<PostResponseDto.PostPageMain> postRecommendation = postRepository.findPostByMostViewAndMostLike();
+        setCountList(postRecommendation);
+        for(int i = 0; i< postList.size(); i++) {
+            List<PostTag> tags =postTagRepository.findPostTagsByPostId(postList.get(i).getPost_id());
+            postList.get(i).setHash_tag(tags);
+        }
 
-    // 메인 페이지 (좋아요 순)
-    @Transactional(readOnly = true)
-    public PostMainResponseDto showPostMainByLikes(Long accountId, Long lastPostId, PostBoard board) {
-
-        Pageable pageable = PageRequest.of(0,12);
-        Page<PostPageMain> postList = postRepository.findAllPostOrderByPostLikes(lastPostId, pageable, board);
-        setCountList(postList);
-
-        // 메인페이지 추천피드
-        List<PostPageMain> postRecommendation = postRepository.findPostByMostViewAndMostLike();
-        postList.forEach((post) -> {
-            Long bookmark_count = postBookMarkRepository.countByPostId(post.getPost_id());
-            Long comment_count = postCommentRepository.countByPostId(post.getPost_id());
-            Long like_count = postLikesRepository.countByPostId(post.getPost_id());
-            post.setCountList(bookmark_count, comment_count, like_count);
-        });
         return PostMainResponseDto.builder().postMainPage(postList).postRecommendationFeed(postRecommendation).build();
     }
 
     // 상세 게시글 (디플 - 꿀팁)
-    @Transactional(readOnly = true)
+    @Transactional
     public PostResponseDto.PostDetailPage showPostDetail(Long accountId, Long postId){
         Post post = postRepository.findById(postId).orElseThrow(() -> new ApiRequestException(ErrorCode.NONEXISTENT_ERROR));
         post.addViewCount();
         PostResponseDto.PostSubDetail postSubDetail = postRepository.findByPostSubDetail(postId);
         List<PostImage> postImageList = postImageRepository.findByPostId(postId);
+        List<PostBookMark> bookmarks = postBookMarkRepository.findByPostId(postId);
         List<PostResponseDto.PostComment> postComments = postCommentRepository.findPostCommentByPostId(postId);
         List<PostTag> postTags = postTagRepository.findPostTagsByPostId(postId);
-        boolean isLike = postLikesRepository.existByAccountIdAndPostId(accountId, postId);
-        boolean isBookmark = postBookMarkRepository.existByAccountIdAndPostId(accountId, postId);
-        boolean isFollow = followRepository.existsByFollowerIdAndFollowingId(accountId, postSubDetail.getAccount_id());
+
+        boolean isLike = false;
+        boolean isBookmark = false;
+        boolean isFollow = false;
+        // 코멘트 좋아요 담을 리스트 생성
+        List<CommonDto.IsCommentsLiked> isCommentsLikes = new ArrayList<>();
+
+        if(accountId != 0){
+            isLike = postLikesRepository.existByAccountIdAndPostId(accountId, postId);
+            isBookmark = postBookMarkRepository.existByAccountIdAndPostId(accountId, postId);
+            isFollow = followRepository.existsByFollowerIdAndFollowingId(accountId, postSubDetail.getAccount_id());
+
+            // 코멘트 당 좋아요 눌렀는지 체크
+            for (int i = 0; i < postComments.size(); i++) {
+                boolean isCommentLike = postCommentLikesRepository.existByAccountIdAndPostCommentId(accountId, postComments.get(i).getComment_id());
+                isCommentsLikes.get(i).setIsCommentsLiked(isCommentLike);
+            }
+        }
+
         Long comment_count = (long) postComments.size();
+        Long bookmark_count = (long) bookmarks.size();
+
         return PostResponseDto.PostDetailPage.from(postImageList, postComments,
-                postTags, postSubDetail, isLike, isBookmark, isFollow, comment_count);
+                postTags, postSubDetail, isLike, isBookmark, isFollow, comment_count, isCommentsLikes, bookmark_count);
     }
 
     // 게시글 작성
     @Transactional
-    public Long createPost(Account account, PostRequestDto.PostCreate dto, List<MultipartFile> imgFile) {
+    public int createPost(Long accountId, PostRequestDto.PostCreate dto, List<MultipartFile> imgFile) {
+        Account account = accountRepository.findById(accountId).orElseThrow(() -> new ApiRequestException(ErrorCode.NO_USER_ERROR));
+        if (account.getPostCreateCount() >= 5) {
+            throw new ApiRequestException(ErrorCode.DAILY_WRITE_UP_BURN_ERROR);
+        }
+
         Post post = Post.of(account, dto);
         Post savedPost = postRepository.save(post);
 
-
-        if(imgFile!=null){
-            imgFile.forEach((img) -> {
-                String s = fileProcessService.uploadImage(img); // s3 url
-                PostImage postImage = PostImage.builder().post(post).postImg(s).build(); // 1 번 포스트에 1번이미지
-                postImageRepository.save(postImage);
-            });
+        for(int i = 0; i < dto.getImg().size(); i++){
+            String img_url = fileProcessService.uploadImage(imgFile.get(i));
+            PostImage postImage = PostImage.builder().post(savedPost).postImg(img_url).build();
+            postImageRepository.save(postImage);
         }
 
-        // 1) dto에 어떻게 img url 값을 세팅해야할지?
-        // 2) 저걸 할 필요가 있을지
         setPostTag(dto.getHashTag(), savedPost);
-        // setImgUrl(dto.getImg(), savedPost);
-        return post.getId();
+        account.upPostCountCreate();
+        return 5 - account.getPostCreateCount();
     }
 
     // 게시물 수정
     @Transactional
     public Long updatePost(Account account, Long postId, PostRequestDto.PostUpdate dto, List<MultipartFile> imgFile){
-        Post post = postAuthValidation(account.getId(), postId);
-        List<PostImage> postImages = postImageRepository.findByPostId(post.getId());
-        if(imgFile!=null){
-            postImages.forEach((img) -> {
-                // S3 삭제
-                fileProcessService.deleteImage(img.getPostImg());
-            });
-            // db 삭제
-            postImageRepository.deleteAllByPostId(postId);
 
-            // 재저장
-            imgFile.forEach((img) -> {
-                String s = fileProcessService.uploadImage(img);
-                PostImage postImage = PostImage.builder().post(post).postImg(s).build();
-                postImageRepository.save(postImage);
-            });
+        Post post = postAuthValidation(account.getId(), postId);
+
+        // 삭제할 이미지가 있다면, 이미지 주소를 직접 하나씩 지운다
+        if(dto.getImg()!=null){
+            for(int i = 0; i < dto.getImg().size(); i++){
+                String deleteImage = dto.getImg().get(i).getImg_url();
+                // 서버 파일 삭제
+                fileProcessService.deleteImage(deleteImage);
+
+                // db 삭제
+                postImageRepository.deleteByPostImg(deleteImage);
+            }
         }
+
+        // 업로드할 이미지가 있다면, 이미지를 업로드한다.
+        if(imgFile!=null){
+            for(int i = 0; i < imgFile.size(); i++){
+                String img_url = fileProcessService.uploadImage(imgFile.get(i));
+                PostImage postImage = PostImage.builder().post(post).postImg(img_url).build();
+                postImageRepository.save(postImage);
+            }
+        }
+
+        // 게시글을 업데이트 한다
         post.updatePost(dto);
-        // setImgUrl(dto.getImg(), post);
+
         // 태그도 지우고 다시 세팅
         postTagRepository.deleteAllByPostId(postId);
         setPostTag(dto.getHashTag(), post);
@@ -182,43 +218,22 @@ public class PostMainPageServiceImpl implements PostMainPageService{
 
     // 게시글 검색
     @Transactional(readOnly = true)
-    public Page<PostPageMain> findBySearchKeyWord(String keyword, Long lastArtWorkId) {
+    public List<PostResponseDto.PostPageMain> findBySearchKeyWord(String keyword, Long lastArtWorkId, Long accountId, PostBoard board) {
         Pageable pageable = PageRequest.of(0,5);
-        return postRepository.findPostBySearchKeyWord(keyword,lastArtWorkId,pageable);
+        return postRepository.findPostBySearchKeyWord(keyword,lastArtWorkId,pageable,board);
     }
 
-    private void setCountList(Page<PostPageMain> postList){
+    private void setCountList(List<PostResponseDto.PostPageMain> postList){
         postList.forEach((post) -> {
             Long bookmark_count = postBookMarkRepository.countByPostId(post.getPost_id());
             Long comment_count = postCommentRepository.countByPostId(post.getPost_id());
-            Long like_count = postLikesRepository.countByPostId(post.getPost_id());
-            post.setCountList(bookmark_count, comment_count, like_count);
+            post.setCountList(bookmark_count, comment_count);
         });
     }
 
-
-    // #단위로 끊어서 해쉬태그 들어옴
-    private void setPostTag(List<CommonDto.PostTagDto> dto, Post post){
-        dto.forEach((tag) -> {
-            PostTag postTag = PostTag.builder()
-                    .post(post)
-                    .hashTag(tag.getHashTag())
-                    .build();
-            postTagRepository.save(postTag);
-        });
-    }
-
-    // post 수정, 삭제 권한 확인
-    private Post postAuthValidation(Long accountId, Long postId){
-        Post post = postRepository.findById(postId).orElseThrow(() -> new ApiRequestException(ErrorCode.NONEXISTENT_ERROR));
-        if(!post.getAccount().getId().equals(accountId)){
-            throw new BadArgumentsValidException(ErrorCode.NO_AUTHORIZATION_ERROR);
-        }
-        return post;
-    }
     // 디모 QnA 상세페이지
-    @Transactional(readOnly = true)
-    public PostResponseDto.PostAnswerDetailPage detailAnswer(Long accountId, Long postId) {
+    @Transactional
+    public PostAnswerDetailPage detailAnswer(Long accountId, Long postId) {
         // 작품 게시글 존재여부
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new ApiRequestException(ErrorCode.NONEXISTENT_ERROR));
@@ -239,7 +254,7 @@ public class PostMainPageServiceImpl implements PostMainPageService{
         boolean isBookmark = false;
         boolean isFollow = false;
 
-        if (accountId != null) {
+        if (accountId != 0) {
             // 지금 상세페이지를 보고있는 사람이 좋아요를 했는지
             isLike = postLikesRepository.existByAccountIdAndPostId(accountId, postId);
             // 지금 상세페이지를 보고있는 사람이 북마크를 했는지
@@ -254,9 +269,77 @@ public class PostMainPageServiceImpl implements PostMainPageService{
 
         //상세페이지의 답글 개수
         postAnswerSubDetail.setAnswer_count((long) postAnswerList.size());
-        return PostResponseDto.PostAnswerDetailPage.from(imgList, postAnswerList, postTagList, postAnswerSubDetail, isLike, isBookmark, isFollow, bookMarkCount);
+        return PostAnswerDetailPage.from(imgList, postAnswerList, postTagList, postAnswerSubDetail, isLike, isBookmark, isFollow, bookMarkCount);
     }
 
+    // 디모 QnA 유사한질문 조회
+    @Transactional(readOnly = true)
+    public List<PostResponseDto.PostSimilarQuestion> similarQuestion(String category, Long accountId, Long postId) {
+        List<PostResponseDto.PostSimilarQuestion> postSimilarList = postRepository.findByCategory(category, "QNA", postId);
+        if (accountId != null) {
+            postSimilarList.forEach((postSimilar) -> {
+                // 좋아요 여부
+                postSimilar.setLikeCountAndIsLike(false);
+                if (postLikesRepository.existByAccountIdAndPostId(accountId, postSimilar.getPost_id())) {
+                    postSimilar.setLikeCountAndIsLike(true);
+                }
+
+                // 북마크 여부
+                postSimilar.setIsBookmark(false);
+                if (postBookMarkRepository.existByAccountIdAndPostId(accountId, postSimilar.getPost_id())) {
+                    postSimilar.setIsBookmark(true);
+                }
+
+                // 질문 답변 가져오기
+                Long answerCount = postAnswerRepository.countByPostId(postSimilar.getPost_id());
+                postSimilar.setAnswer_count(answerCount);
+
+                Long bookMarkCount = postBookMarkRepository.countByPostId(postSimilar.getPost_id());
+                postSimilar.setBookmark_count(bookMarkCount);
+
+                // 태그 리스트 가져오기
+                List<PostTag> postTagList = postTagRepository.findPostTagsByPostId(postSimilar.getPost_id());
+                postSimilar.setHash_tag(postTagList);
+
+            });
+            return postSimilarList;
+        }
+
+        postSimilarList.forEach((postSimilar) -> {
+            // 질문 답변 가져오기
+            Long answerCount = postAnswerRepository.countByPostId(postSimilar.getPost_id());
+            postSimilar.setAnswer_count(answerCount);
+
+            Long bookMarkCount = postBookMarkRepository.countByPostId(postSimilar.getPost_id());
+            postSimilar.setBookmark_count(bookMarkCount);
+
+            // 태그 리스트 가져오기
+            List<PostTag> postTagList = postTagRepository.findPostTagsByPostId(postSimilar.getPost_id());
+            postSimilar.setHash_tag(postTagList);
+
+        });
+        return postSimilarList;
+    }
+
+        // #단위로 끊어서 해쉬태그 들어옴 (dto -> 받을 때)
+        private void setPostTag(List<CommonDto.PostTagDto> dto, Post post){
+            dto.forEach((tag) -> {
+                PostTag postTag = PostTag.builder()
+                        .post(post)
+                        .hashTag(tag.getHashTag())
+                        .build();
+                postTagRepository.save(postTag);
+            });
+        }
+
+    // post 수정, 삭제 권한 확인
+    private Post postAuthValidation(Long accountId, Long postId){
+        Post post = postRepository.findById(postId).orElseThrow(() -> new ApiRequestException(ErrorCode.NONEXISTENT_ERROR));
+        if(!post.getAccount().getId().equals(accountId)){
+            throw new BadArgumentsValidException(ErrorCode.NO_AUTHORIZATION_ERROR);
+        }
+        return post;
+    }
     private void isFollow(Long accountId, List<PostResponseDto.PostAnswer> postAnswerList) {
         postAnswerList.forEach((postAnswer) -> {
             postAnswer.setIsFollow(false);
@@ -275,36 +358,12 @@ public class PostMainPageServiceImpl implements PostMainPageService{
         });
     }
 
-    // 디모 QnA 유사한질문 조회
-    @Transactional(readOnly = true)
-    public List<PostResponseDto.PostSimilarQuestion> similarQuestion(String category, Long accountId) {
-        List<PostResponseDto.PostSimilarQuestion> postSimilarList = postRepository.findByCategory(category);
-        postSimilarList.forEach((postSimilar) -> {
-            // 좋아요 여부
-            postSimilar.setLikeCountAndIsLike(false);
-            if (postLikesRepository.existByAccountIdAndPostId(accountId, postSimilar.getPost_id())) {
-                postSimilar.setLikeCountAndIsLike(true);
-            }
-
-            // 북마크 여부
-            postSimilar.setIsBookmark(false);
-            if (postBookMarkRepository.existByAccountIdAndPostId(accountId, postSimilar.getPost_id())) {
-                postSimilar.setIsBookmark(true);
-            }
-
-            // 질문 답변 가져오기
-            Long answerCount = postAnswerRepository.countByPostId(postSimilar.getPost_id());
-            postSimilar.setAnswer_count(answerCount);
-
-            Long bookMarkCount = postBookMarkRepository.countByPostId(postSimilar.getPost_id());
-            postSimilar.setBookmark_count(bookMarkCount);
-
-            // 태그 리스트 가져오기
-            List<PostTag> postTagList = postTagRepository.findPostTagsByPostId(postSimilar.getPost_id());
-            postSimilar.setHash_tag(postTagList);
-
+    private void setIsLikePost(Long accountId, List<PostResponseDto.PostPageMain> postList) {
+        postList.forEach((post) -> {
+            post.setLikeAndBookmarkStatus(postLikesRepository.
+                            existByAccountIdAndPostId(accountId, post.getPost_id()),
+                    postBookMarkRepository.existByAccountIdAndPostId(accountId, post.getPost_id()));
         });
-        return postSimilarList;
-    }
 
+    }
 }
