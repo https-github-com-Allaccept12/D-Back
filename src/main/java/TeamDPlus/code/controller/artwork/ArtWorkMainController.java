@@ -4,7 +4,6 @@ package TeamDPlus.code.controller.artwork;
 import TeamDPlus.code.advice.BadArgumentsValidException;
 import TeamDPlus.code.advice.ErrorCode;
 import TeamDPlus.code.dto.Success;
-import TeamDPlus.code.dto.request.AccountRequestDto;
 import TeamDPlus.code.dto.request.AccountRequestDto.AccountVisit;
 import TeamDPlus.code.dto.request.ArtWorkRequestDto.ArtWorkCreate;
 import TeamDPlus.code.dto.request.ArtWorkRequestDto.ArtWorkUpdate;
@@ -28,7 +27,7 @@ public class ArtWorkMainController {
     private final int SORT_SIGN_LATEST = 1;
     private final ArtworkMainService artworkMainService;
 
-    @GetMapping("/")
+    @RequestMapping(value = "/",method = RequestMethod.GET)
     public ResponseEntity<Success> main(@RequestBody AccountVisit dto) {
         return new ResponseEntity<>(new Success("메인 페이지",
                 artworkMainService.mostPopularArtWork(dto.getAccount_id())), HttpStatus.OK);
