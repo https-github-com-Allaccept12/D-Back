@@ -41,7 +41,7 @@ dependencies {
 	implementation('com.h2database:h2')
     implementation 'org.springframework.boot:spring-boot-starter-test'
 	implementation 'io.awspring.cloud:spring-cloud-starter-aws:2.4.0'
-
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
     annotationProcessor "com.querydsl:querydsl-apt:${queryDslVersion}"
 
@@ -64,7 +64,7 @@ dependencies {
 	// Thymeleaf (뷰 템플릿 엔진)
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 
-	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
 
 }
 

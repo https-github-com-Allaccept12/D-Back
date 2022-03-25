@@ -14,12 +14,11 @@ import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 import java.time.Duration;
-import java.util.HashMap;
-import java.util.Map;
 
 @Configuration
 @EnableRedisRepositories
 public class RedisConfig {
+
     @Value("${spring.redis.host}")
     private String redisHost;
 
