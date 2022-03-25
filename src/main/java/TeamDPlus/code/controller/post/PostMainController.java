@@ -73,7 +73,7 @@ public class PostMainController {
                                               @RequestPart(required = false) List<MultipartFile> imgFile) {
         if (user != null) {
             return new ResponseEntity<>(new Success("디플 게시물 등록",
-                    postMainPageService.createPost(user.getUser(), data, imgFile)), HttpStatus.OK);
+                    postMainPageService.createPost(user.getUser().getId(), data, imgFile)), HttpStatus.OK);
         }
         throw new BadArgumentsValidException(ErrorCode.NO_AUTHENTICATION_ERROR);
     }
@@ -126,11 +126,12 @@ public class PostMainController {
     }
 
     // 유사한 질문 조회
-    @GetMapping("/question/similar/{category}")
+    @GetMapping("/question/similar/{category}/{post_id}")
     public ResponseEntity<Success> similarQuestion (@RequestBody AccountRequestDto.AccountVisit dto,
-                                                    @PathVariable String category){
+                                                    @PathVariable String category,
+                                                    @PathVariable Long post_id){
         return new ResponseEntity<>(new Success("유사한 질문 리스트",
-                postMainPageService.similarQuestion(category, dto.getAccount_id())), HttpStatus.OK);
+                postMainPageService.similarQuestion(category, dto.getAccount_id(), post_id)), HttpStatus.OK);
 
     }
 }

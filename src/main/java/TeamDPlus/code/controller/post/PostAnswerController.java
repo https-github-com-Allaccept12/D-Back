@@ -26,7 +26,7 @@ public class PostAnswerController {
                                                      @RequestBody PostRequestDto.PostAnswer dto) {
         if (user != null) {
             return new ResponseEntity<>(new Success("질문글 답변 등록 완료",
-                    postAnswerService.createAnswer(dto, post_id, user.getUser())), HttpStatus.OK);
+                    postAnswerService.createAnswer(dto, post_id, user.getUser().getId())), HttpStatus.OK);
         }
         throw new BadArgumentsValidException(ErrorCode.NO_AUTHENTICATION_ERROR);
     }

@@ -153,7 +153,12 @@ public class PostMainPageServiceImpl implements PostMainPageService{
 
     // 게시글 작성
     @Transactional
-    public int createPost(Account account, PostRequestDto.PostCreate dto, List<MultipartFile> imgFile) {
+    public int createPost(Long accountId, PostRequestDto.PostCreate dto, List<MultipartFile> imgFile) {
+        Account account = accountRepository.findById(accountId).orElseThrow(() -> new ApiRequestException(ErrorCode.NO_USER_ERROR));
+        if (account.getPostCreateCount() >= 5) {
+            throw new ApiRequestException(ErrorCode.DAILY_WRITE_UP_BURN_ERROR);
+        }
+
         Post post = Post.of(account, dto);
         Post savedPost = postRepository.save(post);
 
@@ -162,6 +167,7 @@ public class PostMainPageServiceImpl implements PostMainPageService{
             PostImage postImage = PostImage.builder().post(savedPost).postImg(img_url).build();
             postImageRepository.save(postImage);
         }
+
         setPostTag(dto.getHashTag(), savedPost);
         account.upPostCountCreate();
         return 5 - account.getPostCreateCount();
@@ -279,8 +285,8 @@ public class PostMainPageServiceImpl implements PostMainPageService{
 
     // 디모 QnA 유사한질문 조회
     @Transactional(readOnly = true)
-    public List<PostResponseDto.PostSimilarQuestion> similarQuestion(String category, Long accountId) {
-        List<PostResponseDto.PostSimilarQuestion> postSimilarList = postRepository.findByCategory(category, "QNA");
+    public List<PostResponseDto.PostSimilarQuestion> similarQuestion(String category, Long accountId, Long postId) {
+        List<PostResponseDto.PostSimilarQuestion> postSimilarList = postRepository.findByCategory(category, "QNA", postId);
         if (accountId != null) {
             postSimilarList.forEach((postSimilar) -> {
                 // 좋아요 여부
