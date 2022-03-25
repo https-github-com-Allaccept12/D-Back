@@ -1,15 +1,9 @@
 package TeamDPlus.code.dto.response;
-import TeamDPlus.code.domain.account.Specialty;
-import TeamDPlus.code.domain.artwork.ArtWorks;
-import TeamDPlus.code.domain.artwork.comment.ArtWorkComment;
 import TeamDPlus.code.domain.artwork.image.ArtWorkImage;
 import TeamDPlus.code.dto.common.CommonDto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.sql.Timestamp;
@@ -110,12 +104,12 @@ public class ArtWorkResponseDto {
         private Timestamp create_time;
         private Timestamp modify_time;
         private String copyright;
-        private Specialty specialty;
+        private String specialty;
 
         @Builder
         public ArtWorkSubDetail(final Long artwork_id,final Long account_id,final String title,final String content,final Long view_count,
                                 final Long like_count,final String category,final Timestamp create_time,
-                                final Timestamp modify_time,final Specialty specialty,final String account_nickname,
+                                final Timestamp modify_time,final String specialty,final String account_nickname,
                                 final String account_profile_img,final String copyright) {
             this.artwork_id = artwork_id;
             this.account_id = account_id;

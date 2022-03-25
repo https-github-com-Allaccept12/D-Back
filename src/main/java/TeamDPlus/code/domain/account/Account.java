@@ -2,7 +2,6 @@ package TeamDPlus.code.domain.account;
 
 
 import TeamDPlus.code.domain.BaseEntity;
-import TeamDPlus.code.domain.account.orthers.Other;
 import TeamDPlus.code.domain.account.rank.Rank;
 import TeamDPlus.code.dto.request.AccountRequestDto;
 import TeamDPlus.code.dto.request.AccountRequestDto.InitProfileSetting;
@@ -74,23 +73,20 @@ public class Account extends BaseEntity {
     private int artWorkCreateCount;
     private int postCreateCount;
 
-    @Embedded
-    private Specialty specialty;
+    private String specialty;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "rank_id",nullable = false)
     private Rank rank;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "other_id",nullable = false)
-    private Other other;
+    private String other;
 
     @Builder
     public Account(final String accountName, final String email, final String nickname, final String subContent, final String titleContent, final String profileImg,
                    final int career, final String phoneNumber, final String workTime,
                    final String workEmail, final String tendency, final Long exp,
-                   final String linkedIn, final String brunch, final String instagram,final Other other,
-                   final String interest, final Rank rank, final String job, final Specialty specialty)  {
+                   final String linkedIn, final String brunch, final String instagram,final String other,
+                   final String interest, final Rank rank, final String job, final String specialty)  {
         this.accountName = accountName;
         this.email = email;
         this.nickname = nickname;
@@ -160,7 +156,7 @@ public class Account extends BaseEntity {
     }
     public void updateSpecialty(final UpdateSpecialty dto) {
         this.specialty = dto.getSpecialty();
-        this.other.updateOther(dto.getOther_specialty());
+        this.other = dto.getOther_specialty();
     }
 
 

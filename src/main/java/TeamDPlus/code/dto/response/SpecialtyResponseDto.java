@@ -1,12 +1,10 @@
 package TeamDPlus.code.dto.response;
 
-import TeamDPlus.code.domain.account.Specialty;
-
 public class SpecialtyResponseDto {
 
-    private Specialty specialty;
+    private String specialty;
 
-    public SpecialtyResponseDto(Specialty specialty) {
+    public SpecialtyResponseDto(String specialty) {
         this.specialty = specialty;
     }
 }

@@ -1,13 +1,11 @@
 package TeamDPlus.code.dto.request;
 
-import TeamDPlus.code.domain.account.Specialty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import java.util.List;
 
 public class AccountRequestDto {
 
@@ -50,8 +48,8 @@ public class AccountRequestDto {
     @Getter
     @NoArgsConstructor
     public static class UpdateSpecialty {
-        private Specialty specialty;
-        private Specialty other_specialty;
+        private String specialty;
+        private String other_specialty;
     }
 
     @Getter

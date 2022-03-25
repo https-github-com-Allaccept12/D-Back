@@ -3,7 +3,6 @@ package TeamDPlus.code.domain.artwork;
 
 import TeamDPlus.code.domain.BaseEntity;
 import TeamDPlus.code.domain.account.Account;
-import TeamDPlus.code.domain.account.Specialty;
 import TeamDPlus.code.dto.request.ArtWorkRequestDto;
 import TeamDPlus.code.dto.request.ArtWorkRequestDto.ArtWorkCreate;
 import lombok.AccessLevel;
@@ -52,7 +51,7 @@ public class ArtWorks extends BaseEntity {
     private Boolean isMaster;
 
     @Embedded
-    private Specialty specialty;
+    private String specialty;
 
     private String thumbnail;
 
@@ -63,7 +62,7 @@ public class ArtWorks extends BaseEntity {
     @Builder
     public ArtWorks(final Boolean scope,final String title,final String content,final String category,
                     final Long view,final String workStart,final String workEnd,final Account account,
-                    final Boolean isMaster, final Specialty specialty,final String copyright) {
+                    final Boolean isMaster, final String specialty,final String copyright) {
         this.scope = scope;
         this.title = title;
         this.content = content;

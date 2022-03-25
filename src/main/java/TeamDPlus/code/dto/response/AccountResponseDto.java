@@ -1,16 +1,11 @@
 package TeamDPlus.code.dto.response;
 
 import TeamDPlus.code.domain.account.Account;
-import TeamDPlus.code.domain.account.Specialty;
-import TeamDPlus.code.domain.account.history.History;
-import TeamDPlus.code.dto.common.CommonDto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class AccountResponseDto {
 
@@ -34,8 +29,8 @@ public class AccountResponseDto {
         private Long follower_count;
         private Long following_count;
         private Boolean is_follow;
-        private Specialty specialty;
-        private Specialty other_specialty;
+        private String specialty;
+        private String other_specialty;
         private Boolean is_mypage;
 
         @Builder
@@ -43,7 +38,7 @@ public class AccountResponseDto {
                                  final String tendency,final String title_content,final String sub_content,
                                  final String linked_in,final String brunch,final String insta, String work_email,
                                  final String work_time,final Long follower_count,final Long following_count,final boolean is_follow,
-                                 final Specialty specialty, final boolean is_mypage, final Specialty other) {
+                                 final String specialty, final boolean is_mypage, final String other) {
             this.account_id = account_id;
             this.nickname = nickname;
             this.profile_img = profile_img;
@@ -83,7 +78,7 @@ public class AccountResponseDto {
                     .is_follow(is_follow)
                     .specialty(account.getSpecialty())
                     .is_mypage(is_mypage)
-                    .other(account.getOther().getOtherSpecialty())
+                    .other(account.getOther())
                     .build();
         }
     }

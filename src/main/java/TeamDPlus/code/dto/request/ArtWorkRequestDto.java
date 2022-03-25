@@ -1,6 +1,5 @@
 package TeamDPlus.code.dto.request;
 
-import TeamDPlus.code.domain.account.Specialty;
 import TeamDPlus.code.dto.common.CommonDto.ImgUrlDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -37,7 +36,7 @@ public class ArtWorkRequestDto {
 
         private Boolean master;
 
-        private Specialty specialty;
+        private String specialty;
 
         @NotEmpty(message = "작품 판권 설정을 해주세요.")
         private String copyright;
@@ -74,7 +73,7 @@ public class ArtWorkRequestDto {
 
         private Boolean master;
 
-        private Specialty specialty;
+        private String specialty;
 
         @NotEmpty(message = "작품 판권 설정을 해주세요.")
         private String copyright;
