@@ -30,7 +30,7 @@ public class FollowService {
         if (followRepository.existsByFollowerIdAndFollowingId(account.getId(),following_id)) {
             throw new ApiRequestException(ErrorCode.EXIST_FOLLOW_ERROR);
         }
-        account.getRank().upRankScore();
+        account.upRankScore();
         final Follow follow = Follow.builder().followerId(account.getId()).followingId(following_id).build();
         followRepository.save(follow);
     }
@@ -41,7 +41,7 @@ public class FollowService {
         if (!followRepository.existsByFollowerIdAndFollowingId(account.getId(), unFollowing_id)) {
           throw new ApiRequestException(ErrorCode.EXIST_FOLLOW_ERROR);
         }
-        account.getRank().downRankScore();
+        account.downRankScore();
         followRepository.deleteByFollowerIdAndFollowingId(account.getId(),unFollowing_id);
     }
 

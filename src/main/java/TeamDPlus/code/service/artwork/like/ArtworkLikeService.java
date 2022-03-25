@@ -25,7 +25,7 @@ public class ArtworkLikeService {
         if (artWorkLikesRepository.existByAccountIdAndArtWorkId(account.getId(), artWorkId)) {
             throw new BadArgumentsValidException(ErrorCode.ALREADY_LIKE_ERROR);
         }
-        artWorks.getAccount().getRank().upRankScore();
+        artWorks.getAccount().upRankScore();
         ArtWorkLikes artWorkLikes = ArtWorkLikes.builder().artWorks(artWorks).account(account).build();
         artWorkLikesRepository.save(artWorkLikes);
     }
@@ -36,7 +36,7 @@ public class ArtworkLikeService {
         if (!artWorkLikesRepository.existByAccountIdAndArtWorkId(account.getId(), artWorkId)) {
             throw new BadArgumentsValidException(ErrorCode.ALREADY_LIKE_ERROR);
         }
-        artWorks.getAccount().getRank().downRankScore();
+        artWorks.getAccount().downRankScore();
         artWorkLikesRepository.deleteByArtWorksIdAndAccountId(artWorkId,account.getId());
     }
 

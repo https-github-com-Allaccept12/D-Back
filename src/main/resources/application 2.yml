@@ -1,0 +1,33 @@
+spring:
+  profiles:
+    include:
+      - secret
+      - db
+      - credentials
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+ #       format_sql: #true
+        default_batch_fetch_size: 1000
+    open-in-view: false
+  
+  redis:
+    pool:
+      min-idle: 0
+      max-idle: 8
+      max-active: 8
+    port: 6379
+    host: localhost
+
+logging.level:
+  org.hibernate.SQL: debug
+
+#
+#logging.level:
+#  #org.hibernate.SQL: debug
+
+server:
+  port: 8081

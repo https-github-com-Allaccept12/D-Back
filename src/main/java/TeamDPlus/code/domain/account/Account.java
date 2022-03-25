@@ -77,9 +77,12 @@ public class Account extends BaseEntity {
     @Embedded
     private Specialty specialty;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "rank_id",nullable = false)
-    private Rank rank;
+//    @OneToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "rank_id",nullable = false)
+//    private Rank rank;
+
+    @Column(columnDefinition = "BIGINT default 0")
+    private Long rank;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "other_id",nullable = false)
@@ -90,7 +93,7 @@ public class Account extends BaseEntity {
                    final int career, final String phoneNumber, final String workTime,
                    final String workEmail, final String tendency, final Long exp,
                    final String linkedIn, final String brunch, final String instagram,final Other other,
-                   final String interest, final Rank rank, final String job, final Specialty specialty)  {
+                   final String interest, final Long rank, final String job, final Specialty specialty)  {
         this.accountName = accountName;
         this.email = email;
         this.nickname = nickname;
@@ -116,6 +119,14 @@ public class Account extends BaseEntity {
 //    public void refreshToken(final String refreshToken) {
 //        this.refreshToken = refreshToken;
 //    }
+
+    public void upRankScore() {
+        this.rank += 1L;
+    }
+
+    public void downRankScore() {
+        this.rank -= 1L;
+    }
 
     public void initTendency(final String requestTendency) {
         this.tendency = requestTendency;
