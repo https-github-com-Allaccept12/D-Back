@@ -6,18 +6,13 @@ import TeamDPlus.code.advice.ErrorCode;
 import TeamDPlus.code.domain.account.Account;
 import TeamDPlus.code.domain.account.AccountRepository;
 import TeamDPlus.code.domain.account.follow.FollowRepository;
-import TeamDPlus.code.domain.artwork.ArtWorks;
-import TeamDPlus.code.domain.artwork.image.ArtWorkImage;
 import TeamDPlus.code.domain.post.Post;
 import TeamDPlus.code.domain.post.PostBoard;
 import TeamDPlus.code.domain.post.PostRepository;
-import TeamDPlus.code.domain.post.answer.PostAnswer;
 import TeamDPlus.code.domain.post.answer.PostAnswerRepository;
 import TeamDPlus.code.domain.post.bookmark.PostBookMark;
 import TeamDPlus.code.domain.post.bookmark.PostBookMarkRepository;
-import TeamDPlus.code.domain.post.comment.PostComment;
 import TeamDPlus.code.domain.post.comment.PostCommentRepository;
-import TeamDPlus.code.domain.post.comment.like.PostCommentLikes;
 import TeamDPlus.code.domain.post.comment.like.PostCommentLikesRepository;
 import TeamDPlus.code.domain.post.image.PostImage;
 import TeamDPlus.code.domain.post.image.PostImageRepository;
@@ -29,13 +24,10 @@ import TeamDPlus.code.dto.common.CommonDto;
 import TeamDPlus.code.dto.request.PostRequestDto;
 import TeamDPlus.code.dto.response.PostMainResponseDto;
 import TeamDPlus.code.dto.response.PostResponseDto;
-import TeamDPlus.code.dto.response.PostResponseDto.PostPageMain;
+import TeamDPlus.code.dto.response.PostResponseDto.PostAnswerDetailPage;
 import TeamDPlus.code.service.file.FileProcessService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -44,8 +36,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -236,9 +226,8 @@ public class PostMainPageServiceImpl implements PostMainPageService{
     }
 
     // 디모 QnA 상세페이지
-    @Cacheable(value="menu", key="#postId")
     @Transactional
-    public PostResponseDto.PostAnswerDetailPage detailAnswer(Long accountId, Long postId) {
+    public PostAnswerDetailPage detailAnswer(Long accountId, Long postId) {
         // 작품 게시글 존재여부
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new ApiRequestException(ErrorCode.NONEXISTENT_ERROR));
@@ -274,7 +263,7 @@ public class PostMainPageServiceImpl implements PostMainPageService{
 
         //상세페이지의 답글 개수
         postAnswerSubDetail.setAnswer_count((long) postAnswerList.size());
-        return PostResponseDto.PostAnswerDetailPage.from(imgList, postAnswerList, postTagList, postAnswerSubDetail, isLike, isBookmark, isFollow, bookMarkCount);
+        return PostAnswerDetailPage.from(imgList, postAnswerList, postTagList, postAnswerSubDetail, isLike, isBookmark, isFollow, bookMarkCount);
     }
 
     // 디모 QnA 유사한질문 조회
