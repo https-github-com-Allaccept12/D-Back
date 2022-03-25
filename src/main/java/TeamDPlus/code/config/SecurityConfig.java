@@ -1,7 +1,6 @@
 package TeamDPlus.code.config;
 
 import TeamDPlus.code.jwt.AuthenticationEntryPointHandler;
-import TeamDPlus.code.jwt.JwtAuthenticationFilter;
 import TeamDPlus.code.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -16,10 +15,6 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.AuthenticationEntryPoint;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.context.SecurityContextPersistenceFilter;
-import org.springframework.web.filter.CorsFilter;
 
 @RequiredArgsConstructor
 @Configuration
@@ -56,7 +51,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/user/**").permitAll()
                 .antMatchers("/").permitAll()
                 .antMatchers(HttpMethod.GET,"/api/artwork/**","/api/artwork/detail/**","/api/artwork/search/**",
-                        "/api/profile/nickname/**","/api/follow/**","/api/my-page/**","/api/post/**").permitAll()
+                        "/api/profile/nickname/**","/api/follow/**","/api/my-page/**","/api/post/**","/profile").permitAll()
                 .anyRequest().authenticated() // 그외 나머지 요청은 사용권한 체크
                 .and()
                 .exceptionHandling()
