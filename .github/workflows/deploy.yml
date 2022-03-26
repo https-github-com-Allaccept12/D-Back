@@ -33,7 +33,7 @@ jobs:
         with:
           files: ./src/main/resources/application-real1.yml
         env:
-#          spring.datasource.url: ${{ secrets.RDS_HOST }}
+          spring.datasource.url: ${{ secrets.RDS_HOST }}
 #          spring.datasource.username: ${{ secrets.RDS_USERNAME }}
 #          spring.datasource.password: ${{ secrets.RDS_PASSWORD }}
 #          cloud.aws.s3.bucket: ${{secrets.AWS_S3_BUCKET_NAME}}
@@ -47,7 +47,7 @@ jobs:
         with:
           files: ./src/main/resources/application-real2.yml
         env:
-#          spring.datasource.url: ${{ secrets.RDS_HOST }}
+          spring.datasource.url: ${{ secrets.RDS_HOST }}
 #          spring.datasource.username: ${{ secrets.RDS_USERNAME }}
 #          spring.datasource.password: ${{ secrets.RDS_PASSWORD }}
 #          cloud.aws.s3.bucket: ${{secrets.AWS_S3_BUCKET_NAME}}
