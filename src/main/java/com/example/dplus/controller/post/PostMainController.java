@@ -30,40 +30,40 @@ public class PostMainController {
 
     // 전체 목록
     @GetMapping("/{last_post_id}/{board}")
-    public ResponseEntity<Success> postMain(@RequestBody AccountRequestDto.AccountVisit dto,
+    public ResponseEntity<Success> postMain(@RequestParam("account_id") Long account_id,
                                             @PathVariable Long last_post_id,
                                             @PathVariable PostBoard board) {
         return new ResponseEntity<>(new Success("디플 메인 페이지",
-                postMainPageService.showPostMain(dto.getAccount_id(), last_post_id, board, "", SORT_SIGN_LATEST)), HttpStatus.OK);
+                postMainPageService.showPostMain(account_id, last_post_id, board, "", SORT_SIGN_LATEST)), HttpStatus.OK);
     }
 
     // 전체 목록 (카테고리별)
     @GetMapping("/category/{category}/{last_post_id}/{board}")
-    public ResponseEntity<Success> postMainByCategory(@RequestBody AccountRequestDto.AccountVisit dto,
+    public ResponseEntity<Success> postMainByCategory(@RequestParam("account_id") Long account_id,
                                                       @PathVariable String category,
                                                       @PathVariable Long last_post_id,
                                                       @PathVariable PostBoard board) {
         return new ResponseEntity<>(new Success("카테고리별 메인 페이지",
-                postMainPageService.showPostMain(dto.getAccount_id(), last_post_id, board, category, SORT_SIGN_LATEST)), HttpStatus.OK);
+                postMainPageService.showPostMain(account_id, last_post_id, board, category, SORT_SIGN_LATEST)), HttpStatus.OK);
     }
 
     // 카테고리별 정렬
     @GetMapping("/sort/{category}/{sortsign}/{last_post_id}/{board}")
-    public ResponseEntity<Success> postSortByCatetory(@RequestBody AccountRequestDto.AccountVisit dto,
+    public ResponseEntity<Success> postSortByCatetory(@RequestParam("account_id") Long account_id,
                                                       @PathVariable int sortsign,
                                                       @PathVariable Long last_post_id,
                                                       @PathVariable PostBoard board,
                                                       @PathVariable String category) {
         return new ResponseEntity<>(new Success("카테고리별 정렬한 디플페이지",
-                postMainPageService.showPostMain(dto.getAccount_id(), last_post_id, board, category, sortsign)), HttpStatus.OK);
+                postMainPageService.showPostMain(account_id, last_post_id, board, category, sortsign)), HttpStatus.OK);
     }
 
     // 상세 목록
     @GetMapping("/{post_id}")
-    public ResponseEntity<Success> postDetail(@RequestBody AccountRequestDto.AccountVisit dto,
+    public ResponseEntity<Success> postDetail(@RequestParam("account_id") Long account_id,
                                               @PathVariable Long post_id) {
         return new ResponseEntity<>(new Success("디플 상세 페이지",
-                postMainPageService.showPostDetail(dto.getAccount_id(), post_id)), HttpStatus.OK);
+                postMainPageService.showPostDetail(account_id, post_id)), HttpStatus.OK);
     }
 
     // 게시물 등록
@@ -105,7 +105,7 @@ public class PostMainController {
 
     // 게시물 검색
     @GetMapping("/search/{last_post_id}/{board}/{keyword}")
-    public ResponseEntity<Success> postSearch(@RequestBody AccountRequestDto.AccountVisit dto,
+    public ResponseEntity<Success> postSearch(@RequestParam("account_id") Long account_id,
                                               @PathVariable Long last_post_id,
                                               @PathVariable PostBoard board,
                                               @PathVariable String keyword) {
@@ -113,25 +113,25 @@ public class PostMainController {
             throw new IllegalStateException("검색어를 입력 해주세요.");
         }
         return new ResponseEntity<>(new Success("작품 검색 완료",
-                postMainPageService.findBySearchKeyWord(keyword, last_post_id, dto.getAccount_id(), board)), HttpStatus.OK);
+                postMainPageService.findBySearchKeyWord(keyword, last_post_id, account_id, board)), HttpStatus.OK);
 
     }
 
     // 질문글 상세 조회
     @GetMapping("/question/{post_id}")
-    public ResponseEntity<Success> postQuestionDetail (@RequestBody AccountRequestDto.AccountVisit dto,
+    public ResponseEntity<Success> postQuestionDetail (@RequestParam("account_id") Long account_id,
                                                        @PathVariable Long post_id){
         return new ResponseEntity<>(new Success("디플 질문 상세페이지 조회",
-                postMainPageService.detailAnswer(dto.getAccount_id(), post_id)), HttpStatus.OK);
+                postMainPageService.detailAnswer(account_id, post_id)), HttpStatus.OK);
     }
 
     // 유사한 질문 조회
     @GetMapping("/question/similar/{category}/{post_id}")
-    public ResponseEntity<Success> similarQuestion (@RequestBody AccountRequestDto.AccountVisit dto,
+    public ResponseEntity<Success> similarQuestion (@RequestParam("account_id") Long account_id,
                                                     @PathVariable String category,
                                                     @PathVariable Long post_id){
         return new ResponseEntity<>(new Success("유사한 질문 리스트",
-                postMainPageService.similarQuestion(category, dto.getAccount_id(), post_id)), HttpStatus.OK);
+                postMainPageService.similarQuestion(category, account_id, post_id)), HttpStatus.OK);
 
     }
 }

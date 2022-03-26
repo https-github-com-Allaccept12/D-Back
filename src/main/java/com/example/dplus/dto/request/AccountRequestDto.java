@@ -9,14 +9,6 @@ import javax.validation.constraints.NotNull;
 
 public class AccountRequestDto {
 
-
-    @Getter
-    @NoArgsConstructor
-    public static class AccountVisit {
-        private Long owner_account_id;
-        private Long account_id;
-    }
-
     @Getter
     @NoArgsConstructor
     public static class UpdateAccountInfo {
