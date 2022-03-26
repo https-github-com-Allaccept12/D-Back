@@ -3,6 +3,8 @@ package com.example.dplus.domain.post.like;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 
+import static com.example.dplus.domain.post.like.QPostLikes.postLikes;
+
 
 @RequiredArgsConstructor
 public class PostLikesRepositoryImpl implements PostLikesRepositoryCustom {
