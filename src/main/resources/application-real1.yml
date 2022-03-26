@@ -1,3 +1,6 @@
+server:
+  port: 8081
+
 spring:
   config:
     activate:
@@ -29,6 +32,14 @@ spring:
         default_batch_fetch_size: 1000
     open-in-view: false
 
+  redis:
+    pool:
+      min-idle: 0
+      max-idle: 8
+      max-active: 8
+    port: 6379
+    host: localhost
+
 cloud:
   aws:
     s3:
@@ -41,6 +52,7 @@ cloud:
       accessKey: ${aws.s3.accesskey}
       secretKey: ${aws.s3.secretkey}
 
+
 logging.level:
   org.hibernate.SQL: debug
 
@@ -49,5 +61,3 @@ jwt:
   header: Authorization
 
 
-server:
-  port: 8081

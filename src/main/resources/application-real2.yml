@@ -1,3 +1,6 @@
+server:
+  port: 8082
+
 spring:
   config:
     activate:
@@ -28,6 +31,13 @@ spring:
         format_sql: true
         default_batch_fetch_size: 1000
     open-in-view: false
+  redis:
+    pool:
+      min-idle: 0
+      max-idle: 8
+      max-active: 8
+    port: 6379
+    host: localhost
 
 cloud:
   aws:
@@ -48,6 +58,3 @@ jwt:
   header: Authorization
   secret: ${jwt.secrets}
 
-
-server:
-  port: 8082
