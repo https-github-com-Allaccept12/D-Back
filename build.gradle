@@ -13,7 +13,7 @@ plugins {
 
 group = 'Team-D-Plus'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = "1.9"
+sourceCompatibility = "1.8"
 
 configurations {
 	compileOnly {
@@ -33,12 +33,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
-	// websocket
-	implementation 'org.springframework.boot:spring-boot-starter-websocket'
-	// https://mvnrepository.com/artifact/org.webjars/sockjs-client
-	implementation 'org.webjars:sockjs-client:1.5.1'
 
-	implementation 'com.google.firebase:firebase-admin:6.8.1'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation group: 'org.json', name: 'json', version: '20090211'
 	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity5'
@@ -92,4 +87,3 @@ configurations {
 compileQuerydsl {
 	options.annotationProcessorPath = configurations.querydsl
 }
-targetCompatibility = JavaVersion.VERSION_1_9

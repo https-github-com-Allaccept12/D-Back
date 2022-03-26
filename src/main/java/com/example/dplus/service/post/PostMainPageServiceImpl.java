@@ -17,11 +17,6 @@ import com.example.dplus.domain.post.like.PostAnswerLikesRepository;
 import com.example.dplus.domain.post.like.PostLikesRepository;
 import com.example.dplus.domain.post.tag.PostTag;
 import com.example.dplus.domain.post.tag.PostTagRepository;
-import com.example.dplus.advice.ApiRequestException;
-import com.example.dplus.advice.BadArgumentsValidException;
-import com.example.dplus.advice.ErrorCode;
-import com.example.dplus.domain.account.Account;
-import com.example.dplus.domain.account.AccountRepository;
 import com.example.dplus.domain.post.Post;
 import com.example.dplus.domain.post.PostBoard;
 import com.example.dplus.domain.post.PostRepository;
@@ -135,8 +130,6 @@ public class PostMainPageServiceImpl implements PostMainPageService{
         Long bookmark_count = (long) bookmarks.size();
 
         List<PostTag> postTags = postTagRepository.findPostTagsByPostId(postId);
-        System.out.println(postTags.get(0).getHashTag());
-        System.out.println(postTags.get(1).getHashTag());
 
         boolean isLike = false;
         boolean isBookmark = false;

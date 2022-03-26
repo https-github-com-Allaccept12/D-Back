@@ -8,6 +8,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class NotificationController {
 
-    private final FCMService fcmService;
+//    private final FCMService fcmService;
 
 }

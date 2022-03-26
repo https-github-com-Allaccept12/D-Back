@@ -25,7 +25,7 @@ public class PostAnswerController {
                                                     @RequestBody PostRequestDto.PostAnswer dto) {
         loginValid(userDetails);
         return new ResponseEntity<>(new Success("질문글 답변 등록 완료",
-                postAnswerService.createAnswer(dto, post_id, userDetails.getUser())), HttpStatus.OK);
+                postAnswerService.createAnswer(dto, post_id, userDetails.getUser().getId())), HttpStatus.OK);
     }
 
     @PatchMapping("/answer/{answer_id}")

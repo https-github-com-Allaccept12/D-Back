@@ -120,7 +120,7 @@ public class PostMainController {
         if (keyword == null) {
             throw new IllegalStateException("검색어를 입력 해주세요.");
         }
-        return new ResponseEntity<>(new Success("작품 검색 완료",
+        return new ResponseEntity<>(new Success("게시물 검색 완료",
                 postMainPageService.findBySearchKeyWord(keyword, last_post_id, account_id, board)), HttpStatus.OK);
 
     }
