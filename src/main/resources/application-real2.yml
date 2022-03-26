@@ -1,10 +1,10 @@
 server:
-  port: 8082
+  port: 8080
 
 spring:
   config:
     activate:
-      on-profile: real1
+      on-profile: real2
 #  servlet:
 #    multipart:
 #      max-file-size: 30 #파일 최대 크기
