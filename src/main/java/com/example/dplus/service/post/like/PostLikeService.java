@@ -4,15 +4,16 @@ import com.example.dplus.advice.ApiRequestException;
 import com.example.dplus.advice.ErrorCode;
 import com.example.dplus.domain.account.Account;
 import com.example.dplus.domain.post.Post;
-import com.example.dplus.domain.post.PostRepository;
-import com.example.dplus.domain.post.like.PostLikes;
-import com.example.dplus.domain.post.like.PostLikesRepository;
+import com.example.dplus.repository.post.PostRepository;
+import com.example.dplus.domain.post.PostLikes;
+import com.example.dplus.repository.post.like.PostLikesRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class PostLikeService {
 
     private final PostLikesRepository postLikesRepository;

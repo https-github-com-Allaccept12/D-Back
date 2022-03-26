@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RequestMapping("/api/artwork/comment")
 public class ArtWorkCommentController {
-
     private final ArtWorkCommentService artWorkCommentService;
 
     @PostMapping("{artwork_id}")

@@ -21,7 +21,7 @@ public class ArtWorkBookMarkController {
 
     @PostMapping("/artwork/{artwork_id}")
     public ResponseEntity<Success> doBookmark(@PathVariable Long artwork_id,
-                                            @AuthenticationPrincipal UserDetailsImpl user) {
+                                              @AuthenticationPrincipal UserDetailsImpl user) {
         if (user != null) {
             artWorkBookMarkService.doBookMark(user.getUser(),artwork_id);
             return new ResponseEntity<>(new Success("작품 북마크 성공",""), HttpStatus.OK);
@@ -31,14 +31,13 @@ public class ArtWorkBookMarkController {
     }
     @DeleteMapping("/artwork/{artwork_id}")
     public ResponseEntity<Success> unBookmark(@PathVariable Long artwork_id,
-                                            @AuthenticationPrincipal UserDetailsImpl user) {
+                                              @AuthenticationPrincipal UserDetailsImpl user) {
         if (user != null) {
             artWorkBookMarkService.unBookMark(user.getUser(),artwork_id);
             return new ResponseEntity<>(new Success("작품 북마크 해지",""), HttpStatus.OK);
         }
         throw new BadArgumentsValidException(ErrorCode.NO_AUTHENTICATION_ERROR);
     }
-
 
 
 }

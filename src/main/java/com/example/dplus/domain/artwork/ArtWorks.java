@@ -121,9 +121,6 @@ public class ArtWorks extends BaseEntity {
                 .build();
     }
 
-
-
-
 }
 
 

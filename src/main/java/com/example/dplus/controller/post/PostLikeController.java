@@ -43,9 +43,9 @@ public class PostLikeController {
     }
 
     // 코멘트에 대한 like 처리.. postId를 따로 찾지 않아도 되지 않을까.. seq베이스면?
-    @PostMapping("/{postComment_id}")
+    @PostMapping("/comment/{postComment_id}")
     public ResponseEntity<Success> commentDoLike(@PathVariable Long postComment_id,
-                                          @AuthenticationPrincipal UserDetailsImpl user) {
+                                                 @AuthenticationPrincipal UserDetailsImpl user) {
         if (user != null) {
             postCommentLikeService.doLike(user.getUser(), postComment_id);
             return new ResponseEntity<>(new Success("작품 코멘트 좋아요 완료", ""), HttpStatus.OK);
@@ -53,9 +53,9 @@ public class PostLikeController {
         throw new BadArgumentsValidException(ErrorCode.NO_AUTHENTICATION_ERROR);
     }
 
-    @DeleteMapping("/{postComment_id}")
+    @DeleteMapping("/comment/{postComment_id}")
     public ResponseEntity<Success> commentUnLike(@PathVariable Long postComment_id,
-                                          @AuthenticationPrincipal UserDetailsImpl user) {
+                                                 @AuthenticationPrincipal UserDetailsImpl user) {
         if (user != null) {
             postCommentLikeService.unLike(user.getUser(), postComment_id);
             return new ResponseEntity<>(new Success("작품 코멘트 좋아요 취소", ""), HttpStatus.OK);

@@ -1,11 +1,14 @@
 package com.example.dplus.controller.post;
 
 
-import com.example.dplus.advice.BadArgumentsValidException;
-import com.example.dplus.advice.ErrorCode;
+
 import com.example.dplus.domain.post.PostBoard;
 import com.example.dplus.dto.Success;
+
+import com.example.dplus.advice.BadArgumentsValidException;
+import com.example.dplus.advice.ErrorCode;
 import com.example.dplus.dto.request.AccountRequestDto;
+
 import com.example.dplus.dto.request.PostRequestDto;
 import com.example.dplus.jwt.UserDetailsImpl;
 import com.example.dplus.service.post.PostMainPageService;
@@ -32,28 +35,31 @@ public class PostMainController {
     @GetMapping("/{last_post_id}/{board}")
     public ResponseEntity<Success> postMain(@RequestParam("account_id") Long account_id,
                                             @PathVariable Long last_post_id,
-                                            @PathVariable PostBoard board) {
-        return new ResponseEntity<>(new Success("디플 메인 페이지",
-                postMainPageService.showPostMain(account_id, last_post_id, board, "", SORT_SIGN_LATEST)), HttpStatus.OK);
-    }
+                                            @PathVariable String board) {
+
+            return new ResponseEntity<>(new Success("디플 메인 페이지",
+                    postMainPageService.showPostMain(account_id, last_post_id, board, "", SORT_SIGN_LATEST)), HttpStatus.OK);
+        }
 
     // 전체 목록 (카테고리별)
     @GetMapping("/category/{category}/{last_post_id}/{board}")
     public ResponseEntity<Success> postMainByCategory(@RequestParam("account_id") Long account_id,
                                                       @PathVariable String category,
                                                       @PathVariable Long last_post_id,
-                                                      @PathVariable PostBoard board) {
+                                                      @PathVariable String board) {
+
         return new ResponseEntity<>(new Success("카테고리별 메인 페이지",
                 postMainPageService.showPostMain(account_id, last_post_id, board, category, SORT_SIGN_LATEST)), HttpStatus.OK);
     }
 
-    // 카테고리별 정렬
+    // 카테고리별 정렬 + 좋아요
     @GetMapping("/sort/{category}/{sortsign}/{last_post_id}/{board}")
     public ResponseEntity<Success> postSortByCatetory(@RequestParam("account_id") Long account_id,
                                                       @PathVariable int sortsign,
                                                       @PathVariable Long last_post_id,
-                                                      @PathVariable PostBoard board,
+                                                      @PathVariable String board,
                                                       @PathVariable String category) {
+
         return new ResponseEntity<>(new Success("카테고리별 정렬한 디플페이지",
                 postMainPageService.showPostMain(account_id, last_post_id, board, category, sortsign)), HttpStatus.OK);
     }
@@ -71,6 +77,7 @@ public class PostMainController {
     public ResponseEntity<Success> createPost(@AuthenticationPrincipal UserDetailsImpl user,
                                               @RequestPart PostRequestDto.PostCreate data,
                                               @RequestPart(required = false) List<MultipartFile> imgFile) {
+
         if (user != null) {
             return new ResponseEntity<>(new Success("디플 게시물 등록",
                     postMainPageService.createPost(user.getUser().getId(), data, imgFile)), HttpStatus.OK);
@@ -83,7 +90,8 @@ public class PostMainController {
     public ResponseEntity<Success> updatePost(@AuthenticationPrincipal UserDetailsImpl user,
                                               @PathVariable Long post_id,
                                               @RequestPart PostRequestDto.PostUpdate data,
-                                              @RequestPart(value = "file", required = false) List<MultipartFile> imgFile) {
+                                              @RequestPart(required = false) List<MultipartFile> imgFile) {
+
         if (user != null) {
             return new ResponseEntity<>(new Success("디플 게시물 수정",
                     postMainPageService.updatePost(user.getUser(), post_id, data, imgFile)), HttpStatus.OK);

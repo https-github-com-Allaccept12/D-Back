@@ -3,16 +3,17 @@ package com.example.dplus.service.post.like;
 import com.example.dplus.advice.ApiRequestException;
 import com.example.dplus.advice.ErrorCode;
 import com.example.dplus.domain.account.Account;
-import com.example.dplus.domain.post.answer.PostAnswer;
-import com.example.dplus.domain.post.answer.PostAnswerRepository;
-import com.example.dplus.domain.post.like.PostAnswerLikes;
-import com.example.dplus.domain.post.like.PostAnswerLikesRepository;
+import com.example.dplus.domain.post.PostAnswer;
+import com.example.dplus.repository.post.answer.PostAnswerRepository;
+import com.example.dplus.domain.post.PostAnswerLikes;
+import com.example.dplus.repository.post.like.PostAnswerLikesRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class PostAnswerLikeService {
 
     private final PostAnswerLikesRepository postAnswerLikesRepository;
@@ -30,7 +31,6 @@ public class PostAnswerLikeService {
 
     }
 
-    @Transactional
     public void answerUnLike(Account account, Long postAnswerId) {
         PostAnswer postAnswer = postAnswerRepository.findById(postAnswerId)
                 .orElseThrow(() -> new ApiRequestException(ErrorCode.NONEXISTENT_ERROR));

@@ -1,5 +1,5 @@
 package com.example.dplus.dto.response;
-import com.example.dplus.domain.artwork.image.ArtWorkImage;
+import com.example.dplus.domain.artwork.ArtWorkImage;
 import com.example.dplus.dto.common.CommonDto;
 import lombok.Builder;
 import lombok.Getter;

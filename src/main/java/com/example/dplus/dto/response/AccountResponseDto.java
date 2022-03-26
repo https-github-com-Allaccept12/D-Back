@@ -94,16 +94,21 @@ public class AccountResponseDto {
         private String img_url_sec;
         private String account_job;
         private Boolean is_follow = false;
+        private String firstArtwork;
+        private String secondArtwork;
 
         @Builder
         public TopArtist(final Long account_id, final String account_nickname, final String account_profile,
-                         final String account_job,final String img_url_fir, final  String img_url_sec) {
+                         final String account_job,final String img_url_fir, final  String img_url_sec,
+                         final String firstArtwork, final String secondArtwork) {
             this.account_id = account_id;
             this.account_nickname = account_nickname;
             this.account_profile = account_profile;
             this.account_job = account_job;
             this.img_url_fir = img_url_fir;
             this.img_url_sec = img_url_sec;
+            this.firstArtwork = firstArtwork;
+            this.secondArtwork = secondArtwork;
         }
         public void setIsFollow() {
             this.is_follow = true;
