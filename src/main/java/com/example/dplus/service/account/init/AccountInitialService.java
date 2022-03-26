@@ -6,9 +6,7 @@ import com.example.dplus.advice.ErrorCode;
 import com.example.dplus.advice.BadArgumentsValidException;
 import com.example.dplus.domain.account.Account;
 import com.example.dplus.domain.account.AccountRepository;
-import com.example.dplus.dto.request.AccountRequestDto.InitInterestSetting;
-import com.example.dplus.dto.request.AccountRequestDto.InitProfileSetting;
-import com.example.dplus.dto.request.AccountRequestDto.InitTendencySetting;
+import com.example.dplus.dto.request.AccountRequestDto;
 import com.example.dplus.service.file.FileProcessService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,20 +21,19 @@ import java.util.regex.Pattern;
 @Slf4j
 public class AccountInitialService {
 
-
-    private final AccountRepository accountRepository;
     private final FileProcessService fileProcessService;
+    private final AccountRepository accountRepository;
 
     @Transactional
-    public Long setInitProfile(MultipartFile profileImg, InitProfileSetting dto, Long accountId) {
+    public Long setInitProfile(MultipartFile profileImg, AccountRequestDto.InitProfileSetting dto, Long accountId) {
         String profileUrl = fileProcessService.uploadImage(profileImg);
         Account account = getAccount(accountId);
         account.setInitProfile(dto);
-        account.updateProfileImg(profileUrl);
         return account.getId();
     }
+
     @Transactional
-    public Long updateProfile(MultipartFile profileImg, InitProfileSetting dto, Long accountId) {
+    public Long updateProfile(MultipartFile profileImg, AccountRequestDto.InitProfileSetting dto, Long accountId) {
         if (profileImg != null) {
             fileProcessService.deleteImage(dto.getDelete_profile_img());
             String profileUrl = fileProcessService.uploadImage(profileImg);
@@ -48,21 +45,22 @@ public class AccountInitialService {
         Account account = getAccount(accountId);
         account.setInitProfile(dto);
         return account.getId();
-
     }
+
     @Transactional
-    public Long setInitTendency(InitTendencySetting dto, Long accountId) {
+    public Long setInitTendency(AccountRequestDto.InitTendencySetting dto, Long accountId) {
         Account account = getAccount(accountId);
         account.initTendency(dto.getTendency());
         return account.getId();
     }
 
     @Transactional
-    public Long setInitInterest(InitInterestSetting dto, Long accountId) {
+    public Long setInitInterest(AccountRequestDto.InitInterestSetting dto, Long accountId) {
         Account account = getAccount(accountId);
         account.updateInterest(dto.getInterest());
         return account.getId();
     }
+
     @Transactional(readOnly = true)
     public void getNickNameValidation(String nickname) {
         Account account = accountRepository.findByNickname(nickname).orElse(null);

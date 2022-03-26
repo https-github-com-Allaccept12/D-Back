@@ -14,12 +14,12 @@ import javax.persistence.*;
 
 @Entity
 @Getter
-@DynamicInsert
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@DynamicInsert
 public class Post extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "post_id")
     private Long id;
 
@@ -70,10 +70,10 @@ public class Post extends BaseEntity {
     }
     public static Post of(Account account, PostRequestDto.PostCreate dto) {
         return Post.builder()
-                .account(account)
-                .category(dto.getCategory())
-                .content(dto.getContent())
                 .title(dto.getTitle())
+                .content(dto.getContent())
+                .category(dto.getCategory())
+                .account(account)
                 .board(dto.getBoard())
                 .build();
     }

@@ -3,8 +3,8 @@ name: DPlus-webservice
 on:
   push:
     branches:
-      - main # (1) 실습하시는분들은 master로 하시면 됩니다. (저는 별도 브랜치로 지정)
-  workflow_dispatch: # (2) 수동 실행
+      - main
+  workflow_dispatch:
 
 env:
   S3_BUCKET_NAME: dplus-jar
@@ -12,31 +12,89 @@ env:
 
 
 jobs:
-    build:
-      runs-on: ubuntu-latest
+  build:
+    runs-on: ubuntu-latest
 
-      steps:
-        - name: Checkout
-          uses: actions/checkout@v2
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
 
-        - name: Set up JDK 1.8
-          uses: actions/setup-java@v2
-          with:
-            java-version: '8'
-            distribution: 'adopt'
+      - name: Set up JDK 1.8
+        uses: actions/setup-java@v2
+        with:
+          java-version: '8'
+          distribution: 'adopt'
 
-        - name: Grant execute permission for gradlew
-          run: chmod +x ./gradlew
+      - name: Grant execute permission for gradlew
+        run: chmod +x ./gradlew
 
-        - name: Set Yaml-1
-          uses: microsoft/variable-substitution@v1
-          with:
-            files: ./src/main/resources/application.yml
-          env:
-            spring.datasource.url: ${{ secrets.RDS_HOST }}
-            spring.datasource.username: ${{ secrets.RDS_USERNAME }}
-            spring.datasource.password: ${{ secrets.RDS_PASSWORD }}
-            jwt.secret: ${{ secrets.JWT_SECRET }}
-            cloud.aws.credentials.accessKey: ${{secrets.AWS_S3_ACCESS_KEY}}
-            cloud.aws.credentials.secretKey: ${{secrets.AWS_S3_SECRET_KEY}}
-            cloud.aws.s3.bucket: ${{secrets.AWS_S3_BUCKET_NAME}}
+      - name: Set Yaml-1
+        uses: microsoft/variable-substitution@v1
+        with:
+          files: ./src/main/resources/application-real1.yml
+        env:
+          spring.datasource.url: ${{ secrets.RDS_HOST }}
+          spring.datasource.username: ${{ secrets.RDS_USERNAME }}
+          spring.datasource.password: ${{ secrets.RDS_PASSWORD }}
+          jwt.secret: ${{ secrets.JWT_SECRET }}
+          cloud.aws.credentials.accessKey: ${{secrets.AWS_S3_ACCESS_KEY}}
+          cloud.aws.credentials.secretKey: ${{secrets.AWS_S3_SECRET_KEY}}
+          cloud.aws.s3.bucket: ${{secrets.AWS_S3_BUCKET_NAME}}
+
+      - name: Set Yaml-2
+        uses: microsoft/variable-substitution@v1
+        with:
+          files: ./src/main/resources/application-real2.yml
+        env:
+          spring.datasource.url: ${{ secrets.RDS_HOST }}
+          spring.datasource.username: ${{ secrets.RDS_USERNAME }}
+          spring.datasource.password: ${{ secrets.RDS_PASSWORD }}
+          jwt.secret: ${{ secrets.JWT_SECRET }}
+          cloud.aws.credentials.accessKey: ${{secrets.AWS_S3_ACCESS_KEY}}
+          cloud.aws.credentials.secretKey: ${{secrets.AWS_S3_SECRET_KEY}}
+          cloud.aws.s3.bucket: ${{secrets.AWS_S3_BUCKET_NAME}}
+
+      - name: Build with Gradle
+        uses: gradle/gradle-build-action@937999e9cc2425eddc7fd62d1053baf041147db7
+        with:
+          arguments: build
+
+      - name: Get current time
+        uses: 1466587594/get-current-time@v2
+        id: current-time
+        with:
+          format: YYYY-MM-DDTHH-mm-ss # (1)
+          utcOffset: "+09:00"
+
+      - name: Show Current Time
+        run: echo "CurrentTime=${{steps.current-time.outputs.formattedTime}}"
+        shell: bash
+
+      - name: Make Directory
+        run: mkdir deploy
+        # Jar 파일 복사
+      - name: Copy Jar
+        run: cp ./build/libs/*.jar ./deploy/
+
+      - name: Copy script
+        run: cp ./scripts/*.sh ./deploy/
+
+      - name: Copy appspec.yml
+        run: cp appspec.yml ./deploy/
+
+      - name: Make zip file
+        run: zip -r -qq -j ./$GITHUB_SHA.zip ./deploy/
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Upload to S3
+        run: aws s3 cp --region ap-northeast-2 ./$GITHUB_SHA.zip s3://$S3_BUCKET_NAME/$GITHUB_SHA.zip
+
+      - name: Code Deploy
+        run: aws deploy create-deployment --application-name dplus-deploy --deployment-config-name CodeDeployDefault.AllAtOnce --deployment-group-name develop --s3-location bucket=$S3_BUCKET_NAME,bundleType=zip,key=$GITHUB_SHA.zip
+

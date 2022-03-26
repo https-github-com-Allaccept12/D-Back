@@ -32,7 +32,7 @@ public class AccountRepositoryImpl implements AccountRepositoryCustom{
                                 account.bestArtWorkTwo
                                 ))
                 .from(account)
-                .innerJoin(rank).on(rank.eq(account.rank))
+                .join(rank).on(rank.eq(account.rank))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .orderBy(rank.rankScore.desc())

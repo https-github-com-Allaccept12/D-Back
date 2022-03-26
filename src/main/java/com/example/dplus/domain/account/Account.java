@@ -1,7 +1,7 @@
 package com.example.dplus.domain.account;
 
-import com.example.dplus.domain.BaseEntity;
 import com.example.dplus.domain.account.rank.Rank;
+import com.example.dplus.domain.BaseEntity;
 import com.example.dplus.dto.request.AccountRequestDto.InitProfileSetting;
 import com.example.dplus.dto.request.AccountRequestDto.UpdateAccountIntro;
 import com.example.dplus.dto.request.AccountRequestDto.UpdateSpecialty;
@@ -20,7 +20,7 @@ import javax.persistence.*;
 public class Account extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE) // h2는 auto, mysql는 IDENTITY
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // h2는 auto, mysql는 IDENTITY
     @Column(name = "account_id")
     private Long id;
 
@@ -52,6 +52,8 @@ public class Account extends BaseEntity {
 
     @Column(columnDefinition = "BIGINT default 0")
     private Long exp;
+
+//    private String refreshToken;
 
     private String linkedIn;
 
@@ -104,6 +106,10 @@ public class Account extends BaseEntity {
         this.other = other;
     }
 
+//    public void refreshToken(final String refreshToken) {
+//        this.refreshToken = refreshToken;
+//    }
+
     public void initTendency(final String requestTendency) {
         this.tendency = requestTendency;
     }
@@ -149,6 +155,8 @@ public class Account extends BaseEntity {
         this.specialty = dto.getSpecialty();
         this.other = dto.getOther_specialty();
     }
+
+
 
 }
 

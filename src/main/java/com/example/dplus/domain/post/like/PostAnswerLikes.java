@@ -1,7 +1,7 @@
 package com.example.dplus.domain.post.like;
 
-import com.example.dplus.domain.account.Account;
 import com.example.dplus.domain.post.answer.PostAnswer;
+import com.example.dplus.domain.account.Account;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,7 +15,7 @@ import javax.persistence.*;
 public class PostAnswerLikes {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "answer_likes_id")
     private Long id;
 

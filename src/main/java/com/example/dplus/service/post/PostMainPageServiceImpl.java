@@ -9,6 +9,7 @@ import com.example.dplus.domain.account.follow.FollowRepository;
 import com.example.dplus.domain.post.Post;
 import com.example.dplus.domain.post.PostBoard;
 import com.example.dplus.domain.post.PostRepository;
+
 import com.example.dplus.domain.post.answer.PostAnswerRepository;
 import com.example.dplus.domain.post.bookmark.PostBookMark;
 import com.example.dplus.domain.post.bookmark.PostBookMarkRepository;
@@ -24,17 +25,17 @@ import com.example.dplus.dto.common.CommonDto;
 import com.example.dplus.dto.request.PostRequestDto;
 import com.example.dplus.dto.response.PostMainResponseDto;
 import com.example.dplus.dto.response.PostResponseDto;
+import com.example.dplus.dto.response.PostResponseDto.PostAnswerDetailPage;
 import com.example.dplus.service.file.FileProcessService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.Cacheable;
+
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -58,7 +59,7 @@ public class PostMainPageServiceImpl implements PostMainPageService{
 
     // 메인 페이지 (최신순, 좋아요순)
     @Transactional(readOnly = true)
-    public PostMainResponseDto showPostMain(Long accountId, Long lastPostId, PostBoard board, String category, int sortSign) {
+    public PostMainResponseDto showPostMain(Long accountId, Long lastPostId, String board, String category, int sortSign) {
 
         // 회원이면
         if (accountId != 0){
@@ -66,21 +67,20 @@ public class PostMainPageServiceImpl implements PostMainPageService{
             Pageable pageable = PageRequest.of(0,12);
             List<PostResponseDto.PostPageMain> postList = postRepository.findAllPostOrderByCreatedDesc(lastPostId, pageable, board, sortSign, category);
             setCountList(postList);
-            setIsLikePost(accountId, postList);
+            setIsLikeAndBookmarkPost(accountId, postList);
             for(int i = 0; i< postList.size(); i++) {
-                List<PostTag> tags =postTagRepository.findPostTagsByPostId(postList.get(i).getPost_id());
-                postList.get(i).setHash_tag(tags);
+                List<CommonDto.PostTagDto> tagDtos = postTagRepository.findPostTagListByPostId(postList.get(i).getPost_id());
+                postList.get(i).setHash_tag(tagDtos);
             }
 
             // 메인페이지 추천피드
             List<PostResponseDto.PostPageMain> postRecommendation = postRepository.findPostByMostViewAndMostLike();
             setCountList(postRecommendation);
-            setIsLikePost(accountId, postRecommendation);
-            for(int i = 0; i< postList.size(); i++) {
-                List<PostTag> tags =postTagRepository.findPostTagsByPostId(postList.get(i).getPost_id());
-                postList.get(i).setHash_tag(tags);
+            setIsLikeAndBookmarkPost(accountId, postRecommendation);
+            for(int i = 0; i< postRecommendation.size(); i++) {
+                List<CommonDto.PostTagDto> tagDtos = postTagRepository.findPostTagListByPostId(postList.get(i).getPost_id());
+                postRecommendation.get(i).setHash_tag(tagDtos);
             }
-
             return PostMainResponseDto.builder().postMainPage(postList).postRecommendationFeed(postRecommendation).build();
         }
 
@@ -90,16 +90,16 @@ public class PostMainPageServiceImpl implements PostMainPageService{
         List<PostResponseDto.PostPageMain> postList = postRepository.findAllPostOrderByCreatedDesc(lastPostId, pageable, board, sortSign, category);
         setCountList(postList);
         for(int i = 0; i< postList.size(); i++) {
-            List<PostTag> tags =postTagRepository.findPostTagsByPostId(postList.get(i).getPost_id());
-            postList.get(i).setHash_tag(tags);
+            List<CommonDto.PostTagDto> tagDtos = postTagRepository.findPostTagListByPostId(postList.get(i).getPost_id());
+            postList.get(i).setHash_tag(tagDtos);
         }
 
         // 메인페이지 추천피드
         List<PostResponseDto.PostPageMain> postRecommendation = postRepository.findPostByMostViewAndMostLike();
         setCountList(postRecommendation);
-        for(int i = 0; i< postList.size(); i++) {
-            List<PostTag> tags =postTagRepository.findPostTagsByPostId(postList.get(i).getPost_id());
-            postList.get(i).setHash_tag(tags);
+        for(int i = 0; i< postRecommendation.size(); i++) {
+            List<CommonDto.PostTagDto> tagDtos = postTagRepository.findPostTagListByPostId(postList.get(i).getPost_id());
+            postRecommendation.get(i).setHash_tag(tagDtos);
         }
 
         return PostMainResponseDto.builder().postMainPage(postList).postRecommendationFeed(postRecommendation).build();
@@ -109,36 +109,41 @@ public class PostMainPageServiceImpl implements PostMainPageService{
     @Transactional
     public PostResponseDto.PostDetailPage showPostDetail(Long accountId, Long postId){
         Post post = postRepository.findById(postId).orElseThrow(() -> new ApiRequestException(ErrorCode.NONEXISTENT_ERROR));
+
         post.addViewCount();
+
         PostResponseDto.PostSubDetail postSubDetail = postRepository.findByPostSubDetail(postId);
+
         List<PostImage> postImageList = postImageRepository.findByPostId(postId);
         List<PostBookMark> bookmarks = postBookMarkRepository.findByPostId(postId);
         List<PostResponseDto.PostComment> postComments = postCommentRepository.findPostCommentByPostId(postId);
-        List<PostTag> postTags = postTagRepository.findPostTagsByPostId(postId);
 
-        boolean isLike = false;
-        boolean isBookmark = false;
-        boolean isFollow = false;
-        // 코멘트 좋아요 담을 리스트 생성
-        List<CommonDto.IsCommentsLiked> isCommentsLikes = new ArrayList<>();
-
-        if(accountId != 0){
-            isLike = postLikesRepository.existByAccountIdAndPostId(accountId, postId);
-            isBookmark = postBookMarkRepository.existByAccountIdAndPostId(accountId, postId);
-            isFollow = followRepository.existsByFollowerIdAndFollowingId(accountId, postSubDetail.getAccount_id());
-
-            // 코멘트 당 좋아요 눌렀는지 체크
-            for (int i = 0; i < postComments.size(); i++) {
-                boolean isCommentLike = postCommentLikesRepository.existByAccountIdAndPostCommentId(accountId, postComments.get(i).getComment_id());
-                isCommentsLikes.get(i).setIsCommentsLiked(isCommentLike);
-            }
+        // 코멘트가 있으면 코멘트 좋아요 여부 체크
+        if(postComments.size()>0){
+            postComments.forEach((comment) -> {
+                Boolean commentLike = postCommentLikesRepository.existByAccountIdAndPostCommentId(accountId, comment.getComment_id());
+                comment.setIs_comment_like(commentLike);
+            });
         }
 
         Long comment_count = (long) postComments.size();
         Long bookmark_count = (long) bookmarks.size();
 
+        List<PostTag> postTags = postTagRepository.findPostTagsByPostId(postId);
+
+        boolean isLike = false;
+        boolean isBookmark = false;
+        boolean isFollow = false;
+
+        // 게시글의 좋아요, 북마크, 팔로잉 여부 체크
+        if(accountId != 0){
+            isLike = postLikesRepository.existByAccountIdAndPostId(accountId, postId);
+            isBookmark = postBookMarkRepository.existByAccountIdAndPostId(accountId, postId);
+            isFollow = followRepository.existsByFollowerIdAndFollowingId(accountId, postSubDetail.getAccount_id());
+        }
+
         return PostResponseDto.PostDetailPage.from(postImageList, postComments,
-                postTags, postSubDetail, isLike, isBookmark, isFollow, comment_count, isCommentsLikes, bookmark_count);
+                postTags, postSubDetail, isLike, isBookmark, isFollow, comment_count, bookmark_count);
     }
 
     // 게시글 작성
@@ -151,11 +156,12 @@ public class PostMainPageServiceImpl implements PostMainPageService{
 
         Post post = Post.of(account, dto);
         Post savedPost = postRepository.save(post);
-
-        for(int i = 0; i < dto.getImg().size(); i++){
-            String img_url = fileProcessService.uploadImage(imgFile.get(i));
-            PostImage postImage = PostImage.builder().post(savedPost).postImg(img_url).build();
-            postImageRepository.save(postImage);
+        if(imgFile!=null){
+            imgFile.forEach((file) -> {
+                String img_url = fileProcessService.uploadImage(file);
+                PostImage postImage = PostImage.builder().post(post).postImg(img_url).build();
+                postImageRepository.save(postImage);
+            });
         }
 
         setPostTag(dto.getHashTag(), savedPost);
@@ -166,16 +172,14 @@ public class PostMainPageServiceImpl implements PostMainPageService{
     // 게시물 수정
     @Transactional
     public Long updatePost(Account account, Long postId, PostRequestDto.PostUpdate dto, List<MultipartFile> imgFile){
-
         Post post = postAuthValidation(account.getId(), postId);
 
         // 삭제할 이미지가 있다면, 이미지 주소를 직접 하나씩 지운다
-        if(dto.getImg()!=null){
-            for(int i = 0; i < dto.getImg().size(); i++){
-                String deleteImage = dto.getImg().get(i).getImg_url();
+        if(dto.getDelete_img()!=null){
+            for(int i = 0; i < dto.getDelete_img().size(); i++){
+                String deleteImage = dto.getDelete_img().get(i).getFilename();
                 // 서버 파일 삭제
                 fileProcessService.deleteImage(deleteImage);
-
                 // db 삭제
                 postImageRepository.deleteByPostImg(deleteImage);
             }
@@ -183,19 +187,21 @@ public class PostMainPageServiceImpl implements PostMainPageService{
 
         // 업로드할 이미지가 있다면, 이미지를 업로드한다.
         if(imgFile!=null){
-            for(int i = 0; i < imgFile.size(); i++){
-                String img_url = fileProcessService.uploadImage(imgFile.get(i));
+            imgFile.forEach((file) -> {
+                String img_url = fileProcessService.uploadImage(file);
                 PostImage postImage = PostImage.builder().post(post).postImg(img_url).build();
                 postImageRepository.save(postImage);
-            }
+            });
         }
 
         // 게시글을 업데이트 한다
         post.updatePost(dto);
 
         // 태그도 지우고 다시 세팅
-        postTagRepository.deleteAllByPostId(postId);
-        setPostTag(dto.getHashTag(), post);
+        if(dto.getHashTag()!=null){
+            postTagRepository.deleteAllByPostId(postId);
+            setPostTag(dto.getHashTag(), post);
+        }
         return post.getId();
     }
 
@@ -232,9 +238,8 @@ public class PostMainPageServiceImpl implements PostMainPageService{
     }
 
     // 디모 QnA 상세페이지
-    @Cacheable(value="menu", key="#postId")
     @Transactional
-    public PostResponseDto.PostAnswerDetailPage detailAnswer(Long accountId, Long postId) {
+    public PostAnswerDetailPage detailAnswer(Long accountId, Long postId) {
         // 작품 게시글 존재여부
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new ApiRequestException(ErrorCode.NONEXISTENT_ERROR));
@@ -270,7 +275,7 @@ public class PostMainPageServiceImpl implements PostMainPageService{
 
         //상세페이지의 답글 개수
         postAnswerSubDetail.setAnswer_count((long) postAnswerList.size());
-        return PostResponseDto.PostAnswerDetailPage.from(imgList, postAnswerList, postTagList, postAnswerSubDetail, isLike, isBookmark, isFollow, bookMarkCount);
+        return PostAnswerDetailPage.from(imgList, postAnswerList, postTagList, postAnswerSubDetail, isLike, isBookmark, isFollow, bookMarkCount);
     }
 
     // 디모 QnA 유사한질문 조회
@@ -325,9 +330,10 @@ public class PostMainPageServiceImpl implements PostMainPageService{
         // #단위로 끊어서 해쉬태그 들어옴 (dto -> 받을 때)
         private void setPostTag(List<CommonDto.PostTagDto> dto, Post post){
             dto.forEach((tag) -> {
+                System.out.println("태그 : "+ tag);
                 PostTag postTag = PostTag.builder()
                         .post(post)
-                        .hashTag(tag.getHashTag())
+                        .hashTag(tag.getTag())
                         .build();
                 postTagRepository.save(postTag);
             });
@@ -359,7 +365,7 @@ public class PostMainPageServiceImpl implements PostMainPageService{
         });
     }
 
-    private void setIsLikePost(Long accountId, List<PostResponseDto.PostPageMain> postList) {
+    private void setIsLikeAndBookmarkPost(Long accountId, List<PostResponseDto.PostPageMain> postList) {
         postList.forEach((post) -> {
             post.setLikeAndBookmarkStatus(postLikesRepository.
                             existByAccountIdAndPostId(accountId, post.getPost_id()),

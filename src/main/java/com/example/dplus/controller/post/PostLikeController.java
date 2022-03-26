@@ -43,7 +43,7 @@ public class PostLikeController {
     }
 
     // 코멘트에 대한 like 처리.. postId를 따로 찾지 않아도 되지 않을까.. seq베이스면?
-    @PostMapping("/{postComment_id}")
+    @PostMapping("/comment/{postComment_id}")
     public ResponseEntity<Success> commentDoLike(@PathVariable Long postComment_id,
                                           @AuthenticationPrincipal UserDetailsImpl user) {
         if (user != null) {
@@ -53,7 +53,7 @@ public class PostLikeController {
         throw new BadArgumentsValidException(ErrorCode.NO_AUTHENTICATION_ERROR);
     }
 
-    @DeleteMapping("/{postComment_id}")
+    @DeleteMapping("/comment/{postComment_id}")
     public ResponseEntity<Success> commentUnLike(@PathVariable Long postComment_id,
                                           @AuthenticationPrincipal UserDetailsImpl user) {
         if (user != null) {

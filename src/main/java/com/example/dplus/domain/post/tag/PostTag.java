@@ -14,7 +14,7 @@ import javax.persistence.*;
 public class PostTag {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "post_tag_id")
     private Long id;
 
@@ -29,4 +29,5 @@ public class PostTag {
         this.post = post;
         this.hashTag = hashTag;
     }
+
 }

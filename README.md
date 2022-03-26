@@ -11,8 +11,9 @@
 - Spring Data Jpa
 - QueryDSL
 - MySQL 8.0
-- gitAction - 추가예정
-- Beanstalk - 추가예정
-- AWS EC2 - 추가예정
+- gitAction 
+- codedeploy
+- Nginx
+- AWS EC2
+- AWS RDB 
 - AWS Redis - 추가예정
-- NgineX - 추가예정 

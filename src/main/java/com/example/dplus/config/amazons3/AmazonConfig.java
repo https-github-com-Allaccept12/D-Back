@@ -28,4 +28,6 @@ public class AmazonConfig {
                 .withCredentials(new AWSStaticCredentialsProvider(awsCreds))
                 .build();
     }
+
+
 }

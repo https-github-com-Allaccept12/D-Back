@@ -39,3 +39,7 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### resource ###
+/resources/dplus-6acf6-firebase-adminsdk.json
+/resources/templates/firebase-snippet.html

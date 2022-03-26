@@ -13,12 +13,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class PostLikeService {
 
     private final PostLikesRepository postLikesRepository;
     private final PostRepository postRepository;
 
-    @Transactional
     public void doLike(Account account, Long postId) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new ApiRequestException(ErrorCode.NONEXISTENT_ERROR));
         if (postLikesRepository.existByAccountIdAndPostId(account.getId(), postId)) {
@@ -28,12 +28,7 @@ public class PostLikeService {
         postLikesRepository.save(postLikes);
     }
 
-    @Transactional
     public void unLike(Account account, Long postId) {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new ApiRequestException(ErrorCode.NONEXISTENT_ERROR));
-        if (!postLikesRepository.existByAccountIdAndPostId(account.getId(), postId)) {
-            throw new ApiRequestException(ErrorCode.ALREADY_LIKE_ERROR);
-        }
-        postLikesRepository.deleteByPostIdAndAccountId(post.getId(),account.getId());
+        postLikesRepository.deleteByPostIdAndAccountId(postId,account.getId());
     }
 }

@@ -1,9 +1,9 @@
 package com.example.dplus.service.account;
 
-import com.example.dplus.domain.account.Account;
-import com.example.dplus.domain.account.AccountRepository;
 import com.example.dplus.domain.account.rank.Rank;
 import com.example.dplus.domain.account.rank.RankRepository;
+import com.example.dplus.domain.account.Account;
+import com.example.dplus.domain.account.AccountRepository;
 import com.example.dplus.dto.KakaoUserInfoDto;
 import com.example.dplus.dto.response.LoginResponseDto;
 import com.example.dplus.jwt.JwtTokenProvider;
