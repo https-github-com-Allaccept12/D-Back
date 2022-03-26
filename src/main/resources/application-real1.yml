@@ -33,10 +33,10 @@ cloud:
   aws:
     s3:
       bucket: ${aws.s3.bucketname}
-      region:
-        static: "ap-northeast-2"
-      stack:
-        auto: false
+    region:
+      static: ${aws-region}
+    stack:
+      auto: false
     credentials:
       accessKey: ${aws.s3.accesskey}
       secretKey: ${aws.s3.secretkey}
