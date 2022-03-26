@@ -17,13 +17,13 @@ public class ExceptionController {
 
     @ExceptionHandler(value = {BadArgumentsValidException.class})
     public ResponseEntity<Fail> badRequestHandle(BadArgumentsValidException ex) {
-        Fail notFoundException = new Fail(ex.getMessage());
+        Fail notFoundException = new Fail(ex.getMessage(), 400);
         return new ResponseEntity<>(notFoundException, HttpStatus.OK);
     }
 
     @ExceptionHandler(value = {ApiRequestException.class,})
     public ResponseEntity<Fail> apiBadRequestHandle(ApiRequestException ex) {
-        Fail apiException = new Fail(ex.getMessage());
+        Fail apiException = new Fail(ex.getErrorCode());
         return new ResponseEntity<>(apiException, HttpStatus.OK);
     }
 
@@ -34,7 +34,6 @@ public class ExceptionController {
         Fail restApiException = new Fail(msg  + " -----test-----" + ex.getLocalizedMessage() );
         return new ResponseEntity<>(restApiException, HttpStatus.BAD_REQUEST);
     }
-
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Fail> defaultException(Exception ex) {
