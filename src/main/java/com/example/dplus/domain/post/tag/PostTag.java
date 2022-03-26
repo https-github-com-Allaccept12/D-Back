@@ -29,4 +29,5 @@ public class PostTag {
         this.post = post;
         this.hashTag = hashTag;
     }
+
 }

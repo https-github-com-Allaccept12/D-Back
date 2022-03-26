@@ -12,7 +12,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.regex.Pattern;
 
@@ -23,16 +22,15 @@ public class AccountInitialService {
 
 
     private final AccountRepository accountRepository;
-    private final FileProcessService fileProcessService;
 
     @Transactional
     public Long setInitProfile(MultipartFile profileImg, AccountRequestDto.InitProfileSetting dto, Long accountId) {
         String profileUrl = fileProcessService.uploadImage(profileImg);
         Account account = getAccount(accountId);
         account.setInitProfile(dto);
-        account.updateProfileImg(profileUrl);
         return account.getId();
     }
+
     @Transactional
     public Long updateProfile(MultipartFile profileImg, AccountRequestDto.InitProfileSetting dto, Long accountId) {
         if (profileImg != null) {
@@ -47,7 +45,6 @@ public class AccountInitialService {
         account.setInitProfile(dto);
         return account.getId();
 
-    }
     @Transactional
     public Long setInitTendency(AccountRequestDto.InitTendencySetting dto, Long accountId) {
         Account account = getAccount(accountId);
