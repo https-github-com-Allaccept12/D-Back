@@ -4,7 +4,6 @@ import com.example.dplus.advice.ApiRequestException;
 import com.example.dplus.advice.BadArgumentsValidException;
 import com.example.dplus.advice.ErrorCode;
 import com.example.dplus.domain.account.Account;
-
 import com.example.dplus.domain.account.AccountRepository;
 
 import com.example.dplus.domain.account.follow.FollowRepository;
