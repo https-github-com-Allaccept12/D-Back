@@ -1,6 +1,7 @@
 package com.example.dplus.jwt;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONObject;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
@@ -13,7 +14,9 @@ import java.io.IOException;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class AuthenticationEntryPointHandler implements AuthenticationEntryPoint {
+
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
@@ -39,7 +42,6 @@ public class AuthenticationEntryPointHandler implements AuthenticationEntryPoint
         response.setContentType("application/json;charset=UTF-8");
         response.setCharacterEncoding("utf-8");
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-
         json.put("code", errorCode.getCode());
         json.put("message", errorCode.getMessage());
 

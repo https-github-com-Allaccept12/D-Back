@@ -4,27 +4,32 @@ import com.example.dplus.advice.ApiRequestException;
 import com.example.dplus.advice.BadArgumentsValidException;
 import com.example.dplus.advice.ErrorCode;
 import com.example.dplus.domain.account.Account;
-
 import com.example.dplus.domain.account.AccountRepository;
 import com.example.dplus.domain.account.follow.FollowRepository;
-import com.example.dplus.domain.post.Post;
-import com.example.dplus.domain.post.PostBoard;
-import com.example.dplus.domain.post.PostRepository;
 import com.example.dplus.domain.post.answer.PostAnswerRepository;
 import com.example.dplus.domain.post.bookmark.PostBookMark;
 import com.example.dplus.domain.post.bookmark.PostBookMarkRepository;
 import com.example.dplus.domain.post.comment.PostCommentRepository;
-import com.example.dplus.domain.post.comment.like.PostCommentLikesRepository;
 import com.example.dplus.domain.post.image.PostImage;
 import com.example.dplus.domain.post.image.PostImageRepository;
 import com.example.dplus.domain.post.like.PostAnswerLikesRepository;
 import com.example.dplus.domain.post.like.PostLikesRepository;
 import com.example.dplus.domain.post.tag.PostTag;
 import com.example.dplus.domain.post.tag.PostTagRepository;
+import com.example.dplus.advice.ApiRequestException;
+import com.example.dplus.advice.BadArgumentsValidException;
+import com.example.dplus.advice.ErrorCode;
+import com.example.dplus.domain.account.Account;
+import com.example.dplus.domain.account.AccountRepository;
+import com.example.dplus.domain.post.Post;
+import com.example.dplus.domain.post.PostBoard;
+import com.example.dplus.domain.post.PostRepository;
+import com.example.dplus.domain.post.comment.like.PostCommentLikesRepository;
 import com.example.dplus.dto.common.CommonDto;
 import com.example.dplus.dto.request.PostRequestDto;
 import com.example.dplus.dto.response.PostMainResponseDto;
 import com.example.dplus.dto.response.PostResponseDto;
+import com.example.dplus.dto.response.PostResponseDto.PostAnswerDetailPage;
 import com.example.dplus.service.file.FileProcessService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -241,9 +246,8 @@ public class PostMainPageServiceImpl implements PostMainPageService{
     }
 
     // 디모 QnA 상세페이지
-    @Cacheable(value="menu", key="#postId")
     @Transactional
-    public PostResponseDto.PostAnswerDetailPage detailAnswer(Long accountId, Long postId) {
+    public PostAnswerDetailPage detailAnswer(Long accountId, Long postId) {
         // 작품 게시글 존재여부
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new ApiRequestException(ErrorCode.NONEXISTENT_ERROR));
@@ -279,7 +283,7 @@ public class PostMainPageServiceImpl implements PostMainPageService{
 
         //상세페이지의 답글 개수
         postAnswerSubDetail.setAnswer_count((long) postAnswerList.size());
-        return PostResponseDto.PostAnswerDetailPage.from(imgList, postAnswerList, postTagList, postAnswerSubDetail, isLike, isBookmark, isFollow, bookMarkCount);
+        return PostAnswerDetailPage.from(imgList, postAnswerList, postTagList, postAnswerSubDetail, isLike, isBookmark, isFollow, bookMarkCount);
     }
 
     // 디모 QnA 유사한질문 조회

@@ -2,11 +2,13 @@ package com.example.dplus.controller.account;
 
 
 import com.example.dplus.dto.Success;
+import com.example.dplus.dto.request.AccountRequestDto.AccountVisit;
+import com.example.dplus.dto.request.AccountRequestDto.UpdateAccountIntro;
+import com.example.dplus.dto.request.AccountRequestDto.UpdateSpecialty;
+import com.example.dplus.dto.request.ArtWorkRequestDto.ArtWorkPortFolioUpdate;
+import com.example.dplus.dto.request.HistoryRequestDto.HistoryUpdateList;
 import com.example.dplus.jwt.UserDetailsImpl;
 import com.example.dplus.service.account.AccountMyPageService;
-import com.example.dplus.dto.request.AccountRequestDto;
-import com.example.dplus.dto.request.ArtWorkRequestDto;
-import com.example.dplus.dto.request.HistoryRequestDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -24,27 +26,27 @@ public class AccountMyPageController {
 
 
     @GetMapping("")
-    public ResponseEntity<Success> accountInfo(@RequestBody AccountRequestDto.AccountVisit dto) {
+    public ResponseEntity<Success> accountInfo(@RequestBody AccountVisit dto) {
 
         return new ResponseEntity<>(new Success("마이페이지 기본정보 조회",
                 accountMyPageService.showAccountInfo(dto.getOwner_account_id(), dto.getAccount_id())), HttpStatus.OK);
     }
 
     @GetMapping("/career-feed/{last_artwork_id}")
-    public ResponseEntity<Success> accountCareerFeed(@RequestBody AccountRequestDto.AccountVisit dto,
+    public ResponseEntity<Success> accountCareerFeed(@RequestBody AccountVisit dto,
                                                      @PathVariable Long last_artwork_id) {
         return new ResponseEntity<>(new Success("마이페이지 커리어피드 조회",
                 accountMyPageService.showAccountCareerFeed(last_artwork_id,dto.getOwner_account_id(),dto.getAccount_id())), HttpStatus.OK);
     }
 
     @GetMapping("/history")
-    public ResponseEntity<Success> accountHistory(@RequestBody AccountRequestDto.AccountVisit accountId) {
+    public ResponseEntity<Success> accountHistory(@RequestBody AccountVisit accountId) {
         return new ResponseEntity<>(new Success("마이페이지 연혁 조회",
                 accountMyPageService.showAccountHistory(accountId.getAccount_id())), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/history", method = {RequestMethod.POST, RequestMethod.PATCH})
-    public ResponseEntity<Success> accountHistoryUpdate(@RequestBody HistoryRequestDto.HistoryUpdateList data,
+    public ResponseEntity<Success> accountHistoryUpdate(@RequestBody HistoryUpdateList data,
                                                         @AuthenticationPrincipal UserDetailsImpl user) {
         accountMyPageService.updateAccountHistory(data,user.getUser().getId());
         return new ResponseEntity<>(new Success("연혁 수정",""),HttpStatus.OK);
@@ -52,20 +54,20 @@ public class AccountMyPageController {
 
     @GetMapping("/artwork/{last_artwork_id}")
     public ResponseEntity<Success> accountArtWorkList(@PathVariable Long last_artwork_id,
-                                                      @RequestBody AccountRequestDto.AccountVisit dto) {
+                                                      @RequestBody AccountVisit dto) {
         return new ResponseEntity<>(new Success("유저 작품 목록",
                 accountMyPageService.showAccountArtWork(last_artwork_id,dto.getOwner_account_id(),dto.getAccount_id())),HttpStatus.OK);
     }
 
     @RequestMapping(value = "/intro", method = {RequestMethod.POST, RequestMethod.PATCH})
-    public ResponseEntity<Success> accountIntro(@RequestBody AccountRequestDto.UpdateAccountIntro data,
+    public ResponseEntity<Success> accountIntro(@RequestBody UpdateAccountIntro data,
                                                 @AuthenticationPrincipal UserDetailsImpl user) {
         accountMyPageService.updateAccountIntro(data,user.getUser().getId());
         return new ResponseEntity<>(new Success("유저 소개 수정",""),HttpStatus.OK);
     }
 
     @RequestMapping(value = "/specialty", method = {RequestMethod.POST, RequestMethod.PATCH})
-    public ResponseEntity<Success> accountSpecialty(@RequestBody AccountRequestDto.UpdateSpecialty data,
+    public ResponseEntity<Success> accountSpecialty(@RequestBody UpdateSpecialty data,
                                                     @AuthenticationPrincipal UserDetailsImpl user) {
         accountMyPageService.updateAccountSpecialty(data,user.getUser().getId());
         return new ResponseEntity<>(new Success("스킬셋 수정",""),HttpStatus.OK);
@@ -80,7 +82,7 @@ public class AccountMyPageController {
 
     //다건
     @PostMapping(value = {"/career-feed"})
-    public ResponseEntity<Success> createAndUpdateCareerFeed(@RequestBody ArtWorkRequestDto.ArtWorkPortFolioUpdate data) {
+    public ResponseEntity<Success> createAndUpdateCareerFeed(@RequestBody ArtWorkPortFolioUpdate data) {
         accountMyPageService.updateAccountCareerFeedList(data);
         return new ResponseEntity<>(new Success("포트폴리오 선택/수정 성공", ""), HttpStatus.OK);
     }

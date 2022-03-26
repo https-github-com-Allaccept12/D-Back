@@ -1,19 +1,19 @@
 package com.example.dplus.service.account;
 
+import com.example.dplus.domain.account.follow.FollowRepository;
+import com.example.dplus.domain.account.history.History;
+import com.example.dplus.domain.account.history.HistoryRepository;
+import com.example.dplus.domain.post.answer.PostAnswerRepository;
+import com.example.dplus.domain.post.bookmark.PostBookMarkRepository;
+import com.example.dplus.domain.post.comment.PostCommentRepository;
 import com.example.dplus.advice.ApiRequestException;
 import com.example.dplus.advice.BadArgumentsValidException;
 import com.example.dplus.advice.ErrorCode;
 import com.example.dplus.domain.account.Account;
 import com.example.dplus.domain.account.AccountRepository;
-import com.example.dplus.domain.account.follow.FollowRepository;
-import com.example.dplus.domain.account.history.History;
-import com.example.dplus.domain.account.history.HistoryRepository;
 import com.example.dplus.domain.artwork.ArtWorkRepository;
 import com.example.dplus.domain.artwork.ArtWorks;
 import com.example.dplus.domain.post.PostRepository;
-import com.example.dplus.domain.post.answer.PostAnswerRepository;
-import com.example.dplus.domain.post.bookmark.PostBookMarkRepository;
-import com.example.dplus.domain.post.comment.PostCommentRepository;
 import com.example.dplus.dto.request.AccountRequestDto;
 import com.example.dplus.dto.request.AccountRequestDto.UpdateAccountIntro;
 import com.example.dplus.dto.request.AccountRequestDto.UpdateSpecialty;
