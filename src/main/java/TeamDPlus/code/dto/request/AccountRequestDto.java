@@ -1,6 +1,5 @@
 package TeamDPlus.code.dto.request;
 
-import TeamDPlus.code.domain.account.Specialty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -50,8 +49,8 @@ public class AccountRequestDto {
     @Getter
     @NoArgsConstructor
     public static class UpdateSpecialty {
-        private Specialty specialty;
-        private Specialty other_specialty;
+        private String specialty;
+        private String other_specialty;
     }
 
     @Getter

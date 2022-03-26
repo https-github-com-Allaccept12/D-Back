@@ -28,22 +28,6 @@ public class AccountRepositoryImpl implements AccountRepositoryCustom{
 
     @Override
     public List<AccountResponseDto.TopArtist> findTopArtist(Pageable pageable,String interest) {
-//        return queryFactory
-//                .select(
-//                        Projections.constructor(AccountResponseDto.TopArtist.class,
-//                                account.id,
-//                                account.nickname,
-//                                account.profileImg,
-//                                account.job,
-//                                account.bestArtWorkOne,
-//                                account.bestArtWorkTwo
-//                                ))
-//                .from(account)
-//                .innerJoin(rank).on(rank.eq(account.rank))
-//                .offset(pageable.getOffset())
-//                .limit(pageable.getPageSize())
-//                .orderBy(rank.rankScore.desc())
-//                .fetch();
         return queryFactory
                 .select(
                         Projections.constructor(AccountResponseDto.TopArtist.class,
@@ -53,12 +37,12 @@ public class AccountRepositoryImpl implements AccountRepositoryCustom{
                                 account.job,
                                 account.bestArtWorkOne,
                                 account.bestArtWorkTwo
-                        ))
+                                ))
                 .from(account)
-//                .innerJoin(rank).on(rank.eq(account.rank))
+                .innerJoin(rank).on(rank.eq(account.rank))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
-                .orderBy(account.rank.desc())
+                .orderBy(rank.rankScore.desc())
                 .fetch();
     }
 

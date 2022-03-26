@@ -2,9 +2,6 @@ package TeamDPlus.code.service.account;
 
 import TeamDPlus.code.domain.account.Account;
 import TeamDPlus.code.domain.account.AccountRepository;
-import TeamDPlus.code.domain.account.Specialty;
-import TeamDPlus.code.domain.account.orthers.Other;
-import TeamDPlus.code.domain.account.orthers.OtherRepository;
 import TeamDPlus.code.domain.account.rank.Rank;
 import TeamDPlus.code.domain.account.rank.RankRepository;
 import TeamDPlus.code.dto.GoogleUserInfoDto;
@@ -34,8 +31,6 @@ public class GoogleAccountService {
     private final RankRepository rankRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final RedisService redisService;
-
-    private final OtherRepository otherRepository;
 
     @Transactional
     public LoginResponseDto googleLogin(String code) throws JsonProcessingException {
@@ -128,16 +123,14 @@ public class GoogleAccountService {
 
             Rank rank = Rank.builder().rankScore(0L).build();
             Rank saveRank = rankRepository.save(rank);
-            Specialty specialty = new Specialty();
-            Other saveOther = otherRepository.save(Other.builder().specialty(specialty).build());
             googleUser = Account.builder()
                     .accountName(username)
                     .nickname(name)
                     .profileImg(profileImg)
                     .email(email)
-                    .specialty(specialty)
+                    .specialty("")
                     .rank(saveRank)
-                    .other(saveOther)
+                    .other("")
                     .build();
             accountRepository.save(googleUser);
         }

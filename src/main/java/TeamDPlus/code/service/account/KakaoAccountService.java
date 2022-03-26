@@ -2,9 +2,6 @@ package TeamDPlus.code.service.account;
 
 import TeamDPlus.code.domain.account.Account;
 import TeamDPlus.code.domain.account.AccountRepository;
-import TeamDPlus.code.domain.account.Specialty;
-import TeamDPlus.code.domain.account.orthers.Other;
-import TeamDPlus.code.domain.account.orthers.OtherRepository;
 import TeamDPlus.code.domain.account.rank.Rank;
 import TeamDPlus.code.domain.account.rank.RankRepository;
 import TeamDPlus.code.dto.KakaoUserInfoDto;
@@ -34,7 +31,6 @@ public class KakaoAccountService {
     private final RankRepository rankRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final RedisService redisService;
-    private final OtherRepository otherRepository;
 
     @Transactional
     public LoginResponseDto kakaoLogin(String code) throws JsonProcessingException {
@@ -130,16 +126,14 @@ public class KakaoAccountService {
 
             Rank rank = Rank.builder().rankScore(0L).build();
             Rank saveRank = rankRepository.save(rank);
-            Specialty specialty = new Specialty();
-            Other saveOther = otherRepository.save(Other.builder().specialty(specialty).build());
             kakaoUser = Account.builder()
                     .accountName(username)
                     .nickname(nickname)
                     .profileImg(profileImg)
                     .email(email)
                     .rank(saveRank)
-                    .other(saveOther)
-                    .specialty(specialty)
+                    .other("")
+                    .specialty("")
                     .build();
             accountRepository.save(kakaoUser);
         }

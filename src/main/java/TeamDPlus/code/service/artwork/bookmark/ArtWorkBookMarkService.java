@@ -29,7 +29,7 @@ public class ArtWorkBookMarkService {
         if (artWorks.getAccount().getId().equals(account.getId())) {
             throw new BadArgumentsValidException(ErrorCode.NO_BOOKMARK_MY_POST_ERROR);
         }
-        artWorks.getAccount().upRankScore();
+        artWorks.getAccount().getRank().upRankScore();
         ArtWorkBookMark artWorkBookMark = ArtWorkBookMark.builder().artWorks(artWorks).account(account).build();
         artWorkBookMarkRepository.save(artWorkBookMark);
     }
@@ -40,7 +40,7 @@ public class ArtWorkBookMarkService {
         if (!artWorkBookMarkRepository.existByAccountIdAndArtWorkId(account.getId(), artWorkId)) {
             throw new ApiRequestException(ErrorCode.ALREADY_BOOKMARK_ERROR);
         }
-        artWorks.getAccount().downRankScore();
+        artWorks.getAccount().getRank().downRankScore();
         artWorkBookMarkRepository.deleteByArtWorksIdAndAccountId(artWorkId,account.getId());
     }
 

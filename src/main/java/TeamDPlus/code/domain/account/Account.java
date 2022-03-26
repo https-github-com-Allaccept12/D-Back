@@ -1,10 +1,7 @@
 package TeamDPlus.code.domain.account;
 
-
 import TeamDPlus.code.domain.BaseEntity;
-import TeamDPlus.code.domain.account.orthers.Other;
 import TeamDPlus.code.domain.account.rank.Rank;
-import TeamDPlus.code.dto.request.AccountRequestDto;
 import TeamDPlus.code.dto.request.AccountRequestDto.InitProfileSetting;
 import TeamDPlus.code.dto.request.AccountRequestDto.UpdateAccountIntro;
 import TeamDPlus.code.dto.request.AccountRequestDto.UpdateSpecialty;
@@ -15,7 +12,6 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
-import java.io.Serializable;
 
 @Entity
 @Getter
@@ -57,8 +53,6 @@ public class Account extends BaseEntity {
     @Column(columnDefinition = "BIGINT default 0")
     private Long exp;
 
-//    private String refreshToken;
-
     private String linkedIn;
 
     private String brunch;
@@ -74,26 +68,20 @@ public class Account extends BaseEntity {
     private int artWorkCreateCount;
     private int postCreateCount;
 
-    @Embedded
-    private Specialty specialty;
-
-//    @OneToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "rank_id",nullable = false)
-//    private Rank rank;
-
-    @Column(columnDefinition = "BIGINT default 0")
-    private Long rank;
+    private String specialty;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "other_id",nullable = false)
-    private Other other;
+    @JoinColumn(name = "rank_id",nullable = false)
+    private Rank rank;
+
+    private String other;
 
     @Builder
     public Account(final String accountName, final String email, final String nickname, final String subContent, final String titleContent, final String profileImg,
                    final int career, final String phoneNumber, final String workTime,
                    final String workEmail, final String tendency, final Long exp,
-                   final String linkedIn, final String brunch, final String instagram,final Other other,
-                   final String interest, final Long rank, final String job, final Specialty specialty)  {
+                   final String linkedIn, final String brunch, final String instagram,final String other,
+                   final String interest, final Rank rank, final String job, final String specialty)  {
         this.accountName = accountName;
         this.email = email;
         this.nickname = nickname;
@@ -114,18 +102,6 @@ public class Account extends BaseEntity {
         this.job = job;
         this.specialty = specialty;
         this.other = other;
-    }
-
-//    public void refreshToken(final String refreshToken) {
-//        this.refreshToken = refreshToken;
-//    }
-
-    public void upRankScore() {
-        this.rank += 1L;
-    }
-
-    public void downRankScore() {
-        this.rank -= 1L;
     }
 
     public void initTendency(final String requestTendency) {
@@ -171,10 +147,8 @@ public class Account extends BaseEntity {
     }
     public void updateSpecialty(final UpdateSpecialty dto) {
         this.specialty = dto.getSpecialty();
-        this.other.updateOther(dto.getOther_specialty());
+        this.other = dto.getOther_specialty();
     }
-
-
 
 }
 
