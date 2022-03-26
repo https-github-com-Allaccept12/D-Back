@@ -1,7 +1,6 @@
 package com.example.dplus.domain.account;
 
 
-import com.example.dplus.domain.account.rank.Rank;
 import com.example.dplus.domain.BaseEntity;
 import com.example.dplus.dto.request.AccountRequestDto.InitProfileSetting;
 import com.example.dplus.dto.request.AccountRequestDto.UpdateAccountIntro;

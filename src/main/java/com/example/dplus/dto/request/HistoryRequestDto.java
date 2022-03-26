@@ -1,7 +1,7 @@
 package com.example.dplus.dto.request;
 
 import com.example.dplus.domain.account.Account;
-import com.example.dplus.domain.account.history.History;
+import com.example.dplus.domain.account.History;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
