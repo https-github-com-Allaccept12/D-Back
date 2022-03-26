@@ -46,15 +46,15 @@ jobs:
         with:
           files: ./src/main/resources/application-real1.yml
         env:
-          jwt.secrets: ${{ secrets.JWT_SECRET }}
+          jwt.secrets.code: ${{ secrets.JWT_SECRET }}
 
       - name: Set Jwt2
         uses: microsoft/variable-substitution@v1
         with:
           files: ./src/main/resources/application-real1.yml
         env:
-          jwt.secrets: ${{ secrets.JWT_SECRET }}
-          
+          jwt.secrets.code: ${{ secrets.JWT_SECRET }}
+
       - name: Set Yaml-2
         uses: microsoft/variable-substitution@v1
         with:

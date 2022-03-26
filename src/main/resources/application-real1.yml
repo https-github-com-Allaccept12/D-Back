@@ -46,7 +46,7 @@ logging.level:
 
 jwt:
   header: Authorization
-  secret: ${jwt.secrets}
+  secret: ${jwt.secrets.code}
 
 server:
   port: 8081
