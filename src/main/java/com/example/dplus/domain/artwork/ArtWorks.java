@@ -20,7 +20,7 @@ import javax.persistence.*;
 public class ArtWorks extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "artwork_id")
     private Long id;
 
@@ -101,7 +101,7 @@ public class ArtWorks extends BaseEntity {
         this.thumbnail = thumbnail;
     }
 
-    public void updateArtoWorkThumbnail(String thumbnail) {
+    public void updateArtWorkThumbnail(String thumbnail) {
         this.thumbnail = thumbnail;
     }
 

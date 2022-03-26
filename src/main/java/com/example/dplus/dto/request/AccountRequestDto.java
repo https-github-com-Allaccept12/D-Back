@@ -9,14 +9,6 @@ import javax.validation.constraints.NotNull;
 
 public class AccountRequestDto {
 
-
-    @Getter
-    @NoArgsConstructor
-    public static class AccountVisit {
-        private Long owner_account_id;
-        private Long account_id;
-    }
-
     @Getter
     @NoArgsConstructor
     public static class UpdateAccountInfo {
@@ -107,5 +99,11 @@ public class AccountRequestDto {
     public static class setAccountMasterPiece {
         private String img_url_fir;
         private String img_url_sec;
+    }
+
+    @Getter
+    @NoArgsConstructor
+    public static class AccountVisit {
+        private Long account_id;
     }
 }

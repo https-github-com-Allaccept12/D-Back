@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 
 import static com.example.dplus.domain.artwork.bookmark.QArtWorkBookMark.artWorkBookMark;
 
+
+
 @RequiredArgsConstructor
 public class ArtWorkBookMarkRepositoryImpl implements ArtWorkBookMarkRepositoryCustom{
 

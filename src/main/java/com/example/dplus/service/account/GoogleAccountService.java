@@ -1,9 +1,9 @@
 package com.example.dplus.service.account;
 
-import com.example.dplus.domain.account.Account;
-import com.example.dplus.domain.account.AccountRepository;
 import com.example.dplus.domain.account.rank.Rank;
 import com.example.dplus.domain.account.rank.RankRepository;
+import com.example.dplus.domain.account.Account;
+import com.example.dplus.domain.account.AccountRepository;
 import com.example.dplus.dto.GoogleUserInfoDto;
 import com.example.dplus.dto.response.LoginResponseDto;
 import com.example.dplus.jwt.JwtTokenProvider;
@@ -112,12 +112,8 @@ public class GoogleAccountService {
 
         Account googleUser = accountRepository.findByAccountName(username)
                 .orElse(null);
-
-        boolean isSignUp = false;
-
         if (googleUser == null) {
             // 회원가입
-            isSignUp = true;
             String name = googleUserInfo.getName();
             String profileImg = googleUserInfo.getProfile_img();
 
@@ -128,9 +124,9 @@ public class GoogleAccountService {
                     .nickname(name)
                     .profileImg(profileImg)
                     .email(email)
+                    .other("")
                     .specialty("")
                     .rank(saveRank)
-                    .other("")
                     .build();
             accountRepository.save(googleUser);
         }
@@ -144,7 +140,6 @@ public class GoogleAccountService {
                 .profile_img(googleUser.getProfileImg())
                 .access_token(accessToken)
                 .refresh_token(refreshToken)
-                .isSignUp(isSignUp)
                 .build();
 
     }

@@ -2,15 +2,17 @@ package com.example.dplus.service.account.init;
 
 
 import com.example.dplus.advice.ApiRequestException;
-import com.example.dplus.advice.ErrorCode;
 import com.example.dplus.advice.BadArgumentsValidException;
+import com.example.dplus.advice.ErrorCode;
 import com.example.dplus.domain.account.Account;
 import com.example.dplus.domain.account.AccountRepository;
 import com.example.dplus.dto.request.AccountRequestDto;
+import com.example.dplus.service.file.FileProcessService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.regex.Pattern;
 
@@ -21,14 +23,31 @@ public class AccountInitialService {
 
 
     private final AccountRepository accountRepository;
+    private final FileProcessService fileProcessService;
 
     @Transactional
-    public Long setInitProfile(AccountRequestDto.InitProfileSetting dto, Long accountId) {
+    public Long setInitProfile(MultipartFile profileImg, AccountRequestDto.InitProfileSetting dto, Long accountId) {
+        String profileUrl = fileProcessService.uploadImage(profileImg);
+        Account account = getAccount(accountId);
+        account.setInitProfile(dto);
+        account.updateProfileImg(profileUrl);
+        return account.getId();
+    }
+    @Transactional
+    public Long updateProfile(MultipartFile profileImg, AccountRequestDto.InitProfileSetting dto, Long accountId) {
+        if (profileImg != null) {
+            fileProcessService.deleteImage(dto.getDelete_profile_img());
+            String profileUrl = fileProcessService.uploadImage(profileImg);
+            Account account = getAccount(accountId);
+            account.setInitProfile(dto);
+            account.updateProfileImg(profileUrl);
+            return account.getId();
+        }
         Account account = getAccount(accountId);
         account.setInitProfile(dto);
         return account.getId();
-    }
 
+    }
     @Transactional
     public Long setInitTendency(AccountRequestDto.InitTendencySetting dto, Long accountId) {
         Account account = getAccount(accountId);

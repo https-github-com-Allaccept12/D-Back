@@ -140,5 +140,6 @@ public class PostMainController {
                                                     @PathVariable Long post_id){
         return new ResponseEntity<>(new Success("유사한 질문 리스트",
                 postMainPageService.similarQuestion(category, account_id, post_id)), HttpStatus.OK);
+
     }
 }
