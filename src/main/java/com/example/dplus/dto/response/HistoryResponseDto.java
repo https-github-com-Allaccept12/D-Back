@@ -24,7 +24,7 @@ public class HistoryResponseDto {
         private String achievements;
 
         @Builder
-        public History(com.example.dplus.domain.account.history.History historyEntity) {
+        public History(com.example.dplus.domain.account.History historyEntity) {
             this.history_id = historyEntity.getId();
             this.company_name = historyEntity.getCompanyName();
             this.company_department = historyEntity.getCompanyDepartment();

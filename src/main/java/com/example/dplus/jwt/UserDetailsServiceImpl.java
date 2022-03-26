@@ -1,7 +1,7 @@
 package com.example.dplus.jwt;
 
 import com.example.dplus.domain.account.Account;
-import com.example.dplus.domain.account.AccountRepository;
+import com.example.dplus.repository.account.AccountRepository;
 import com.example.dplus.advice.ApiRequestException;
 import com.example.dplus.advice.ErrorCode;
 import lombok.RequiredArgsConstructor;

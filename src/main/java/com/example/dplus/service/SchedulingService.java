@@ -1,8 +1,8 @@
 package com.example.dplus.service;
 
 
-import com.example.dplus.domain.account.AccountRepository;
-import com.example.dplus.domain.account.rank.RankRepository;
+import com.example.dplus.repository.account.AccountRepository;
+import com.example.dplus.repository.account.rank.RankRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
