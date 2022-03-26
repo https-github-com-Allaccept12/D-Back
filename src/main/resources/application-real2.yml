@@ -22,7 +22,7 @@ spring:
     password: ${rds.password}
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: none
     properties:
       hibernate:
         format_sql: true
@@ -34,7 +34,7 @@ cloud:
     s3:
       bucket: ${aws.s3.bucketname}
       region:
-        static: ap-northeast-2
+        static: "ap-northeast-2"
       stack:
         auto: false
     credentials:
