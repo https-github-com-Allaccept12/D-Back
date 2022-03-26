@@ -29,6 +29,10 @@ spring:
         default_batch_fetch_size: 1000
     open-in-view: false
 
+jwt:
+  header: Authorization
+  secret: ${jwt.secrets}
+
 cloud:
   aws:
     s3:
@@ -44,10 +48,8 @@ cloud:
 logging.level:
   org.hibernate.SQL: debug
 
-  jwt:
-    header: Authorization
-  #hs256 알고리즘 32비트 이상의 시크릿키
-    secret: ${jwt.secrets}
+
+
 
 server:
   port: 8082

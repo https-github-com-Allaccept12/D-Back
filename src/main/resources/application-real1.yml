@@ -46,7 +46,6 @@ logging.level:
 
   jwt:
     header: Authorization
-  #hs256 알고리즘 32비트 이상의 시크릿키
     secret: ${jwt.secrets}
 
 server:
