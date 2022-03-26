@@ -16,7 +16,7 @@ import javax.persistence.*;
 public class History  {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "history_id")
     private Long id;
 

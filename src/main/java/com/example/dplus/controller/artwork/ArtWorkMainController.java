@@ -4,10 +4,11 @@ package com.example.dplus.controller.artwork;
 import com.example.dplus.advice.BadArgumentsValidException;
 import com.example.dplus.advice.ErrorCode;
 import com.example.dplus.dto.Success;
+import com.example.dplus.dto.request.AccountRequestDto.AccountVisit;
+import com.example.dplus.dto.request.ArtWorkRequestDto.ArtWorkCreate;
+import com.example.dplus.dto.request.ArtWorkRequestDto.ArtWorkUpdate;
 import com.example.dplus.jwt.UserDetailsImpl;
 import com.example.dplus.service.artwork.ArtworkMainService;
-import com.example.dplus.dto.request.AccountRequestDto;
-import com.example.dplus.dto.request.ArtWorkRequestDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -26,14 +27,14 @@ public class ArtWorkMainController {
     private final int SORT_SIGN_LATEST = 1;
     private final ArtworkMainService artworkMainService;
 
-    @GetMapping("/")
-    public ResponseEntity<Success> main(@RequestBody AccountRequestDto.AccountVisit dto) {
+    @RequestMapping(value = "/",method = RequestMethod.GET)
+    public ResponseEntity<Success> main(@RequestParam("account_id") Long account_id) {
         return new ResponseEntity<>(new Success("메인 페이지",
-                artworkMainService.mostPopularArtWork(dto.getAccount_id())), HttpStatus.OK);
+                artworkMainService.mostPopularArtWork(account_id)), HttpStatus.OK);
     }
 
     @GetMapping("/api/artwork/{last_artwork_id}")
-    public ResponseEntity<Success> artWorkMain(@RequestBody AccountRequestDto.AccountVisit dto,
+    public ResponseEntity<Success> artWorkMain(@RequestBody AccountVisit dto,
                                                @PathVariable Long last_artwork_id) {
 
         return new ResponseEntity<>(new Success("둘러보기",
@@ -41,7 +42,7 @@ public class ArtWorkMainController {
     }
 
     @GetMapping("/api/artwork/category/{category}/{last_artwork_id}")
-    public ResponseEntity<Success> artWorkCategory(@RequestBody AccountRequestDto.AccountVisit dto,
+    public ResponseEntity<Success> artWorkCategory(@RequestBody AccountVisit dto,
                                                    @PathVariable String category,
                                                    @PathVariable Long last_artwork_id) {
 
@@ -50,7 +51,7 @@ public class ArtWorkMainController {
     }
 
     @GetMapping("/api/artwork/sort/{category}/{sortsign}/{last_artwork_id}")
-    public ResponseEntity<Success> artWorkSort(@RequestBody AccountRequestDto.AccountVisit dto,
+    public ResponseEntity<Success> artWorkSort(@RequestBody AccountVisit dto,
                                                @PathVariable int sortsign,
                                                @PathVariable Long last_artwork_id,
                                                @PathVariable String category) {
@@ -73,7 +74,7 @@ public class ArtWorkMainController {
 
     @PostMapping("/api/artwork")
     public ResponseEntity<Success> createArtWork(@AuthenticationPrincipal UserDetailsImpl user,
-                                                 @RequestPart ArtWorkRequestDto.ArtWorkCreate data,
+                                                 @RequestPart ArtWorkCreate data,
                                                  @RequestPart List<MultipartFile> imgFile) {
         if (user != null) {
             return new ResponseEntity<>(new Success("작품 등록 완료"
@@ -85,7 +86,7 @@ public class ArtWorkMainController {
     @PatchMapping("/api/artwork/{artwork_id}")
     public ResponseEntity<Success> updateArtWork(@AuthenticationPrincipal UserDetailsImpl user,
                                                  @PathVariable Long artwork_id,
-                                                 @RequestPart ArtWorkRequestDto.ArtWorkUpdate data,
+                                                 @RequestPart ArtWorkUpdate data,
                                                  @RequestPart List<MultipartFile> imgFile) {
         if (user != null) {
             return new ResponseEntity<>(new Success("작품 수정 완료",
@@ -105,14 +106,14 @@ public class ArtWorkMainController {
     }
 
     @GetMapping("/api/artwork/detail/{artwork_id}")
-    public ResponseEntity<Success> artWorkDetail(@RequestBody AccountRequestDto.AccountVisit dto,
+    public ResponseEntity<Success> artWorkDetail(@RequestBody AccountVisit dto,
                                                  @PathVariable Long artwork_id) {
         return new ResponseEntity<>(new Success("작품 상세",
                 artworkMainService.detailArtWork(dto.getAccount_id(),artwork_id)),HttpStatus.OK);
     }
 
     @GetMapping("/api/artwork/search/{last_artwork_id}/{keyword}")
-    public ResponseEntity<Success> artWorkSearch(@RequestBody AccountRequestDto.AccountVisit dto,
+    public ResponseEntity<Success> artWorkSearch(@RequestBody AccountVisit dto,
                                                  @PathVariable Long last_artwork_id,
                                                  @PathVariable String keyword) {
         if (keyword == null) {

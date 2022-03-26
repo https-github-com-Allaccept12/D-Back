@@ -1,6 +1,6 @@
 package com.example.dplus.dto.request;
 
-import com.example.dplus.dto.common.CommonDto.ImgUrlDto;
+import com.example.dplus.dto.common.CommonDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -14,6 +14,8 @@ public class ArtWorkRequestDto {
     @Getter
     @NoArgsConstructor
     public static class ArtWorkCreate {
+
+        @NotEmpty(message = "작품의 공개범위를 설정해주세요.")
         private Boolean scope;
 
         @NotEmpty(message = "작품 제목을 입력해주세요")
@@ -56,7 +58,7 @@ public class ArtWorkRequestDto {
         @NotEmpty(message = "작품 설명을 해주세요.")
         private String content;
 
-        private List<ImgUrlDto> delete_img;
+        private List<CommonDto.ImgUrlDto> delete_img;
 
         private String thumbnail;
 

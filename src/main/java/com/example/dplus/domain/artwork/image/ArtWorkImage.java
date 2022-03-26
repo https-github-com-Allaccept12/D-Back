@@ -17,7 +17,7 @@ import javax.persistence.*;
 public class ArtWorkImage {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "artwork_img_id")
     private Long id;
 

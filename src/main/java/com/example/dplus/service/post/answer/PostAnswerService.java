@@ -1,6 +1,7 @@
 package com.example.dplus.service.post.answer;
 
 import com.example.dplus.advice.ApiRequestException;
+import com.example.dplus.advice.BadArgumentsValidException;
 import com.example.dplus.advice.ErrorCode;
 import com.example.dplus.domain.account.Account;
 import com.example.dplus.domain.account.AccountRepository;
@@ -38,7 +39,7 @@ public class PostAnswerService {
                 .orElseThrow(() -> new ApiRequestException(ErrorCode.NONEXISTENT_ERROR));
 
         if (!postAnswer.getAccount().getId().equals(accountId)) {
-            throw new ApiRequestException(ErrorCode.NO_AUTHORIZATION_ERROR);
+            throw new BadArgumentsValidException(ErrorCode.NO_AUTHORIZATION_ERROR);
         }
 
         postAnswer.updateAnswer(dto.getContent());
@@ -51,7 +52,7 @@ public class PostAnswerService {
                 .orElseThrow(() -> new ApiRequestException(ErrorCode.NONEXISTENT_ERROR));
 
         if (!postAnswer.getAccount().getId().equals(accountId)) {
-            throw new ApiRequestException(ErrorCode.NO_AUTHORIZATION_ERROR);
+            throw new BadArgumentsValidException(ErrorCode.NO_AUTHORIZATION_ERROR);
         }
 
         postAnswerRepository.deleteById(answerId);
@@ -63,11 +64,11 @@ public class PostAnswerService {
                 .orElseThrow(() -> new ApiRequestException(ErrorCode.NONEXISTENT_ERROR));
 
         if (!postAnswer.getPost().getAccount().getId().equals(accountId)) {
-            throw new ApiRequestException(ErrorCode.NO_AUTHORIZATION_ERROR);
+            throw new IllegalStateException("댓글 작성자가 아닙니다.");
         }
 
         if (postAnswer.isSelected()) {
-            throw new ApiRequestException(ErrorCode.ALREADY_SELECTED_ERROR);
+            throw new IllegalStateException("이미 채택된 게시글입니다.");
         }
 
         postAnswer.doIsSelected(true);
