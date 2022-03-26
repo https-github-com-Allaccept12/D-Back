@@ -4,9 +4,9 @@ import com.example.dplus.advice.ApiRequestException;
 import com.example.dplus.advice.ErrorCode;
 import com.example.dplus.domain.account.Account;
 import com.example.dplus.domain.post.Post;
-import com.example.dplus.domain.post.PostRepository;
-import com.example.dplus.domain.post.like.PostLikes;
-import com.example.dplus.domain.post.like.PostLikesRepository;
+import com.example.dplus.repository.post.PostRepository;
+import com.example.dplus.domain.post.PostLikes;
+import com.example.dplus.repository.post.like.PostLikesRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +31,10 @@ public class PostLikeService {
 
     @Transactional
     public void unLike(Account account, Long postId) {
-        postLikesRepository.deleteByPostIdAndAccountId(postId,account.getId());
+        Post post = postRepository.findById(postId).orElseThrow(() -> new ApiRequestException(ErrorCode.NONEXISTENT_ERROR));
+        if (!postLikesRepository.existByAccountIdAndPostId(account.getId(), postId)) {
+            throw new ApiRequestException(ErrorCode.ALREADY_LIKE_ERROR);
+        }
+        postLikesRepository.deleteByPostIdAndAccountId(post.getId(),account.getId());
     }
 }

@@ -1,19 +1,19 @@
 package com.example.dplus.service.account;
 
-import com.example.dplus.domain.account.follow.FollowRepository;
-import com.example.dplus.domain.account.history.History;
-import com.example.dplus.domain.account.history.HistoryRepository;
-import com.example.dplus.domain.post.answer.PostAnswerRepository;
-import com.example.dplus.domain.post.bookmark.PostBookMarkRepository;
-import com.example.dplus.domain.post.comment.PostCommentRepository;
+import com.example.dplus.repository.account.follow.FollowRepository;
+import com.example.dplus.domain.account.History;
+import com.example.dplus.repository.account.history.HistoryRepository;
+import com.example.dplus.repository.post.answer.PostAnswerRepository;
+import com.example.dplus.repository.post.bookmark.PostBookMarkRepository;
+import com.example.dplus.repository.post.comment.PostCommentRepository;
 import com.example.dplus.advice.ApiRequestException;
 import com.example.dplus.advice.BadArgumentsValidException;
 import com.example.dplus.advice.ErrorCode;
 import com.example.dplus.domain.account.Account;
-import com.example.dplus.domain.account.AccountRepository;
-import com.example.dplus.domain.artwork.ArtWorkRepository;
+import com.example.dplus.repository.account.AccountRepository;
+import com.example.dplus.repository.artwork.ArtWorkRepository;
 import com.example.dplus.domain.artwork.ArtWorks;
-import com.example.dplus.domain.post.PostRepository;
+import com.example.dplus.repository.post.PostRepository;
 import com.example.dplus.dto.request.AccountRequestDto;
 import com.example.dplus.dto.request.AccountRequestDto.UpdateAccountIntro;
 import com.example.dplus.dto.request.AccountRequestDto.UpdateSpecialty;
@@ -157,6 +157,38 @@ public class AccountMyPageServiceImpl implements AccountMyPageService {
         account.setBestArtWork(materPiece.getImg_url_fir(),materPiece.getImg_url_sec());
     }
 
+    @Transactional(readOnly = true)
+    public List<AccountResponseDto.MyPost> getMyPost(Long accountId, String board) {
+        Pageable pageable = PageRequest.of(0,5);
+        List<AccountResponseDto.MyPost> myPosts = postRepository.findPostByAccountIdAndBoard(accountId, board, pageable);
+        if (board.equals("QNA")) {
+            setQnaInfo(myPosts);
+        } else if (board.equals("INFO")) {
+            setPostInfo(myPosts);
+        }
+        return myPosts;
+    }
+
+    @Transactional(readOnly = true)
+    public List<AccountResponseDto.MyPost> getMyBookMarkPost(Long accountId, String board) {
+        Pageable pageable = PageRequest.of(0,5);
+        List<AccountResponseDto.MyPost> myBookMarkPost = postRepository.findPostBookMarkByAccountId(accountId, board, pageable);
+        setPostInfo(myBookMarkPost);
+        return myBookMarkPost;
+    }
+
+    @Transactional(readOnly = true)
+    public List<AccountResponseDto.MyAnswer> getMyAnswer(Long accountId) {
+        Pageable pageable = PageRequest.of(0,5);
+        return postAnswerRepository.findPostAnswerByAccountId(accountId, pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public List<AccountResponseDto.MyComment> getMyComment(Long accountId) {
+        Pageable pageable = PageRequest.of(0,5);
+        return postCommentRepository.findPostCommentByAccountId(accountId, pageable);
+    }
+
     private Account getAccount(Long accountId) {
         return accountRepository.findById(accountId).orElseThrow(() -> new ApiRequestException(ErrorCode.NO_USER_ERROR));
     }
@@ -170,43 +202,13 @@ public class AccountMyPageServiceImpl implements AccountMyPageService {
         }
     }
 
-    public List<AccountResponseDto.MyPost> getMyPost(Long accountId, String board) {
-        Pageable pageable = PageRequest.of(0,5);
-        List<AccountResponseDto.MyPost> myPosts = postRepository.findPostByAccountIdAndBoard(accountId, board, pageable);
-        if (board.equals("QNA")) {
-            setQnaInfo(myPosts);
-        } else if (board.equals("INFO")) {
-            setPostInfo(myPosts);
-        }
-        return myPosts;
-    }
-
-    public List<AccountResponseDto.MyPost> getMyBookMarkPost(Long accountId, String board) {
-        Pageable pageable = PageRequest.of(0,5);
-        List<AccountResponseDto.MyPost> myBookMarkPost = postRepository.findPostBookMarkByAccountId(accountId, board, pageable);
-        setPostInfo(myBookMarkPost);
-        return myBookMarkPost;
-    }
-
-    public List<AccountResponseDto.MyAnswer> getMyAnswer(Long accountId) {
-        Pageable pageable = PageRequest.of(0,5);
-        List<AccountResponseDto.MyAnswer> myAnswers = postAnswerRepository.findPostAnswerByAccountId(accountId, pageable);
-        return myAnswers;
-    }
-
-    public List<AccountResponseDto.MyComment> getMyComment(Long accountId) {
-        Pageable pageable = PageRequest.of(0,5);
-        List<AccountResponseDto.MyComment> myComments = postCommentRepository.findPostCommentByAccountId(accountId, pageable);
-        return myComments;
-    }
-
     private void setQnaInfo(List<AccountResponseDto.MyPost> myPosts) {
         myPosts.forEach((myPost) -> {
-           Long answerCount = postAnswerRepository.countByPostId(myPost.getPost_id());
-           myPost.setAnswer_count(answerCount);
+            Long answerCount = postAnswerRepository.countByPostId(myPost.getPost_id());
+            myPost.setAnswer_count(answerCount);
 
-           Long bookMarkCount = postBookMarkRepository.countByPostId(myPost.getPost_id());
-           myPost.setBookmark_count(bookMarkCount);
+            Long bookMarkCount = postBookMarkRepository.countByPostId(myPost.getPost_id());
+            myPost.setBookmark_count(bookMarkCount);
         });
     }
 

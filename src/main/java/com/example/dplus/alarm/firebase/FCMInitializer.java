@@ -1,23 +1,26 @@
-package com.example.dplus.alarm.firebase;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.stereotype.Service;
-
-import javax.annotation.PostConstruct;
-import java.io.IOException;
-
-
-// fcm 초기설정
-@Service
-public class FCMInitializer {
-
-    private static final Logger logger = LoggerFactory.getLogger(FCMInitializer.class);
-
-    // path 전달
-    private static final String FIREBASE_CONFIG_PATH = "dplus-6acf6-firebase-adminsdk.json";
-
+//package com.example.dplus.alarm.firebase;
+//
+//import com.google.auth.oauth2.GoogleCredentials;
+//import com.google.firebase.FirebaseApp;
+//import com.google.firebase.FirebaseOptions;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
+//import org.springframework.core.io.ClassPathResource;
+//import org.springframework.stereotype.Service;
+//
+//import javax.annotation.PostConstruct;
+//import java.io.IOException;
+//
+//
+//// fcm 초기설정
+//@Service
+//public class FCMInitializer {
+//
+//    private static final Logger logger = LoggerFactory.getLogger(FCMInitializer.class);
+//
+//    // path 전달
+//    private static final String FIREBASE_CONFIG_PATH = "dplus-6acf6-firebase-adminsdk.json";
+//
 //    // app 시작시 무조건 패스로 가서 빈 할당, 의존성 주입
 //    @PostConstruct
 //    public void initialize() {
@@ -32,4 +35,4 @@ public class FCMInitializer {
 //            logger.error(e.getMessage());
 //        }
 //    }
-}
+//}

@@ -34,14 +34,20 @@ public class PostCommentController {
     public ResponseEntity<Success> updatePostComment(@AuthenticationPrincipal UserDetailsImpl user,
                                                      @PathVariable Long post_comment_id,
                                                      @RequestBody PostRequestDto.PostComment data) {
-        return new ResponseEntity<>(new Success("게시글 코멘트 수정 완료",
-                postCommentService.updateComment(user.getUser().getId(), post_comment_id, data)), HttpStatus.OK);
+        if (user != null) {
+            return new ResponseEntity<>(new Success("게시글 코멘트 수정 완료",
+                    postCommentService.updateComment(user.getUser().getId(), post_comment_id, data)), HttpStatus.OK);
+        }
+        throw new BadArgumentsValidException(ErrorCode.NO_AUTHENTICATION_ERROR);
     }
 
     @DeleteMapping("/comment/{post_comment_id}")
     public ResponseEntity<Success> deletePostComment(@AuthenticationPrincipal UserDetailsImpl user,
                                                      @PathVariable Long post_comment_id) {
-        postCommentService.deleteComment(user.getUser().getId(), post_comment_id);
-        return new ResponseEntity<>(new Success("게시글 코멘트 삭제 완료",""), HttpStatus.OK);
+        if (user != null) {
+            postCommentService.deleteComment(user.getUser().getId(), post_comment_id);
+            return new ResponseEntity<>(new Success("게시글 코멘트 삭제 완료",""), HttpStatus.OK);
+        }
+        throw new BadArgumentsValidException(ErrorCode.NO_AUTHENTICATION_ERROR);
     }
 }

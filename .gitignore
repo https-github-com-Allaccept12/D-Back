@@ -11,6 +11,7 @@ build/
 /src/main/resources/application-real1.yml
 /src/main/resources/application-real2.yml
 
+
 ### STS ###
 .apt_generated
 .classpath

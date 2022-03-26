@@ -1,18 +1,18 @@
 package com.example.dplus.service.artwork;
 
-import com.example.dplus.domain.account.follow.FollowRepository;
-import com.example.dplus.domain.artwork.comment.ArtWorkCommentRepository;
-import com.example.dplus.domain.artwork.image.ArtWorkImage;
-import com.example.dplus.domain.artwork.image.ArtWorkImageRepository;
-import com.example.dplus.domain.artwork.like.ArtWorkLikesRepository;
+import com.example.dplus.repository.account.follow.FollowRepository;
+import com.example.dplus.repository.artwork.comment.ArtWorkCommentRepository;
+import com.example.dplus.domain.artwork.ArtWorkImage;
+import com.example.dplus.repository.artwork.image.ArtWorkImageRepository;
+import com.example.dplus.repository.artwork.like.ArtWorkLikesRepository;
 import com.example.dplus.advice.ApiRequestException;
 import com.example.dplus.advice.BadArgumentsValidException;
 import com.example.dplus.advice.ErrorCode;
 import com.example.dplus.domain.account.Account;
-import com.example.dplus.domain.account.AccountRepository;
-import com.example.dplus.domain.artwork.ArtWorkRepository;
+import com.example.dplus.repository.account.AccountRepository;
+import com.example.dplus.repository.artwork.ArtWorkRepository;
 import com.example.dplus.domain.artwork.ArtWorks;
-import com.example.dplus.domain.artwork.bookmark.ArtWorkBookMarkRepository;
+import com.example.dplus.repository.artwork.bookmark.ArtWorkBookMarkRepository;
 import com.example.dplus.dto.request.ArtWorkRequestDto.ArtWorkCreate;
 import com.example.dplus.dto.request.ArtWorkRequestDto.ArtWorkUpdate;
 import com.example.dplus.dto.response.AccountResponseDto.TopArtist;
@@ -36,7 +36,6 @@ import java.util.Objects;
 @RequiredArgsConstructor
 @Slf4j
 public class ArtworkMainServiceImpl implements ArtworkMainService {
-
     private final ArtWorkRepository artWorkRepository;
     private final ArtWorkImageRepository artWorkImageRepository;
     private final ArtWorkLikesRepository artWorkLikesRepository;
@@ -124,9 +123,9 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
     @Transactional
     public Long updateArtwork(Long accountId, Long artworkId, ArtWorkUpdate dto, List<MultipartFile> multipartFiles) {
         ArtWorks artWorks = artworkValidation(accountId, artworkId);
-        isThumbnailCheck(artworkId, dto, artWorks);
         updateImg(multipartFiles, artWorks, dto);
         artWorks.updateArtWork(dto);
+        artWorks.setThumbnail(dto.getThumbnail());
         return artWorks.getId();
     }
 
@@ -199,16 +198,6 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
             }
         }
     }
-    private void isThumbnailCheck(Long artworkId, ArtWorkUpdate dto, ArtWorks artWorks) {
-        if (!artWorks.getThumbnail().equals(dto.getThumbnail())) {
-            List<String> allImgUrl = artWorkImageRepository.findByAllImageUrl(artworkId);
-            allImgUrl.forEach((url) -> {
-                if(dto.getThumbnail().equals(url))
-                    artWorks.updateArtWorkThumbnail(url);
-            });
-        }
-    }
-
     private List<TopArtist> getTopArtist(String interest) {
         Pageable pageable = PageRequest.of(0,10);
         return accountRepository.findTopArtist(pageable,interest);

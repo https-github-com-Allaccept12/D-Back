@@ -1,14 +1,27 @@
-package com.example.dplus.alarm.firebase;
-
-import lombok.RequiredArgsConstructor;
-
-import org.springframework.stereotype.Service;
-
-
-@Service
-@RequiredArgsConstructor
-public class FCMService {
-
+//package com.example.dplus.alarm.firebase;
+//
+//import com.example.dplus.dto.fcm.FCMMessage;
+//import com.fasterxml.jackson.core.JsonProcessingException;
+//import com.fasterxml.jackson.databind.ObjectMapper;
+//import com.google.auth.oauth2.GoogleCredentials;
+//import com.google.firebase.messaging.*;
+//import lombok.RequiredArgsConstructor;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
+//import org.springframework.data.redis.core.StringRedisTemplate;
+//import org.springframework.stereotype.Service;
+//
+//import java.io.FileInputStream;
+//import java.io.IOException;
+//import java.util.HashMap;
+//import java.util.List;
+//import java.util.Map;
+//import java.util.concurrent.ExecutionException;
+//
+//@Service
+//@RequiredArgsConstructor
+//public class FCMService {
+//
 //    // redisTemplate 가져오기
 //    private final StringRedisTemplate redisTemplate;
 //    private static final Logger logger = LoggerFactory.getLogger(FCMService.class);
@@ -83,4 +96,4 @@ public class FCMService {
 //                .build();
 //        return mapper.writeValueAsString(fcmMessage);
 //    }
-}
+//}

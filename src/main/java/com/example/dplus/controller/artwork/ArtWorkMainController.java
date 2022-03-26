@@ -122,4 +122,5 @@ public class ArtWorkMainController {
                 artworkMainService.findBySearchKeyWord(keyword,last_artwork_id,accountId)),HttpStatus.OK);
     }
 
+
 }
