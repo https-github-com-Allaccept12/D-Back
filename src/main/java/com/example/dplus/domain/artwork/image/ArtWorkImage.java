@@ -28,18 +28,11 @@ public class ArtWorkImage {
     @Column(nullable = false)
     private String artworkImg;
 
-    @Column(columnDefinition = "TINYINT default 0")
-    private boolean thumbnail;
 
     @Builder
-    public ArtWorkImage(final ArtWorks artWorks,final String artworkImg,final boolean thumbnail) {
+    public ArtWorkImage(final ArtWorks artWorks,final String artworkImg) {
         this.artWorks = artWorks;
         this.artworkImg = artworkImg;
-        this.thumbnail = thumbnail;
-    }
-
-    public void updateThumbnail() {
-        this.thumbnail = true;
     }
 
 

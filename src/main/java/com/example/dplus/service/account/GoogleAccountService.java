@@ -2,7 +2,6 @@ package com.example.dplus.service.account;
 
 import com.example.dplus.domain.account.Account;
 import com.example.dplus.domain.account.AccountRepository;
-import com.example.dplus.domain.account.Specialty;
 import com.example.dplus.domain.account.rank.Rank;
 import com.example.dplus.domain.account.rank.RankRepository;
 import com.example.dplus.dto.GoogleUserInfoDto;
@@ -111,18 +110,28 @@ public class GoogleAccountService {
         String email = googleUserInfo.getEmail();
         String username = googleUserInfo.getEmail();
 
-        Account googleUser = accountRepository.findByUsername(username)
+        Account googleUser = accountRepository.findByAccountName(username)
                 .orElse(null);
+
+        boolean isSignUp = false;
+
         if (googleUser == null) {
             // 회원가입
+            isSignUp = true;
             String name = googleUserInfo.getName();
             String profileImg = googleUserInfo.getProfile_img();
 
             Rank rank = Rank.builder().rankScore(0L).build();
             Rank saveRank = rankRepository.save(rank);
-
-            Specialty specialty = new Specialty();
-            googleUser = Account.builder().username(username).nickname(name).profileImg(profileImg).email(email).specialty(specialty).rank(saveRank).build();
+            googleUser = Account.builder()
+                    .accountName(username)
+                    .nickname(name)
+                    .profileImg(profileImg)
+                    .email(email)
+                    .specialty("")
+                    .rank(saveRank)
+                    .other("")
+                    .build();
             accountRepository.save(googleUser);
         }
 
@@ -135,6 +144,7 @@ public class GoogleAccountService {
                 .profile_img(googleUser.getProfileImg())
                 .access_token(accessToken)
                 .refresh_token(refreshToken)
+                .isSignUp(isSignUp)
                 .build();
 
     }

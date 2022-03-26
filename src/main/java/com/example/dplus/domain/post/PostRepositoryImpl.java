@@ -17,7 +17,6 @@ import static com.example.dplus.domain.post.bookmark.QPostBookMark.postBookMark;
 import static com.example.dplus.domain.post.like.QPostLikes.postLikes;
 import static com.example.dplus.domain.post.tag.QPostTag.postTag;
 
-
 @RequiredArgsConstructor
 public class PostRepositoryImpl implements PostRepositoryCustom{
 
@@ -162,7 +161,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
 
     // 유사한 질문
     @Override
-    public List<PostResponseDto.PostSimilarQuestion> findByCategory(String category) {
+    public List<PostResponseDto.PostSimilarQuestion> findByCategory(String category, String board, Long postId) {
         List<PostResponseDto.PostSimilarQuestion> result = queryFactory
                 .select(Projections.constructor(PostResponseDto.PostSimilarQuestion.class,
                         post.id,
@@ -178,7 +177,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                 .from(post)
                 .join(post.account, account)
                 .leftJoin(postLikes).on(postLikes.post.eq(post))
-                .where(post.category.eq(category))
+                .where(post.category.eq(category), post.board.eq(PostBoard.valueOf(board)), post.id.ne(postId))
                 .offset(0)
                 .limit(5)
                 .groupBy(post.id)

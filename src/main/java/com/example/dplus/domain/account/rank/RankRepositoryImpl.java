@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 
 import static com.example.dplus.domain.account.rank.QRank.rank;
 
-
 @RequiredArgsConstructor
 public class RankRepositoryImpl implements RankRepositoryCustom{
 

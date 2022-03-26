@@ -4,7 +4,7 @@ package com.example.dplus.controller.artwork;
 import com.example.dplus.advice.BadArgumentsValidException;
 import com.example.dplus.advice.ErrorCode;
 import com.example.dplus.dto.Success;
-import com.example.dplus.dto.request.ArtWorkRequestDto.ArtWorkCreateAndUpdate;
+import com.example.dplus.dto.request.ArtWorkRequestDto;
 import com.example.dplus.jwt.UserDetailsImpl;
 import com.example.dplus.service.artwork.ArtworkMainService;
 import lombok.RequiredArgsConstructor;
@@ -86,7 +86,7 @@ public class ArtWorkMainController {
 
     @PostMapping("/api/artwork")
     public ResponseEntity<Success> createArtWork(@AuthenticationPrincipal UserDetailsImpl user,
-                                                 @RequestPart ArtWorkCreateAndUpdate data,
+                                                 @RequestPart ArtWorkRequestDto.ArtWorkCreate data,
                                                  @RequestPart List<MultipartFile> imgFile) {
         loginValid(user);
         return new ResponseEntity<>(new Success("작품 등록 완료"
@@ -98,7 +98,7 @@ public class ArtWorkMainController {
     @PatchMapping("/api/artwork/{artwork_id}")
     public ResponseEntity<Success> updateArtWork(@AuthenticationPrincipal UserDetailsImpl user,
                                                  @PathVariable Long artwork_id,
-                                                 @RequestPart ArtWorkCreateAndUpdate data,
+                                                 @RequestPart ArtWorkRequestDto.ArtWorkUpdate data,
                                                  @RequestPart List<MultipartFile> imgFile) {
         loginValid(user);
         return new ResponseEntity<>(new Success("작품 수정 완료",

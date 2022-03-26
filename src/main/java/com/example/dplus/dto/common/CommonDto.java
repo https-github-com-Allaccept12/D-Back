@@ -40,7 +40,6 @@ public class CommonDto {
     @NoArgsConstructor
     public static class ImgUrlDto {
         private String img_url;
-        private boolean thumbnail;
 
         public ImgUrlDto(final String img_url) {
             this.img_url = img_url;

@@ -22,7 +22,7 @@ public interface PostRepositoryCustom {
 
     PostResponseDto.PostAnswerSubDetail findByPostAnswerSubDetail(Long postId);
 
-    List<PostResponseDto.PostSimilarQuestion> findByCategory(String category);
+    List<PostResponseDto.PostSimilarQuestion> findByCategory(String category, String board, Long postId);
 
     List<AccountResponseDto.MyPost> findPostByAccountIdAndBoard(Long accountId, String board, Pageable pageable);
 

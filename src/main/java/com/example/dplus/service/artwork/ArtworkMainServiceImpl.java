@@ -13,13 +13,14 @@ import com.example.dplus.domain.artwork.comment.ArtWorkCommentRepository;
 import com.example.dplus.domain.artwork.image.ArtWorkImage;
 import com.example.dplus.domain.artwork.image.ArtWorkImageRepository;
 import com.example.dplus.domain.artwork.like.ArtWorkLikesRepository;
+import com.example.dplus.dto.request.ArtWorkRequestDto.ArtWorkCreate;
+import com.example.dplus.dto.request.ArtWorkRequestDto.ArtWorkUpdate;
 
 import com.example.dplus.dto.response.AccountResponseDto;
 import com.example.dplus.dto.response.ArtWorkResponseDto;
+import com.example.dplus.dto.response.ArtWorkResponseDto.ArtworkMain;
 import com.example.dplus.dto.response.MainResponseDto;
 import com.example.dplus.service.file.FileProcessService;
-//import jdk.jfr.internal.tool.Main;
-import com.example.dplus.dto.request.ArtWorkRequestDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -29,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -49,24 +51,24 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
     @Transactional(readOnly = true)
     public MainResponseDto mostPopularArtWork(Long accountId) {
         //회원인지 비회원인지
-        if (accountId != null) {
+        if (accountId != 0) {
             Account account = accountRepository.findById(accountId).orElseThrow(() -> new ApiRequestException(ErrorCode.NO_USER_ERROR));
-            List<ArtWorkResponseDto.ArtworkMain> artWorkList = getArtworkList(account.getInterest());
+            List<ArtworkMain> artWorkList = getArtworkList(account.getInterest());
             List<AccountResponseDto.TopArtist> topArtist = getTopArtist(account.getInterest());
             isFollow(accountId,topArtist);
             setIsLike(accountId,artWorkList);
             return MainResponseDto.builder().artwork(artWorkList).top_artist(topArtist).build();
         }
-        List<ArtWorkResponseDto.ArtworkMain> artworkList = getArtworkList(null);
+        List<ArtworkMain> artworkList = getArtworkList("");
         List<AccountResponseDto.TopArtist> topArtist = getTopArtist("");
         return MainResponseDto.builder().artwork(artworkList).top_artist(topArtist).build();
     }
     //둘러보기
     @Transactional(readOnly = true)
-    public List<ArtWorkResponseDto.ArtworkMain> showArtworkMain(Long accountId, Long lastArtWorkId, String category, int sortSign){
+    public List<ArtworkMain> showArtworkMain(Long accountId, Long lastArtWorkId,String category,int sortSign){
         Pageable pageable = PageRequest.of(0,10);
-        List<ArtWorkResponseDto.ArtworkMain> artWorkList = artWorkRepository.findAllArtWork(lastArtWorkId,category,pageable,sortSign);
-        if (accountId != null)
+        List<ArtworkMain> artWorkList = artWorkRepository.findAllArtWork(lastArtWorkId,category,pageable,sortSign);
+        if (accountId != 0)
             setIsLike(accountId, artWorkList);
         return artWorkList;
     }
@@ -91,7 +93,7 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
         boolean isLike = false;
         boolean isBookmark = false;
         boolean isFollow = false;
-        if (accountId != null) {
+        if (accountId != 0) {
             //지금 상세페이지를 보고있는사람이 좋아요를 했는지
             isLike = artWorkLikesRepository.existByAccountIdAndArtWorkId(accountId, artWorkId);
             //지금 상세페이지를 보고있는사람이 북마크를 했는지
@@ -105,25 +107,24 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
     }
 
     @Transactional
-    public int createArtwork(Long accountId, ArtWorkRequestDto.ArtWorkCreateAndUpdate dto, List<MultipartFile> multipartFiles) {
+    public int createArtwork(Long accountId, ArtWorkCreate dto, List<MultipartFile> multipartFiles) {
         Account account = accountRepository.findById(accountId).orElseThrow(() -> new ApiRequestException(ErrorCode.NO_USER_ERROR));
         if (account.getArtWorkCreateCount() >= 5) {
             throw new ApiRequestException(ErrorCode.DAILY_WRITE_UP_BURN_ERROR);
         }
-        ArtWorks artWorks = ArtWorks.of(account, dto);
-        ArtWorks saveArtwork = artWorkRepository.save(artWorks);
-
-        s3ImageUpload(multipartFiles, saveArtwork);
+        if (multipartFiles == null) {
+            throw new ApiRequestException(ErrorCode.PHOTO_UPLOAD_ERROR);
+        }
+        ArtWorks saveArtwork = artWorkRepository.save(ArtWorks.of(account, dto));
+        s3ImageUpload(multipartFiles,dto,saveArtwork);
         account.upArtworkCountCreate();
         return 5 - account.getArtWorkCreateCount();
     }
 
-    //지금 현재 문제
     @Transactional
-    public Long updateArtwork(Long accountId, Long artworkId, ArtWorkRequestDto.ArtWorkCreateAndUpdate dto, List<MultipartFile> multipartFiles) {
+    public Long updateArtwork(Long accountId, Long artworkId, ArtWorkUpdate dto, List<MultipartFile> multipartFiles) {
         ArtWorks artWorks = artworkValidation(accountId, artworkId);
-        ArtWorkImage thumbNail = artWorkImageRepository.findByArtworkImg(dto.getThumbnail());
-
+        isThumbnailCheck(artworkId, dto, artWorks);
         updateImg(multipartFiles, artWorks, dto);
         artWorks.updateArtWork(dto);
         return artWorks.getId();
@@ -145,55 +146,62 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
 
     //작품 검색
     @Transactional(readOnly = true)
-    public List<ArtWorkResponseDto.ArtworkMain> findBySearchKeyWord(String keyword, Long lastArtWorkId, Long accountId) {
+    public List<ArtworkMain> findBySearchKeyWord(String keyword, Long lastArtWorkId, Long accountId) {
         Pageable pageable = PageRequest.of(0,10);
-        List<ArtWorkResponseDto.ArtworkMain> artWorkList = artWorkRepository.findBySearchKeyWord(keyword, lastArtWorkId, pageable);
+        List<ArtworkMain> artWorkList = artWorkRepository.findBySearchKeyWord(keyword, lastArtWorkId, pageable);
         if(accountId != null)
             setIsLike(accountId,artWorkList);
         return artWorkList;
     }
 
     @Transactional(readOnly = true)
-    public List<ArtWorkResponseDto.ArtworkMain> findByFollowerArtWork(Long accountId, String category, Long lastArtWorkId) {
+    public List<ArtworkMain> findByFollowerArtWork(Long accountId, String category, Long lastArtWorkId) {
         Pageable pageable = PageRequest.of(0,10);
-        List<ArtWorkResponseDto.ArtworkMain> artWorkList = artWorkRepository.findByFollowerArtWork(accountId, category, lastArtWorkId, pageable);
+        List<ArtworkMain> artWorkList = artWorkRepository.findByFollowerArtWork(accountId, category, lastArtWorkId, pageable);
         if(accountId != null)
             setIsLike(accountId,artWorkList);
         return artWorkList;
     }
 
-    private void s3ImageUpload(List<MultipartFile> multipartFiles, ArtWorks saveArtwork) {
-        if(multipartFiles != null){
-            for (int i = 0; i < multipartFiles.size(); i++) {
-                String saveFile = fileProcessService.uploadImage(multipartFiles.get(i));
-                ArtWorkImage img = ArtWorkImage.builder().artWorks(saveArtwork).artworkImg(saveFile).thumbnail(false).build();
-                if (i == 0) {
-                    img.updateThumbnail();
-                }
-                artWorkImageRepository.save(img);
+    private void s3ImageUpload(List<MultipartFile> multipartFiles,ArtWorkCreate dto, ArtWorks saveArtwork) {
+        multipartFiles.forEach((file) -> {
+            boolean thumbnail = Objects.equals(file.getOriginalFilename(), dto.getThumbnail());
+            String imgUrl = fileProcessService.uploadImage(file);
+            ArtWorkImage img = ArtWorkImage.builder().artWorks(saveArtwork).artworkImg(imgUrl).build();
+            artWorkImageRepository.save(img);
+            if (thumbnail) {
+                saveArtwork.updateArtoWorkThumbnail(imgUrl);
             }
-        }else{
-            throw new ApiRequestException(ErrorCode.PHOTO_UPLOAD_ERROR);
-        }
-
+        });
     }
 
-    private void updateImg( List<MultipartFile> multipartFiles, ArtWorks findArtWork, ArtWorkRequestDto.ArtWorkCreateAndUpdate dto) {
-       if(dto.getImg().size() != 0){
-           dto.getImg().forEach((img) -> {
+    private void updateImg( List<MultipartFile> multipartFiles, ArtWorks findArtWork, ArtWorkUpdate dto) {
+       if(dto.getDelete_img().size() != 0){
+           dto.getDelete_img().forEach((img) -> {
                artWorkImageRepository.deleteByArtworkImg(img.getImg_url());
                fileProcessService.deleteImage(img.getImg_url());
            });
        }
-
        if (multipartFiles != null) {
             multipartFiles.forEach((file) -> {
+                boolean thumbnail = Objects.equals(file.getOriginalFilename(), dto.getThumbnail());
                 String imgUrl = fileProcessService.uploadImage(file);
                 ArtWorkImage img = ArtWorkImage.builder().artWorks(findArtWork).artworkImg(imgUrl).build();
                 artWorkImageRepository.save(img);
+                if (thumbnail) {
+                    findArtWork.updateArtoWorkThumbnail(imgUrl);
+                }
             });
        }
-
+    }
+    private void isThumbnailCheck(Long artworkId, ArtWorkUpdate dto, ArtWorks artWorks) {
+        if (!artWorks.getThumbnail().equals(dto.getThumbnail())) {
+            List<String> allImgUrl = artWorkImageRepository.findByAllImageUrl(artworkId);
+            allImgUrl.forEach((url) -> {
+                if(dto.getThumbnail().equals(url))
+                    artWorks.updateArtoWorkThumbnail(url);
+            });
+        }
     }
 
     private List<AccountResponseDto.TopArtist> getTopArtist(String interest) {
@@ -201,7 +209,7 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
         return accountRepository.findTopArtist(pageable,interest);
     }
 
-    private List<ArtWorkResponseDto.ArtworkMain> getArtworkList(String interest) {
+    private List<ArtworkMain> getArtworkList(String interest) {
         Pageable pageable = PageRequest.of(0,10);
         return artWorkRepository.findArtWorkByMostViewAndMostLike(interest,pageable);
     }
@@ -221,7 +229,7 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
         });
     }
 
-    private void setIsLike(Long accountId, List<ArtWorkResponseDto.ArtworkMain> artWorkList) {
+    private void setIsLike(Long accountId, List<ArtworkMain> artWorkList) {
         artWorkList.forEach((artWork) -> {
             artWork.setLikeCountAndIsLike(artWorkLikesRepository.
                     existByAccountIdAndArtWorkId(accountId, artWork.getArtwork_id()));

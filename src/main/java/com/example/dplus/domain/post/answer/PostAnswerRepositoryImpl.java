@@ -13,7 +13,6 @@ import static com.example.dplus.domain.account.QAccount.account;
 import static com.example.dplus.domain.post.answer.QPostAnswer.postAnswer;
 import static com.example.dplus.domain.post.like.QPostAnswerLikes.postAnswerLikes;
 
-
 @RequiredArgsConstructor
 public class PostAnswerRepositoryImpl implements PostAnswerRepositoryCustom {
 

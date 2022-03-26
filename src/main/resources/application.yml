@@ -7,13 +7,13 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
     properties:
       hibernate:
-        format_sql: true
+ #       format_sql: #true
         default_batch_fetch_size: 1000
     open-in-view: false
-
+  
   redis:
     pool:
       min-idle: 0
@@ -21,11 +21,13 @@ spring:
       max-active: 8
     port: 6379
     host: localhost
+#
+#logging.level:
+#  org.hibernate.SQL: debug
 
-logging.level:
-  org.hibernate.SQL: debug
-
-
+#
+#logging.level:
+#  #org.hibernate.SQL: debug
 
 server:
   port: 8081

@@ -14,7 +14,6 @@ import static com.example.dplus.domain.post.QPost.post;
 import static com.example.dplus.domain.post.comment.QPostComment.postComment;
 import static com.example.dplus.domain.post.comment.like.QPostCommentLikes.postCommentLikes;
 
-
 @RequiredArgsConstructor
 public class PostCommentRepositoryImpl implements PostCommentRepositoryCustom{
 

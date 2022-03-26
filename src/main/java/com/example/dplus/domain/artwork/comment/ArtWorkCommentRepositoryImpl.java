@@ -1,6 +1,5 @@
 package com.example.dplus.domain.artwork.comment;
 
-
 import com.example.dplus.dto.response.ArtWorkResponseDto;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -10,7 +9,6 @@ import java.util.List;
 
 import static com.example.dplus.domain.artwork.QArtWorks.artWorks;
 import static com.example.dplus.domain.artwork.comment.QArtWorkComment.artWorkComment;
-
 
 @RequiredArgsConstructor
 public class ArtWorkCommentRepositoryImpl implements ArtWorkCommentRepositoryCustom{

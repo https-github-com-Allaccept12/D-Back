@@ -3,6 +3,7 @@ package com.example.dplus.service.post.answer;
 import com.example.dplus.advice.ApiRequestException;
 import com.example.dplus.advice.ErrorCode;
 import com.example.dplus.domain.account.Account;
+import com.example.dplus.domain.account.AccountRepository;
 import com.example.dplus.domain.post.Post;
 import com.example.dplus.domain.post.PostRepository;
 import com.example.dplus.domain.post.answer.PostAnswer;
@@ -19,9 +20,11 @@ public class PostAnswerService {
 
     private final PostRepository postRepository;
     private final PostAnswerRepository postAnswerRepository;
+    private final AccountRepository accountRepository;
 
     @Transactional
-    public Long createAnswer(PostRequestDto.PostAnswer dto, Long postId, Account account) {
+    public Long createAnswer(PostRequestDto.PostAnswer dto, Long postId, Long accountId) {
+        Account account = accountRepository.findById(accountId).orElseThrow(() -> new ApiRequestException(ErrorCode.NO_USER_ERROR));
         Post post = postRepository.findById(postId).orElseThrow(() -> new ApiRequestException(ErrorCode.NONEXISTENT_ERROR));
         PostAnswer postAnswer = PostAnswer.builder().post(post).account(account).content(dto.getContent()).build();
         PostAnswer save = postAnswerRepository.save(postAnswer);

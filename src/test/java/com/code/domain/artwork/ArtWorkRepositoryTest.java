@@ -2,7 +2,6 @@ package com.code.domain.artwork;
 
 import com.example.dplus.domain.account.Account;
 import com.example.dplus.domain.account.AccountRepository;
-import com.code.domain.account.QAccount;
 import com.example.dplus.domain.account.follow.Follow;
 import com.example.dplus.domain.account.follow.FollowRepository;
 import com.example.dplus.domain.account.rank.Rank;
@@ -38,7 +37,6 @@ import static com.code.domain.account.QAccount.account;
 import static com.code.domain.account.follow.QFollow.follow;
 import static com.code.domain.artwork.QArtWorks.artWorks;
 import static com.code.domain.artwork.bookmark.QArtWorkBookMark.artWorkBookMark;
-import static com.code.domain.artwork.comment.QArtWorkComment.artWorkComment;
 import static com.code.domain.artwork.image.QArtWorkImage.artWorkImage;
 import static com.code.domain.artwork.like.QArtWorkLikes.artWorkLikes;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -198,13 +196,12 @@ class ArtWorkRepositoryTest {
                         account.profileImg,
                         artWorkImage.artworkImg,
                         artWorks.view,
-                        artWorkLikes.count(),
+                        artWorks.thumbnail,
                         artWorks.category,
                         artWorks.created
                 ))
                 .from(artWorks)
                 .join(account).on(account.id.eq(artWorks.account.id))
-                .join(artWorkImage).on(artWorkImage.artWorks.eq(artWorks).and(artWorkImage.thumbnail.isTrue()))
                 .leftJoin(artWorkLikes).on(artWorkLikes.artWorks.eq(artWorks))
                 .offset(paging.getOffset())
                 .limit(paging.getPageSize())
@@ -353,13 +350,12 @@ class ArtWorkRepositoryTest {
                         account.profileImg,
                         artWorkImage.artworkImg,
                         artWorks.view,
-                        artWorkLikes.count(),
+                        artWorks.thumbnail,
                         artWorks.category,
                         artWorks.created
                 ))
                 .from(artWorks)
                 .join(artWorks.account, account)
-                .join(artWorkImage).on(artWorkImage.artWorks.eq(artWorks).and(artWorkImage.thumbnail.isTrue()))
                 .leftJoin(artWorkLikes).on(artWorkLikes.artWorks.eq(artWorks))
                 .offset(paging.getOffset())
                 .limit(paging.getPageSize())
@@ -407,13 +403,12 @@ class ArtWorkRepositoryTest {
                         account.profileImg,
                         artWorkImage.artworkImg,
                         artWorks.view,
-                        artWorkLikes.count(),
+                        artWorks.thumbnail,
                         artWorks.category,
                         artWorks.created
                 ))
                 .from(artWorks)
                 .join(account).on(account.id.eq(artWorks.account.id))
-                .join(artWorkImage).on(artWorkImage.artWorks.eq(artWorks).and(artWorkImage.thumbnail.isTrue()))
                 .leftJoin(artWorkLikes).on(artWorkLikes.artWorks.eq(artWorks))
                 .offset(paging.getOffset())
                 .limit(paging.getPageSize())
@@ -460,13 +455,12 @@ class ArtWorkRepositoryTest {
                         account.profileImg,
                         artWorkImage.artworkImg,
                         artWorks.view,
-                        artWorkLikes.count(),
+                        artWorks.thumbnail,
                         artWorks.category,
                         artWorks.created
                 ))
                 .from(artWorks)
                 .join(account).on(account.id.eq(artWorks.account.id))
-                .join(artWorkImage).on(artWorkImage.artWorks.eq(artWorks).and(artWorkImage.thumbnail.isTrue()))
                 .leftJoin(artWorkLikes).on(artWorkLikes.artWorks.eq(artWorks))
                 .offset(paging.getOffset())
                 .limit(paging.getPageSize())
@@ -566,7 +560,6 @@ class ArtWorkRepositoryTest {
         ArtWorkImage testArtWorkImage = ArtWorkImage.builder()
                 .artWorks(artWorks)
                 .artworkImg(test)
-                .thumbnail(thumb)
                 .build();
         ArtWorkImage save = artWorkImageRepository.save(testArtWorkImage);
 

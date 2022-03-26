@@ -2,7 +2,6 @@ package com.example.dplus.service.account;
 
 import com.example.dplus.domain.account.Account;
 import com.example.dplus.domain.account.AccountRepository;
-import com.example.dplus.domain.account.Specialty;
 import com.example.dplus.domain.account.rank.Rank;
 import com.example.dplus.domain.account.rank.RankRepository;
 import com.example.dplus.dto.KakaoUserInfoDto;
@@ -113,7 +112,7 @@ public class KakaoAccountService {
         String email = kakaoUserInfo.getEmail();
         String username = kakaoUserInfo.getUsername();
 
-        Account kakaoUser = accountRepository.findByUsername(username)
+        Account kakaoUser = accountRepository.findByAccountName(username)
                 .orElse(null);
 
         boolean isSignUp = false;
@@ -127,9 +126,15 @@ public class KakaoAccountService {
 
             Rank rank = Rank.builder().rankScore(0L).build();
             Rank saveRank = rankRepository.save(rank);
-
-            Specialty specialty = new Specialty();
-            kakaoUser = Account.builder().username(username).nickname(nickname).profileImg(profileImg).email(email).rank(saveRank).specialty(specialty).build();
+            kakaoUser = Account.builder()
+                    .accountName(username)
+                    .nickname(nickname)
+                    .profileImg(profileImg)
+                    .email(email)
+                    .rank(saveRank)
+                    .other("")
+                    .specialty("")
+                    .build();
             accountRepository.save(kakaoUser);
         }
 
@@ -137,7 +142,6 @@ public class KakaoAccountService {
         String refreshToken = jwtTokenProvider.createRefreshToken(Long.toString(kakaoUser.getId()));
 //        kakaoUser.refreshToken(refreshToken);
         redisService.setValues(refreshToken, kakaoUser.getId());
-        System.out.println("3");
         return LoginResponseDto.builder()
                 .account_id(kakaoUser.getId())
                 .profile_img(kakaoUser.getProfileImg())

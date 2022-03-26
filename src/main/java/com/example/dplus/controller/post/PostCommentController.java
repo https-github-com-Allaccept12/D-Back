@@ -1,5 +1,8 @@
 package com.example.dplus.controller.post;
 
+
+import com.example.dplus.advice.BadArgumentsValidException;
+import com.example.dplus.advice.ErrorCode;
 import com.example.dplus.dto.Success;
 import com.example.dplus.dto.request.PostRequestDto;
 import com.example.dplus.jwt.UserDetailsImpl;
@@ -21,8 +24,11 @@ public class PostCommentController {
     public ResponseEntity<Success> createPostComment(@AuthenticationPrincipal UserDetailsImpl user,
                                                      @PathVariable Long post_id,
                                                      @RequestBody PostRequestDto.PostComment data) {
-        return new ResponseEntity<>(new Success("게시글 코멘트 등록 완료",
-                postCommentService.createComment(user.getUser(), post_id, data)), HttpStatus.OK);
+        if (user != null) {
+            return new ResponseEntity<>(new Success("게시글 코멘트 등록 완료",
+                    postCommentService.createComment(user.getUser(), post_id, data)), HttpStatus.OK);
+        }
+        throw new BadArgumentsValidException(ErrorCode.NO_AUTHENTICATION_ERROR);
     }
 
     @PatchMapping("/comment/{post_comment_id}")

@@ -1,5 +1,4 @@
 package com.example.dplus.dto.response;
-import com.example.dplus.domain.account.Specialty;
 import com.example.dplus.domain.artwork.image.ArtWorkImage;
 import com.example.dplus.dto.common.CommonDto;
 import lombok.Builder;
@@ -24,7 +23,7 @@ public class ArtWorkResponseDto {
         private String img;
         private Long view_count;
         private Long like_count;
-        private boolean is_like;
+        private Boolean is_like;
         private Timestamp create_time;
 
         @Builder
@@ -40,7 +39,7 @@ public class ArtWorkResponseDto {
             this.category = category;
             this.account_nickname = account_nickname;
         }
-        public void setLikeCountAndIsLike(boolean is_like) {
+        public void setLikeCountAndIsLike(Boolean is_like) {
             this.is_like = is_like;
         }
     }
@@ -49,9 +48,9 @@ public class ArtWorkResponseDto {
     @NoArgsConstructor
     public static class ArtWorkDetail {
 
-        private boolean is_like;
-        private boolean is_bookmark;
-        private boolean is_follow ;
+        private Boolean is_like;
+        private Boolean is_bookmark;
+        private Boolean is_follow ;
         private ArtWorkSubDetail artWorkSubDetail;
         private List<CommonDto.ImgUrlDto> img;
         private List<ArtWorkComment> comment;
@@ -62,7 +61,7 @@ public class ArtWorkResponseDto {
                              final List<ArtWorkComment> comment,
                              final List<ArtWorkSimilarWork> similar_Work,
                              final ArtWorkSubDetail artWorkSubDetail,
-                             final boolean is_like, final boolean is_bookmark,final boolean is_follow) {
+                             final Boolean is_like, final Boolean is_bookmark,final Boolean is_follow) {
             this.is_like = is_like;
             this.is_bookmark = is_bookmark;
             this.is_follow = is_follow;
@@ -74,7 +73,7 @@ public class ArtWorkResponseDto {
 
         public static ArtWorkDetail from(final List<ArtWorkImage> imgList, final List<ArtWorkComment> commentList,
                                          final List<ArtWorkSimilarWork> similarList, ArtWorkSubDetail artWorkSubDetail,
-                                         final boolean is_like, final boolean is_bookmark, final boolean is_follow) {
+                                         final Boolean is_like, final Boolean is_bookmark, final Boolean is_follow) {
             return ArtWorkDetail.builder()
                     .img(imgList.stream()
                             .map(i -> new CommonDto.ImgUrlDto(i.getArtworkImg())).collect(Collectors.toList()))
@@ -105,12 +104,12 @@ public class ArtWorkResponseDto {
         private Timestamp create_time;
         private Timestamp modify_time;
         private String copyright;
-        private Specialty specialty;
+        private String specialty;
 
         @Builder
         public ArtWorkSubDetail(final Long artwork_id,final Long account_id,final String title,final String content,final Long view_count,
                                 final Long like_count,final String category,final Timestamp create_time,
-                                final Timestamp modify_time,final Specialty specialty,final String account_nickname,
+                                final Timestamp modify_time,final String specialty,final String account_nickname,
                                 final String account_profile_img,final String copyright) {
             this.artwork_id = artwork_id;
             this.account_id = account_id;
@@ -138,12 +137,12 @@ public class ArtWorkResponseDto {
     public static class ArtWorkFeed {
 
         private Long artwork_id;
-        private boolean scope;
+        private Boolean scope;
         private String img;
-        private boolean is_master;
+        private Boolean is_master;
 
         @Builder
-        public ArtWorkFeed(final Long artwork_id,final boolean scope,final String img, final boolean is_master) {
+        public ArtWorkFeed(final Long artwork_id,final Boolean scope,final String img, final Boolean is_master) {
             this.artwork_id = artwork_id;
             this.scope = scope;
             this.img = img;

@@ -12,7 +12,6 @@ import java.util.List;
 import static com.example.dplus.domain.account.QAccount.account;
 import static com.example.dplus.domain.account.rank.QRank.rank;
 
-
 @RequiredArgsConstructor
 @Slf4j
 public class AccountRepositoryImpl implements AccountRepositoryCustom{
@@ -33,7 +32,7 @@ public class AccountRepositoryImpl implements AccountRepositoryCustom{
                                 account.bestArtWorkTwo
                                 ))
                 .from(account)
-                .innerJoin(rank).on(rank.eq(account.rank))
+                .join(rank).on(rank.eq(account.rank))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .orderBy(rank.rankScore.desc())
@@ -48,8 +47,6 @@ public class AccountRepositoryImpl implements AccountRepositoryCustom{
                 .set(account.postCreateCount, 0)
                 .execute();
     }
-
-
 
 }
 
