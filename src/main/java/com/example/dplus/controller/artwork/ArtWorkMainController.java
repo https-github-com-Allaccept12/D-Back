@@ -61,11 +61,11 @@ public class ArtWorkMainController {
 
     @GetMapping("/api/artwork/sort-follow/{category}/{last_artwork_id}")
     public ResponseEntity<Success> artWorkSortFollow(@AuthenticationPrincipal UserDetailsImpl user,
-                                               @PathVariable Long last_artwork_id,
-                                               @PathVariable String category) {
-        if (user != null){
+                                                     @PathVariable Long last_artwork_id,
+                                                     @PathVariable String category) {
+        if (user != null) {
             return new ResponseEntity<>(new Success("팔로우한 작가 작업물",
-                    artworkMainService.findByFollowerArtWork(user.getUser().getId(),category,last_artwork_id)),HttpStatus.OK);
+                    artworkMainService.findByFollowerArtWork(user.getUser().getId(), category, last_artwork_id)), HttpStatus.OK);
         }
         throw new BadArgumentsValidException(ErrorCode.NO_AUTHENTICATION_ERROR);
 
