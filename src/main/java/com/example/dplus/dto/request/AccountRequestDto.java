@@ -100,4 +100,10 @@ public class AccountRequestDto {
         private String img_url_fir;
         private String img_url_sec;
     }
+
+    @Getter
+    @NoArgsConstructor
+    public static class AccountVisit {
+        private Long account_id;
+    }
 }

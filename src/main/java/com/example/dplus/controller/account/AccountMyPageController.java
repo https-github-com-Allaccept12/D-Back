@@ -2,7 +2,6 @@ package com.example.dplus.controller.account;
 
 
 import com.example.dplus.dto.Success;
-import com.example.dplus.dto.request.AccountRequestDto.AccountVisit;
 import com.example.dplus.dto.request.AccountRequestDto.UpdateAccountIntro;
 import com.example.dplus.dto.request.AccountRequestDto.UpdateSpecialty;
 import com.example.dplus.dto.request.ArtWorkRequestDto.ArtWorkPortFolioUpdate;
@@ -26,23 +25,25 @@ public class AccountMyPageController {
 
 
     @GetMapping("")
-    public ResponseEntity<Success> accountInfo(@RequestBody AccountVisit dto) {
+    public ResponseEntity<Success> accountInfo(@RequestParam("account_id") Long accountId,
+                                               @RequestParam("owner_account_id") Long ownerAccountId) {
 
         return new ResponseEntity<>(new Success("마이페이지 기본정보 조회",
-                accountMyPageService.showAccountInfo(dto.getOwner_account_id(), dto.getAccount_id())), HttpStatus.OK);
+                accountMyPageService.showAccountInfo(accountId, ownerAccountId)), HttpStatus.OK);
     }
 
     @GetMapping("/career-feed/{last_artwork_id}")
-    public ResponseEntity<Success> accountCareerFeed(@RequestBody AccountVisit dto,
+    public ResponseEntity<Success> accountCareerFeed(@RequestParam("account_id") Long accountId,
+                                                     @RequestParam("owner_account_id") Long ownerAccountId,
                                                      @PathVariable Long last_artwork_id) {
         return new ResponseEntity<>(new Success("마이페이지 커리어피드 조회",
-                accountMyPageService.showAccountCareerFeed(last_artwork_id,dto.getOwner_account_id(),dto.getAccount_id())), HttpStatus.OK);
+                accountMyPageService.showAccountCareerFeed(last_artwork_id,ownerAccountId,accountId)), HttpStatus.OK);
     }
 
     @GetMapping("/history")
-    public ResponseEntity<Success> accountHistory(@RequestBody AccountVisit accountId) {
+    public ResponseEntity<Success> accountHistory(@RequestParam("account_id") Long accountId) {
         return new ResponseEntity<>(new Success("마이페이지 연혁 조회",
-                accountMyPageService.showAccountHistory(accountId.getAccount_id())), HttpStatus.OK);
+                accountMyPageService.showAccountHistory(accountId)), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/history", method = {RequestMethod.POST, RequestMethod.PATCH})
@@ -54,9 +55,10 @@ public class AccountMyPageController {
 
     @GetMapping("/artwork/{last_artwork_id}")
     public ResponseEntity<Success> accountArtWorkList(@PathVariable Long last_artwork_id,
-                                                      @RequestBody AccountVisit dto) {
+                                                      @RequestParam("account_id") Long accountId,
+                                                      @RequestParam("owner_account_id") Long ownerAccountId) {
         return new ResponseEntity<>(new Success("유저 작품 목록",
-                accountMyPageService.showAccountArtWork(last_artwork_id,dto.getOwner_account_id(),dto.getAccount_id())),HttpStatus.OK);
+                accountMyPageService.showAccountArtWork(last_artwork_id,ownerAccountId,accountId)),HttpStatus.OK);
     }
 
     @RequestMapping(value = "/intro", method = {RequestMethod.POST, RequestMethod.PATCH})
