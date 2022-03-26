@@ -28,7 +28,7 @@ public interface AccountMyPageService {
 
     void updateAccountSpecialty(final AccountRequestDto.UpdateSpecialty dto, final Long accountId);
 
-    void masterAccountCareerFeed(Long artWorkId,Account account);
+    void masterAccountCareerFeed(Long artWorkId, Account account);
     void nonMasterAccountCareerFeed(Long artWorkId,Account account);
     void hideArtWorkScope(Long artWorkId, Account account);
     void nonHideArtWorkScope(Long artWorkId, Account account);

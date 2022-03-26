@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class PostCommentService {
     private final PostCommentRepository postCommentRepository;
     private final PostRepository postRepository;

@@ -24,7 +24,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
 
     // 전체 페이지 (최신순, 좋아요순)
     @Override
-    public List<PostResponseDto.PostPageMain> findAllPostOrderByCreatedDesc(Long lastPostId, Pageable pageable, PostBoard board, int sortSign, String category) {
+    public List<PostResponseDto.PostPageMain> findAllPostOrderByCreatedDesc(Long lastPostId, Pageable pageable, String board, int sortSign, String category) {
         return queryFactory
                 .select(Projections.constructor(PostResponseDto.PostPageMain.class,
                         post.id,
@@ -32,8 +32,8 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                         account.nickname,
                         account.profileImg,
                         post.title,
-                        post.category,
                         post.content,
+                        post.category,
                         post.created,
                         post.isSelected,
                         postLikes.count()
@@ -43,7 +43,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                 .leftJoin(postLikes).on(postLikes.post.eq(post))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
-                .where(isLastPostId(lastPostId), post.board.eq(board),
+                .where(isLastPostId(lastPostId), post.board.eq(PostBoard.valueOf(board)),
                         isCategory(category))
                 .groupBy(post.id)
                 .orderBy(isPostSort(sortSign))
@@ -135,17 +135,18 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
         return queryFactory
                .select(Projections.constructor(PostResponseDto.PostPageMain.class,
                        post.id,
-                       post.title,
-                       post.content,
-                       post.view,
-                       post.category,
-                       post.created,
                        account.id,
                        account.nickname,
-                       account.profileImg
+                       account.profileImg,
+                       post.title,
+                       post.content,
+                       post.category,
+                       post.created,
+                       post.isSelected,
+                       postLikes.count()
                ))
                .from(post)
-               .join(post.account, account)
+               .join(account).on(account.id.eq(post.account.id))
                .leftJoin(postLikes).on(postLikes.post.eq(post))
                .offset(0)
                .limit(10)

@@ -4,6 +4,8 @@ package com.example.dplus.controller.artwork;
 import com.example.dplus.advice.BadArgumentsValidException;
 import com.example.dplus.advice.ErrorCode;
 import com.example.dplus.dto.Success;
+import com.example.dplus.dto.request.ArtWorkRequestDto;
+import com.example.dplus.dto.request.AccountRequestDto.AccountVisit;
 import com.example.dplus.dto.request.ArtWorkRequestDto.ArtWorkCreate;
 import com.example.dplus.dto.request.ArtWorkRequestDto.ArtWorkUpdate;
 import com.example.dplus.jwt.UserDetailsImpl;
@@ -24,7 +26,9 @@ import java.util.List;
 public class ArtWorkMainController {
 
     private final int SORT_SIGN_LATEST = 1;
+    private final int SORT_SIGN_LIKE = 2;
     private final ArtworkMainService artworkMainService;
+
 
     @RequestMapping(value = "/",method = RequestMethod.GET)
     public ResponseEntity<Success> main(@RequestParam("account_id") Long account_id) {
@@ -33,30 +37,38 @@ public class ArtWorkMainController {
     }
 
     @GetMapping("/api/artwork/{last_artwork_id}")
-    public ResponseEntity<Success> artWorkMain(@RequestParam("account_id") Long accountId,
+    public ResponseEntity<Success> artWorkMain(@RequestBody AccountVisit dto,
                                                @PathVariable Long last_artwork_id) {
-
+        if (user == null) {
+            return new ResponseEntity<>(new Success("둘러보기",
+                    artworkMainService.showArtworkMain(null,last_artwork_id,"",SORT_SIGN_LATEST)),HttpStatus.OK);
+        }
         return new ResponseEntity<>(new Success("둘러보기",
-                artworkMainService.showArtworkMain(accountId,last_artwork_id,"",SORT_SIGN_LATEST)),HttpStatus.OK);
+                artworkMainService.showArtworkMain(user.getUser().getId(),last_artwork_id,"",SORT_SIGN_LATEST)),HttpStatus.OK);
     }
 
     @GetMapping("/api/artwork/category/{category}/{last_artwork_id}")
-    public ResponseEntity<Success> artWorkCategory(@RequestParam("account_id") Long accountId,
+    public ResponseEntity<Success> artWorkCategory(@RequestBody AccountVisit dto,
                                                    @PathVariable String category,
                                                    @PathVariable Long last_artwork_id) {
 
+
         return new ResponseEntity<>(new Success("카테고리별 작업물",
-                artworkMainService.showArtworkMain(accountId,last_artwork_id,category,SORT_SIGN_LATEST)),HttpStatus.OK);
+                artworkMainService.showArtworkMain(user.getUser().getId(),last_artwork_id,category,SORT_SIGN_LATEST)),HttpStatus.OK);
     }
 
     @GetMapping("/api/artwork/sort/{category}/{sortsign}/{last_artwork_id}")
-    public ResponseEntity<Success> artWorkSort(@RequestParam("account_id") Long accountId,
+
+    public ResponseEntity<Success> artWorkSort(@RequestBody AccountVisit dto,
                                                @PathVariable int sortsign,
                                                @PathVariable Long last_artwork_id,
                                                @PathVariable String category) {
-
+        if (user == null) {
+            return new ResponseEntity<>(new Success("카테고리별 정렬한 작업물",
+                    artworkMainService.showArtworkMain(null,last_artwork_id,category,sortsign)),HttpStatus.OK);
+        }
         return new ResponseEntity<>(new Success("카테고리별 정렬한 작업물",
-                artworkMainService.showArtworkMain(accountId,last_artwork_id,category,sortsign)),HttpStatus.OK);
+                artworkMainService.showArtworkMain(user.getUser().getId(),last_artwork_id,category,sortsign)),HttpStatus.OK);
     }
 
     @GetMapping("/api/artwork/sort-follow/{category}/{last_artwork_id}")
@@ -75,51 +87,61 @@ public class ArtWorkMainController {
     public ResponseEntity<Success> createArtWork(@AuthenticationPrincipal UserDetailsImpl user,
                                                  @RequestPart ArtWorkCreate data,
                                                  @RequestPart List<MultipartFile> imgFile) {
-        if (user != null) {
-            return new ResponseEntity<>(new Success("작품 등록 완료"
-                    ,artworkMainService.createArtwork(user.getUser().getId(),data, imgFile)),HttpStatus.OK);
-        }
-        throw new BadArgumentsValidException(ErrorCode.NO_AUTHENTICATION_ERROR);
+        loginValid(user);
+        return new ResponseEntity<>(new Success("작품 등록 완료"
+                ,artworkMainService.createArtwork(user.getUser().getId(),data, imgFile)),HttpStatus.OK);
     }
+
+
 
     @PatchMapping("/api/artwork/{artwork_id}")
     public ResponseEntity<Success> updateArtWork(@AuthenticationPrincipal UserDetailsImpl user,
                                                  @PathVariable Long artwork_id,
                                                  @RequestPart ArtWorkUpdate data,
                                                  @RequestPart List<MultipartFile> imgFile) {
-        if (user != null) {
-            return new ResponseEntity<>(new Success("작품 수정 완료",
-                    artworkMainService.updateArtwork(user.getUser().getId(),artwork_id,data, imgFile)),HttpStatus.OK);
-        }
-        throw new BadArgumentsValidException(ErrorCode.NO_AUTHENTICATION_ERROR);
+        loginValid(user);
+        return new ResponseEntity<>(new Success("작품 수정 완료",
+                artworkMainService.updateArtwork(user.getUser().getId(),artwork_id,data, imgFile)),HttpStatus.OK);
     }
 
     @DeleteMapping("/api/artwork/{artwork_id}")
     public ResponseEntity<Success> deleteArtWork(@AuthenticationPrincipal UserDetailsImpl user,
                                                  @PathVariable Long artwork_id) {
-        if (user != null) {
-            artworkMainService.deleteArtwork(user.getUser().getId(), artwork_id);
-            return new ResponseEntity<>(new Success("작품 삭제",""),HttpStatus.OK);
-        }
-        throw new BadArgumentsValidException(ErrorCode.NO_AUTHENTICATION_ERROR);
+        loginValid(user);
+        artworkMainService.deleteArtwork(user.getUser().getId(), artwork_id);
+        return new ResponseEntity<>(new Success("작품 삭제",""),HttpStatus.OK);
     }
 
     @GetMapping("/api/artwork/detail/{artwork_id}")
-    public ResponseEntity<Success> artWorkDetail(@RequestParam("account_id") Long accountId,
+    public ResponseEntity<Success> artWorkDetail(@RequestBody AccountVisit dto,
+
                                                  @PathVariable Long artwork_id) {
+        if (user == null) {
+            return new ResponseEntity<>(new Success("작품 상세",
+                    artworkMainService.detailArtWork(null,artwork_id)),HttpStatus.OK);
+        }
         return new ResponseEntity<>(new Success("작품 상세",
-                artworkMainService.detailArtWork(accountId,artwork_id)),HttpStatus.OK);
+                artworkMainService.detailArtWork(user.getUser().getId(),artwork_id)),HttpStatus.OK);
     }
 
     @GetMapping("/api/artwork/search/{last_artwork_id}/{keyword}")
-    public ResponseEntity<Success> artWorkSearch(@RequestParam("account_id") Long accountId,
+    public ResponseEntity<Success> artWorkSearch(@RequestBody AccountVisit dto,
                                                  @PathVariable Long last_artwork_id,
                                                  @PathVariable String keyword) {
         if (keyword == null) {
             throw new IllegalStateException("검색어를 입력 해주세요.");
         }
+        if (user == null) {
+            return new ResponseEntity<>(new Success("작품 검색 완료",
+                    artworkMainService.findBySearchKeyWord(keyword,last_artwork_id,null)),HttpStatus.OK);
+        }
         return new ResponseEntity<>(new Success("작품 검색 완료",
-                artworkMainService.findBySearchKeyWord(keyword,last_artwork_id,accountId)),HttpStatus.OK);
+                artworkMainService.findBySearchKeyWord(keyword,last_artwork_id,user.getUser().getId())),HttpStatus.OK);
+    }
+    private void loginValid(UserDetailsImpl user) {
+        if (user == null) {
+            throw new BadArgumentsValidException(ErrorCode.NO_AUTHENTICATION_ERROR);
+        }
     }
 
 }
