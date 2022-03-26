@@ -29,11 +29,12 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Set Yaml-1
+        uses: microsoft/variable-substitution@v1
         with:
-          files: ./src/main/resources/application-real1.yml
+            files: ./src/main/resources/application-real1.yml
         env:
-          spring.datasource.url: ${{ secrets.RDS_HOST }}
-          jwt.secrets: ${{ secrets.JWT_SECRET }}
+            spring.datasource.url: ${{ secrets.RDS_HOST }}
+            jwt.secret: ${{ secrets.JWT_SECRET }}
 #          spring.datasource.username: ${{ secrets.RDS_USERNAME }}
 #          spring.datasource.password: ${{ secrets.RDS_PASSWORD }}
 #          cloud.aws.s3.bucket: ${{secrets.AWS_S3_BUCKET_NAME}}

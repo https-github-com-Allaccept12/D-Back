@@ -45,8 +45,9 @@ logging.level:
   org.hibernate.SQL: debug
 
 jwt:
+  secret: ${jwt.secrets}
   header: Authorization
-  secret: ${jwt.secrets.code}
+
 
 server:
   port: 8081

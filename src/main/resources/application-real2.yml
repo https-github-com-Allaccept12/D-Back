@@ -29,11 +29,6 @@ spring:
         default_batch_fetch_size: 1000
     open-in-view: false
 
-jwt:
-  header: Authorization
-  secret: ${jwt.secrets.code}
-
-
 cloud:
   aws:
     s3:
@@ -49,7 +44,9 @@ cloud:
 logging.level:
   org.hibernate.SQL: debug
 
-
+jwt:
+  header: Authorization
+  secret: ${jwt.secrets}
 
 
 server:
