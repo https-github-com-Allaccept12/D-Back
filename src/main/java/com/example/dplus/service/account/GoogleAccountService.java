@@ -1,9 +1,9 @@
 package com.example.dplus.service.account;
 
-import com.example.dplus.domain.account.rank.Rank;
-import com.example.dplus.domain.account.rank.RankRepository;
+import com.example.dplus.domain.account.Rank;
+import com.example.dplus.repository.account.rank.RankRepository;
 import com.example.dplus.domain.account.Account;
-import com.example.dplus.domain.account.AccountRepository;
+import com.example.dplus.repository.account.AccountRepository;
 import com.example.dplus.dto.GoogleUserInfoDto;
 import com.example.dplus.dto.response.LoginResponseDto;
 import com.example.dplus.jwt.JwtTokenProvider;
@@ -101,7 +101,6 @@ public class GoogleAccountService {
         String email = jsonNode.get("email").asText();
         String username = id + email;
 
-        System.out.println("구글 사용자 정보: " + id + ", " + username + ", " + name + ", " + profileImage + ", " + email);
         return new GoogleUserInfoDto(id, name, profileImage, email, username);
     }
 
@@ -133,7 +132,6 @@ public class GoogleAccountService {
 
         String accessToken = jwtTokenProvider.createToken(Long.toString(googleUser.getId()), googleUser.getEmail());
         String refreshToken = jwtTokenProvider.createRefreshToken(Long.toString(googleUser.getId()));
-//        googleUser.refreshToken(refreshToken);
         redisService.setValues(refreshToken, googleUser.getId());
         return LoginResponseDto.builder()
                 .account_id(googleUser.getId())

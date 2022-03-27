@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RequestMapping("/api/artwork/comment")
 public class ArtWorkCommentController {
-
     private final ArtWorkCommentService artWorkCommentService;
 
     @PostMapping("{artwork_id}")
@@ -34,13 +33,19 @@ public class ArtWorkCommentController {
     public ResponseEntity<Success> updateComment(@PathVariable Long comment_id,
                                                  @RequestBody ArtWorkComment data,
                                                  @AuthenticationPrincipal UserDetailsImpl user) {
-        artWorkCommentService.updateComment(comment_id,data,user.getUser().getId());
-        return new ResponseEntity<>(new Success("코멘트 수정 완료","" ), HttpStatus.OK);
+        if (user != null) {
+            artWorkCommentService.updateComment(comment_id, data, user.getUser().getId());
+            return new ResponseEntity<>(new Success("코멘트 수정 완료", ""), HttpStatus.OK);
+        }
+        throw new BadArgumentsValidException(ErrorCode.NO_AUTHENTICATION_ERROR);
     }
     @DeleteMapping("{comment_id}")
     public ResponseEntity<Success> updateComment(@PathVariable Long comment_id,
                                                  @AuthenticationPrincipal UserDetailsImpl user) {
-        artWorkCommentService.deleteComment(comment_id,user.getUser().getId());
-        return new ResponseEntity<>(new Success("코멘트 삭제 완료","" ), HttpStatus.OK);
+        if (user != null) {
+            artWorkCommentService.deleteComment(comment_id, user.getUser().getId());
+            return new ResponseEntity<>(new Success("코멘트 삭제 완료", ""), HttpStatus.OK);
+        }
+        throw new BadArgumentsValidException(ErrorCode.NO_AUTHENTICATION_ERROR);
     }
 }

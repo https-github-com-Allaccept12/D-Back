@@ -1,6 +1,6 @@
 package com.example.dplus.domain.account;
 
-import com.example.dplus.domain.account.rank.Rank;
+import com.example.dplus.domain.account.Rank;
 import com.example.dplus.domain.BaseEntity;
 import com.example.dplus.dto.request.AccountRequestDto.InitProfileSetting;
 import com.example.dplus.dto.request.AccountRequestDto.UpdateAccountIntro;
@@ -53,8 +53,6 @@ public class Account extends BaseEntity {
     @Column(columnDefinition = "BIGINT default 0")
     private Long exp;
 
-//    private String refreshToken;
-
     private String linkedIn;
 
     private String brunch;
@@ -105,10 +103,6 @@ public class Account extends BaseEntity {
         this.specialty = specialty;
         this.other = other;
     }
-
-//    public void refreshToken(final String refreshToken) {
-//        this.refreshToken = refreshToken;
-//    }
 
     public void initTendency(final String requestTendency) {
         this.tendency = requestTendency;

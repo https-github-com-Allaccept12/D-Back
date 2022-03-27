@@ -4,23 +4,22 @@ import com.example.dplus.advice.ApiRequestException;
 import com.example.dplus.advice.BadArgumentsValidException;
 import com.example.dplus.advice.ErrorCode;
 import com.example.dplus.domain.account.Account;
-import com.example.dplus.domain.account.AccountRepository;
-import com.example.dplus.domain.account.follow.FollowRepository;
+import com.example.dplus.repository.account.AccountRepository;
+import com.example.dplus.repository.account.follow.FollowRepository;
 import com.example.dplus.domain.post.Post;
 import com.example.dplus.domain.post.PostBoard;
-import com.example.dplus.domain.post.PostRepository;
-
-import com.example.dplus.domain.post.answer.PostAnswerRepository;
-import com.example.dplus.domain.post.bookmark.PostBookMark;
-import com.example.dplus.domain.post.bookmark.PostBookMarkRepository;
-import com.example.dplus.domain.post.comment.PostCommentRepository;
-import com.example.dplus.domain.post.comment.like.PostCommentLikesRepository;
-import com.example.dplus.domain.post.image.PostImage;
-import com.example.dplus.domain.post.image.PostImageRepository;
-import com.example.dplus.domain.post.like.PostAnswerLikesRepository;
-import com.example.dplus.domain.post.like.PostLikesRepository;
-import com.example.dplus.domain.post.tag.PostTag;
-import com.example.dplus.domain.post.tag.PostTagRepository;
+import com.example.dplus.repository.post.PostRepository;
+import com.example.dplus.repository.post.answer.PostAnswerRepository;
+import com.example.dplus.domain.post.PostBookMark;
+import com.example.dplus.repository.post.bookmark.PostBookMarkRepository;
+import com.example.dplus.repository.post.comment.PostCommentRepository;
+import com.example.dplus.repository.post.like.PostCommentLikesRepository;
+import com.example.dplus.domain.post.PostImage;
+import com.example.dplus.repository.post.image.PostImageRepository;
+import com.example.dplus.repository.post.like.PostAnswerLikesRepository;
+import com.example.dplus.repository.post.like.PostLikesRepository;
+import com.example.dplus.domain.post.PostTag;
+import com.example.dplus.repository.post.tag.PostTagRepository;
 import com.example.dplus.dto.common.CommonDto;
 import com.example.dplus.dto.request.PostRequestDto;
 import com.example.dplus.dto.response.PostMainResponseDto;
@@ -29,7 +28,6 @@ import com.example.dplus.dto.response.PostResponseDto.PostAnswerDetailPage;
 import com.example.dplus.service.file.FileProcessService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -184,7 +182,6 @@ public class PostMainPageServiceImpl implements PostMainPageService{
                 postImageRepository.deleteByPostImg(deleteImage);
             }
         }
-
         // 업로드할 이미지가 있다면, 이미지를 업로드한다.
         if(imgFile!=null){
             imgFile.forEach((file) -> {
@@ -227,14 +224,6 @@ public class PostMainPageServiceImpl implements PostMainPageService{
     public List<PostResponseDto.PostPageMain> findBySearchKeyWord(String keyword, Long lastArtWorkId, Long accountId, PostBoard board) {
         Pageable pageable = PageRequest.of(0,5);
         return postRepository.findPostBySearchKeyWord(keyword,lastArtWorkId,pageable,board);
-    }
-
-    private void setCountList(List<PostResponseDto.PostPageMain> postList){
-        postList.forEach((post) -> {
-            Long bookmark_count = postBookMarkRepository.countByPostId(post.getPost_id());
-            Long comment_count = postCommentRepository.countByPostId(post.getPost_id());
-            post.setCountList(bookmark_count, comment_count);
-        });
     }
 
     // 디모 QnA 상세페이지
@@ -330,7 +319,6 @@ public class PostMainPageServiceImpl implements PostMainPageService{
         // #단위로 끊어서 해쉬태그 들어옴 (dto -> 받을 때)
         private void setPostTag(List<CommonDto.PostTagDto> dto, Post post){
             dto.forEach((tag) -> {
-                System.out.println("태그 : "+ tag);
                 PostTag postTag = PostTag.builder()
                         .post(post)
                         .hashTag(tag.getTag())
@@ -338,6 +326,13 @@ public class PostMainPageServiceImpl implements PostMainPageService{
                 postTagRepository.save(postTag);
             });
         }
+    private void setCountList(List<PostResponseDto.PostPageMain> postList){
+        postList.forEach((post) -> {
+            Long bookmark_count = postBookMarkRepository.countByPostId(post.getPost_id());
+            Long comment_count = postCommentRepository.countByPostId(post.getPost_id());
+            post.setCountList(bookmark_count, comment_count);
+        });
+    }
 
     // post 수정, 삭제 권한 확인
     private Post postAuthValidation(Long accountId, Long postId){

@@ -1,8 +1,8 @@
 package com.example.dplus.dto.response;
 
-import com.example.dplus.domain.post.PostBoard;
-import com.example.dplus.domain.post.image.PostImage;
-import com.example.dplus.domain.post.tag.PostTag;
+
+import com.example.dplus.domain.post.PostImage;
+import com.example.dplus.domain.post.PostTag;
 import com.example.dplus.dto.common.CommonDto;
 import lombok.Builder;
 import lombok.Getter;

@@ -46,7 +46,7 @@ public class PostCommentController {
                                                      @PathVariable Long post_comment_id) {
         if (user != null) {
             postCommentService.deleteComment(user.getUser().getId(), post_comment_id);
-            return new ResponseEntity<>(new Success("게시글 코멘트 삭제 완료", ""), HttpStatus.OK);
+            return new ResponseEntity<>(new Success("게시글 코멘트 삭제 완료",""), HttpStatus.OK);
         }
         throw new BadArgumentsValidException(ErrorCode.NO_AUTHENTICATION_ERROR);
     }

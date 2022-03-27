@@ -1,5 +1,6 @@
 package com.example.dplus.dto.response;
-import com.example.dplus.domain.artwork.image.ArtWorkImage;
+
+import com.example.dplus.domain.artwork.ArtWorkImage;
 import com.example.dplus.dto.common.CommonDto;
 import lombok.Builder;
 import lombok.Getter;
@@ -162,7 +163,6 @@ public class ArtWorkResponseDto {
         private String linkedIn;
         private String brunch;
         private String instagram;
-
         private String img;
 
         public ArtWorkSimilarWork(final Long artwork_id,final String artwork_title,final String img) {

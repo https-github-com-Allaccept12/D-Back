@@ -32,11 +32,11 @@ public class ArtWorkLikeController {
     public ResponseEntity<Success> unLike(@PathVariable Long artwork_id,
                                           @AuthenticationPrincipal UserDetailsImpl user) {
         if (user != null) {
-            artworkLikeService.unLike(user.getUser(),artwork_id);
-            return new ResponseEntity<>(new Success("작품 좋아요 완료",""), HttpStatus.OK);
+            artworkLikeService.unLike(user.getUser(), artwork_id);
+            return new ResponseEntity<>(new Success("작품 좋아요 해지", ""), HttpStatus.OK);
         }
         throw new BadArgumentsValidException(ErrorCode.NO_AUTHENTICATION_ERROR);
-    }
 
+    }
 
 }

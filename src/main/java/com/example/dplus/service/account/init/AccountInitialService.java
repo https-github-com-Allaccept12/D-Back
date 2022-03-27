@@ -5,7 +5,7 @@ import com.example.dplus.advice.ApiRequestException;
 import com.example.dplus.advice.ErrorCode;
 import com.example.dplus.advice.BadArgumentsValidException;
 import com.example.dplus.domain.account.Account;
-import com.example.dplus.domain.account.AccountRepository;
+import com.example.dplus.repository.account.AccountRepository;
 import com.example.dplus.dto.request.AccountRequestDto;
 import com.example.dplus.service.file.FileProcessService;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +29,7 @@ public class AccountInitialService {
         String profileUrl = fileProcessService.uploadImage(profileImg);
         Account account = getAccount(accountId);
         account.setInitProfile(dto);
+        account.updateProfileImg(profileUrl);
         return account.getId();
     }
 

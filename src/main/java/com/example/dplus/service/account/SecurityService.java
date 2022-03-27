@@ -3,7 +3,7 @@ package com.example.dplus.service.account;
 import com.example.dplus.advice.ApiRequestException;
 import com.example.dplus.advice.ErrorCode;
 import com.example.dplus.domain.account.Account;
-import com.example.dplus.domain.account.AccountRepository;
+import com.example.dplus.repository.account.AccountRepository;
 import com.example.dplus.dto.response.TokenResponseDto;
 import com.example.dplus.jwt.JwtTokenProvider;
 import com.example.dplus.service.RedisService;
@@ -37,8 +37,6 @@ public class SecurityService {
             throw new ApiRequestException(ErrorCode.TOKEN_EXPIRATION_ERROR);
         }
 
-//        String getRefreshToken = account.getRefreshToken();
-        
         if (!refreshToken.equals(getRefreshToken)) {
             throw new ApiRequestException(ErrorCode.NO_MATCH_ITEM_ERROR);
         }
@@ -47,7 +45,6 @@ public class SecurityService {
         String updateRefreshToken = jwtTokenProvider.createRefreshToken(Long.toString(account.getId()));
         redisService.delValues(userPk);
         redisService.setValues(updateRefreshToken, userPk);
-//        account.refreshToken(updateRefreshToken);
 
         return TokenResponseDto.builder()
                 .accessToken(updateToken)

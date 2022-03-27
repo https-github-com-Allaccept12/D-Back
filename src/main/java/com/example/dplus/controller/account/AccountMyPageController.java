@@ -64,8 +64,8 @@ public class AccountMyPageController {
     @RequestMapping(value = "/intro", method = {RequestMethod.POST, RequestMethod.PATCH})
     public ResponseEntity<Success> accountIntro(@RequestBody UpdateAccountIntro data,
                                                 @AuthenticationPrincipal UserDetailsImpl user) {
-        accountMyPageService.updateAccountIntro(data,user.getUser().getId());
-        return new ResponseEntity<>(new Success("유저 소개 수정",""),HttpStatus.OK);
+        accountMyPageService.updateAccountIntro(data, user.getUser().getId());
+        return new ResponseEntity<>(new Success("유저 소개 수정", ""), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/specialty", method = {RequestMethod.POST, RequestMethod.PATCH})
