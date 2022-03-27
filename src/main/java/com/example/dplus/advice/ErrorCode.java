@@ -19,14 +19,17 @@ public enum ErrorCode {
     // Validation 체크 에러
     ALREADY_NICKNAME_ERROR(400, "V001","이미 사용중인 닉네임입니다."),
     PHOTO_UPLOAD_ERROR(400, "V002","작품을 업로드 해주세요."),
-    BAD_CONDITION_NICKNAME_ERROR(400, "V003","닉네임 조건에 맞지않습니다."),
+    BAD_CONDITION_NICKNAME_ERROR(400, "V003","닉네임 조건에 맞지 않습니다."),
     CONVERTING_FILE_ERROR(400,"V004","파일 변환 에러"),
 
     // 아트워크, 포스트 게시글 페이지 에러
-    NONEXISTENT_ERROR(404,"AP001","존재하지 않는 게시글 및 작업물"),
+    NONEXISTENT_ERROR(404,"AP001","존재하지 않는 게시글 및 작업물입니다"),
     DAILY_WRITE_UP_BURN_ERROR(400, "AP002",
-            "일일 작성 가능분을 다 사용 하셨습니다. 작성 가능 횟수는 오전 00시에 초기화 됩니다."),
+            "일일 작품 작성 가능분을 다 사용 하셨습니다. 작성 가능 횟수는 오전 00시에 초기화 됩니다."),
+    DAILY_POST_WRITE_UP_BURN_ERROR(400, "AP002",
+            "일일 작품 작성 가능분을 다 사용 하셨습니다. 작성 가능 횟수는 오전 00시에 초기화 됩니다."),
     ALREADY_SELECTED_ERROR(400, "AP003","이미 채택된 글입니다."),
+    NON_KEYWORD_ERROR(400, "AP004","검색어를 입력해 주세요."),
 
     // 좋아요, 북마크, 팔로우 에러
     NO_BOOKMARK_MY_POST_ERROR(400,"LBF001","자신의 게시물은 북마크할 수 없습니다."),

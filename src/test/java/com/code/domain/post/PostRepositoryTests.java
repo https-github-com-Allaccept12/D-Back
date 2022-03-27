@@ -1,27 +1,18 @@
 package com.code.domain.post;
 
 import com.example.dplus.domain.account.Account;
+import com.example.dplus.domain.post.*;
 import com.example.dplus.repository.account.AccountRepository;
 import com.example.dplus.domain.account.Rank;
 import com.example.dplus.repository.account.rank.RankRepository;
-import com.example.dplus.domain.post.Post;
-import com.example.dplus.domain.post.PostBoard;
 import com.example.dplus.repository.post.PostRepository;
-import com.example.dplus.domain.post.PostAnswer;
 import com.example.dplus.repository.post.answer.PostAnswerRepository;
-import com.example.dplus.domain.post.PostBookMark;
 import com.example.dplus.repository.post.bookmark.PostBookMarkRepository;
-import com.code.domain.post.bookmark.QPostBookMark;
-import com.example.dplus.domain.post.PostComment;
 import com.example.dplus.repository.post.comment.PostCommentRepository;
 
-import com.example.dplus.domain.post.PostCommentLikes;
 import com.example.dplus.repository.post.comment.PostCommentLikesRepository;
-import com.example.dplus.domain.post.PostImage;
 import com.example.dplus.repository.post.image.PostImageRepository;
-import com.example.dplus.domain.post.PostAnswerLikes;
 import com.example.dplus.repository.post.like.PostAnswerLikesRepository;
-import com.example.dplus.domain.post.PostLikes;
 import com.example.dplus.repository.post.like.PostLikesRepository;
 import com.example.dplus.repository.post.tag.PostTagRepository;
 
@@ -43,14 +34,15 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
 import java.util.List;
 
-import static com.code.domain.account.QAccount.account;
-import static com.code.domain.artwork.QArtWorks.artWorks;
-import static com.code.domain.artwork.bookmark.QArtWorkBookMark.artWorkBookMark;
-import static com.code.domain.post.QPost.post;
-import static com.code.domain.post.answer.QPostAnswer.postAnswer;
-import static com.code.domain.post.comment.like.QPostCommentLikes.postCommentLikes;
-import static com.code.domain.post.like.QPostAnswerLikes.postAnswerLikes;
-import static com.code.domain.post.tag.QPostTag.postTag;
+import static com.example.dplus.domain.account.QAccount.account;
+import static com.example.dplus.domain.post.QPost.post;
+import static com.example.dplus.domain.post.QPostAnswer.postAnswer;
+import static com.example.dplus.domain.post.QPostAnswerLikes.postAnswerLikes;
+import static com.example.dplus.domain.post.QPostBookMark.postBookMark;
+import static com.example.dplus.domain.post.QPostComment.postComment;
+import static com.example.dplus.domain.post.QPostCommentLikes.postCommentLikes;
+import static com.example.dplus.domain.post.QPostLikes.postLikes;
+import static com.example.dplus.domain.post.QPostTag.postTag;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest

@@ -1,8 +1,8 @@
 package com.example.dplus.controller.artwork;
 
 
-import com.example.dplus.advice.BadArgumentsValidException;
 import com.example.dplus.advice.ErrorCode;
+import com.example.dplus.advice.ErrorCustomException;
 import com.example.dplus.dto.Success;
 import com.example.dplus.dto.request.ArtWorkRequestDto.ArtWorkCreate;
 import com.example.dplus.dto.request.ArtWorkRequestDto.ArtWorkUpdate;
@@ -16,6 +16,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -67,31 +68,31 @@ public class ArtWorkMainController {
             return new ResponseEntity<>(new Success("팔로우한 작가 작업물",
                     artworkMainService.findByFollowerArtWork(user.getUser().getId(), category, last_artwork_id)), HttpStatus.OK);
         }
-        throw new BadArgumentsValidException(ErrorCode.NO_AUTHENTICATION_ERROR);
+        throw new ErrorCustomException(ErrorCode.NO_AUTHENTICATION_ERROR);
 
     }
 
     @PostMapping("/api/artwork")
     public ResponseEntity<Success> createArtWork(@AuthenticationPrincipal UserDetailsImpl user,
-                                                 @RequestPart ArtWorkCreate data,
+                                                 @Valid @RequestPart ArtWorkCreate data,
                                                  @RequestPart List<MultipartFile> imgFile) {
         if (user != null) {
             return new ResponseEntity<>(new Success("작품 등록 완료"
                     ,artworkMainService.createArtwork(user.getUser().getId(),data, imgFile)),HttpStatus.OK);
         }
-        throw new BadArgumentsValidException(ErrorCode.NO_AUTHENTICATION_ERROR);
+        throw new ErrorCustomException(ErrorCode.NO_AUTHENTICATION_ERROR);
     }
 
     @PatchMapping("/api/artwork/{artwork_id}")
     public ResponseEntity<Success> updateArtWork(@AuthenticationPrincipal UserDetailsImpl user,
                                                  @PathVariable Long artwork_id,
-                                                 @RequestPart ArtWorkUpdate data,
+                                                 @Valid @RequestPart ArtWorkUpdate data,
                                                  @RequestPart List<MultipartFile> imgFile) {
         if (user != null) {
             return new ResponseEntity<>(new Success("작품 수정 완료",
                     artworkMainService.updateArtwork(user.getUser().getId(),artwork_id,data, imgFile)),HttpStatus.OK);
         }
-        throw new BadArgumentsValidException(ErrorCode.NO_AUTHENTICATION_ERROR);
+        throw new ErrorCustomException(ErrorCode.NO_AUTHENTICATION_ERROR);
     }
 
     @DeleteMapping("/api/artwork/{artwork_id}")
@@ -101,7 +102,7 @@ public class ArtWorkMainController {
             artworkMainService.deleteArtwork(user.getUser().getId(), artwork_id);
             return new ResponseEntity<>(new Success("작품 삭제",""),HttpStatus.OK);
         }
-        throw new BadArgumentsValidException(ErrorCode.NO_AUTHENTICATION_ERROR);
+        throw new ErrorCustomException(ErrorCode.NO_AUTHENTICATION_ERROR);
     }
 
     @GetMapping("/api/artwork/detail/{artwork_id}")
@@ -116,7 +117,7 @@ public class ArtWorkMainController {
                                                  @PathVariable Long last_artwork_id,
                                                  @PathVariable String keyword) {
         if (keyword == null) {
-            throw new IllegalStateException("검색어를 입력 해주세요.");
+            throw new ErrorCustomException(ErrorCode.NON_KEYWORD_ERROR);
         }
         return new ResponseEntity<>(new Success("작품 검색 완료",
                 artworkMainService.findBySearchKeyWord(keyword,last_artwork_id,accountId)),HttpStatus.OK);

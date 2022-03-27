@@ -6,8 +6,7 @@ import com.example.dplus.repository.account.history.HistoryRepository;
 import com.example.dplus.repository.post.answer.PostAnswerRepository;
 import com.example.dplus.repository.post.bookmark.PostBookMarkRepository;
 import com.example.dplus.repository.post.comment.PostCommentRepository;
-import com.example.dplus.advice.ApiRequestException;
-import com.example.dplus.advice.BadArgumentsValidException;
+import com.example.dplus.advice.ErrorCustomException;
 import com.example.dplus.advice.ErrorCode;
 import com.example.dplus.domain.account.Account;
 import com.example.dplus.repository.account.AccountRepository;
@@ -190,15 +189,15 @@ public class AccountMyPageServiceImpl implements AccountMyPageService {
     }
 
     private Account getAccount(Long accountId) {
-        return accountRepository.findById(accountId).orElseThrow(() -> new ApiRequestException(ErrorCode.NO_USER_ERROR));
+        return accountRepository.findById(accountId).orElseThrow(() -> new ErrorCustomException(ErrorCode.NO_USER_ERROR));
     }
 
     private ArtWorks getArtWorks(Long artWorkId) {
-        return artWorkRepository.findById(artWorkId).orElseThrow(() -> new ApiRequestException(ErrorCode.NONEXISTENT_ERROR));
+        return artWorkRepository.findById(artWorkId).orElseThrow(() -> new ErrorCustomException(ErrorCode.NONEXISTENT_ERROR));
     }
     private void createValid(Account account, ArtWorks artWorks) {
         if(account.getId().equals(artWorks.getId())){
-            throw new BadArgumentsValidException(ErrorCode.NO_AUTHORIZATION_ERROR);
+            throw new ErrorCustomException(ErrorCode.NO_AUTHORIZATION_ERROR);
         }
     }
 

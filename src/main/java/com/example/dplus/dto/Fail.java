@@ -20,11 +20,6 @@ public class Fail {
         this.code = errorCode.getCode();
     }
 
-    public Fail(final String msg, int status){
-        this.msg = msg;
-        this.status = status;
-    }
-
     public Fail(final String msg){
         this.msg = msg;
     }

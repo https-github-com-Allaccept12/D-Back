@@ -1,15 +1,15 @@
 package com.example.dplus.advice;
 
-public class ApiRequestException extends RuntimeException{
+public class ErrorCustomException extends RuntimeException{
 
     private ErrorCode errorCode;
 
-    public ApiRequestException(String messaeg, ErrorCode code){
-        super(messaeg);
+    public ErrorCustomException(String message, ErrorCode code){
+        super(message);
         this.errorCode = code;
     }
 
-    public ApiRequestException(ErrorCode code) {
+    public ErrorCustomException(ErrorCode code) {
         super(code.getMessage());
         this.errorCode = code;
     }
