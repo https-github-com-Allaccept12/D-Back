@@ -26,7 +26,7 @@ public class ArtWorkCommentRepositoryImpl implements ArtWorkCommentRepositoryCus
                         artWorkComment.modified
                         ))
                 .from(artWorkComment)
-                .join(artWorks).on(artWorks.id.eq(artWorkId))
+                .join(artWorkComment.artWorks,artWorks).on(artWorks.id.eq(artWorkId))
                 .fetch();
     }
 }
