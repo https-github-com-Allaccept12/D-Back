@@ -73,31 +73,36 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
     //개선 필요
     @Override
     public List<ArtworkMain> findArtWorkByMostViewAndMostLike(String interest, Pageable pageable) {
-
-        List<ArtworkMain> fetch = queryFactory
-                .select(
-                        Projections.constructor(ArtworkMain.class,
-                                artWorks.id,
-                                account.id,
-                                account.nickname,
-                                account.profileImg,
-                                artWorks.thumbnail,
-                                artWorks.view,
-                                artWorkLikes.count(),
-                                artWorks.category,
-                                artWorks.created))
+        List<Long> Separator = queryFactory
+                .select(artWorks.id)
                 .from(artWorks)
-                .join(artWorks.account, account)
                 .leftJoin(artWorkLikes).on(artWorkLikes.artWorks.eq(artWorks))
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .where(isInterest(interest),
-                        artWorks.scope.isTrue())
-                .groupBy(artWorks.id)
-                .orderBy(artWorkLikes.count().desc(), artWorks.view.desc())
+                .limit(10)
+                .where(isInterest(interest))
                 .fetch();
-
-        if (fetch.size() < 10) {
+        if (Separator.size() >= 10) {
+            return queryFactory
+                    .select(
+                            Projections.constructor(ArtworkMain.class,
+                                    artWorks.id,
+                                    account.id,
+                                    account.nickname,
+                                    account.profileImg,
+                                    artWorks.thumbnail,
+                                    artWorks.view,
+                                    artWorkLikes.count(),
+                                    artWorks.category,
+                                    artWorks.created))
+                    .from(artWorks)
+                    .join(artWorks.account, account)
+                    .leftJoin(artWorkLikes).on(artWorkLikes.artWorks.eq(artWorks))
+                    .limit(10)
+                    .where(isInterest(interest),
+                            artWorks.scope.isTrue())
+                    .groupBy(artWorks.id)
+                    .orderBy(artWorkLikes.count().desc(), artWorks.view.desc())
+                    .fetch();
+        }
             return queryFactory
                     .select(
                             Projections.constructor(ArtworkMain.class,
@@ -120,11 +125,7 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
                     .where(artWorks.scope.isTrue())
                     .orderBy(artWorkLikes.count().desc(), artWorks.view.desc())
                     .fetch();
-        }
-        return fetch;
-
     }
-
     @Override
     public List<ArtworkMain> findAllArtWork(Long lastArtworkId, String category, Pageable paging,int sortSign) {
         return queryFactory

@@ -50,7 +50,6 @@ public class ArtWorks extends BaseEntity {
     @Column(columnDefinition = "TINYINT default 0")
     private Boolean isMaster;
 
-    @Embedded
     private String specialty;
 
     private String thumbnail;
@@ -62,7 +61,7 @@ public class ArtWorks extends BaseEntity {
     @Builder
     public ArtWorks(final Boolean scope,final String title,final String content,final String category,
                     final Long view,final String workStart,final String workEnd,final Account account,
-                    final Boolean isMaster, final String specialty,final String copyright) {
+                    final Boolean isMaster, final String specialty,final String copyright,final String thumbnail) {
         this.scope = scope;
         this.title = title;
         this.content = content;
@@ -74,6 +73,7 @@ public class ArtWorks extends BaseEntity {
         this.isMaster = isMaster;
         this.specialty = specialty;
         this.copyright = copyright;
+        this.thumbnail = thumbnail;
     }
 
     public void addViewCount() {
