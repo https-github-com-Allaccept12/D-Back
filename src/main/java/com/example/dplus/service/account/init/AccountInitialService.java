@@ -1,9 +1,8 @@
 package com.example.dplus.service.account.init;
 
 
-import com.example.dplus.advice.ApiRequestException;
+import com.example.dplus.advice.ErrorCustomException;
 import com.example.dplus.advice.ErrorCode;
-import com.example.dplus.advice.BadArgumentsValidException;
 import com.example.dplus.domain.account.Account;
 import com.example.dplus.repository.account.AccountRepository;
 import com.example.dplus.dto.request.AccountRequestDto;
@@ -66,15 +65,15 @@ public class AccountInitialService {
     public void getNickNameValidation(String nickname) {
         Account account = accountRepository.findByNickname(nickname).orElse(null);
         if (account != null){
-            throw new BadArgumentsValidException(ErrorCode.ALREADY_NICKNAME_ERROR);
+            throw new ErrorCustomException(ErrorCode.ALREADY_NICKNAME_ERROR);
         }
         if (!Pattern.matches("^[A-Za-z0-9]{3,}$", nickname)){
-            throw new BadArgumentsValidException(ErrorCode.BAD_CONDITION_NICKNAME_ERROR); //닉네임 조건에 맞지않음
+            throw new ErrorCustomException(ErrorCode.BAD_CONDITION_NICKNAME_ERROR); //닉네임 조건에 맞지않음
         }
     }
 
     private Account getAccount(Long accountId) {
-        return accountRepository.findById(accountId).orElseThrow(() -> new ApiRequestException(ErrorCode.NO_USER_ERROR));
+        return accountRepository.findById(accountId).orElseThrow(() -> new ErrorCustomException(ErrorCode.NO_USER_ERROR));
     }
 
 }

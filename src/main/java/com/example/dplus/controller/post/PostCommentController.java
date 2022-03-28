@@ -1,7 +1,7 @@
 package com.example.dplus.controller.post;
 
-import com.example.dplus.advice.BadArgumentsValidException;
 import com.example.dplus.advice.ErrorCode;
+import com.example.dplus.advice.ErrorCustomException;
 import com.example.dplus.dto.Success;
 import com.example.dplus.dto.request.PostRequestDto;
 import com.example.dplus.jwt.UserDetailsImpl;
@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 @RestController
 @RequiredArgsConstructor
@@ -22,23 +24,23 @@ public class PostCommentController {
     @PostMapping("/comment/{post_id}")
     public ResponseEntity<Success> createPostComment(@AuthenticationPrincipal UserDetailsImpl user,
                                                      @PathVariable Long post_id,
-                                                     @RequestBody PostRequestDto.PostComment data) {
+                                                     @Valid @RequestBody PostRequestDto.PostComment data) {
         if (user != null) {
             return new ResponseEntity<>(new Success("게시글 코멘트 등록 완료",
                     postCommentService.createComment(user.getUser(), post_id, data)), HttpStatus.OK);
         }
-        throw new BadArgumentsValidException(ErrorCode.NO_AUTHENTICATION_ERROR);
+        throw new ErrorCustomException(ErrorCode.NO_AUTHENTICATION_ERROR);
     }
 
     @PatchMapping("/comment/{post_comment_id}")
     public ResponseEntity<Success> updatePostComment(@AuthenticationPrincipal UserDetailsImpl user,
                                                      @PathVariable Long post_comment_id,
-                                                     @RequestBody PostRequestDto.PostComment data) {
+                                                     @Valid @RequestBody PostRequestDto.PostComment data) {
         if (user != null) {
             return new ResponseEntity<>(new Success("게시글 코멘트 수정 완료",
                     postCommentService.updateComment(user.getUser().getId(), post_comment_id, data)), HttpStatus.OK);
         }
-        throw new BadArgumentsValidException(ErrorCode.NO_AUTHENTICATION_ERROR);
+        throw new ErrorCustomException(ErrorCode.NO_AUTHENTICATION_ERROR);
     }
 
     @DeleteMapping("/comment/{post_comment_id}")
@@ -48,6 +50,6 @@ public class PostCommentController {
             postCommentService.deleteComment(user.getUser().getId(), post_comment_id);
             return new ResponseEntity<>(new Success("게시글 코멘트 삭제 완료",""), HttpStatus.OK);
         }
-        throw new BadArgumentsValidException(ErrorCode.NO_AUTHENTICATION_ERROR);
+        throw new ErrorCustomException(ErrorCode.NO_AUTHENTICATION_ERROR);
     }
 }

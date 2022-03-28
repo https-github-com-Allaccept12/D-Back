@@ -1,10 +1,8 @@
 package com.example.dplus.controller.post;
 
-
-import com.example.dplus.advice.BadArgumentsValidException;
-import com.example.dplus.advice.ErrorCode;
-import com.example.dplus.domain.post.PostBoard;
+import com.example.dplus.advice.ErrorCustomException;
 import com.example.dplus.dto.Success;
+import com.example.dplus.advice.ErrorCode;
 import com.example.dplus.dto.request.PostRequestDto;
 import com.example.dplus.jwt.UserDetailsImpl;
 import com.example.dplus.service.post.PostMainPageService;
@@ -16,6 +14,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -62,7 +61,7 @@ public class PostMainController {
 
     // 상세 목록
     @GetMapping("/{post_id}")
-    public ResponseEntity<Success> postDetail(@RequestParam("account_id") Long account_id,
+    public ResponseEntity<Success> postDetail(@RequestParam(value = "account_id", required = false) Long account_id,
                                               @PathVariable Long post_id) {
         return new ResponseEntity<>(new Success("디플 상세 페이지",
                 postMainPageService.showPostDetail(account_id, post_id)), HttpStatus.OK);
@@ -71,28 +70,28 @@ public class PostMainController {
     // 게시물 등록
     @PostMapping("")
     public ResponseEntity<Success> createPost(@AuthenticationPrincipal UserDetailsImpl user,
-                                              @RequestPart PostRequestDto.PostCreate data,
+                                              @Valid @RequestPart PostRequestDto.PostCreate data,
                                               @RequestPart(required = false) List<MultipartFile> imgFile) {
 
         if (user != null) {
             return new ResponseEntity<>(new Success("디플 게시물 등록",
                     postMainPageService.createPost(user.getUser().getId(), data, imgFile)), HttpStatus.OK);
         }
-        throw new BadArgumentsValidException(ErrorCode.NO_AUTHENTICATION_ERROR);
+        throw new ErrorCustomException(ErrorCode.NO_AUTHENTICATION_ERROR);
     }
 
     // 게시물 수정
     @PatchMapping("/{post_id}")
     public ResponseEntity<Success> updatePost(@AuthenticationPrincipal UserDetailsImpl user,
                                               @PathVariable Long post_id,
-                                              @RequestPart PostRequestDto.PostUpdate data,
+                                              @Valid @RequestPart PostRequestDto.PostUpdate data,
                                               @RequestPart(required = false) List<MultipartFile> imgFile) {
 
         if (user != null) {
             return new ResponseEntity<>(new Success("디플 게시물 수정",
                     postMainPageService.updatePost(user.getUser(), post_id, data, imgFile)), HttpStatus.OK);
         }
-        throw new BadArgumentsValidException(ErrorCode.NO_AUTHENTICATION_ERROR);
+        throw new ErrorCustomException(ErrorCode.NO_AUTHENTICATION_ERROR);
     }
 
     // 게시물 삭제
@@ -103,7 +102,7 @@ public class PostMainController {
             postMainPageService.deletePost(user.getUser().getId(), post_id);
             return new ResponseEntity<>(new Success("디플 게시물 삭제", ""), HttpStatus.OK);
         }
-        throw new BadArgumentsValidException(ErrorCode.NO_AUTHENTICATION_ERROR);
+        throw new ErrorCustomException(ErrorCode.NO_AUTHENTICATION_ERROR);
     }
 
 
@@ -111,12 +110,12 @@ public class PostMainController {
     @GetMapping("/search/{last_post_id}/{board}/{keyword}")
     public ResponseEntity<Success> postSearch(@RequestParam("account_id") Long account_id,
                                               @PathVariable Long last_post_id,
-                                              @PathVariable PostBoard board,
+                                              @PathVariable String board,
                                               @PathVariable String keyword) {
         if (keyword == null) {
-            throw new IllegalStateException("검색어를 입력 해주세요.");
+            throw new ErrorCustomException(ErrorCode.NON_KEYWORD_ERROR);
         }
-        return new ResponseEntity<>(new Success("작품 검색 완료",
+        return new ResponseEntity<>(new Success("게시물 검색 완료",
                 postMainPageService.findBySearchKeyWord(keyword, last_post_id, account_id, board)), HttpStatus.OK);
 
     }

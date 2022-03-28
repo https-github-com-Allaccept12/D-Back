@@ -1,11 +1,9 @@
-package com.code.service.post;
+package com.example.dplus.service.post;
 
 import com.example.dplus.domain.account.Account;
 import com.example.dplus.repository.account.AccountRepository;
-import com.code.domain.account.QAccount;
 import com.example.dplus.domain.post.Post;
 import com.example.dplus.repository.post.PostRepository;
-import com.code.domain.post.QPost;
 import com.example.dplus.domain.post.PostBookMark;
 import com.example.dplus.repository.post.bookmark.PostBookMarkRepository;
 import com.example.dplus.domain.post.PostComment;
@@ -29,8 +27,8 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
 import java.util.List;
 
-import static com.code.domain.account.QAccount.account;
-import static com.code.domain.post.QPost.post;
+import static com.example.dplus.domain.account.QAccount.account;
+import static com.example.dplus.domain.post.QPost.post;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest

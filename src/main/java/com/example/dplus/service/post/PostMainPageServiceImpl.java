@@ -1,13 +1,11 @@
 package com.example.dplus.service.post;
 
-import com.example.dplus.advice.ApiRequestException;
-import com.example.dplus.advice.BadArgumentsValidException;
+import com.example.dplus.advice.ErrorCustomException;
 import com.example.dplus.advice.ErrorCode;
 import com.example.dplus.domain.account.Account;
 import com.example.dplus.repository.account.AccountRepository;
 import com.example.dplus.repository.account.follow.FollowRepository;
 import com.example.dplus.domain.post.Post;
-import com.example.dplus.domain.post.PostBoard;
 import com.example.dplus.repository.post.PostRepository;
 import com.example.dplus.repository.post.answer.PostAnswerRepository;
 import com.example.dplus.domain.post.PostBookMark;
@@ -106,7 +104,7 @@ public class PostMainPageServiceImpl implements PostMainPageService{
     // 상세 게시글 (디플 - 꿀팁)
     @Transactional
     public PostResponseDto.PostDetailPage showPostDetail(Long accountId, Long postId){
-        Post post = postRepository.findById(postId).orElseThrow(() -> new ApiRequestException(ErrorCode.NONEXISTENT_ERROR));
+        Post post = postRepository.findById(postId).orElseThrow(() -> new ErrorCustomException(ErrorCode.NONEXISTENT_ERROR));
 
         post.addViewCount();
 
@@ -147,9 +145,9 @@ public class PostMainPageServiceImpl implements PostMainPageService{
     // 게시글 작성
     @Transactional
     public int createPost(Long accountId, PostRequestDto.PostCreate dto, List<MultipartFile> imgFile) {
-        Account account = accountRepository.findById(accountId).orElseThrow(() -> new ApiRequestException(ErrorCode.NO_USER_ERROR));
+        Account account = accountRepository.findById(accountId).orElseThrow(() -> new ErrorCustomException(ErrorCode.NO_USER_ERROR));
         if (account.getPostCreateCount() >= 5) {
-            throw new ApiRequestException(ErrorCode.DAILY_WRITE_UP_BURN_ERROR);
+            throw new ErrorCustomException(ErrorCode.DAILY_POST_WRITE_UP_BURN_ERROR);
         }
 
         Post post = Post.of(account, dto);
@@ -221,9 +219,9 @@ public class PostMainPageServiceImpl implements PostMainPageService{
 
     // 게시글 검색
     @Transactional(readOnly = true)
-    public List<PostResponseDto.PostPageMain> findBySearchKeyWord(String keyword, Long lastArtWorkId, Long accountId, PostBoard board) {
+    public List<PostResponseDto.PostPageMain> findBySearchKeyWord(String keyword, Long lastArtWorkId, Long accountId, String board) {
         Pageable pageable = PageRequest.of(0,5);
-        return postRepository.findPostBySearchKeyWord(keyword,lastArtWorkId,pageable,board);
+        return postRepository.findPostBySearchKeyWord(keyword,lastArtWorkId,pageable, board);
     }
 
     // 디모 QnA 상세페이지
@@ -231,7 +229,7 @@ public class PostMainPageServiceImpl implements PostMainPageService{
     public PostAnswerDetailPage detailAnswer(Long accountId, Long postId) {
         // 작품 게시글 존재여부
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new ApiRequestException(ErrorCode.NONEXISTENT_ERROR));
+                .orElseThrow(() -> new ErrorCustomException(ErrorCode.NONEXISTENT_ERROR));
         // 조회수 + 1
         post.addViewCount();
         // QnA 좋아요 개수와 QnA 기본정보 가져오기
@@ -336,9 +334,9 @@ public class PostMainPageServiceImpl implements PostMainPageService{
 
     // post 수정, 삭제 권한 확인
     private Post postAuthValidation(Long accountId, Long postId){
-        Post post = postRepository.findById(postId).orElseThrow(() -> new ApiRequestException(ErrorCode.NONEXISTENT_ERROR));
+        Post post = postRepository.findById(postId).orElseThrow(() -> new ErrorCustomException(ErrorCode.NONEXISTENT_ERROR));
         if(!post.getAccount().getId().equals(accountId)){
-            throw new BadArgumentsValidException(ErrorCode.NO_AUTHORIZATION_ERROR);
+            throw new ErrorCustomException(ErrorCode.NO_AUTHORIZATION_ERROR);
         }
         return post;
     }

@@ -1,7 +1,7 @@
 package com.example.dplus.service.file;
 
 
-import com.example.dplus.advice.BadArgumentsValidException;
+import com.example.dplus.advice.ErrorCustomException;
 import com.example.dplus.advice.ErrorCode;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +30,7 @@ public class FileProcessService {
         try (InputStream inputStream = file.getInputStream()) {
             amazonS3Service.uploadFile(inputStream, objectMetadata, fileName);
         } catch (IOException ioe) {
-            throw new BadArgumentsValidException(ErrorCode.CONVERTING_FILE_ERROR);
+            throw new ErrorCustomException(ErrorCode.CONVERTING_FILE_ERROR);
         }
         return amazonS3Service.getFileUrl(fileName);
     }
