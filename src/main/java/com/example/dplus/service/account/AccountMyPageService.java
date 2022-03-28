@@ -33,8 +33,6 @@ public interface AccountMyPageService {
     void hideArtWorkScope(Long artWorkId, Account account);
     void nonHideArtWorkScope(Long artWorkId, Account account);
 
-    void setAccountMasterPiece(final Long accountId, final AccountRequestDto.setAccountMasterPiece materPiece);
-
     List<ArtWorkResponseDto.ArtWorkFeed> showAccountArtWork(final Long lastArtWorkId,final Long visitAccountId,final Long accountId);
 
     List<ArtWorkResponseDto.ArtWorkBookMark> showAccountArtWorkBookMark(final Long lastArtWorkId,final Long accountId);

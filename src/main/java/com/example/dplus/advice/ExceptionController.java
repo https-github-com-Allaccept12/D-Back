@@ -16,7 +16,7 @@ import java.util.Objects;
 public class ExceptionController {
 
     @ExceptionHandler(value = {ErrorCustomException.class,})
-    public ResponseEntity<Fail> apiBadRequestHandle(ErrorCustomException ex) {
+    public ResponseEntity<Fail> customErrorException(ErrorCustomException ex) {
         Fail apiException = new Fail(ex.getErrorCode());
         log.error("에러발생 :" + ex.getErrorCode());
         return new ResponseEntity<>(apiException, HttpStatus.OK);

@@ -22,7 +22,7 @@ public interface ArtworkMainService {
 
     ArtWorkResponseDto.ArtWorkDetail detailArtWork(Long accountId, Long artWorkId);
 
-    MainResponseDto mostPopularArtWork(Long accountId);
+//    MainResponseDto mostPopularArtWork(Long accountId);
 
     List<ArtworkMain> findBySearchKeyWord(String keyword, Long lastArtWorkId, Long accountId);
 

@@ -19,25 +19,25 @@ public class AccountRepositoryImpl implements AccountRepositoryCustom{
     private final JPAQueryFactory queryFactory;
 
 
-    @Override
-    public List<AccountResponseDto.TopArtist> findTopArtist(Pageable pageable,String interest) {
-        return queryFactory
-                .select(
-                        Projections.constructor(AccountResponseDto.TopArtist.class,
-                                account.id,
-                                account.nickname,
-                                account.profileImg,
-                                account.job,
-                                account.bestArtWorkOne,
-                                account.bestArtWorkTwo
-                                ))
-                .from(account)
-                .join(rank).on(rank.eq(account.rank))
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .orderBy(rank.rankScore.desc())
-                .fetch();
-    }
+//    @Override
+//    public List<AccountResponseDto.TopArtist> findTopArtist(Pageable pageable,String interest) {
+//        return queryFactory
+//                .select(
+//                        Projections.constructor(AccountResponseDto.TopArtist.class,
+//                                account.id,
+//                                account.nickname,
+//                                account.profileImg,
+//                                account.job,
+//                                account.bestArtWorkOne,
+//                                account.bestArtWorkTwo
+//                                ))
+//                .from(account)
+//                .join(rank).on(rank.eq(account.rank))
+//                .offset(pageable.getOffset())
+//                .limit(pageable.getPageSize())
+//                .orderBy(rank.rankScore.desc())
+//                .fetch();
+//    }
 
     @Override
     public void accountCreateCountInitialization() {

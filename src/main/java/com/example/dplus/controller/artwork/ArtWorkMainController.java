@@ -27,11 +27,11 @@ public class ArtWorkMainController {
     private final int SORT_SIGN_LATEST = 1;
     private final ArtworkMainService artworkMainService;
 
-    @RequestMapping(value = "/",method = RequestMethod.GET)
-    public ResponseEntity<Success> main(@RequestParam("account_id") Long account_id) {
-        return new ResponseEntity<>(new Success("메인 페이지",
-                artworkMainService.mostPopularArtWork(account_id)), HttpStatus.OK);
-    }
+//    @RequestMapping(value = "/",method = RequestMethod.GET)
+//    public ResponseEntity<Success> main(@RequestParam("account_id") Long account_id) {
+//        return new ResponseEntity<>(new Success("메인 페이지",
+//                artworkMainService.mostPopularArtWork(account_id)), HttpStatus.OK);
+//    }
 
     @GetMapping("/api/artwork/{last_artwork_id}")
     public ResponseEntity<Success> artWorkMain(@RequestParam("account_id") Long accountId,
