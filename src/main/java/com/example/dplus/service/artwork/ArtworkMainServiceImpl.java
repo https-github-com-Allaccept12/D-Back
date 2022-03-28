@@ -30,6 +30,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -53,6 +54,7 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
             Account account = accountRepository.findById(accountId).orElseThrow(() -> new ErrorCustomException(ErrorCode.NO_USER_ERROR));
             List<ArtworkMain> artWorkList = getArtworkList(account.getInterest());
             List<TopArtist> topArtist = getTopArtist(account.getInterest());
+
             isFollow(accountId,topArtist);
             setIsLike(accountId,artWorkList);
             return MainResponseDto.builder().artwork(artWorkList).top_artist(topArtist).build();
@@ -198,8 +200,11 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
         }
     }
     private List<TopArtist> getTopArtist(String interest) {
-        Pageable pageable = PageRequest.of(0,10);
-        return accountRepository.findTopArtist(pageable,interest);
+        Pageable pageable = PageRequest.of(0, 10);
+        List<Account> topArtist = accountRepository.findTopArtist(pageable, interest);
+        return topArtist.stream()
+                .map(TopArtist::new)
+                .collect(Collectors.toList());
     }
 
     private List<ArtworkMain> getArtworkList(String interest) {

@@ -9,8 +9,6 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.util.Objects;
-
 @Slf4j
 @RestControllerAdvice
 public class ExceptionController {
@@ -24,9 +22,8 @@ public class ExceptionController {
 
     @ExceptionHandler(value = {MethodArgumentNotValidException.class})
     public ResponseEntity<Fail> handleApiRequestErrorException(MethodArgumentNotValidException ex) {
-        String msg = Objects.requireNonNull(ex.getMessage());
-        Fail restApiException = new Fail(msg  + " -----test-----" + ex.getLocalizedMessage() );
-        log.error(msg + "---- test ----" +ex.getLocalizedMessage());
+        Fail restApiException = new Fail(ex + " " + ex.getLocalizedMessage() );
+        log.error(ex.getMessage());
         return new ResponseEntity<>(restApiException, HttpStatus.BAD_REQUEST);
     }
 
