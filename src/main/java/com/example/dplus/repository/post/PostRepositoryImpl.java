@@ -103,7 +103,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
     }
 
     @Override
-    public List<PostResponseDto.PostPageMain> findPostBySearchKeyWord(String keyword, Long lastPostId, Pageable pageable, PostBoard board) {
+    public List<PostResponseDto.PostPageMain> findPostBySearchKeyWord(String keyword, Long lastPostId, Pageable pageable, String board) {
         return queryFactory
                 .select(Projections.constructor(PostResponseDto.PostPageMain.class,
                         post.id,
@@ -121,7 +121,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                 .leftJoin(postTag).on(postTag.post.eq(post))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
-                .where(isLastPostId(lastPostId),post.board.eq(board),
+                .where(isLastPostId(lastPostId),post.board.eq(PostBoard.valueOf(board)),
                         post.title.contains(keyword),
                         post.account.nickname.contains(keyword),
                         post.content.contains(keyword),

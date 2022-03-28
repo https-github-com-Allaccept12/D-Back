@@ -17,7 +17,7 @@ public interface PostMainPageService {
     int createPost(Long accountId, PostRequestDto.PostCreate dto, List<MultipartFile> imageFile);
 
     // 게시글 검색
-    List<PostResponseDto.PostPageMain> findBySearchKeyWord(String keyword, Long lastArtWorkId, Long accountId, PostBoard board);
+    List<PostResponseDto.PostPageMain> findBySearchKeyWord(String keyword, Long lastArtWorkId, Long accountId, String board);
 
     // 상세 게시글
     PostResponseDto.PostDetailPage showPostDetail(Long accountId, Long postId);

@@ -15,6 +15,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/my-page")
@@ -62,7 +64,7 @@ public class AccountMyPageController {
     }
 
     @RequestMapping(value = "/intro", method = {RequestMethod.POST, RequestMethod.PATCH})
-    public ResponseEntity<Success> accountIntro(@RequestBody UpdateAccountIntro data,
+    public ResponseEntity<Success> accountIntro(@Valid @RequestBody UpdateAccountIntro data,
                                                 @AuthenticationPrincipal UserDetailsImpl user) {
         accountMyPageService.updateAccountIntro(data, user.getUser().getId());
         return new ResponseEntity<>(new Success("유저 소개 수정", ""), HttpStatus.OK);

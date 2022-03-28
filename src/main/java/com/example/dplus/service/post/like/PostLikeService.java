@@ -1,6 +1,6 @@
 package com.example.dplus.service.post.like;
 
-import com.example.dplus.advice.ApiRequestException;
+import com.example.dplus.advice.ErrorCustomException;
 import com.example.dplus.advice.ErrorCode;
 import com.example.dplus.domain.account.Account;
 import com.example.dplus.domain.post.Post;
@@ -21,9 +21,9 @@ public class PostLikeService {
 
     @Transactional
     public void doLike(Account account, Long postId) {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new ApiRequestException(ErrorCode.NONEXISTENT_ERROR));
+        Post post = postRepository.findById(postId).orElseThrow(() -> new ErrorCustomException(ErrorCode.NONEXISTENT_ERROR));
         if (postLikesRepository.existByAccountIdAndPostId(account.getId(), postId)) {
-            throw new ApiRequestException(ErrorCode.ALREADY_LIKE_ERROR);
+            throw new ErrorCustomException(ErrorCode.ALREADY_LIKE_ERROR);
         }
         PostLikes postLikes = PostLikes.builder().post(post).account(account).build();
         postLikesRepository.save(postLikes);
@@ -31,9 +31,9 @@ public class PostLikeService {
 
     @Transactional
     public void unLike(Account account, Long postId) {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new ApiRequestException(ErrorCode.NONEXISTENT_ERROR));
+        Post post = postRepository.findById(postId).orElseThrow(() -> new ErrorCustomException(ErrorCode.NONEXISTENT_ERROR));
         if (!postLikesRepository.existByAccountIdAndPostId(account.getId(), postId)) {
-            throw new ApiRequestException(ErrorCode.ALREADY_LIKE_ERROR);
+            throw new ErrorCustomException(ErrorCode.ALREADY_LIKE_ERROR);
         }
         postLikesRepository.deleteByPostIdAndAccountId(post.getId(),account.getId());
     }
