@@ -1,6 +1,7 @@
 package com.example.dplus.dto.response;
 
 import com.example.dplus.domain.account.Account;
+import com.example.dplus.domain.artwork.ArtWorks;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -99,17 +100,21 @@ public class AccountResponseDto {
         private String secondArtwork;
 
         @Builder
-        public TopArtist(final Long account_id, final String account_nickname, final String account_profile,
-                         final String account_job,final String firstArtwork, final String secondArtwork) {
+        public TopArtist(final Long account_id, final String account_nickname, final String account_profile, final String account_job) {
             this.account_id = account_id;
             this.account_nickname = account_nickname;
             this.account_profile = account_profile;
             this.account_job = account_job;
-            this.firstArtwork = firstArtwork;
-            this.secondArtwork = secondArtwork;
+
         }
         public void setIsFollow() {
             this.is_follow = true;
+        }
+
+        public void setArtWork(ArtWorks artWork) {
+            this.firstArtwork = artWork.getThumbnail();
+            this.secondArtwork = artWork.getThumbnail();
+
         }
 
     }

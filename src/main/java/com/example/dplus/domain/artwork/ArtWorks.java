@@ -58,6 +58,7 @@ public class ArtWorks extends BaseEntity {
     @JoinColumn(name = "account_id")
     private Account account;
 
+
     @Builder
     public ArtWorks(final Boolean scope,final String title,final String content,final String category,
                     final Long view,final String workStart,final String workEnd,final Account account,
@@ -74,6 +75,7 @@ public class ArtWorks extends BaseEntity {
         this.specialty = specialty;
         this.copyright = copyright;
         this.thumbnail = thumbnail;
+        this.account.getArtWorksList().add(this);
     }
 
     public void addViewCount() {
@@ -103,6 +105,10 @@ public class ArtWorks extends BaseEntity {
 
     public void updateArtWorkThumbnail(String thumbnail) {
         this.thumbnail = thumbnail;
+    }
+
+    public void deleteArtWork() {
+        this.account.getArtWorksList().remove(this);
     }
 
     public static ArtWorks of(Account account, ArtWorkCreate dto) {

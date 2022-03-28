@@ -29,11 +29,9 @@ public class AccountRepositoryImpl implements AccountRepositoryCustom {
                                 account.id,
                                 account.nickname,
                                 account.profileImg,
-                                account.job,
-                                artWorks.thumbnail,
-                                artWorks.thumbnail
+                                account.job
                         ))
-                .from(artWorks)
+                .from(account)
                 .join(artWorks.account, account)
                 .join(rank).on(rank.eq(account.rank))
                 .offset(pageable.getOffset())
