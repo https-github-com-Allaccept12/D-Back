@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class AccountResponseDto {
 
@@ -96,26 +98,25 @@ public class AccountResponseDto {
         private String account_profile;
         private String account_job;
         private Boolean is_follow = false;
-        private String firstArtwork;
-        private String secondArtwork;
+        private List<String> artWorks ;
 
         @Builder
-        public TopArtist(final Long account_id, final String account_nickname, final String account_profile, final String account_job) {
-            this.account_id = account_id;
-            this.account_nickname = account_nickname;
-            this.account_profile = account_profile;
-            this.account_job = account_job;
+        public TopArtist(final Account account) {
+            this.account_id = account.getId();
+            this.account_nickname = account.getNickname();
+            this.account_profile = account.getProfileImg();
+            this.account_job = account.getJob();
+            this.artWorks = account.getArtWorksList().stream()
+                    .map(ArtWorks::getThumbnail)
+                    .limit(2)
+                    .collect(Collectors.toList());
 
         }
         public void setIsFollow() {
             this.is_follow = true;
         }
 
-        public void setArtWork(ArtWorks artWork) {
-            this.firstArtwork = artWork.getThumbnail();
-            this.secondArtwork = artWork.getThumbnail();
 
-        }
 
     }
 

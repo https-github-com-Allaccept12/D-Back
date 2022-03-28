@@ -1,8 +1,8 @@
 package com.example.dplus.controller.account;
 
 
-import com.example.dplus.advice.BadArgumentsValidException;
 import com.example.dplus.advice.ErrorCode;
+import com.example.dplus.advice.ErrorCustomException;
 import com.example.dplus.dto.Success;
 import com.example.dplus.dto.request.AccountRequestDto.InitInterestSetting;
 import com.example.dplus.dto.request.AccountRequestDto.InitProfileSetting;
@@ -16,6 +16,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.Valid;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
@@ -25,18 +27,18 @@ public class AccountInitController {
 
     //프로필 설정
     @PostMapping("/profile")
-    public ResponseEntity<Success<Long>> initProfile(@RequestPart InitProfileSetting data,
+    public ResponseEntity<Success<Long>> initProfile(@Valid @RequestPart InitProfileSetting data,
                                                      @RequestPart MultipartFile imgFile,
                                                      @AuthenticationPrincipal UserDetailsImpl user) {
         if (imgFile != null) {
             return new ResponseEntity<>(new Success<>("프로필 설정 완료",
                     accountInitialService.setInitProfile(imgFile,data,user.getUser().getId())), HttpStatus.OK);
         }
-        throw new BadArgumentsValidException(ErrorCode.PHOTO_UPLOAD_ERROR);
+        throw new ErrorCustomException(ErrorCode.PHOTO_UPLOAD_ERROR);
     }
     //프로필 수정
     @PatchMapping("/profile")
-    public ResponseEntity<Success<Long>> updateProfile(@RequestPart InitProfileSetting data,
+    public ResponseEntity<Success<Long>> updateProfile(@Valid @RequestPart InitProfileSetting data,
                                                        @RequestPart MultipartFile imgFile,
                                                        @AuthenticationPrincipal UserDetailsImpl user) {
 
@@ -65,7 +67,6 @@ public class AccountInitController {
     }
 
 }
-
 
 
 

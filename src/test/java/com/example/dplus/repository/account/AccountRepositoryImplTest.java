@@ -7,7 +7,6 @@ import com.example.dplus.domain.artwork.ArtWorkComment;
 import com.example.dplus.domain.artwork.ArtWorkImage;
 import com.example.dplus.domain.artwork.ArtWorkLikes;
 import com.example.dplus.domain.artwork.ArtWorks;
-import com.example.dplus.dto.response.AccountResponseDto;
 import com.example.dplus.repository.account.follow.FollowRepository;
 import com.example.dplus.repository.account.rank.RankRepository;
 import com.example.dplus.repository.artwork.ArtWorkRepository;
@@ -15,7 +14,6 @@ import com.example.dplus.repository.artwork.bookmark.ArtWorkBookMarkRepository;
 import com.example.dplus.repository.artwork.comment.ArtWorkCommentRepository;
 import com.example.dplus.repository.artwork.image.ArtWorkImageRepository;
 import com.example.dplus.repository.artwork.like.ArtWorkLikesRepository;
-import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,12 +21,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
-import java.util.List;
-
-import static com.example.dplus.domain.account.QAccount.account;
-import static com.example.dplus.domain.account.QRank.rank;
-import static com.example.dplus.domain.artwork.QArtWorks.artWorks;
-import static com.querydsl.jpa.JPAExpressions.select;
 
 @SpringBootTest
 @Transactional
@@ -65,6 +57,7 @@ class AccountRepositoryImplTest {
     RankRepository rankRepository;
 
 
+
     @Test
     public void 탑_아티스트_테스트() throws Exception {
         //given
@@ -78,39 +71,39 @@ class AccountRepositoryImplTest {
         testArtWorksSet(account2,"act6");
         testArtWorksSet(account2,"act7");
 
-        //when
-        List<AccountResponseDto.TopArtist> result = queryFactory
-                .select(
-                        Projections.constructor(AccountResponseDto.TopArtist.class,
-                                account.id,
-                                account.nickname,
-                                account.profileImg,
-                                account.job,
-                                artWorks.thumbnail,
-                                queryFactory
-                                        .select(artWorks.thumbnail)
-                                        .from(artWorks)
-                                        .where(artWorks.account.id.eq(account.id)
-                                                        .and(artWorks.scope.isTrue()),
-                                                artWorks.id.eq(
-                                                        select(artWorks.id.max())
-                                                        .from(artWorks)
-                                                        .where(artWorks.account.id.eq(account.id))))
-                        ))
-                .from(account)
-                .leftJoin(artWorks).on(artWorks.account.eq(account))
-                .join(rank).on(rank.eq(account.rank))
-                .limit(10)
-                .where(artWorks.scope.isTrue())
-                .orderBy(rank.rankScore.desc())
-                .groupBy(account.id)
-                .fetch();
+//        //when
+//        List<AccountResponseDto.TopArtist> result = queryFactory
+//                .select(
+//                        Projections.constructor(AccountResponseDto.TopArtist.class,
+//                                account.id,
+//                                account.nickname,
+//                                account.profileImg,
+//                                account.job,
+//                                artWorks.thumbnail,
+//                                queryFactory
+//                                        .select(artWorks.thumbnail)
+//                                        .from(artWorks)
+//                                        .where(artWorks.account.id.eq(account.id)
+//                                                        .and(artWorks.scope.isTrue()),
+//                                                artWorks.id.eq(
+//                                                        select(artWorks.id.max())
+//                                                        .from(artWorks)
+//                                                        .where(artWorks.account.id.eq(account.id))))
+//                        ))
+//                .from(account)
+//                .leftJoin(artWorks).on(artWorks.account.eq(account))
+//                .join(rank).on(rank.eq(account.rank))
+//                .limit(10)
+//                .where(artWorks.scope.isTrue())
+//                .orderBy(rank.rankScore.desc())
+//                .groupBy(account.id)
+//                .fetch();
         //then
-        for (AccountResponseDto.TopArtist topArtist : result) {
-            System.out.println("topArtist.id = " + topArtist.getAccount_id()
-                    +" topArtist.getSecondArtwork() = " + topArtist.getSecondArtwork()
-                    +" topArtist.getFirstArtwork() = " + topArtist.getFirstArtwork());
-        }
+//        for (AccountResponseDto.TopArtist topArtist : result) {
+//            System.out.println("topArtist.id = " + topArtist.getAccount_id()
+//                    +" topArtist.getSecondArtwork() = " + topArtist.getSecondArtwork()
+//                    +" topArtist.getFirstArtwork() = " + topArtist.getFirstArtwork());
+//        }
     }
 
     private Follow followSet(Long followingId, Long followerId) {

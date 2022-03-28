@@ -1,7 +1,7 @@
 package com.example.dplus.service.account.follow;
 
 
-import com.example.dplus.advice.ApiRequestException;
+import com.example.dplus.advice.ErrorCustomException;
 import com.example.dplus.advice.ErrorCode;
 import com.example.dplus.domain.account.Account;
 import com.example.dplus.repository.account.AccountRepository;
@@ -23,23 +23,23 @@ public class FollowService {
 
     @Transactional
     public void follow(Long following_id, Long accountId) {
-        Account account = getAccount(accountId);
+        Account account = getAccount(following_id);
         if (followRepository.existsByFollowerIdAndFollowingId(account.getId(),following_id)) {
-            throw new ApiRequestException(ErrorCode.EXIST_FOLLOW_ERROR);
+            throw new ErrorCustomException(ErrorCode.EXIST_FOLLOW_ERROR);
         }
         account.getRank().upRankScore();
-        final Follow follow = Follow.builder().followerId(account.getId()).followingId(following_id).build();
+        final Follow follow = Follow.builder().followerId(accountId).followingId(following_id).build();
         followRepository.save(follow);
     }
 
     @Transactional
     public void unFollow(Long unFollowing_id, Long accountId) {
-        Account account = getAccount(accountId);
+        Account account = getAccount(unFollowing_id);
         if (!followRepository.existsByFollowerIdAndFollowingId(account.getId(), unFollowing_id)) {
-          throw new ApiRequestException(ErrorCode.EXIST_FOLLOW_ERROR);
+          throw new ErrorCustomException(ErrorCode.EXIST_FOLLOW_ERROR);
         }
         account.getRank().downRankScore();
-        followRepository.deleteByFollowerIdAndFollowingId(account.getId(),unFollowing_id);
+        followRepository.deleteByFollowerIdAndFollowingId(accountId,account.getId());
     }
 
     //accountId를 팔로잉 하고있는 사람들의 리스트
@@ -55,7 +55,7 @@ public class FollowService {
     }
 
     private Account getAccount(Long accountId) {
-        return accountRepository.findById(accountId).orElseThrow(() -> new ApiRequestException(ErrorCode.NO_USER_ERROR));
+        return accountRepository.findById(accountId).orElseThrow(() -> new ErrorCustomException(ErrorCode.NO_USER_ERROR));
     }
 
 }

@@ -2,7 +2,7 @@ package com.example.dplus.jwt;
 
 import com.example.dplus.domain.account.Account;
 import com.example.dplus.repository.account.AccountRepository;
-import com.example.dplus.advice.ApiRequestException;
+import com.example.dplus.advice.ErrorCustomException;
 import com.example.dplus.advice.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,7 +18,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     public UserDetails loadUserByUsername(String userPk) throws UsernameNotFoundException {
         Account user = accountRepository.findById(Long.parseLong(userPk))
-                .orElseThrow(() -> new ApiRequestException(ErrorCode.NO_AUTHENTICATION_ERROR));
+                .orElseThrow(() -> new ErrorCustomException(ErrorCode.NO_AUTHENTICATION_ERROR));
         return new UserDetailsImpl(user);
     }
 }

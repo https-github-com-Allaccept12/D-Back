@@ -1,7 +1,6 @@
 package com.example.dplus.repository.account;
 
-import com.example.dplus.dto.response.AccountResponseDto;
-import com.querydsl.core.types.Projections;
+import com.example.dplus.domain.account.Account;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,7 +10,6 @@ import java.util.List;
 
 import static com.example.dplus.domain.account.QAccount.account;
 import static com.example.dplus.domain.account.QRank.rank;
-import static com.example.dplus.domain.artwork.QArtWorks.artWorks;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -22,21 +20,11 @@ public class AccountRepositoryImpl implements AccountRepositoryCustom {
 
 
     @Override
-    public List<AccountResponseDto.TopArtist> findTopArtist(Pageable pageable, String interest) {
+    public List<Account> findTopArtist(Pageable pageable, String interest) {
         return queryFactory
-                .select(
-                        Projections.constructor(AccountResponseDto.TopArtist.class,
-                                account.id,
-                                account.nickname,
-                                account.profileImg,
-                                account.job
-                        ))
-                .from(account)
-                .join(artWorks.account, account)
+                .selectFrom(account)
                 .join(rank).on(rank.eq(account.rank))
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .where(artWorks.scope.isTrue())
+                .limit(10)
                 .orderBy(rank.rankScore.desc())
                 .fetch();
     }

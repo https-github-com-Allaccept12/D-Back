@@ -1,23 +1,24 @@
 package com.example.dplus.service.artwork;
 
-import com.example.dplus.advice.ApiRequestException;
-import com.example.dplus.advice.BadArgumentsValidException;
+import com.example.dplus.repository.account.follow.FollowRepository;
+import com.example.dplus.repository.artwork.comment.ArtWorkCommentRepository;
+import com.example.dplus.domain.artwork.ArtWorkImage;
+import com.example.dplus.repository.artwork.image.ArtWorkImageRepository;
+import com.example.dplus.repository.artwork.like.ArtWorkLikesRepository;
+import com.example.dplus.advice.ErrorCustomException;
 import com.example.dplus.advice.ErrorCode;
 import com.example.dplus.domain.account.Account;
-import com.example.dplus.domain.artwork.ArtWorkImage;
+import com.example.dplus.repository.account.AccountRepository;
+import com.example.dplus.repository.artwork.ArtWorkRepository;
 import com.example.dplus.domain.artwork.ArtWorks;
+import com.example.dplus.repository.artwork.bookmark.ArtWorkBookMarkRepository;
 import com.example.dplus.dto.request.ArtWorkRequestDto.ArtWorkCreate;
 import com.example.dplus.dto.request.ArtWorkRequestDto.ArtWorkUpdate;
 import com.example.dplus.dto.response.AccountResponseDto.TopArtist;
-import com.example.dplus.dto.response.ArtWorkResponseDto.*;
+import com.example.dplus.dto.response.ArtWorkResponseDto;
+import com.example.dplus.dto.response.ArtWorkResponseDto.ArtWorkDetail;
+import com.example.dplus.dto.response.ArtWorkResponseDto.ArtworkMain;
 import com.example.dplus.dto.response.MainResponseDto;
-import com.example.dplus.repository.account.AccountRepository;
-import com.example.dplus.repository.account.follow.FollowRepository;
-import com.example.dplus.repository.artwork.ArtWorkRepository;
-import com.example.dplus.repository.artwork.bookmark.ArtWorkBookMarkRepository;
-import com.example.dplus.repository.artwork.comment.ArtWorkCommentRepository;
-import com.example.dplus.repository.artwork.image.ArtWorkImageRepository;
-import com.example.dplus.repository.artwork.like.ArtWorkLikesRepository;
 import com.example.dplus.service.file.FileProcessService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +30,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -49,9 +51,10 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
     public MainResponseDto mostPopularArtWork(Long accountId) {
         //회원인지 비회원인지
         if (accountId != 0) {
-            Account account = accountRepository.findById(accountId).orElseThrow(() -> new ApiRequestException(ErrorCode.NO_USER_ERROR));
+            Account account = accountRepository.findById(accountId).orElseThrow(() -> new ErrorCustomException(ErrorCode.NO_USER_ERROR));
             List<ArtworkMain> artWorkList = getArtworkList(account.getInterest());
             List<TopArtist> topArtist = getTopArtist(account.getInterest());
+
             isFollow(accountId,topArtist);
             setIsLike(accountId,artWorkList);
             return MainResponseDto.builder().artwork(artWorkList).top_artist(topArtist).build();
@@ -74,18 +77,18 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
     public ArtWorkDetail detailArtWork(Long accountId, Long artWorkId) {
         //작품 게시글 존재여부
         ArtWorks artWorks = artWorkRepository.findById(artWorkId)
-                .orElseThrow(() -> new ApiRequestException(ErrorCode.NONEXISTENT_ERROR));
+                .orElseThrow(() -> new ErrorCustomException(ErrorCode.NONEXISTENT_ERROR));
         //조회수
         artWorks.addViewCount();
         //작품 좋아요개수와 작품 기본정보 가져오기
-        ArtWorkSubDetail artWorksSub = artWorkRepository.findByArtWorkSubDetail(artWorkId);
+        ArtWorkResponseDto.ArtWorkSubDetail artWorksSub = artWorkRepository.findByArtWorkSubDetail(artWorkId);
         //작품 이미지들 가져오기
         List<ArtWorkImage> imgList = artWorkImageRepository.findByArtWorksId(artWorksSub.getArtwork_id());
         //작품 코멘트 가져오기
-        List<ArtWorkComment> commentList = artWorkCommentRepository.findArtWorkCommentByArtWorksId(artWorksSub.getArtwork_id());
+        List<ArtWorkResponseDto.ArtWorkComment> commentList = artWorkCommentRepository.findArtWorkCommentByArtWorksId(artWorksSub.getArtwork_id());
         //해당 유저의 다른 작품들 가져오기
         Pageable pageable = PageRequest.of(0, 5);
-        List<ArtWorkSimilarWork> similarList = artWorkRepository
+        List<ArtWorkResponseDto.ArtWorkSimilarWork> similarList = artWorkRepository
                 .findSimilarArtWork(artWorks.getAccount().getId(),artWorks.getId(),pageable);
         boolean isLike = false;
         boolean isBookmark = false;
@@ -105,12 +108,12 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
 
     @Transactional
     public int createArtwork(Long accountId, ArtWorkCreate dto, List<MultipartFile> multipartFiles) {
-        Account account = accountRepository.findById(accountId).orElseThrow(() -> new ApiRequestException(ErrorCode.NO_USER_ERROR));
+        Account account = accountRepository.findById(accountId).orElseThrow(() -> new ErrorCustomException(ErrorCode.NO_USER_ERROR));
         if (account.getArtWorkCreateCount() >= 5) {
-            throw new ApiRequestException(ErrorCode.DAILY_WRITE_UP_BURN_ERROR);
+            throw new ErrorCustomException(ErrorCode.DAILY_WRITE_UP_BURN_ERROR);
         }
         if (multipartFiles == null) {
-            throw new ApiRequestException(ErrorCode.PHOTO_UPLOAD_ERROR);
+            throw new ErrorCustomException(ErrorCode.PHOTO_UPLOAD_ERROR);
         }
         ArtWorks saveArtwork = artWorkRepository.save(ArtWorks.of(account, dto));
         s3ImageUpload(multipartFiles,dto,saveArtwork);
@@ -130,7 +133,6 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
     @Transactional
     public void deleteArtwork(Long accountId, Long artworkId) {
         ArtWorks artWorks = artworkValidation(accountId, artworkId);
-        artWorks.deleteArtWork();
         List<ArtWorkImage> artWorkImages = artWorkImageRepository.findByArtWorksId(artWorks.getId());
         artWorkImages.forEach((img) -> {
             fileProcessService.deleteImage(img.getArtworkImg());
@@ -198,8 +200,11 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
         }
     }
     private List<TopArtist> getTopArtist(String interest) {
-        Pageable pageable = PageRequest.of(0,10);
-        return accountRepository.findTopArtist(pageable,interest);
+        Pageable pageable = PageRequest.of(0, 10);
+        List<Account> topArtist = accountRepository.findTopArtist(pageable, interest);
+        return topArtist.stream()
+                .map(TopArtist::new)
+                .collect(Collectors.toList());
     }
 
     private List<ArtworkMain> getArtworkList(String interest) {
@@ -208,9 +213,9 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
     }
 
     private ArtWorks artworkValidation(Long accountId, Long artworkId){
-        ArtWorks artWorks = artWorkRepository.findById(artworkId).orElseThrow(() -> new ApiRequestException(ErrorCode.NONEXISTENT_ERROR));
+        ArtWorks artWorks = artWorkRepository.findById(artworkId).orElseThrow(() -> new ErrorCustomException(ErrorCode.NONEXISTENT_ERROR));
         if(!artWorks.getAccount().getId().equals(accountId)){
-            throw new BadArgumentsValidException(ErrorCode.NO_AUTHORIZATION_ERROR);
+            throw new ErrorCustomException(ErrorCode.NO_AUTHORIZATION_ERROR);
         }
         return artWorks;
     }

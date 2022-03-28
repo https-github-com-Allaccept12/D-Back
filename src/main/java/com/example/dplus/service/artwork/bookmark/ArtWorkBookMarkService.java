@@ -1,8 +1,7 @@
 package com.example.dplus.service.artwork.bookmark;
 
 
-import com.example.dplus.advice.ApiRequestException;
-import com.example.dplus.advice.BadArgumentsValidException;
+import com.example.dplus.advice.ErrorCustomException;
 import com.example.dplus.advice.ErrorCode;
 import com.example.dplus.domain.account.Account;
 import com.example.dplus.repository.artwork.ArtWorkRepository;
@@ -24,10 +23,10 @@ public class ArtWorkBookMarkService {
     public void doBookMark(Account account, Long artWorkId) {
         ArtWorks artWorks = getArtWorks(artWorkId);
         if (artWorkBookMarkRepository.existByAccountIdAndArtWorkId(account.getId(), artWorkId)) {
-            throw new ApiRequestException(ErrorCode.ALREADY_BOOKMARK_ERROR);
+            throw new ErrorCustomException(ErrorCode.ALREADY_BOOKMARK_ERROR);
         }
         if (artWorks.getAccount().getId().equals(account.getId())) {
-            throw new BadArgumentsValidException(ErrorCode.NO_BOOKMARK_MY_POST_ERROR);
+            throw new ErrorCustomException(ErrorCode.NO_BOOKMARK_MY_POST_ERROR);
         }
         artWorks.getAccount().getRank().upRankScore();
         ArtWorkBookMark artWorkBookMark = ArtWorkBookMark.builder().artWorks(artWorks).account(account).build();
@@ -38,13 +37,13 @@ public class ArtWorkBookMarkService {
     public void unBookMark(Account account, Long artWorkId) {
         ArtWorks artWorks = getArtWorks(artWorkId);
         if (!artWorkBookMarkRepository.existByAccountIdAndArtWorkId(account.getId(), artWorkId)) {
-            throw new ApiRequestException(ErrorCode.ALREADY_BOOKMARK_ERROR);
+            throw new ErrorCustomException(ErrorCode.ALREADY_BOOKMARK_ERROR);
         }
         artWorks.getAccount().getRank().downRankScore();
         artWorkBookMarkRepository.deleteByArtWorksIdAndAccountId(artWorkId,account.getId());
     }
 
     private ArtWorks getArtWorks(Long artWorkId) {
-        return artWorkRepository.findById(artWorkId).orElseThrow(() -> new ApiRequestException(ErrorCode.NONEXISTENT_ERROR));
+        return artWorkRepository.findById(artWorkId).orElseThrow(() -> new ErrorCustomException(ErrorCode.NONEXISTENT_ERROR));
     }
 }

@@ -1,8 +1,7 @@
 package com.example.dplus.service.account;
 
-import com.example.dplus.advice.ApiRequestException;
-import com.example.dplus.advice.BadArgumentsValidException;
 import com.example.dplus.advice.ErrorCode;
+import com.example.dplus.advice.ErrorCustomException;
 import com.example.dplus.domain.account.Account;
 import com.example.dplus.domain.account.History;
 import com.example.dplus.domain.artwork.ArtWorks;
@@ -149,13 +148,6 @@ public class AccountMyPageServiceImpl implements AccountMyPageService {
         return artWorkRepository.findArtWorkBookMarkByAccountId(lastArtWorkId,pageable,accountId);
     }
 
-    //마이페이지 대표작품 설정/수정
-//    @Transactional
-//    public void setAccountMasterPiece(final Long accountId, final AccountRequestDto.setAccountMasterPiece materPiece) {
-//        Account account = getAccount(accountId);
-//        account.setBestArtWork(materPiece.getImg_url_fir(),materPiece.getImg_url_sec());
-//    }
-
     @Transactional(readOnly = true)
     public List<AccountResponseDto.MyPost> getMyPost(Long accountId, String board) {
         Pageable pageable = PageRequest.of(0,5);
@@ -189,15 +181,15 @@ public class AccountMyPageServiceImpl implements AccountMyPageService {
     }
 
     private Account getAccount(Long accountId) {
-        return accountRepository.findById(accountId).orElseThrow(() -> new ApiRequestException(ErrorCode.NO_USER_ERROR));
+        return accountRepository.findById(accountId).orElseThrow(() -> new ErrorCustomException(ErrorCode.NO_USER_ERROR));
     }
 
     private ArtWorks getArtWorks(Long artWorkId) {
-        return artWorkRepository.findById(artWorkId).orElseThrow(() -> new ApiRequestException(ErrorCode.NONEXISTENT_ERROR));
+        return artWorkRepository.findById(artWorkId).orElseThrow(() -> new ErrorCustomException(ErrorCode.NONEXISTENT_ERROR));
     }
     private void createValid(Account account, ArtWorks artWorks) {
         if(account.getId().equals(artWorks.getId())){
-            throw new BadArgumentsValidException(ErrorCode.NO_AUTHORIZATION_ERROR);
+            throw new ErrorCustomException(ErrorCode.NO_AUTHORIZATION_ERROR);
         }
     }
 

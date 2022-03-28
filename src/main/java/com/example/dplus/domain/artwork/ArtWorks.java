@@ -60,9 +60,9 @@ public class ArtWorks extends BaseEntity {
 
 
     @Builder
-    public ArtWorks(final Boolean scope,final String title,final String content,final String category,
-                    final Long view,final String workStart,final String workEnd,final Account account,
-                    final Boolean isMaster, final String specialty,final String copyright,final String thumbnail) {
+    public ArtWorks(final Boolean scope, final String title, final String content, final String category,
+                    final Long view, final String workStart, final String workEnd, final Account account,
+                    final Boolean isMaster, final String specialty, final String copyright, final String thumbnail) {
         this.scope = scope;
         this.title = title;
         this.content = content;
@@ -75,7 +75,7 @@ public class ArtWorks extends BaseEntity {
         this.specialty = specialty;
         this.copyright = copyright;
         this.thumbnail = thumbnail;
-        this.account.getArtWorksList().add(this);
+        account.getArtWorksList().add(this);
     }
 
     public void addViewCount() {
@@ -92,9 +92,11 @@ public class ArtWorks extends BaseEntity {
         this.isMaster = dto.getMaster();
         this.copyright = dto.getCopyright();
     }
+
     public void updateArtWorkIsMaster(boolean isMaster) {
         this.isMaster = isMaster;
     }
+
     public void updateArtWorkIsScope(boolean isScope) {
         this.scope = isScope;
     }
@@ -123,6 +125,7 @@ public class ArtWorks extends BaseEntity {
                 .isMaster(dto.getMaster())
                 .specialty(dto.getSpecialty())
                 .copyright(dto.getCopyright())
+                .thumbnail(dto.getThumbnail())
                 .view(0L)
                 .build();
     }
