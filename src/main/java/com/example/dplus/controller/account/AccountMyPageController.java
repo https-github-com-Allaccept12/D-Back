@@ -2,6 +2,7 @@ package com.example.dplus.controller.account;
 
 
 import com.example.dplus.dto.Success;
+import com.example.dplus.dto.request.HistoryRequestDto;
 import com.example.dplus.jwt.UserDetailsImpl;
 import com.example.dplus.service.account.AccountMyPageService;
 import com.example.dplus.dto.request.AccountRequestDto.UpdateAccountIntro;

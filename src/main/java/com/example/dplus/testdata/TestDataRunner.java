@@ -99,9 +99,9 @@ public class TestDataRunner implements ApplicationRunner {
 //            postImageRepository.save(postImage2);
 //            postImageRepository.save(postImage3);
 //        }
-//        for (int i = 1; i < 10001; i++) {
+//        for (int i = 1; i < 100; i++) {
 //            Post post = postRepository.findById((long) i).orElse(null);
-//            Account account = accountRepository.findById((long) i + 2).orElse(null);
+//            Account account = accountRepository.findById((long) 1).orElse(null);
 //            PostBookMark postBookMark = PostBookMark.builder().post(post).account(account).build();
 //            postBookMarkRepository.save(postBookMark);
 //        }
