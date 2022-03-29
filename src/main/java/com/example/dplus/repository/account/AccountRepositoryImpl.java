@@ -20,7 +20,7 @@ public class AccountRepositoryImpl implements AccountRepositoryCustom {
 
 
     @Override
-    public List<Account> findTopArtist(Pageable pageable, String interest) {
+    public List<Account> findTopArtist(String interest) {
         return queryFactory
                 .selectFrom(account)
                 .join(rank).on(rank.eq(account.rank))

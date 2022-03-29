@@ -14,7 +14,7 @@ public interface ArtWorkRepositoryCustom {
 
     List<ArtWorkBookMark> findArtWorkBookMarkByAccountId(Long lastArtWorkId, Pageable pageable, Long accountId);
 
-    List<ArtworkMain> findArtWorkByMostViewAndMostLike(String interest, Pageable pageable);
+    List<ArtworkMain> findArtWorkByMostViewAndMostLike(String interest);
 
     List<ArtworkMain> findAllArtWork(Long lastArtWorkId,String category, Pageable pageable,int sort);
 

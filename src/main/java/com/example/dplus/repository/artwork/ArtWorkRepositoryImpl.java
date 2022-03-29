@@ -72,7 +72,7 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
 
     //개선 필요
     @Override
-    public List<ArtworkMain> findArtWorkByMostViewAndMostLike(String interest, Pageable pageable) {
+    public List<ArtworkMain> findArtWorkByMostViewAndMostLike(String interest) {
         List<Long> Separator = queryFactory
                 .select(artWorks.id)
                 .from(artWorks)
@@ -119,8 +119,7 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
                     .from(artWorks)
                     .join(artWorks.account, account)
                     .leftJoin(artWorkLikes).on(artWorkLikes.artWorks.eq(artWorks))
-                    .offset(pageable.getOffset())
-                    .limit(pageable.getPageSize())
+                    .limit(10)
                     .groupBy(artWorks.id)
                     .where(artWorks.scope.isTrue())
                     .orderBy(artWorkLikes.count().desc(), artWorks.view.desc())
