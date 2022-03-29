@@ -42,13 +42,13 @@ public class FollowService {
         followRepository.deleteByFollowerIdAndFollowingId(accountId,account.getId());
     }
 
-    //accountId를 팔로잉 하고있는 사람들의 리스트
+    //accountId를 팔로우 하고있는 사람들의 리스트
     @Transactional(readOnly = true)
     public List<FollowResponseDto.FollowList> findFollowingList(Long accountId) {
         return followRepository.findAllByFollowingId(accountId);
     }
 
-    //accountId가 팔로잉 하고있는 사람들의 리스트
+    //accountId가 팔로우 하고있는 사람들의 리스트
     @Transactional(readOnly = true)
     public List<FollowResponseDto.FollowList> findFollowerList(Long accountId) {
         return followRepository.findAllByFollowerId(accountId);

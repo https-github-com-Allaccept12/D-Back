@@ -314,16 +314,17 @@ public class PostMainPageServiceImpl implements PostMainPageService{
         return postSimilarList;
     }
 
-        // #단위로 끊어서 해쉬태그 들어옴 (dto -> 받을 때)
-        private void setPostTag(List<CommonDto.PostTagDto> dto, Post post){
-            dto.forEach((tag) -> {
-                PostTag postTag = PostTag.builder()
-                        .post(post)
-                        .hashTag(tag.getTag())
-                        .build();
-                postTagRepository.save(postTag);
-            });
-        }
+    // #단위로 끊어서 해쉬태그 들어옴 (dto -> 받을 때)
+    private void setPostTag(List<CommonDto.PostTagDto> dto, Post post){
+        dto.forEach((tag) -> {
+            PostTag postTag = PostTag.builder()
+                    .post(post)
+                    .hashTag(tag.getTag())
+                    .build();
+            postTagRepository.save(postTag);
+        });
+    }
+    
     private void setCountList(List<PostResponseDto.PostPageMain> postList){
         postList.forEach((post) -> {
             Long bookmark_count = postBookMarkRepository.countByPostId(post.getPost_id());

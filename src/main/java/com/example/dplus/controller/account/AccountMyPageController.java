@@ -52,6 +52,7 @@ public class AccountMyPageController {
     @RequestMapping(value = "/history", method = {RequestMethod.POST, RequestMethod.PATCH})
     public ResponseEntity<Success> accountHistoryUpdate(@RequestBody HistoryUpdateList data,
                                                         @AuthenticationPrincipal UserDetailsImpl user) {
+
         accountMyPageService.updateAccountHistory(data,user.getUser().getId());
         return new ResponseEntity<>(new Success("연혁 수정",""),HttpStatus.OK);
     }
@@ -67,6 +68,7 @@ public class AccountMyPageController {
     @RequestMapping(value = "/intro", method = {RequestMethod.POST, RequestMethod.PATCH})
     public ResponseEntity<Success> accountIntro(@Valid @RequestBody UpdateAccountIntro data,
                                                 @AuthenticationPrincipal UserDetailsImpl user) {
+
         accountMyPageService.updateAccountIntro(data, user.getUser().getId());
         return new ResponseEntity<>(new Success("유저 소개 수정", ""), HttpStatus.OK);
     }

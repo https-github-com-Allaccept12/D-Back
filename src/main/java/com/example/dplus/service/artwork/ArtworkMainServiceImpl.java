@@ -55,7 +55,6 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
             Account account = accountRepository.findById(accountId).orElseThrow(() -> new ErrorCustomException(ErrorCode.NO_USER_ERROR));
             List<ArtworkMain> artWorkList = getArtworkList(account.getInterest());
             List<TopArtist> topArtist = getTopArtist(account.getInterest());
-
             isFollow(accountId,topArtist);
             setIsLike(accountId,artWorkList);
             return MainResponseDto.builder().artwork(artWorkList).top_artist(topArtist).build();
@@ -148,9 +147,9 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
 
     //작품 검색
     @Transactional(readOnly = true)
-    public List<ArtworkMain> findBySearchKeyWord(String keyword, Long lastArtWorkId, Long accountId) {
+    public List<ArtworkMain> findBySearchKeyWord(String keyword,Long lastArtWorkId,Long accountId) {
         Pageable pageable = PageRequest.of(0,10);
-        List<ArtworkMain> artWorkList = artWorkRepository.findBySearchKeyWord(keyword, lastArtWorkId, pageable);
+        List<ArtworkMain> artWorkList = artWorkRepository.findBySearchKeyWord(keyword,lastArtWorkId,pageable);
         if(accountId != null)
             setIsLike(accountId,artWorkList);
         return artWorkList;

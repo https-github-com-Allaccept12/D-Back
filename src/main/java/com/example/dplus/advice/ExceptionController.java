@@ -27,10 +27,10 @@ public class ExceptionController {
         return new ResponseEntity<>(restApiException, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<Fail> defaultException(Exception ex) {
-        Fail apiException = new Fail(ex.getMessage());
-        log.error(apiException.getMsg());
-        return new  ResponseEntity<>(apiException, HttpStatus.OK);
-    }
+//    @ExceptionHandler(Exception.class)
+//    public ResponseEntity<Fail> defaultException(Exception ex) {
+//        Fail apiException = new Fail(ex.getMessage());
+//        log.error(apiException.getMsg());
+//        return new  ResponseEntity<>(apiException, HttpStatus.OK);
+//    }
 }
