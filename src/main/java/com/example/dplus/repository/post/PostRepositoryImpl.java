@@ -25,7 +25,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
 
     // 전체 페이지 (최신순, 좋아요순)
     @Override
-    public List<PostResponseDto.PostPageMain> findAllPostOrderByCreatedDesc(Long lastPostId, Pageable pageable, String board, int sortSign, String category) {
+    public List<PostResponseDto.PostPageMain> findAllPostOrderByCreatedDesc(Long lastPostId, Pageable pageable, String board, String category) {
         return queryFactory
                 .select(Projections.constructor(PostResponseDto.PostPageMain.class,
                         post.id,
@@ -47,7 +47,34 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                 .where(isLastPostId(lastPostId), post.board.eq(PostBoard.valueOf(board)),
                         isCategory(category))
                 .groupBy(post.id)
-                .orderBy(isPostSort(sortSign))
+                .orderBy(post.created.desc())
+                .fetch();
+    }
+
+    @Override
+    public List<PostResponseDto.PostPageMain> findAllPostOrderByLikes(Pageable pageable, String board, String category) {
+        return queryFactory
+                .select(Projections.constructor(PostResponseDto.PostPageMain.class,
+                        post.id,
+                        account.id,
+                        account.nickname,
+                        account.profileImg,
+                        post.title,
+                        post.content,
+                        post.category,
+                        post.created,
+                        post.isSelected,
+                        postLikes.count()
+                ))
+                .from(post)
+                .join(account).on(account.id.eq(post.account.id))
+                .leftJoin(postLikes).on(postLikes.post.eq(post))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .where(post.board.eq(PostBoard.valueOf(board)),
+                        isCategory(category))
+                .groupBy(post.id)
+                .orderBy(postLikes.count().desc())
                 .fetch();
     }
 
@@ -123,10 +150,10 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .where(isLastPostId(lastPostId),post.board.eq(PostBoard.valueOf(board)),
-                        post.title.contains(keyword),
-                        post.account.nickname.contains(keyword),
-                        post.content.contains(keyword),
-                        postTag.hashTag.contains(keyword))
+                        (post.title.contains(keyword))
+                                .or(post.account.nickname.contains(keyword))
+                                .or(post.content.contains(keyword))
+                                .or(postTag.hashTag.contains(keyword)))
                 .groupBy(post.id)
                 .orderBy(post.created.desc())
                 .fetch();
@@ -235,9 +262,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                 .orderBy(post.created.desc())
                 .fetch();
     }
-    private OrderSpecifier<?> isPostSort(int sortSign) {
-        return sortSign == 1 ? post.created.desc() : postLikes.count().desc();
-    }
+
     private BooleanExpression isCategory(String category) {
         return category.isEmpty() ? null : post.category.eq(category);
     }

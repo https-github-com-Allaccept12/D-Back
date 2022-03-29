@@ -27,7 +27,6 @@ import java.util.List;
 @Slf4j
 public class PostMainController {
 
-    private final int SORT_SIGN_LATEST = 1;
     private final PostMainPageService postMainPageService;
 
     // 전체 목록
@@ -37,10 +36,19 @@ public class PostMainController {
                                             @PathVariable String board) {
 
             return new ResponseEntity<>(new Success("디플 메인 페이지",
-                    postMainPageService.showPostMain(account_id, last_post_id, board, "", SORT_SIGN_LATEST)), HttpStatus.OK);
-        }
+                    postMainPageService.showPostMain(account_id, last_post_id, board, "")), HttpStatus.OK);
+    }
 
-    // 전체 목록 (카테고리별)
+    // 전체 목록 (좋아요 순)
+    @GetMapping("/category/like/{category}/{last_post_id}/{board}")
+    public ResponseEntity<Success> postLikeMain(@RequestParam("account_id") Long account_id,
+                                                      @PathVariable String board) {
+
+        return new ResponseEntity<>(new Success("카테고리별 메인 페이지",
+                postMainPageService.showPostLikeMain(account_id, board, "")), HttpStatus.OK);
+    }
+
+    // 전체 목록 (카테고리별 + 최신순)
     @GetMapping("/category/{category}/{last_post_id}/{board}")
     public ResponseEntity<Success> postMainByCategory(@RequestParam("account_id") Long account_id,
                                                       @PathVariable String category,
@@ -48,19 +56,17 @@ public class PostMainController {
                                                       @PathVariable String board) {
 
         return new ResponseEntity<>(new Success("카테고리별 메인 페이지",
-                postMainPageService.showPostMain(account_id, last_post_id, board, category, SORT_SIGN_LATEST)), HttpStatus.OK);
+                postMainPageService.showPostMain(account_id, last_post_id, board, category)), HttpStatus.OK);
     }
 
     // 카테고리별 정렬 + 좋아요
     @GetMapping("/sort/{category}/{sortsign}/{last_post_id}/{board}")
     public ResponseEntity<Success> postSortByCatetory(@RequestParam("account_id") Long account_id,
-                                                      @PathVariable int sortsign,
-                                                      @PathVariable Long last_post_id,
                                                       @PathVariable String board,
                                                       @PathVariable String category) {
 
         return new ResponseEntity<>(new Success("카테고리별 정렬한 디플페이지",
-                postMainPageService.showPostMain(account_id, last_post_id, board, category, sortsign)), HttpStatus.OK);
+                postMainPageService.showPostLikeMain(account_id, board, category)), HttpStatus.OK);
     }
 
     // 상세 목록
@@ -74,7 +80,7 @@ public class PostMainController {
     // 게시물 등록
     @PostMapping("")
     public ResponseEntity<Success> createPost(@AuthenticationPrincipal UserDetailsImpl user,
-                                              @Valid @RequestPart PostRequestDto.PostCreate data,
+                                              @RequestPart PostRequestDto.PostCreate data,
                                               @RequestPart(required = false) List<MultipartFile> imgFile) {
 
         if (user != null) {
@@ -88,7 +94,7 @@ public class PostMainController {
     @PatchMapping("/{post_id}")
     public ResponseEntity<Success> updatePost(@AuthenticationPrincipal UserDetailsImpl user,
                                               @PathVariable Long post_id,
-                                              @Valid @RequestPart PostRequestDto.PostUpdate data,
+                                              @RequestPart PostRequestDto.PostUpdate data,
                                               @RequestPart(required = false) List<MultipartFile> imgFile) {
 
         if (user != null) {

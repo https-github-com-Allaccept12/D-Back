@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import javax.xml.stream.events.Comment;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -417,7 +418,7 @@ public class PostResponseDto {
         private String category;
         private Timestamp create_time;
         private Boolean is_selected;
-        private List<PostTag> hash_tag;
+        private List<CommonDto.PostTagDto> hash_tag;
         private Long bookmark_count;
         private Long like_count;
         private Long comment_count;
@@ -430,9 +431,7 @@ public class PostResponseDto {
         public PostSearchMain(final Long post_id, final Long account_id, final String account_nickname,
                             final String account_profile_img, final String title,
                             final String content, final String category,
-                            final Timestamp create_time, final Boolean is_selected
-//                            final List<PostTag> hash_tag
-        ) {
+                            final Timestamp create_time, final Boolean is_selected) {
 
             this.post_id = post_id;
             this.account_id = account_id;
@@ -443,7 +442,6 @@ public class PostResponseDto {
             this.category = category;
             this.create_time = create_time;
             this.is_selected = is_selected;
-            //this.hash_tag = hash_tag;
         }
 
         public void setCountList(Long bookmark_count, Long comment_count, Long like_count){
@@ -455,6 +453,10 @@ public class PostResponseDto {
         public void setIsLikeAndBookmark(Boolean is_like, Boolean is_bookmark){
             this.is_like = is_like;
             this.is_bookmark = is_bookmark;
+        }
+
+        public void setHash_tag(List<CommonDto.PostTagDto> hash_tag) {
+            this.hash_tag = hash_tag;
         }
     }
 }

@@ -11,6 +11,8 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -45,6 +47,9 @@ public class Post extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     private PostBoard board;
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE)
+    private List<PostTag> postTagList = new ArrayList<>();
 
 
     @Builder

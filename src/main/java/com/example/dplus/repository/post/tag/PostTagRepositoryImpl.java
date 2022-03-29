@@ -22,7 +22,7 @@ public class PostTagRepositoryImpl implements PostTagRepositoryCustom {
                 .select(Projections.constructor(CommonDto.PostTagDto.class,
                         postTag.hashTag))
                 .from(postTag)
-                .join(post).on(post.id.eq(postTag.post.id))
+                .join(post).on(post.eq(postTag.post))
                 .fetch();
     }
 }
