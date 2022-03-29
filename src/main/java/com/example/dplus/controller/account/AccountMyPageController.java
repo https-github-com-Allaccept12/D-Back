@@ -27,29 +27,31 @@ public class AccountMyPageController {
 
 
     @GetMapping("")
-    public ResponseEntity<Success> accountInfo(@RequestParam("account_id") Long accountId,
+    public ResponseEntity<Success> accountInfo(@AuthenticationPrincipal UserDetailsImpl user,
                                                @RequestParam("owner_account_id") Long ownerAccountId) {
-
+        Long accountId = getaLong(user);
         return new ResponseEntity<>(new Success("마이페이지 기본정보 조회",
                 accountMyPageService.showAccountInfo(accountId, ownerAccountId)), HttpStatus.OK);
     }
 
     @GetMapping("/career-feed/{last_artwork_id}")
-    public ResponseEntity<Success> accountCareerFeed(@RequestParam("account_id") Long accountId,
+    public ResponseEntity<Success> accountCareerFeed(@AuthenticationPrincipal UserDetailsImpl user,
                                                      @RequestParam("owner_account_id") Long ownerAccountId,
                                                      @PathVariable Long last_artwork_id) {
+        Long accountId = getaLong(user);
         return new ResponseEntity<>(new Success("마이페이지 커리어피드 조회",
                 accountMyPageService.showAccountCareerFeed(last_artwork_id,ownerAccountId,accountId)), HttpStatus.OK);
     }
 
     @GetMapping("/history")
-    public ResponseEntity<Success> accountHistory(@RequestParam("account_id") Long accountId) {
+    public ResponseEntity<Success> accountHistory(@RequestParam("owner_account_id") Long accountId) {
+
         return new ResponseEntity<>(new Success("마이페이지 연혁 조회",
                 accountMyPageService.showAccountHistory(accountId)), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/history", method = {RequestMethod.POST, RequestMethod.PATCH})
-    public ResponseEntity<Success> accountHistoryUpdate(@RequestBody HistoryUpdateList data,
+    public ResponseEntity<Success> accountHistoryUpdate(@Valid @RequestBody HistoryUpdateList data,
                                                         @AuthenticationPrincipal UserDetailsImpl user) {
 
         accountMyPageService.updateAccountHistory(data,user.getUser().getId());
@@ -58,8 +60,9 @@ public class AccountMyPageController {
 
     @GetMapping("/artwork/{last_artwork_id}")
     public ResponseEntity<Success> accountArtWorkList(@PathVariable Long last_artwork_id,
-                                                      @RequestParam("account_id") Long accountId,
+                                                      @AuthenticationPrincipal UserDetailsImpl user,
                                                       @RequestParam("owner_account_id") Long ownerAccountId) {
+        Long accountId = getaLong(user);
         return new ResponseEntity<>(new Success("유저 작품 목록",
                 accountMyPageService.showAccountArtWork(last_artwork_id,ownerAccountId,accountId)),HttpStatus.OK);
     }
@@ -143,5 +146,13 @@ public class AccountMyPageController {
     public ResponseEntity<Success> getMyComment(@AuthenticationPrincipal UserDetailsImpl user) {
         return new ResponseEntity<>(new Success("나의 댓글",accountMyPageService.getMyComment(user.getUser().getId())),HttpStatus.OK);
     }
-    
+    private Long getaLong(UserDetailsImpl user) {
+        Long accountId ;
+        if (user != null) {
+            accountId = user.getUser().getId();
+        } else {
+            accountId = 0L;
+        }
+        return accountId;
+    }
 }
