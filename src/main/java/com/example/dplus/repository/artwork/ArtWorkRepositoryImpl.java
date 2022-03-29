@@ -240,7 +240,8 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
     }
 
     @Override
-    public List<ArtworkMain> findBySearchKeyWord(String keyword, Long lastArtWorkId, Pageable pageable) {
+    public List<ArtworkMain> findBySearchKeyWord(String keyword,Long lastArtWorkId, Pageable pageable) {
+
         return queryFactory
                 .select(Projections.constructor(ArtworkMain.class,
                         artWorks.id,
@@ -258,10 +259,10 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .where(isLastArtworkId(lastArtWorkId),
-                        artWorks.title.contains(keyword),
-                        artWorks.content.contains(keyword),
-                        artWorks.account.nickname.contains(keyword),
-                        artWorks.scope.isTrue())
+                        (artWorks.title.contains(keyword)
+                                .or(artWorks.content.contains(keyword))
+                                .or(artWorks.account.nickname.contains(keyword)))
+                        .and(artWorks.scope.isTrue()))
                 .groupBy(artWorks.id)
                 .orderBy(artWorks.created.desc())
                 .fetch();

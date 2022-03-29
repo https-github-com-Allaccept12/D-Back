@@ -20,7 +20,7 @@ public interface ArtWorkRepositoryCustom {
 
     List<ArtWorkSimilarWork> findSimilarArtWork(Long accountId, Long artWorkId, Pageable pageable);
 
-    List<ArtworkMain> findBySearchKeyWord(String keyword, Long lastArtWorkId, Pageable pageable);
+    List<ArtworkMain> findBySearchKeyWord(String keyword,Long lastArtWorkId,Pageable pageable);
 
     ArtWorkSubDetail findByArtWorkSubDetail(Long artworkId);
 

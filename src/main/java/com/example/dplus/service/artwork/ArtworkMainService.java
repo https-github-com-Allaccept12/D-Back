@@ -24,7 +24,7 @@ public interface ArtworkMainService {
 
     MainResponseDto mostPopularArtWork(Long accountId);
 
-    List<ArtworkMain> findBySearchKeyWord(String keyword, Long lastArtWorkId, Long accountId);
+    List<ArtworkMain> findBySearchKeyWord(String keyword,Long lastId,  Long accountId);
 
     List<ArtworkMain> findByFollowerArtWork(Long accountId,String category, Long lastArtWorkId);
 
