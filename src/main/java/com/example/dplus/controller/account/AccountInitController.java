@@ -16,8 +16,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.validation.Valid;
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
@@ -27,7 +25,7 @@ public class AccountInitController {
 
     //프로필 설정
     @PostMapping("/profile")
-    public ResponseEntity<Success<Long>> initProfile(@Valid @RequestPart InitProfileSetting data,
+    public ResponseEntity<Success<Long>> initProfile(@RequestPart InitProfileSetting data,
                                                      @RequestPart MultipartFile imgFile,
                                                      @AuthenticationPrincipal UserDetailsImpl user) {
         if (imgFile != null) {
@@ -38,7 +36,7 @@ public class AccountInitController {
     }
     //프로필 수정
     @PatchMapping("/profile")
-    public ResponseEntity<Success<Long>> updateProfile(@Valid @RequestPart InitProfileSetting data,
+    public ResponseEntity<Success<Long>> updateProfile(@RequestPart InitProfileSetting data,
                                                        @RequestPart MultipartFile imgFile,
                                                        @AuthenticationPrincipal UserDetailsImpl user) {
 

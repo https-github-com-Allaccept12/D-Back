@@ -64,9 +64,18 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
     }
     //둘러보기
     @Transactional(readOnly = true)
-    public List<ArtworkMain> showArtworkMain(Long accountId, Long lastArtWorkId,String category,int sortSign){
+    public List<ArtworkMain> showArtworkMain(Long accountId, Long lastArtWorkId,String category){
         Pageable pageable = PageRequest.of(0,10);
-        List<ArtworkMain> artWorkList = artWorkRepository.findAllArtWork(lastArtWorkId,category,pageable,sortSign);
+        List<ArtworkMain> artWorkList = artWorkRepository.findAllArtWork(lastArtWorkId,category,pageable);
+        if (accountId != 0)
+            setIsLike(accountId, artWorkList);
+        return artWorkList;
+    }
+
+    @Transactional(readOnly = true)
+    public List<ArtworkMain> showArtWorkLikeSort(Long accountId, String category,int start) {
+        Pageable pageable = PageRequest.of(start,10);
+        List<ArtworkMain> artWorkList = artWorkRepository.showArtWorkLikeSort(category,pageable);
         if (accountId != 0)
             setIsLike(accountId, artWorkList);
         return artWorkList;
@@ -199,16 +208,14 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
         }
     }
     private List<TopArtist> getTopArtist(String interest) {
-        Pageable pageable = PageRequest.of(0, 10);
-        List<Account> topArtist = accountRepository.findTopArtist(pageable, interest);
+        List<Account> topArtist = accountRepository.findTopArtist(interest);
         return topArtist.stream()
                 .map(TopArtist::new)
                 .collect(Collectors.toList());
     }
 
     private List<ArtworkMain> getArtworkList(String interest) {
-        Pageable pageable = PageRequest.of(0,10);
-        return artWorkRepository.findArtWorkByMostViewAndMostLike(interest,pageable);
+        return artWorkRepository.findArtWorkByMostViewAndMostLike(interest);
     }
 
     private ArtWorks artworkValidation(Long accountId, Long artworkId){

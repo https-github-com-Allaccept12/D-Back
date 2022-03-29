@@ -4,7 +4,6 @@ import com.example.dplus.domain.account.Account;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -20,7 +19,7 @@ public class AccountRepositoryImpl implements AccountRepositoryCustom {
 
 
     @Override
-    public List<Account> findTopArtist(Pageable pageable, String interest) {
+    public List<Account> findTopArtist(String interest) {
         return queryFactory
                 .selectFrom(account)
                 .join(rank).on(rank.eq(account.rank))

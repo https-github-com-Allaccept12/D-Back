@@ -12,7 +12,9 @@ import java.util.List;
 
 public interface ArtworkMainService {
 
-    List<ArtworkMain> showArtworkMain(Long accountId, Long artworkId,String category, int sort);
+    List<ArtworkMain> showArtworkMain(Long accountId, Long artworkId,String category);
+
+    List<ArtworkMain> showArtWorkLikeSort(Long accountId, String category,int start );
 
     int createArtwork(Long accountId, ArtWorkCreate artWorkCreate, List<MultipartFile> multipartFiles);
 
