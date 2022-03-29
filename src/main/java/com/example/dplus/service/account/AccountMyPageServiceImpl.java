@@ -1,19 +1,10 @@
 package com.example.dplus.service.account;
 
-import com.example.dplus.repository.account.follow.FollowRepository;
-import com.example.dplus.domain.account.History;
-import com.example.dplus.repository.account.history.HistoryRepository;
-import com.example.dplus.repository.post.answer.PostAnswerRepository;
-import com.example.dplus.repository.post.bookmark.PostBookMarkRepository;
-import com.example.dplus.repository.post.comment.PostCommentRepository;
-import com.example.dplus.advice.ErrorCustomException;
 import com.example.dplus.advice.ErrorCode;
+import com.example.dplus.advice.ErrorCustomException;
 import com.example.dplus.domain.account.Account;
-import com.example.dplus.repository.account.AccountRepository;
-import com.example.dplus.repository.artwork.ArtWorkRepository;
+import com.example.dplus.domain.account.History;
 import com.example.dplus.domain.artwork.ArtWorks;
-import com.example.dplus.repository.post.PostRepository;
-import com.example.dplus.dto.request.AccountRequestDto;
 import com.example.dplus.dto.request.AccountRequestDto.UpdateAccountIntro;
 import com.example.dplus.dto.request.AccountRequestDto.UpdateSpecialty;
 import com.example.dplus.dto.request.ArtWorkRequestDto.ArtWorkPortFolioUpdate;
@@ -22,6 +13,14 @@ import com.example.dplus.dto.response.AccountResponseDto;
 import com.example.dplus.dto.response.AccountResponseDto.AccountInfo;
 import com.example.dplus.dto.response.ArtWorkResponseDto;
 import com.example.dplus.dto.response.HistoryResponseDto;
+import com.example.dplus.repository.account.AccountRepository;
+import com.example.dplus.repository.account.follow.FollowRepository;
+import com.example.dplus.repository.account.history.HistoryRepository;
+import com.example.dplus.repository.artwork.ArtWorkRepository;
+import com.example.dplus.repository.post.PostRepository;
+import com.example.dplus.repository.post.answer.PostAnswerRepository;
+import com.example.dplus.repository.post.bookmark.PostBookMarkRepository;
+import com.example.dplus.repository.post.comment.PostCommentRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -147,13 +146,6 @@ public class AccountMyPageServiceImpl implements AccountMyPageService {
     public List<ArtWorkResponseDto.ArtWorkBookMark> showAccountArtWorkBookMark(Long lastArtWorkId,final Long accountId) {
         Pageable pageable = PageRequest.of(0,10);
         return artWorkRepository.findArtWorkBookMarkByAccountId(lastArtWorkId,pageable,accountId);
-    }
-
-    //마이페이지 대표작품 설정/수정
-    @Transactional
-    public void setAccountMasterPiece(final Long accountId, final AccountRequestDto.setAccountMasterPiece materPiece) {
-        Account account = getAccount(accountId);
-//        account.setBestArtWork(materPiece.getImg_url_fir(),materPiece.getImg_url_sec());
     }
 
     @Transactional(readOnly = true)

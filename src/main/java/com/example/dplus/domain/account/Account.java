@@ -2,6 +2,7 @@ package com.example.dplus.domain.account;
 
 
 import com.example.dplus.domain.BaseEntity;
+import com.example.dplus.domain.artwork.ArtWorks;
 import com.example.dplus.dto.request.AccountRequestDto.InitProfileSetting;
 import com.example.dplus.dto.request.AccountRequestDto.UpdateAccountIntro;
 import com.example.dplus.dto.request.AccountRequestDto.UpdateSpecialty;
@@ -12,6 +13,8 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -65,9 +68,8 @@ public class Account extends BaseEntity {
 
     private String job;
 
-//    private String bestArtWorkOne;
-//    private String bestArtWorkTwo;
     private int artWorkCreateCount;
+
     private int postCreateCount;
 
     private String specialty;
@@ -75,6 +77,9 @@ public class Account extends BaseEntity {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "rank_id",nullable = false)
     private Rank rank;
+
+    @OneToMany(mappedBy = "account")
+    private List<ArtWorks> artWorksList = new ArrayList<>();
 
     private String other;
 
@@ -127,10 +132,6 @@ public class Account extends BaseEntity {
     public void upPostCountCreate() {
         this.postCreateCount += 1;
     }
-//    public void setBestArtWork(String bestArtWorkOne, String bestArtWorkTwo) {
-//        this.bestArtWorkOne = bestArtWorkOne;
-//        this.bestArtWorkTwo = bestArtWorkTwo;
-//    }
 
     public void updateProfileImg(String profileImg) {
         this.profileImg = profileImg;
@@ -145,7 +146,7 @@ public class Account extends BaseEntity {
         this.linkedIn = dto.getLinked_in();
         this.brunch = dto.getBrunch();
         this.instagram = dto.getInsta();
-        this.phoneNumber =dto.getPhone_number();
+        this.phoneNumber = dto.getPhone_number();
     }
     public void updateIntro(final UpdateAccountIntro dto) {
         this.titleContent = dto.getTitle_content();

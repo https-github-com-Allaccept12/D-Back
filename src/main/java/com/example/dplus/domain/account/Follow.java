@@ -11,6 +11,10 @@ import javax.persistence.*;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+//@Table(
+//        name = "follow_follwing_group",
+//        indexes = {@Index(columnList = )}
+//)
 public class Follow {
 
     @Id

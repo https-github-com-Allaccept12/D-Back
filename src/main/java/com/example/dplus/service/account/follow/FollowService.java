@@ -23,32 +23,32 @@ public class FollowService {
 
     @Transactional
     public void follow(Long following_id, Long accountId) {
-        Account account = getAccount(accountId);
+        Account account = getAccount(following_id);
         if (followRepository.existsByFollowerIdAndFollowingId(account.getId(),following_id)) {
             throw new ErrorCustomException(ErrorCode.EXIST_FOLLOW_ERROR);
         }
         account.getRank().upRankScore();
-        final Follow follow = Follow.builder().followerId(account.getId()).followingId(following_id).build();
+        final Follow follow = Follow.builder().followerId(accountId).followingId(following_id).build();
         followRepository.save(follow);
     }
 
     @Transactional
     public void unFollow(Long unFollowing_id, Long accountId) {
-        Account account = getAccount(accountId);
+        Account account = getAccount(unFollowing_id);
         if (!followRepository.existsByFollowerIdAndFollowingId(account.getId(), unFollowing_id)) {
           throw new ErrorCustomException(ErrorCode.EXIST_FOLLOW_ERROR);
         }
         account.getRank().downRankScore();
-        followRepository.deleteByFollowerIdAndFollowingId(account.getId(),unFollowing_id);
+        followRepository.deleteByFollowerIdAndFollowingId(accountId,account.getId());
     }
 
-    //accountId를 팔로잉 하고있는 사람들의 리스트
+    //accountId를 팔로우 하고있는 사람들의 리스트
     @Transactional(readOnly = true)
     public List<FollowResponseDto.FollowList> findFollowingList(Long accountId) {
         return followRepository.findAllByFollowingId(accountId);
     }
 
-    //accountId가 팔로잉 하고있는 사람들의 리스트
+    //accountId가 팔로우 하고있는 사람들의 리스트
     @Transactional(readOnly = true)
     public List<FollowResponseDto.FollowList> findFollowerList(Long accountId) {
         return followRepository.findAllByFollowerId(accountId);

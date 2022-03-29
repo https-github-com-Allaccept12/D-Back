@@ -1,11 +1,14 @@
 package com.example.dplus.dto.response;
 
 import com.example.dplus.domain.account.Account;
+import com.example.dplus.domain.artwork.ArtWorks;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class AccountResponseDto {
 
@@ -32,13 +35,14 @@ public class AccountResponseDto {
         private String specialty;
         private String other_specialty;
         private Boolean is_mypage;
+        private String job;
 
         @Builder
         public AccountInfo(final Long account_id,final String nickname,final String profile_img,final Long exp,
                                  final String tendency,final String title_content,final String sub_content,
                                  final String linked_in,final String brunch,final String insta, String work_email,
                                  final String work_time,final Long follower_count,final Long following_count,final boolean is_follow,
-                                 final String specialty, final boolean is_mypage, final String other) {
+                                 final String specialty, final boolean is_mypage, final String other, final String job) {
             this.account_id = account_id;
             this.nickname = nickname;
             this.profile_img = profile_img;
@@ -57,6 +61,7 @@ public class AccountResponseDto {
             this.specialty = specialty;
             this.is_mypage = is_mypage;
             this.other_specialty = other;
+            this.job = job;
         }
         public static AccountInfo from(final Account account, final Long follower, final Long following,
                                        final Boolean is_follow, final Boolean is_mypage) {
@@ -79,6 +84,7 @@ public class AccountResponseDto {
                     .specialty(account.getSpecialty())
                     .is_mypage(is_mypage)
                     .other(account.getOther())
+                    .job(account.getJob())
                     .build();
         }
     }
@@ -90,29 +96,27 @@ public class AccountResponseDto {
         private Long account_id;
         private String account_nickname;
         private String account_profile;
-        private String img_url_fir;
-        private String img_url_sec;
         private String account_job;
         private Boolean is_follow = false;
-        private String firstArtwork;
-        private String secondArtwork;
+        private List<String> artWorks ;
 
         @Builder
-        public TopArtist(final Long account_id, final String account_nickname, final String account_profile,
-                         final String account_job,final String img_url_fir, final  String img_url_sec,
-                         final String firstArtwork, final String secondArtwork) {
-            this.account_id = account_id;
-            this.account_nickname = account_nickname;
-            this.account_profile = account_profile;
-            this.account_job = account_job;
-            this.img_url_fir = img_url_fir;
-            this.img_url_sec = img_url_sec;
-            this.firstArtwork = firstArtwork;
-            this.secondArtwork = secondArtwork;
+        public TopArtist(final Account account) {
+            this.account_id = account.getId();
+            this.account_nickname = account.getNickname();
+            this.account_profile = account.getProfileImg();
+            this.account_job = account.getJob();
+            this.artWorks = account.getArtWorksList().stream()
+                    .map(ArtWorks::getThumbnail)
+                    .limit(2)
+                    .collect(Collectors.toList());
+
         }
         public void setIsFollow() {
             this.is_follow = true;
         }
+
+
 
     }
 

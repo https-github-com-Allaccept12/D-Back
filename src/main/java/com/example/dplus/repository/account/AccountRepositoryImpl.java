@@ -1,7 +1,6 @@
 package com.example.dplus.repository.account;
 
-import com.example.dplus.dto.response.AccountResponseDto;
-import com.querydsl.core.types.Projections;
+import com.example.dplus.domain.account.Account;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,27 +13,18 @@ import static com.example.dplus.domain.account.QRank.rank;
 
 @RequiredArgsConstructor
 @Slf4j
-public class AccountRepositoryImpl implements AccountRepositoryCustom{
+public class AccountRepositoryImpl implements AccountRepositoryCustom {
+
 
     private final JPAQueryFactory queryFactory;
 
 
     @Override
-    public List<AccountResponseDto.TopArtist> findTopArtist(Pageable pageable,String interest) {
+    public List<Account> findTopArtist(Pageable pageable, String interest) {
         return queryFactory
-                .select(
-                        Projections.constructor(AccountResponseDto.TopArtist.class,
-                                account.id,
-                                account.nickname,
-                                account.profileImg,
-                                account.job
-//                                account.bestArtWorkOne,
-//                                account.bestArtWorkTwo
-                                ))
-                .from(account)
+                .selectFrom(account)
                 .join(rank).on(rank.eq(account.rank))
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
+                .limit(10)
                 .orderBy(rank.rankScore.desc())
                 .fetch();
     }
@@ -43,7 +33,7 @@ public class AccountRepositoryImpl implements AccountRepositoryCustom{
     public void accountCreateCountInitialization() {
         queryFactory
                 .update(account)
-                .set(account.artWorkCreateCount,0)
+                .set(account.artWorkCreateCount, 0)
                 .set(account.postCreateCount, 0)
                 .execute();
     }

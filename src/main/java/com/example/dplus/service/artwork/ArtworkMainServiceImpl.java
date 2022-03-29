@@ -30,6 +30,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -144,9 +145,9 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
 
     //작품 검색
     @Transactional(readOnly = true)
-    public List<ArtworkMain> findBySearchKeyWord(String keyword, Long lastArtWorkId, Long accountId) {
+    public List<ArtworkMain> findBySearchKeyWord(String keyword,Long lastArtWorkId,Long accountId) {
         Pageable pageable = PageRequest.of(0,10);
-        List<ArtworkMain> artWorkList = artWorkRepository.findBySearchKeyWord(keyword, lastArtWorkId, pageable);
+        List<ArtworkMain> artWorkList = artWorkRepository.findBySearchKeyWord(keyword,lastArtWorkId,pageable);
         if(accountId != null)
             setIsLike(accountId,artWorkList);
         return artWorkList;
@@ -198,8 +199,11 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
         }
     }
     private List<TopArtist> getTopArtist(String interest) {
-        Pageable pageable = PageRequest.of(0,10);
-        return accountRepository.findTopArtist(pageable,interest);
+        Pageable pageable = PageRequest.of(0, 10);
+        List<Account> topArtist = accountRepository.findTopArtist(pageable, interest);
+        return topArtist.stream()
+                .map(TopArtist::new)
+                .collect(Collectors.toList());
     }
 
     private List<ArtworkMain> getArtworkList(String interest) {
