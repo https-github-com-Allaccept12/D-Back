@@ -64,9 +64,18 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
     }
     //둘러보기
     @Transactional(readOnly = true)
-    public List<ArtworkMain> showArtworkMain(Long accountId, Long lastArtWorkId,String category,int sortSign){
+    public List<ArtworkMain> showArtworkMain(Long accountId, Long lastArtWorkId,String category){
         Pageable pageable = PageRequest.of(0,10);
-        List<ArtworkMain> artWorkList = artWorkRepository.findAllArtWork(lastArtWorkId,category,pageable,sortSign);
+        List<ArtworkMain> artWorkList = artWorkRepository.findAllArtWork(lastArtWorkId,category,pageable);
+        if (accountId != 0)
+            setIsLike(accountId, artWorkList);
+        return artWorkList;
+    }
+
+    @Transactional(readOnly = true)
+    public List<ArtworkMain> showArtWorkLikeSort(Long accountId, String category,int start) {
+        Pageable pageable = PageRequest.of(start,10);
+        List<ArtworkMain> artWorkList = artWorkRepository.showArtWorkLikeSort(category,pageable);
         if (accountId != 0)
             setIsLike(accountId, artWorkList);
         return artWorkList;

@@ -100,7 +100,7 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
                     .where(isInterest(interest),
                             artWorks.scope.isTrue())
                     .groupBy(artWorks.id)
-                    .orderBy(artWorkLikes.count().desc(), artWorks.view.desc())
+                    .orderBy(artWorkLikes.count().desc())
                     .fetch();
         }
             return queryFactory
@@ -123,11 +123,11 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
                     .limit(pageable.getPageSize())
                     .groupBy(artWorks.id)
                     .where(artWorks.scope.isTrue())
-                    .orderBy(artWorkLikes.count().desc(), artWorks.view.desc())
+                    .orderBy(artWorkLikes.count().desc())
                     .fetch();
     }
     @Override
-    public List<ArtworkMain> findAllArtWork(Long lastArtworkId, String category, Pageable paging,int sortSign) {
+    public List<ArtworkMain> findAllArtWork(Long lastArtworkId, String category, Pageable paging) {
         return queryFactory
                 .select(Projections.constructor(ArtworkMain.class,
                         artWorks.id,
@@ -149,11 +149,35 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
                         isCategory(category),
                         artWorks.scope.isTrue())
                 .groupBy(artWorks.id)
-                .orderBy(isArtWorkSort(sortSign))
+                .orderBy(artWorks.created.desc())
                 .fetch();
     }
 
-
+    @Override
+    public List<ArtworkMain> showArtWorkLikeSort(String category, Pageable pageable) {
+        return queryFactory
+                .select(Projections.constructor(ArtworkMain.class,
+                        artWorks.id,
+                        account.id,
+                        account.nickname,
+                        account.profileImg,
+                        artWorks.thumbnail,
+                        artWorks.view,
+                        artWorkLikes.count(),
+                        artWorks.category,
+                        artWorks.created
+                ))
+                .from(artWorks)
+                .join(account).on(account.id.eq(artWorks.account.id))
+                .leftJoin(artWorkLikes).on(artWorkLikes.artWorks.eq(artWorks))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .where(isCategory(category),
+                        artWorks.scope.isTrue())
+                .groupBy(artWorks.id)
+                .orderBy(artWorkLikes.count().desc())
+                .fetch();
+    }
 
     @Override
     public List<ArtworkMain> findByFollowerArtWork(Long accountId,String category, Long lastArtWorkId, Pageable paging) {

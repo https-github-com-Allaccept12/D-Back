@@ -24,7 +24,6 @@ import java.util.List;
 @Slf4j
 public class ArtWorkMainController {
 
-    private final int SORT_SIGN_LATEST = 1;
     private final ArtworkMainService artworkMainService;
 
     @RequestMapping(value = "/",method = RequestMethod.GET)
@@ -38,7 +37,7 @@ public class ArtWorkMainController {
                                                @PathVariable Long last_artwork_id) {
 
         return new ResponseEntity<>(new Success("둘러보기",
-                artworkMainService.showArtworkMain(accountId,last_artwork_id,"",SORT_SIGN_LATEST)),HttpStatus.OK);
+                artworkMainService.showArtworkMain(accountId,last_artwork_id,"")),HttpStatus.OK);
     }
 
     @GetMapping("/api/artwork/category/{category}/{last_artwork_id}")
@@ -47,17 +46,16 @@ public class ArtWorkMainController {
                                                    @PathVariable Long last_artwork_id) {
 
         return new ResponseEntity<>(new Success("카테고리별 작업물",
-                artworkMainService.showArtworkMain(accountId,last_artwork_id,category,SORT_SIGN_LATEST)),HttpStatus.OK);
+                artworkMainService.showArtworkMain(accountId,last_artwork_id,category)),HttpStatus.OK);
     }
 
-    @GetMapping("/api/artwork/sort/{category}/{sortsign}/{last_artwork_id}")
-    public ResponseEntity<Success> artWorkSort(@RequestParam("account_id") Long accountId,
-                                               @PathVariable int sortsign,
-                                               @PathVariable Long last_artwork_id,
-                                               @PathVariable String category) {
+    @GetMapping("/api/artwork/sort/{category}")
+    public ResponseEntity<Success> artWorkLikeSort(@RequestParam("account_id") Long accountId,
+                                               @PathVariable String category,
+                                               @RequestParam("start") int start) {
 
-        return new ResponseEntity<>(new Success("카테고리별 정렬한 작업물",
-                artworkMainService.showArtworkMain(accountId,last_artwork_id,category,sortsign)),HttpStatus.OK);
+        return new ResponseEntity<>(new Success("좋아요 정렬한 작업물",
+                artworkMainService.showArtWorkLikeSort(accountId,category,start)),HttpStatus.OK);
     }
 
     @GetMapping("/api/artwork/sort-follow/{category}/{last_artwork_id}")
