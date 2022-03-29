@@ -74,7 +74,7 @@ public class PostMainController {
     // 게시물 등록
     @PostMapping("")
     public ResponseEntity<Success> createPost(@AuthenticationPrincipal UserDetailsImpl user,
-                                              @RequestPart PostRequestDto.PostCreate data,
+                                              @Valid @RequestPart PostRequestDto.PostCreate data,
                                               @RequestPart(required = false) List<MultipartFile> imgFile) {
 
         if (user != null) {

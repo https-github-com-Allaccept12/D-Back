@@ -33,12 +33,12 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
 import java.util.List;
 
-import static com.code.domain.account.QAccount.account;
-import static com.code.domain.account.follow.QFollow.follow;
-import static com.code.domain.artwork.QArtWorks.artWorks;
-import static com.code.domain.artwork.bookmark.QArtWorkBookMark.artWorkBookMark;
-import static com.code.domain.artwork.image.QArtWorkImage.artWorkImage;
-import static com.code.domain.artwork.like.QArtWorkLikes.artWorkLikes;
+import static com.example.dplus.domain.account.QAccount.account;
+import static com.example.dplus.domain.account.QFollow.follow;
+import static com.example.dplus.domain.artwork.QArtWorkBookMark.artWorkBookMark;
+import static com.example.dplus.domain.artwork.QArtWorkImage.artWorkImage;
+import static com.example.dplus.domain.artwork.QArtWorkLikes.artWorkLikes;
+import static com.example.dplus.domain.artwork.QArtWorks.artWorks;
 import static org.assertj.core.api.Assertions.assertThat;
 
 

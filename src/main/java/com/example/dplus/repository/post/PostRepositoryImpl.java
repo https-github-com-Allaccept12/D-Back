@@ -69,10 +69,10 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                         postLikes.count()
                 ))
                 .from(post)
-                .groupBy(post.id)
                 .innerJoin(post.account, account)
                 .leftJoin(postLikes).on(postLikes.post.eq(post))
                 .where(post.id.eq(postId))
+                .groupBy(post.id)
                 .fetchOne();
     }
 
@@ -102,10 +102,11 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                 .fetchOne();
     }
 
+    // 태그로도 검색 필요
     @Override
-    public List<PostResponseDto.PostPageMain> findPostBySearchKeyWord(String keyword, Long lastPostId, Pageable pageable, String board) {
+    public List<PostResponseDto.PostSearchMain> findPostBySearchKeyWord(String keyword, Long lastPostId, Pageable pageable, String board) {
         return queryFactory
-                .select(Projections.constructor(PostResponseDto.PostPageMain.class,
+                .select(Projections.constructor(PostResponseDto.PostSearchMain.class,
                         post.id,
                         account.id,
                         account.nickname,
@@ -114,11 +115,11 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                         post.content,
                         post.category,
                         post.created,
-                        postTag.hashTag
+                        post.isSelected
                         ))
                 .from(post)
                 .join(account).on(account.id.eq(post.account.id))
-                .leftJoin(postTag).on(postTag.post.eq(post))
+                .leftJoin(postTag).on(postTag.post.id.eq(post.id))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .where(isLastPostId(lastPostId),post.board.eq(PostBoard.valueOf(board)),
@@ -126,6 +127,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                         post.account.nickname.contains(keyword),
                         post.content.contains(keyword),
                         postTag.hashTag.contains(keyword))
+                .groupBy(post.id)
                 .orderBy(post.created.desc())
                 .fetch();
     }

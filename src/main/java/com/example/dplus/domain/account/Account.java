@@ -65,8 +65,8 @@ public class Account extends BaseEntity {
 
     private String job;
 
-    private String bestArtWorkOne;
-    private String bestArtWorkTwo;
+//    private String bestArtWorkOne;
+//    private String bestArtWorkTwo;
     private int artWorkCreateCount;
     private int postCreateCount;
 
@@ -127,10 +127,10 @@ public class Account extends BaseEntity {
     public void upPostCountCreate() {
         this.postCreateCount += 1;
     }
-    public void setBestArtWork(String bestArtWorkOne, String bestArtWorkTwo) {
-        this.bestArtWorkOne = bestArtWorkOne;
-        this.bestArtWorkTwo = bestArtWorkTwo;
-    }
+//    public void setBestArtWork(String bestArtWorkOne, String bestArtWorkTwo) {
+//        this.bestArtWorkOne = bestArtWorkOne;
+//        this.bestArtWorkTwo = bestArtWorkTwo;
+//    }
 
     public void updateProfileImg(String profileImg) {
         this.profileImg = profileImg;

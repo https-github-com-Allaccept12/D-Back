@@ -27,9 +27,9 @@ public class AccountRepositoryImpl implements AccountRepositoryCustom{
                                 account.id,
                                 account.nickname,
                                 account.profileImg,
-                                account.job,
-                                account.bestArtWorkOne,
-                                account.bestArtWorkTwo
+                                account.job
+//                                account.bestArtWorkOne,
+//                                account.bestArtWorkTwo
                                 ))
                 .from(account)
                 .join(rank).on(rank.eq(account.rank))

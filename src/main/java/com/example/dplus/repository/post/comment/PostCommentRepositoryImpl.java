@@ -32,7 +32,7 @@ public class PostCommentRepositoryImpl implements PostCommentRepositoryCustom{
                         postCommentLikes.count()
                 ))
                 .from(postComment)
-                .join(post).on(post.id.eq(postId))
+                .join(post).on(postComment.post.id.eq(postId))
                 .leftJoin(postCommentLikes).on(postComment.id.eq(postCommentLikes.postComment.id))
                 .groupBy(postComment.id) // groupBy로 묶어줘야 성능 올라감
                 .orderBy(postCommentLikes.count().desc())

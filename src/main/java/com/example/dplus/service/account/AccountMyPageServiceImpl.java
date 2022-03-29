@@ -153,7 +153,7 @@ public class AccountMyPageServiceImpl implements AccountMyPageService {
     @Transactional
     public void setAccountMasterPiece(final Long accountId, final AccountRequestDto.setAccountMasterPiece materPiece) {
         Account account = getAccount(accountId);
-        account.setBestArtWork(materPiece.getImg_url_fir(),materPiece.getImg_url_sec());
+//        account.setBestArtWork(materPiece.getImg_url_fir(),materPiece.getImg_url_sec());
     }
 
     @Transactional(readOnly = true)

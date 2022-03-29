@@ -3,6 +3,7 @@ package com.example.dplus.service.post;
 import com.example.dplus.advice.ErrorCustomException;
 import com.example.dplus.advice.ErrorCode;
 import com.example.dplus.domain.account.Account;
+import com.example.dplus.dto.response.AccountResponseDto;
 import com.example.dplus.repository.account.AccountRepository;
 import com.example.dplus.repository.account.follow.FollowRepository;
 import com.example.dplus.domain.post.Post;
@@ -106,23 +107,19 @@ public class PostMainPageServiceImpl implements PostMainPageService{
     @Transactional
     public PostResponseDto.PostDetailPage showPostDetail(Long accountId, Long postId){
         Post post = postRepository.findById(postId).orElseThrow(() -> new ErrorCustomException(ErrorCode.NONEXISTENT_ERROR));
-
         post.addViewCount();
-
         PostResponseDto.PostSubDetail postSubDetail = postRepository.findByPostSubDetail(postId);
-
         List<PostImage> postImageList = postImageRepository.findByPostId(postId);
         List<PostBookMark> bookmarks = postBookMarkRepository.findByPostId(postId);
         List<PostResponseDto.PostComment> postComments = postCommentRepository.findPostCommentByPostId(postId);
 
         // 코멘트가 있으면 코멘트 좋아요 여부 체크
-        if(postComments.size()>0){
+        if(postComments.size()>0 && accountId != 0){
             postComments.forEach((comment) -> {
                 Boolean commentLike = postCommentLikesRepository.existByAccountIdAndPostCommentId(accountId, comment.getComment_id());
                 comment.setIs_comment_like(commentLike);
             });
         }
-
         Long comment_count = (long) postComments.size();
         Long bookmark_count = (long) bookmarks.size();
 
@@ -220,9 +217,14 @@ public class PostMainPageServiceImpl implements PostMainPageService{
 
     // 게시글 검색
     @Transactional(readOnly = true)
-    public List<PostResponseDto.PostPageMain> findBySearchKeyWord(String keyword, Long lastArtWorkId, Long accountId, String board) {
-        Pageable pageable = PageRequest.of(0,5);
-        return postRepository.findPostBySearchKeyWord(keyword,lastArtWorkId,pageable, board);
+    public List<PostResponseDto.PostSearchMain> findBySearchKeyWord(String keyword, Long lastArtWorkId, Long accountId, String board) {
+        Pageable pageable = PageRequest.of(0,12);
+        List<PostResponseDto.PostSearchMain> post = postRepository.findPostBySearchKeyWord(keyword,lastArtWorkId,pageable, board);
+        setCountSearchPost(post);
+        if(accountId!=0){
+            setIsLikeAndBookmarkSearchPost(accountId, post);
+        }
+        return post;
     }
 
     // 디모 QnA 상세페이지
@@ -367,5 +369,22 @@ public class PostMainPageServiceImpl implements PostMainPageService{
                     postBookMarkRepository.existByAccountIdAndPostId(accountId, post.getPost_id()));
         });
 
+    }
+
+    private void setCountSearchPost(List<PostResponseDto.PostSearchMain> searchPost){
+        searchPost.forEach((post) -> {
+            Long bookmark_count = postBookMarkRepository.countByPostId(post.getPost_id());
+            Long comment_count = postCommentRepository.countByPostId(post.getPost_id());
+            Long like_count = postLikesRepository.countByPostId(post.getPost_id());
+            post.setCountList(bookmark_count,comment_count,like_count);
+        });
+    }
+
+    private void setIsLikeAndBookmarkSearchPost(Long accountId, List<PostResponseDto.PostSearchMain> searchPost) {
+        searchPost.forEach((post) -> {
+            boolean isLike = postLikesRepository.existByAccountIdAndPostId(accountId, post.getAccount_id());
+            boolean isBookmark = postBookMarkRepository.existByAccountIdAndPostId(accountId, post.getAccount_id());
+            post.setIsLikeAndBookmark(isLike, isBookmark);
+        });
     }
 }
