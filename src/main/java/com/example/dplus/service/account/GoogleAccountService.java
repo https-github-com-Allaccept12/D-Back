@@ -112,8 +112,12 @@ public class GoogleAccountService {
 
         Account googleUser = accountRepository.findByAccountName(username)
                 .orElse(null);
+
+        boolean isSignUp = false;
+
         if (googleUser == null) {
             // 회원가입
+            isSignUp = true;
             String name = googleUserInfo.getName();
             String profileImg = googleUserInfo.getProfile_img();
 
@@ -133,13 +137,13 @@ public class GoogleAccountService {
 
         String accessToken = jwtTokenProvider.createToken(Long.toString(googleUser.getId()), googleUser.getEmail());
         String refreshToken = jwtTokenProvider.createRefreshToken(Long.toString(googleUser.getId()));
-//        googleUser.refreshToken(refreshToken);
         redisService.setValues(refreshToken, googleUser.getId());
         return LoginResponseDto.builder()
                 .account_id(googleUser.getId())
                 .profile_img(googleUser.getProfileImg())
                 .access_token(accessToken)
                 .refresh_token(refreshToken)
+                .isSignUp(isSignUp)
                 .build();
 
     }

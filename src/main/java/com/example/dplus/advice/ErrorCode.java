@@ -15,6 +15,7 @@ public enum ErrorCode {
     NO_TOKEN_ERROR(400, "A004","토큰이 존재하지 않습니다."),
     NO_AUTHORIZATION_ERROR(403,"A005","접근 권한이 없습니다."),
     NO_MATCH_ITEM_ERROR(400, "A006","일치하는 토큰값이 없습니다."),
+    EXPIRED_JWT_ERROR(444,"A007", "기존 토큰이 만료되었습니다."),
 
     // Validation 체크 에러
     ALREADY_NICKNAME_ERROR(400, "V001","이미 사용중인 닉네임입니다."),
