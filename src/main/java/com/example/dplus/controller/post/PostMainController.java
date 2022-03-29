@@ -32,45 +32,46 @@ public class PostMainController {
 
     // 전체 목록
     @GetMapping("/{last_post_id}/{board}")
-    public ResponseEntity<Success> postMain(@RequestParam("account_id") Long account_id,
+    public ResponseEntity<Success> postMain(@AuthenticationPrincipal UserDetailsImpl user,
                                             @PathVariable Long last_post_id,
                                             @PathVariable String board) {
+        Long accountId = getaLong(user);
+        return new ResponseEntity<>(new Success("디플 메인 페이지",
+                postMainPageService.showPostMain(accountId, last_post_id, board, "", SORT_SIGN_LATEST)), HttpStatus.OK);
+    }
 
-            return new ResponseEntity<>(new Success("디플 메인 페이지",
-                    postMainPageService.showPostMain(account_id, last_post_id, board, "", SORT_SIGN_LATEST)), HttpStatus.OK);
-        }
 
     // 전체 목록 (카테고리별)
     @GetMapping("/category/{category}/{last_post_id}/{board}")
-    public ResponseEntity<Success> postMainByCategory(@RequestParam("account_id") Long account_id,
+    public ResponseEntity<Success> postMainByCategory(@AuthenticationPrincipal UserDetailsImpl user,
                                                       @PathVariable String category,
                                                       @PathVariable Long last_post_id,
                                                       @PathVariable String board) {
-
+        Long accountId = getaLong(user);
         return new ResponseEntity<>(new Success("카테고리별 메인 페이지",
-                postMainPageService.showPostMain(account_id, last_post_id, board, category, SORT_SIGN_LATEST)), HttpStatus.OK);
+                postMainPageService.showPostMain(accountId, last_post_id, board, category, SORT_SIGN_LATEST)), HttpStatus.OK);
     }
 
     // 카테고리별 정렬 + 좋아요
     @GetMapping("/sort/{category}/{sortsign}/{last_post_id}/{board}")
-    public ResponseEntity<Success> postSortByCatetory(@RequestParam("account_id") Long account_id,
+    public ResponseEntity<Success> postSortByCatetory(@AuthenticationPrincipal UserDetailsImpl user,
                                                       @PathVariable int sortsign,
                                                       @PathVariable Long last_post_id,
                                                       @PathVariable String board,
                                                       @PathVariable String category) {
-
+        Long accountId = getaLong(user);
         return new ResponseEntity<>(new Success("카테고리별 정렬한 디플페이지",
-                postMainPageService.showPostMain(account_id, last_post_id, board, category, sortsign)), HttpStatus.OK);
+                postMainPageService.showPostMain(accountId, last_post_id, board, category, sortsign)), HttpStatus.OK);
     }
 
     // 상세 목록
     @GetMapping("/{post_id}")
-    public ResponseEntity<Success> postDetail(@RequestParam(value = "account_id", required = false) Long account_id,
+    public ResponseEntity<Success> postDetail(@AuthenticationPrincipal UserDetailsImpl user,
                                               @PathVariable Long post_id) {
+        Long accountId = getaLong(user);
         return new ResponseEntity<>(new Success("디플 상세 페이지",
-                postMainPageService.showPostDetail(account_id, post_id)), HttpStatus.OK);
+                postMainPageService.showPostDetail(accountId, post_id)), HttpStatus.OK);
     }
-
     // 게시물 등록
     @PostMapping("")
     public ResponseEntity<Success> createPost(@AuthenticationPrincipal UserDetailsImpl user,
@@ -112,33 +113,45 @@ public class PostMainController {
 
     // 게시물 검색
     @GetMapping("/search/{last_post_id}/{board}/{keyword}")
-    public ResponseEntity<Success> postSearch(@RequestParam("account_id") Long account_id,
+    public ResponseEntity<Success> postSearch(@AuthenticationPrincipal UserDetailsImpl user,
                                               @PathVariable Long last_post_id,
                                               @PathVariable String board,
                                               @PathVariable String keyword) {
+        Long accountId = getaLong(user);
         if (keyword == null) {
             throw new ErrorCustomException(ErrorCode.NON_KEYWORD_ERROR);
         }
         return new ResponseEntity<>(new Success("게시물 검색 완료",
-                postMainPageService.findBySearchKeyWord(keyword, last_post_id, account_id, board)), HttpStatus.OK);
+                postMainPageService.findBySearchKeyWord(keyword, last_post_id, accountId, board)), HttpStatus.OK);
 
     }
 
     // 질문글 상세 조회
     @GetMapping("/question/{post_id}")
-    public ResponseEntity<Success> postQuestionDetail (@RequestParam("account_id") Long account_id,
+    public ResponseEntity<Success> postQuestionDetail (@AuthenticationPrincipal UserDetailsImpl user,
                                                        @PathVariable Long post_id){
+        Long accountId = getaLong(user);
         return new ResponseEntity<>(new Success("디플 질문 상세페이지 조회",
-                postMainPageService.detailAnswer(account_id, post_id)), HttpStatus.OK);
+                postMainPageService.detailAnswer(accountId, post_id)), HttpStatus.OK);
     }
 
     // 유사한 질문 조회
     @GetMapping("/question/similar/{category}/{post_id}")
-    public ResponseEntity<Success> similarQuestion (@RequestParam("account_id") Long account_id,
+    public ResponseEntity<Success> similarQuestion (@AuthenticationPrincipal UserDetailsImpl user,
                                                     @PathVariable String category,
                                                     @PathVariable Long post_id){
+        Long accountId = getaLong(user);
         return new ResponseEntity<>(new Success("유사한 질문 리스트",
-                postMainPageService.similarQuestion(category, account_id, post_id)), HttpStatus.OK);
+                postMainPageService.similarQuestion(category, accountId, post_id)), HttpStatus.OK);
 
+    }
+    private Long getaLong(UserDetailsImpl user) {
+        Long accountId ;
+        if (user != null) {
+            accountId = user.getUser().getId();
+        } else {
+            accountId = 0L;
+        }
+        return accountId;
     }
 }

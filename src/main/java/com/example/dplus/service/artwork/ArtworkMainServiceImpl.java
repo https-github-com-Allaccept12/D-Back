@@ -208,16 +208,14 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
         }
     }
     private List<TopArtist> getTopArtist(String interest) {
-        Pageable pageable = PageRequest.of(0, 10);
-        List<Account> topArtist = accountRepository.findTopArtist(pageable, interest);
+        List<Account> topArtist = accountRepository.findTopArtist(interest);
         return topArtist.stream()
                 .map(TopArtist::new)
                 .collect(Collectors.toList());
     }
 
     private List<ArtworkMain> getArtworkList(String interest) {
-        Pageable pageable = PageRequest.of(0,10);
-        return artWorkRepository.findArtWorkByMostViewAndMostLike(interest,pageable);
+        return artWorkRepository.findArtWorkByMostViewAndMostLike(interest);
     }
 
     private ArtWorks artworkValidation(Long accountId, Long artworkId){
