@@ -103,7 +103,7 @@ public class KakaoAccountService {
                 .get("email").asText();
         String username = id + email;
 
-        System.out.println("카카오 사용자 정보: " + id + ", " + username + ", " + nickname + ", " + profileImage + ", " + email);
+        //System.out.println("카카오 사용자 정보: " + id + ", " + username + ", " + nickname + ", " + profileImage + ", " + email);
         return new KakaoUserInfoDto(id, nickname, profileImage, email, username);
     }
 

@@ -27,41 +27,33 @@ import java.util.List;
 @Slf4j
 public class PostMainController {
 
-    private final int SORT_SIGN_LATEST = 1;
     private final PostMainPageService postMainPageService;
 
     // 전체 목록
     @GetMapping("/{last_post_id}/{board}")
-    public ResponseEntity<Success> postMain(@AuthenticationPrincipal UserDetailsImpl user,
-                                            @PathVariable Long last_post_id,
+    public ResponseEntity<Success> postMain(@PathVariable Long last_post_id,
                                             @PathVariable String board) {
-        Long accountId = getaLong(user);
         return new ResponseEntity<>(new Success("디플 메인 페이지",
-                postMainPageService.showPostMain(accountId, last_post_id, board, "", SORT_SIGN_LATEST)), HttpStatus.OK);
+                postMainPageService.showPostMain(last_post_id, board, "")), HttpStatus.OK);
     }
 
 
     // 전체 목록 (카테고리별)
     @GetMapping("/category/{category}/{last_post_id}/{board}")
-    public ResponseEntity<Success> postMainByCategory(@AuthenticationPrincipal UserDetailsImpl user,
-                                                      @PathVariable String category,
+    public ResponseEntity<Success> postMainByCategory(@PathVariable String category,
                                                       @PathVariable Long last_post_id,
                                                       @PathVariable String board) {
-        Long accountId = getaLong(user);
         return new ResponseEntity<>(new Success("카테고리별 메인 페이지",
-                postMainPageService.showPostMain(accountId, last_post_id, board, category, SORT_SIGN_LATEST)), HttpStatus.OK);
+                postMainPageService.showPostMain(last_post_id, board, category)), HttpStatus.OK);
     }
 
-    // 카테고리별 정렬 + 좋아요
-    @GetMapping("/sort/{category}/{sortsign}/{last_post_id}/{board}")
-    public ResponseEntity<Success> postSortByCatetory(@AuthenticationPrincipal UserDetailsImpl user,
-                                                      @PathVariable int sortsign,
-                                                      @PathVariable Long last_post_id,
+    // 카테고리별 좋아요
+    @GetMapping("/sort/{category}/{board}")
+    public ResponseEntity<Success> postSortByCategory(@RequestParam("start") int start,
                                                       @PathVariable String board,
                                                       @PathVariable String category) {
-        Long accountId = getaLong(user);
-        return new ResponseEntity<>(new Success("카테고리별 정렬한 디플페이지",
-                postMainPageService.showPostMain(accountId, last_post_id, board, category, sortsign)), HttpStatus.OK);
+        return new ResponseEntity<>(new Success("카테고리별 좋아요순 디플페이지",
+                postMainPageService.showPostMainLikeSort(start, board, category)), HttpStatus.OK);
     }
 
     // 상세 목록

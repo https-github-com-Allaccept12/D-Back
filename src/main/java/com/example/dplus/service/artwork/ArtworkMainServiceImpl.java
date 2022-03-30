@@ -1,24 +1,26 @@
 package com.example.dplus.service.artwork;
 
-import com.example.dplus.repository.account.follow.FollowRepository;
-import com.example.dplus.repository.artwork.comment.ArtWorkCommentRepository;
-import com.example.dplus.domain.artwork.ArtWorkImage;
-import com.example.dplus.repository.artwork.image.ArtWorkImageRepository;
-import com.example.dplus.repository.artwork.like.ArtWorkLikesRepository;
-import com.example.dplus.advice.ErrorCustomException;
 import com.example.dplus.advice.ErrorCode;
+import com.example.dplus.advice.ErrorCustomException;
 import com.example.dplus.domain.account.Account;
-import com.example.dplus.repository.account.AccountRepository;
-import com.example.dplus.repository.artwork.ArtWorkRepository;
+import com.example.dplus.domain.artwork.ArtWorkImage;
 import com.example.dplus.domain.artwork.ArtWorks;
-import com.example.dplus.repository.artwork.bookmark.ArtWorkBookMarkRepository;
 import com.example.dplus.dto.request.ArtWorkRequestDto.ArtWorkCreate;
 import com.example.dplus.dto.request.ArtWorkRequestDto.ArtWorkUpdate;
 import com.example.dplus.dto.response.AccountResponseDto.TopArtist;
 import com.example.dplus.dto.response.ArtWorkResponseDto;
+import com.example.dplus.dto.response.ArtWorkResponseDto.ArtWorkComment;
 import com.example.dplus.dto.response.ArtWorkResponseDto.ArtWorkDetail;
+import com.example.dplus.dto.response.ArtWorkResponseDto.ArtWorkSubDetail;
 import com.example.dplus.dto.response.ArtWorkResponseDto.ArtworkMain;
 import com.example.dplus.dto.response.MainResponseDto;
+import com.example.dplus.repository.account.AccountRepository;
+import com.example.dplus.repository.account.follow.FollowRepository;
+import com.example.dplus.repository.artwork.ArtWorkRepository;
+import com.example.dplus.repository.artwork.bookmark.ArtWorkBookMarkRepository;
+import com.example.dplus.repository.artwork.comment.ArtWorkCommentRepository;
+import com.example.dplus.repository.artwork.image.ArtWorkImageRepository;
+import com.example.dplus.repository.artwork.like.ArtWorkLikesRepository;
 import com.example.dplus.service.file.FileProcessService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -48,37 +50,30 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
     //비회원 일경우 모든작품 카테고리에서 탑10
     //회원 일경우 관심사 카테고리중에서 탑10
     @Transactional(readOnly = true)
-    public MainResponseDto mostPopularArtWork(Long accountId) {
+    public MainResponseDto mostPopularArtWork(Long accountId, String interest) {
         //회원인지 비회원인지
         if (accountId != 0) {
             Account account = accountRepository.findById(accountId).orElseThrow(() -> new ErrorCustomException(ErrorCode.NO_USER_ERROR));
             List<ArtworkMain> artWorkList = getArtworkList(account.getInterest());
             List<TopArtist> topArtist = getTopArtist(account.getInterest());
             isFollow(accountId,topArtist);
-            setIsLike(accountId,artWorkList);
             return MainResponseDto.builder().artwork(artWorkList).top_artist(topArtist).build();
         }
         List<ArtworkMain> artworkList = getArtworkList("");
         List<TopArtist> topArtist = getTopArtist("");
         return MainResponseDto.builder().artwork(artworkList).top_artist(topArtist).build();
     }
-    //둘러보기
+    //모아보기
     @Transactional(readOnly = true)
     public List<ArtworkMain> showArtworkMain(Long accountId, Long lastArtWorkId,String category){
         Pageable pageable = PageRequest.of(0,10);
-        List<ArtworkMain> artWorkList = artWorkRepository.findAllArtWork(lastArtWorkId,category,pageable);
-        if (accountId != 0)
-            setIsLike(accountId, artWorkList);
-        return artWorkList;
+        return artWorkRepository.findAllArtWork(lastArtWorkId,category,pageable);
     }
 
     @Transactional(readOnly = true)
     public List<ArtworkMain> showArtWorkLikeSort(Long accountId, String category,int start) {
         Pageable pageable = PageRequest.of(start,10);
-        List<ArtworkMain> artWorkList = artWorkRepository.showArtWorkLikeSort(category,pageable);
-        if (accountId != 0)
-            setIsLike(accountId, artWorkList);
-        return artWorkList;
+        return artWorkRepository.showArtWorkLikeSort(category,pageable);
     }
 
     @Transactional
@@ -89,11 +84,11 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
         //조회수
         artWorks.addViewCount();
         //작품 좋아요개수와 작품 기본정보 가져오기
-        ArtWorkResponseDto.ArtWorkSubDetail artWorksSub = artWorkRepository.findByArtWorkSubDetail(artWorkId);
+        ArtWorkSubDetail artWorksSub = artWorkRepository.findByArtWorkSubDetail(artWorkId);
         //작품 이미지들 가져오기
         List<ArtWorkImage> imgList = artWorkImageRepository.findByArtWorksId(artWorksSub.getArtwork_id());
         //작품 코멘트 가져오기
-        List<ArtWorkResponseDto.ArtWorkComment> commentList = artWorkCommentRepository.findArtWorkCommentByArtWorksId(artWorksSub.getArtwork_id());
+        List<ArtWorkComment> commentList = artWorkCommentRepository.findArtWorkCommentByArtWorksId(artWorksSub.getArtwork_id());
         //해당 유저의 다른 작품들 가져오기
         Pageable pageable = PageRequest.of(0, 5);
         List<ArtWorkResponseDto.ArtWorkSimilarWork> similarList = artWorkRepository
@@ -156,19 +151,13 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
     @Transactional(readOnly = true)
     public List<ArtworkMain> findBySearchKeyWord(String keyword,Long lastArtWorkId,Long accountId) {
         Pageable pageable = PageRequest.of(0,10);
-        List<ArtworkMain> artWorkList = artWorkRepository.findBySearchKeyWord(keyword,lastArtWorkId,pageable);
-        if(accountId != null)
-            setIsLike(accountId,artWorkList);
-        return artWorkList;
+        return artWorkRepository.findBySearchKeyWord(keyword,lastArtWorkId,pageable);
     }
 
     @Transactional(readOnly = true)
     public List<ArtworkMain> findByFollowerArtWork(Long accountId, String category, Long lastArtWorkId) {
         Pageable pageable = PageRequest.of(0,10);
-        List<ArtworkMain> artWorkList = artWorkRepository.findByFollowerArtWork(accountId, category, lastArtWorkId, pageable);
-        if(accountId != null)
-            setIsLike(accountId,artWorkList);
-        return artWorkList;
+        return artWorkRepository.findByFollowerArtWork(accountId, category, lastArtWorkId, pageable);
     }
 
     private void s3ImageUpload(List<MultipartFile> multipartFiles,ArtWorkCreate dto, ArtWorks saveArtwork) {
@@ -230,13 +219,6 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
             boolean isFollow = followRepository.existsByFollowerIdAndFollowingId(accountId, artist.getAccount_id());
             if (isFollow)
                 artist.setIsFollow();
-        });
-    }
-
-    private void setIsLike(Long accountId, List<ArtworkMain> artWorkList) {
-        artWorkList.forEach((artWork) -> {
-            artWork.setLikeCountAndIsLike(artWorkLikesRepository.
-                    existByAccountIdAndArtWorkId(accountId, artWork.getArtwork_id()));
         });
     }
 }

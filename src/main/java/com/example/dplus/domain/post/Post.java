@@ -48,6 +48,12 @@ public class Post extends BaseEntity {
     @OneToMany(mappedBy = "post",cascade = CascadeType.REMOVE)
     private List<PostTag> postTagList = new ArrayList<>();
 
+    @OneToMany(mappedBy = "post",cascade = CascadeType.REMOVE)
+    private List<PostLikes> postLikeList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "post",cascade = CascadeType.REMOVE)
+    private List<PostComment> postCommentList = new ArrayList<>();
+
     @Enumerated(EnumType.STRING)
     private PostBoard board;
 
