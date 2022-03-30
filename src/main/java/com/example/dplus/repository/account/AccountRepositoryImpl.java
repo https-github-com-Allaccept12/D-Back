@@ -9,23 +9,31 @@ import java.util.List;
 
 import static com.example.dplus.domain.account.QAccount.account;
 import static com.example.dplus.domain.account.QRank.rank;
+import static com.example.dplus.domain.account.QRanker.ranker;
 
 @RequiredArgsConstructor
 @Slf4j
 public class AccountRepositoryImpl implements AccountRepositoryCustom {
 
-
     private final JPAQueryFactory queryFactory;
 
 
     @Override
-    public List<Account> findTopArtist(String interest) {
+    public List<Account> newTopArtist() {
         return queryFactory
                 .selectFrom(account)
                 .join(rank).on(rank.eq(account.rank))
                 .limit(10)
                 .orderBy(rank.rankScore.desc())
                 .fetch();
+    }
+    @Override
+    public List<Account> findTopArtist() {
+        return queryFactory
+                .selectFrom(account)
+                .where(ranker.rankerId.eq(account.id))
+                .fetch();
+
     }
 
     @Override

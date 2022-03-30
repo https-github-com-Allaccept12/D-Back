@@ -16,6 +16,7 @@ import com.example.dplus.dto.response.ArtWorkResponseDto.ArtworkMain;
 import com.example.dplus.dto.response.MainResponseDto;
 import com.example.dplus.repository.account.AccountRepository;
 import com.example.dplus.repository.account.follow.FollowRepository;
+import com.example.dplus.repository.account.rank.RankerRepository;
 import com.example.dplus.repository.artwork.ArtWorkRepository;
 import com.example.dplus.repository.artwork.bookmark.ArtWorkBookMarkRepository;
 import com.example.dplus.repository.artwork.comment.ArtWorkCommentRepository;
@@ -47,6 +48,8 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
     private final AccountRepository accountRepository;
     private final FileProcessService fileProcessService;
 
+    private final RankerRepository rankerRepository;
+
     //비회원 일경우 모든작품 카테고리에서 탑10
     //회원 일경우 관심사 카테고리중에서 탑10
     @Transactional(readOnly = true)
@@ -55,12 +58,12 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
         if (accountId != 0) {
             Account account = accountRepository.findById(accountId).orElseThrow(() -> new ErrorCustomException(ErrorCode.NO_USER_ERROR));
             List<ArtworkMain> artWorkList = getArtworkList(account.getInterest());
-            List<TopArtist> topArtist = getTopArtist(account.getInterest());
+            List<TopArtist> topArtist = getTopArtist();
             isFollow(accountId,topArtist);
             return MainResponseDto.builder().artwork(artWorkList).top_artist(topArtist).build();
         }
         List<ArtworkMain> artworkList = getArtworkList("");
-        List<TopArtist> topArtist = getTopArtist("");
+        List<TopArtist> topArtist = getTopArtist();
         return MainResponseDto.builder().artwork(artworkList).top_artist(topArtist).build();
     }
     //모아보기
@@ -196,8 +199,8 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
             }
         }
     }
-    private List<TopArtist> getTopArtist(String interest) {
-        List<Account> topArtist = accountRepository.findTopArtist(interest);
+    private List<TopArtist> getTopArtist() {
+        List<Account> topArtist = accountRepository.findTopArtist();
         return topArtist.stream()
                 .map(TopArtist::new)
                 .collect(Collectors.toList());
