@@ -27,6 +27,7 @@ import com.example.dplus.dto.response.PostResponseDto.PostAnswerDetailPage;
 import com.example.dplus.service.file.FileProcessService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -344,7 +345,6 @@ public class PostMainPageServiceImpl implements PostMainPageService{
     }
     private void isFollow(Long accountId, List<PostResponseDto.PostAnswer> postAnswerList) {
         postAnswerList.forEach((postAnswer) -> {
-            postAnswer.setIsFollow(false);
             boolean isFollow = followRepository.existsByFollowerIdAndFollowingId(accountId, postAnswer.getAccount_id());
             if (isFollow)
                 postAnswer.setIsFollow(true);
@@ -353,7 +353,6 @@ public class PostMainPageServiceImpl implements PostMainPageService{
 
     private void setIsLike(Long accountId, List<PostResponseDto.PostAnswer> postAnswerList) {
         postAnswerList.forEach((postAnswer) -> {
-            postAnswer.setLikeCountAndIsLike(false);
             if(postAnswerLikesRepository.existByAccountIdAndPostAnswerId(accountId, postAnswer.getAnswer_id())) {
                 postAnswer.setLikeCountAndIsLike(true);
             }
