@@ -37,14 +37,14 @@ public class ArtWorkMainController {
             accountId = 0L;
         }
         return new ResponseEntity<>(new Success("메인 페이지",
-                artworkMainService.mostPopularArtWork(accountId, interest)), HttpStatus.OK);
+                artworkMainService.mostPopularArtWork(accountId,interest)), HttpStatus.OK);
     }
 
     @GetMapping("/api/artwork/{last_artwork_id}")
     public ResponseEntity<Success> artWorkMain(@AuthenticationPrincipal UserDetailsImpl user,
                                                @PathVariable Long last_artwork_id) {
         Long accountId = getaLong(user);
-        return new ResponseEntity<>(new Success("둘러보기",
+        return new ResponseEntity<>(new Success("모아보기",
                 artworkMainService.showArtworkMain(accountId,last_artwork_id,"")),HttpStatus.OK);
     }
 

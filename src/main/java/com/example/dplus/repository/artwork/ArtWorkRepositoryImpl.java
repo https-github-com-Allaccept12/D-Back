@@ -63,7 +63,8 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
                 .leftJoin(artWorkLikes).on(artWorkLikes.artWorks.eq(artWorks))
                 .offset(paging.getOffset())
                 .limit(paging.getPageSize())
-                .where(artWorkBookMark.account.id.eq(accountId).and(artWorks.scope.isTrue()),
+                .where(artWorkBookMark.account.id.eq(accountId)
+                                .and(artWorks.scope.isTrue()),
                         isLastArtworkId(lastArtWorkId))
                 .groupBy(artWorks.id)
                 .orderBy(artWorks.created.desc())
@@ -80,6 +81,7 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
                 .limit(10)
                 .where(isInterest(interest))
                 .fetch();
+
         //10개
         if (Separator.size() >= 10) {
             return queryFactory
@@ -242,8 +244,6 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
                 .fetchOne();
     }
 
-
-
     @Override
     public List<ArtWorkResponseDto.ArtWorkSimilarWork> findSimilarArtWork(Long accountId,Long artWorkId, Pageable pageable) {
         return  queryFactory
@@ -255,7 +255,8 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
                 .join(artWorks.account, account)
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
-                .where(artWorks.account.id.eq(accountId).and(artWorks.id.ne(artWorkId)),
+                .where(artWorks.account.id.eq(accountId)
+                                .and(artWorks.id.ne(artWorkId)),
                         artWorks.scope.isTrue())
                 .orderBy(artWorks.created.desc())
                 .fetch();

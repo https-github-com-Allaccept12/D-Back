@@ -10,6 +10,7 @@ import com.example.dplus.repository.post.comment.PostCommentRepository;
 import com.example.dplus.repository.post.comment.PostCommentLikesRepository;
 import com.example.dplus.dto.request.PostRequestDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +22,7 @@ public class PostCommentService {
     private final PostCommentLikesRepository postCommentLikesRepository;
 
     @Transactional
+    @CacheEvict(value="myComment", key="#account.id")
     public Long createComment(Account account, Long postId, PostRequestDto.PostComment dto) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new ErrorCustomException(ErrorCode.NONEXISTENT_ERROR));
         PostComment postComment = PostComment.builder().post(post).account(account).content(dto.getContent()).build();
@@ -29,6 +31,7 @@ public class PostCommentService {
     }
 
     @Transactional
+    @CacheEvict(value="myComment", key="#accountId")
     public Long updateComment(Long accountId, Long commentId, PostRequestDto.PostComment dto) {
         PostComment postComment = commentValidation(accountId, commentId);
         postComment.updateComment(dto);
@@ -36,6 +39,7 @@ public class PostCommentService {
     }
 
     @Transactional
+    @CacheEvict(value="myComment", key="#accountId")
     public void deleteComment(Long accountId, Long postCommentId) {
         commentValidation(accountId, postCommentId);
         postCommentLikesRepository.deleteAllByPostCommentId(postCommentId);

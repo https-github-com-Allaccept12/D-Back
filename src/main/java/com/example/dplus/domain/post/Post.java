@@ -45,8 +45,14 @@ public class Post extends BaseEntity {
     @Column(columnDefinition = "TINYINT default 0")
     private boolean isSelected;
 
-    @OneToMany(mappedBy = "post",cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "post",orphanRemoval = true)
     private List<PostTag> postTagList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "post",orphanRemoval = true)
+    private List<PostLikes> postLikeList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "post",orphanRemoval = true)
+    private List<PostComment> postCommentList = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
     private PostBoard board;

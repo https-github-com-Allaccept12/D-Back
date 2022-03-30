@@ -1,7 +1,6 @@
 package com.example.dplus.service.post;
 
 import com.example.dplus.domain.account.Account;
-import com.example.dplus.domain.post.PostBoard;
 import com.example.dplus.dto.request.PostRequestDto;
 import com.example.dplus.dto.response.PostMainResponseDto;
 import com.example.dplus.dto.response.PostResponseDto;
@@ -11,7 +10,9 @@ import java.util.List;
 
 public interface PostMainPageService {
     // 전체 게시물 조회 (최신순)
-    PostMainResponseDto showPostMain(Long accountId, Long lastPostId, String board, String category, int sortSign);
+    PostMainResponseDto showPostMain(Long lastPostId, String board, String category);
+
+    PostMainResponseDto showPostMainLikeSort(int start, String board, String category);
 
     // 게시글 작성
     int createPost(Long accountId, PostRequestDto.PostCreate dto, List<MultipartFile> imageFile);

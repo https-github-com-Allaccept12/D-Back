@@ -22,8 +22,6 @@ public interface AccountMyPageService {
 
     void updateAccountHistory(final HistoryUpdateList dto, final Long accountId);
 
-    void updateAccountCareerFeedList(ArtWorkRequestDto.ArtWorkPortFolioUpdate dto);
-
     void updateAccountIntro(final AccountRequestDto.UpdateAccountIntro dto, final Long accountId);
 
     void updateAccountSpecialty(final AccountRequestDto.UpdateSpecialty dto, final Long accountId);

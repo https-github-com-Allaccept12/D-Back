@@ -31,7 +31,7 @@ public class AccountMyPageController {
                                                @RequestParam("owner_account_id") Long ownerAccountId) {
         Long accountId = getaLong(user);
         return new ResponseEntity<>(new Success("마이페이지 기본정보 조회",
-                accountMyPageService.showAccountInfo(accountId, ownerAccountId)), HttpStatus.OK);
+                accountMyPageService.showAccountInfo(ownerAccountId, accountId)), HttpStatus.OK);
     }
 
     @GetMapping("/career-feed/{last_artwork_id}")
@@ -89,12 +89,6 @@ public class AccountMyPageController {
                 accountMyPageService.showAccountArtWorkBookMark(last_artwork_id,user.getUser().getId())),HttpStatus.OK);
     }
 
-    //다건
-    @PostMapping(value = {"/career-feed"})
-    public ResponseEntity<Success> createAndUpdateCareerFeed(@RequestBody ArtWorkPortFolioUpdate data) {
-        accountMyPageService.updateAccountCareerFeedList(data);
-        return new ResponseEntity<>(new Success("포트폴리오 선택/수정 성공", ""), HttpStatus.OK);
-    }
     //단건
     @PostMapping(value = "/masterpiece/{artwork_id}")
     public ResponseEntity<Success> masterpieceSelect(@PathVariable Long artwork_id,
