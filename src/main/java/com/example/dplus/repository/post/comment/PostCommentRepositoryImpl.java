@@ -10,7 +10,6 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 import static com.example.dplus.domain.account.QAccount.account;
-import static com.example.dplus.domain.post.QPost.post;
 import static com.example.dplus.domain.post.QPostComment.postComment;
 import static com.example.dplus.domain.post.QPostCommentLikes.postCommentLikes;
 
@@ -32,9 +31,9 @@ public class PostCommentRepositoryImpl implements PostCommentRepositoryCustom{
                         postCommentLikes.count()
                 ))
                 .from(postComment)
-                .join(post).on(postComment.post.id.eq(postId))
                 .leftJoin(postCommentLikes).on(postComment.id.eq(postCommentLikes.postComment.id))
-                .groupBy(postComment.id) // groupBy로 묶어줘야 성능 올라감
+                .where(postComment.post.id.eq(postId))
+                .groupBy(postComment.id)
                 .orderBy(postCommentLikes.count().desc())
                 .fetch();
     }

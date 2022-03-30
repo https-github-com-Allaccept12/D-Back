@@ -1,5 +1,6 @@
 package com.example.dplus.jwt;
 
+import com.example.dplus.advice.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONObject;
@@ -21,23 +22,23 @@ public class AuthenticationEntryPointHandler implements AuthenticationEntryPoint
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
         String exception = (String)request.getAttribute("exception");
-        JwtErrorCode errorCode;
+        ErrorCode errorCode;
 
         if (exception == null) {
-            errorCode = JwtErrorCode.UNAUTHORIZEDException;
+            errorCode = ErrorCode.NO_AUTHENTICATION_ERROR;
             setResponse(response, errorCode);
             return;
         }
 
         if (exception.equals("ExpiredJwtException")) {
-            errorCode = JwtErrorCode.ExpiredJwtException;
+            errorCode = ErrorCode.EXPIRED_JWT_ERROR;
             setResponse(response, errorCode);
             return;
         }
 
     }
     //한글 출력을 위해 getWriter() 사용
-    private void setResponse(HttpServletResponse response, JwtErrorCode errorCode) throws IOException {
+    private void setResponse(HttpServletResponse response, ErrorCode errorCode) throws IOException {
         JSONObject json = new JSONObject();
         response.setContentType("application/json;charset=UTF-8");
         response.setCharacterEncoding("utf-8");

@@ -1,7 +1,6 @@
 package com.example.dplus.service.post;
 
 import com.example.dplus.domain.account.Account;
-import com.example.dplus.domain.post.PostBoard;
 import com.example.dplus.dto.request.PostRequestDto;
 import com.example.dplus.dto.response.PostMainResponseDto;
 import com.example.dplus.dto.response.PostResponseDto;
@@ -11,16 +10,15 @@ import java.util.List;
 
 public interface PostMainPageService {
     // 전체 게시물 조회 (최신순)
-    PostMainResponseDto showPostMain(Long accountId, Long lastPostId, String board, String category);
+    PostMainResponseDto showPostMain(Long lastPostId, String board, String category);
 
-    // 전체 게시물 조회 (좋아요순)
-    PostMainResponseDto showPostLikeMain(Long accountId, String board, String category, int start);
+    PostMainResponseDto showPostMainLikeSort(int start, String board, String category);
 
     // 게시글 작성
     int createPost(Long accountId, PostRequestDto.PostCreate dto, List<MultipartFile> imageFile);
 
     // 게시글 검색
-    List<PostResponseDto.PostSearchMain> findBySearchKeyWord(String keyword, Long lastArtWorkId, Long accountId, String board);
+    List<PostResponseDto.PostPageMain> findBySearchKeyWord(String keyword, Long lastArtWorkId, Long accountId, String board);
 
     // 상세 게시글
     PostResponseDto.PostDetailPage showPostDetail(Long accountId, Long postId);

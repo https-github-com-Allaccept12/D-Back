@@ -103,7 +103,7 @@ public class KakaoAccountService {
                 .get("email").asText();
         String username = id + email;
 
-        System.out.println("카카오 사용자 정보: " + id + ", " + username + ", " + nickname + ", " + profileImage + ", " + email);
+        //System.out.println("카카오 사용자 정보: " + id + ", " + username + ", " + nickname + ", " + profileImage + ", " + email);
         return new KakaoUserInfoDto(id, nickname, profileImage, email, username);
     }
 
@@ -140,7 +140,6 @@ public class KakaoAccountService {
 
         String accessToken = jwtTokenProvider.createToken(Long.toString(kakaoUser.getId()), kakaoUser.getEmail());
         String refreshToken = jwtTokenProvider.createRefreshToken(Long.toString(kakaoUser.getId()));
-//        kakaoUser.refreshToken(refreshToken);
         redisService.setValues(refreshToken, kakaoUser.getId());
         return LoginResponseDto.builder()
                 .account_id(kakaoUser.getId())

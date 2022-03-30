@@ -31,7 +31,7 @@ public class AccountMyPageController {
                                                @RequestParam("owner_account_id") Long ownerAccountId) {
         Long accountId = getaLong(user);
         return new ResponseEntity<>(new Success("마이페이지 기본정보 조회",
-                accountMyPageService.showAccountInfo(accountId, ownerAccountId)), HttpStatus.OK);
+                accountMyPageService.showAccountInfo(ownerAccountId, accountId)), HttpStatus.OK);
     }
 
     @GetMapping("/career-feed/{last_artwork_id}")
