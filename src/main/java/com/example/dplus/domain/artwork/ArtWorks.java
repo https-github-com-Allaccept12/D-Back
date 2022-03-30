@@ -12,7 +12,6 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
-import java.util.List;
 
 @Entity
 @Getter
@@ -59,8 +58,8 @@ public class ArtWorks extends BaseEntity {
     @JoinColumn(name = "account_id")
     private Account account;
 
-    @OneToMany(mappedBy = "artWorks")
-    private List<ArtWorkImage> artWorkImageList;
+//    @OneToMany(mappedBy = "artWorks")
+//    private List<ArtWorkImage> artWorkImageList;
 
     @Builder
     public ArtWorks(final Boolean scope, final String title, final String content, final String category,

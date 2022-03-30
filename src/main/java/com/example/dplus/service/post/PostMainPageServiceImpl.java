@@ -157,14 +157,11 @@ public class PostMainPageServiceImpl implements PostMainPageService{
     @Transactional
     public void deletePost(Long accountId, Long postId){
         Post post = postAuthValidation(accountId, postId);
-        //List<PostImage> postImages = postImageRepository.findByPostId(postId);
-//        postImages.forEach((img) -> {
-//            // S3 이미지 삭제
-//            fileProcessService.deleteImage(img.getPostImg());
-//        });
-        // db 삭제
-        postLikesRepository.deleteAllByPostId(postId);
-        //postTagRepository.deleteAllByPostId(postId);
+        List<PostImage> postImages = postImageRepository.findByPostId(postId);
+        postImages.forEach((img) -> {
+            // S3 이미지 삭제
+            fileProcessService.deleteImage(img.getPostImg());
+        });
         postImageRepository.deleteAllByPostId(postId);
         postBookMarkRepository.deleteAllByPostId(postId);
         postRepository.delete(post);
