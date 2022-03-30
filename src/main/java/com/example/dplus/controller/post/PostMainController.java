@@ -37,7 +37,7 @@ public class PostMainController {
                                             @PathVariable String board) {
         Long accountId = getaLong(user);
         return new ResponseEntity<>(new Success("디플 메인 페이지",
-                postMainPageService.showPostMain(accountId, last_post_id, board, "", SORT_SIGN_LATEST)), HttpStatus.OK);
+                postMainPageService.showPostMain(accountId, last_post_id, board, "")), HttpStatus.OK);
     }
 
 
@@ -49,19 +49,18 @@ public class PostMainController {
                                                       @PathVariable String board) {
         Long accountId = getaLong(user);
         return new ResponseEntity<>(new Success("카테고리별 메인 페이지",
-                postMainPageService.showPostMain(accountId, last_post_id, board, category, SORT_SIGN_LATEST)), HttpStatus.OK);
+                postMainPageService.showPostMain(accountId, last_post_id, board, category)), HttpStatus.OK);
     }
 
     // 카테고리별 정렬 + 좋아요
-    @GetMapping("/sort/{category}/{sortsign}/{last_post_id}/{board}")
+    @GetMapping("/sort/{category}/{board}")
     public ResponseEntity<Success> postSortByCatetory(@AuthenticationPrincipal UserDetailsImpl user,
-                                                      @PathVariable int sortsign,
-                                                      @PathVariable Long last_post_id,
+                                                      @RequestParam("start") int start,
                                                       @PathVariable String board,
                                                       @PathVariable String category) {
         Long accountId = getaLong(user);
         return new ResponseEntity<>(new Success("카테고리별 정렬한 디플페이지",
-                postMainPageService.showPostMain(accountId, last_post_id, board, category, sortsign)), HttpStatus.OK);
+                postMainPageService.showPostLikeMain(accountId, board, category, start)), HttpStatus.OK);
     }
 
     // 상세 목록

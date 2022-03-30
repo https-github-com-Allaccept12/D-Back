@@ -25,21 +25,17 @@ public class PostResponseDto {
         private String account_profile_img;
         private String title;
         private String content;
-        private Long bookmark_count;
         private Long like_count;
         private Long comment_count;
         private String category;
         private Timestamp create_time;
-        private Boolean is_selected;
-        private Boolean is_like;
-        private Boolean is_bookmark;
         private List<CommonDto.PostTagDto> hash_tag;
 
         @Builder
         public PostPageMain(final Long post_id, final Long account_id, final String account_nickname,
                             final String account_profile_img, final String title,
                             final String content, final String category,
-                            final Timestamp create_time, final Boolean is_selected,
+                            final Timestamp create_time,
                             final Long like_count) {
 
             this.post_id = post_id;
@@ -50,23 +46,19 @@ public class PostResponseDto {
             this.content = content;
             this.category = category;
             this.create_time = create_time;
-            this.is_selected = is_selected;
             this.like_count = like_count;
         }
 
-        public void setCountList(Long bookmark_count, Long comment_count){
-            this.bookmark_count = bookmark_count;
+        public void setCountList(Long comment_count){
             this.comment_count = comment_count;
         }
 
-        public void setHash_tag(List<CommonDto.PostTagDto> hash_tag){
-            this.hash_tag = hash_tag;
+        public void setHash_tag(List<PostTag> hash_tag) {
+            this.hash_tag = hash_tag.stream()
+                    .map(i -> new CommonDto.PostTagDto(i.getHashTag())).collect(Collectors.toList());
+//            this.hash_tag = hash_tag;
         }
 
-        public void setLikeAndBookmarkStatus(Boolean is_like, Boolean is_bookmark){
-            this.is_like = is_like;
-            this.is_bookmark = is_bookmark;
-        }
     }
 
 
@@ -419,13 +411,8 @@ public class PostResponseDto {
         private Timestamp create_time;
         private Boolean is_selected;
         private List<CommonDto.PostTagDto> hash_tag;
-        private Long bookmark_count;
         private Long like_count;
         private Long comment_count;
-
-        private Boolean is_like;
-
-        private Boolean is_bookmark;
 
         @Builder
         public PostSearchMain(final Long post_id, final Long account_id, final String account_nickname,
@@ -441,22 +428,16 @@ public class PostResponseDto {
             this.content = content;
             this.category = category;
             this.create_time = create_time;
-            this.is_selected = is_selected;
         }
 
-        public void setCountList(Long bookmark_count, Long comment_count, Long like_count){
-            this.bookmark_count = bookmark_count;
+        public void setCountList(Long comment_count, Long like_count){
             this.comment_count = comment_count;
             this.like_count = like_count;
         }
 
-        public void setIsLikeAndBookmark(Boolean is_like, Boolean is_bookmark){
-            this.is_like = is_like;
-            this.is_bookmark = is_bookmark;
-        }
-
-        public void setHash_tag(List<CommonDto.PostTagDto> hash_tag) {
-            this.hash_tag = hash_tag;
+        public void setHash_tag(List<PostTag> hash_tag) {
+            this.hash_tag = hash_tag.stream()
+                    .map(i -> new CommonDto.PostTagDto(i.getHashTag())).collect(Collectors.toList());
         }
     }
 }

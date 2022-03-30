@@ -51,10 +51,6 @@ public class Post extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private PostBoard board;
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE)
-    private List<PostTag> postTagList = new ArrayList<>();
-
-
     @Builder
     public Post(final String title, final String content, final String category,
                 final Account account, final Long view, final boolean isSelected, final PostBoard board) {

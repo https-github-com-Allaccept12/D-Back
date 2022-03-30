@@ -36,7 +36,6 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                         post.content,
                         post.category,
                         post.created,
-                        post.isSelected,
                         postLikes.count()
                 ))
                 .from(post)
@@ -63,7 +62,6 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                         post.content,
                         post.category,
                         post.created,
-                        post.isSelected,
                         postLikes.count()
                 ))
                 .from(post)
@@ -141,8 +139,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                         post.title,
                         post.content,
                         post.category,
-                        post.created,
-                        post.isSelected
+                        post.created
                         ))
                 .from(post)
                 .join(account).on(account.id.eq(post.account.id))
@@ -172,7 +169,6 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                        post.content,
                        post.category,
                        post.created,
-                       post.isSelected,
                        postLikes.count()
                ))
                .from(post)

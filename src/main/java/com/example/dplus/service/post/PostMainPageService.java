@@ -14,7 +14,7 @@ public interface PostMainPageService {
     PostMainResponseDto showPostMain(Long accountId, Long lastPostId, String board, String category);
 
     // 전체 게시물 조회 (좋아요순)
-    PostMainResponseDto showPostLikeMain(Long accountId, String board, String category);
+    PostMainResponseDto showPostLikeMain(Long accountId, String board, String category, int start);
 
     // 게시글 작성
     int createPost(Long accountId, PostRequestDto.PostCreate dto, List<MultipartFile> imageFile);

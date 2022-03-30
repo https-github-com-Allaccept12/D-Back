@@ -3,11 +3,9 @@ package com.example.dplus.service.post;
 import com.example.dplus.advice.ErrorCustomException;
 import com.example.dplus.advice.ErrorCode;
 import com.example.dplus.domain.account.Account;
-import com.example.dplus.dto.response.AccountResponseDto;
 import com.example.dplus.repository.account.AccountRepository;
 import com.example.dplus.repository.account.follow.FollowRepository;
 import com.example.dplus.domain.post.Post;
-import com.example.dplus.domain.post.PostBoard;
 import com.example.dplus.repository.post.PostRepository;
 import com.example.dplus.repository.post.answer.PostAnswerRepository;
 import com.example.dplus.domain.post.PostBookMark;
@@ -65,19 +63,15 @@ public class PostMainPageServiceImpl implements PostMainPageService{
             Pageable pageable = PageRequest.of(0,12);
             List<PostResponseDto.PostPageMain> postList = postRepository.findAllPostOrderByCreatedDesc(lastPostId, pageable, board, category);
             setCountList(postList);
-            setIsLikeAndBookmarkPost(accountId, postList);
-            for(int i = 0; i< postList.size(); i++) {
-                List<CommonDto.PostTagDto> tagDtos = postTagRepository.findPostTagListByPostId(postList.get(i).getPost_id());
-                postList.get(i).setHash_tag(tagDtos);
-            }
 
             // 메인페이지 추천피드
             List<PostResponseDto.PostPageMain> postRecommendation = postRepository.findPostByMostViewAndMostLike();
             setCountList(postRecommendation);
-            setIsLikeAndBookmarkPost(accountId, postRecommendation);
             for(int i = 0; i< postRecommendation.size(); i++) {
-                List<CommonDto.PostTagDto> tagDtos = postTagRepository.findPostTagListByPostId(postList.get(i).getPost_id());
-                postRecommendation.get(i).setHash_tag(tagDtos);
+                List<PostTag> tagDtos = postTagRepository.findPostTagsByPostId(postList.get(i).getPost_id());
+                if (tagDtos.size()>0){
+                    postList.get(i).setHash_tag(tagDtos);
+                }
             }
             return PostMainResponseDto.builder().postMainPage(postList).postRecommendationFeed(postRecommendation).build();
         }
@@ -88,7 +82,7 @@ public class PostMainPageServiceImpl implements PostMainPageService{
         List<PostResponseDto.PostPageMain> postList = postRepository.findAllPostOrderByCreatedDesc(lastPostId, pageable, board, category);
         setCountList(postList);
         for(int i = 0; i< postList.size(); i++) {
-            List<CommonDto.PostTagDto> tagDtos = postTagRepository.findPostTagListByPostId(postList.get(i).getPost_id());
+            List<PostTag> tagDtos = postTagRepository.findPostTagsByPostId(postList.get(i).getPost_id());
             postList.get(i).setHash_tag(tagDtos);
         }
 
@@ -96,8 +90,10 @@ public class PostMainPageServiceImpl implements PostMainPageService{
         List<PostResponseDto.PostPageMain> postRecommendation = postRepository.findPostByMostViewAndMostLike();
         setCountList(postRecommendation);
         for(int i = 0; i< postRecommendation.size(); i++) {
-            List<CommonDto.PostTagDto> tagDtos = postTagRepository.findPostTagListByPostId(postList.get(i).getPost_id());
-            postRecommendation.get(i).setHash_tag(tagDtos);
+            List<PostTag> tagDtos = postTagRepository.findPostTagsByPostId(postList.get(i).getPost_id());
+            if (tagDtos.size()>0){
+                postList.get(i).setHash_tag(tagDtos);
+            }
         }
 
         return PostMainResponseDto.builder().postMainPage(postList).postRecommendationFeed(postRecommendation).build();
@@ -105,38 +101,32 @@ public class PostMainPageServiceImpl implements PostMainPageService{
 
     // 메인 페이지 (좋아요 순)
     @Transactional(readOnly = true)
-    public PostMainResponseDto showPostLikeMain(Long accountId, String board, String category) {
+    public PostMainResponseDto showPostLikeMain(Long accountId, String board, String category,int start) {
 
         // 회원이면
         if (accountId != 0){
             // 메인 페이지 전체 피드
-            Pageable pageable = PageRequest.of(0,12);
+            Pageable pageable = PageRequest.of(start,12);
             List<PostResponseDto.PostPageMain> postList = postRepository.findAllPostOrderByLikes(pageable, board, category);
-            setCountList(postList);
-            setIsLikeAndBookmarkPost(accountId, postList);
-            for(int i = 0; i< postList.size(); i++) {
-                List<CommonDto.PostTagDto> tagDtos = postTagRepository.findPostTagListByPostId(postList.get(i).getPost_id());
-                postList.get(i).setHash_tag(tagDtos);
-            }
-
             // 메인페이지 추천피드
             List<PostResponseDto.PostPageMain> postRecommendation = postRepository.findPostByMostViewAndMostLike();
             setCountList(postRecommendation);
-            setIsLikeAndBookmarkPost(accountId, postRecommendation);
             for(int i = 0; i< postRecommendation.size(); i++) {
-                List<CommonDto.PostTagDto> tagDtos = postTagRepository.findPostTagListByPostId(postList.get(i).getPost_id());
-                postRecommendation.get(i).setHash_tag(tagDtos);
+                List<PostTag> tagDtos = postTagRepository.findPostTagsByPostId(postList.get(i).getPost_id());
+                if (tagDtos.size()>0){
+                    postList.get(i).setHash_tag(tagDtos);
+                }
             }
             return PostMainResponseDto.builder().postMainPage(postList).postRecommendationFeed(postRecommendation).build();
         }
 
         // 메인 페이지 전체 피드
-        Pageable pageable = PageRequest.of(0,12);
+        Pageable pageable = PageRequest.of(start,12);
 
         List<PostResponseDto.PostPageMain> postList = postRepository.findAllPostOrderByLikes(pageable, board, category);
         setCountList(postList);
         for(int i = 0; i< postList.size(); i++) {
-            List<CommonDto.PostTagDto> tagDtos = postTagRepository.findPostTagListByPostId(postList.get(i).getPost_id());
+            List<PostTag> tagDtos = postTagRepository.findPostTagsByPostId(postList.get(i).getPost_id());
             postList.get(i).setHash_tag(tagDtos);
         }
 
@@ -144,8 +134,10 @@ public class PostMainPageServiceImpl implements PostMainPageService{
         List<PostResponseDto.PostPageMain> postRecommendation = postRepository.findPostByMostViewAndMostLike();
         setCountList(postRecommendation);
         for(int i = 0; i< postRecommendation.size(); i++) {
-            List<CommonDto.PostTagDto> tagDtos = postTagRepository.findPostTagListByPostId(postList.get(i).getPost_id());
-            postRecommendation.get(i).setHash_tag(tagDtos);
+            List<PostTag> tagDtos = postTagRepository.findPostTagsByPostId(postList.get(i).getPost_id());
+            if (tagDtos.size()>0){
+                postList.get(i).setHash_tag(tagDtos);
+            }
         }
 
         return PostMainResponseDto.builder().postMainPage(postList).postRecommendationFeed(postRecommendation).build();
@@ -269,14 +261,10 @@ public class PostMainPageServiceImpl implements PostMainPageService{
         Pageable pageable = PageRequest.of(0,12);
         List<PostResponseDto.PostSearchMain> postSearched = postRepository.findPostBySearchKeyWord(keyword,lastArtWorkId,pageable, board);
         for(int i = 0; i<postSearched.size();i++){
-            List<CommonDto.PostTagDto> tagDtos = postTagRepository.findPostTagListByPostId(postSearched.get(i).getPost_id());
+            List<PostTag> tagDtos = postTagRepository.findPostTagsByPostId(postSearched.get(i).getPost_id());
             postSearched.get(i).setHash_tag(tagDtos);
         }
-
         setCountSearchPost(postSearched);
-        if(accountId!=0){
-            setIsLikeAndBookmarkSearchPost(accountId, postSearched);
-        }
         return postSearched;
     }
 
@@ -373,7 +361,6 @@ public class PostMainPageServiceImpl implements PostMainPageService{
         // #단위로 끊어서 해쉬태그 들어옴 (dto -> 받을 때)
         private void setPostTag(List<CommonDto.PostTagDto> dto, Post post){
             dto.forEach((tag) -> {
-                System.out.println("태그 : "+ tag);
                 PostTag postTag = PostTag.builder()
                         .post(post)
                         .hashTag(tag.getTag())
@@ -383,9 +370,8 @@ public class PostMainPageServiceImpl implements PostMainPageService{
         }
     private void setCountList(List<PostResponseDto.PostPageMain> postList){
         postList.forEach((post) -> {
-            Long bookmark_count = postBookMarkRepository.countByPostId(post.getPost_id());
             Long comment_count = postCommentRepository.countByPostId(post.getPost_id());
-            post.setCountList(bookmark_count, comment_count);
+            post.setCountList(comment_count);
         });
     }
 
@@ -415,29 +401,12 @@ public class PostMainPageServiceImpl implements PostMainPageService{
         });
     }
 
-    private void setIsLikeAndBookmarkPost(Long accountId, List<PostResponseDto.PostPageMain> postList) {
-        postList.forEach((post) -> {
-            post.setLikeAndBookmarkStatus(postLikesRepository.
-                            existByAccountIdAndPostId(accountId, post.getPost_id()),
-                    postBookMarkRepository.existByAccountIdAndPostId(accountId, post.getPost_id()));
-        });
-
-    }
-
     private void setCountSearchPost(List<PostResponseDto.PostSearchMain> searchPost){
         searchPost.forEach((post) -> {
-            Long bookmark_count = postBookMarkRepository.countByPostId(post.getPost_id());
             Long comment_count = postCommentRepository.countByPostId(post.getPost_id());
             Long like_count = postLikesRepository.countByPostId(post.getPost_id());
-            post.setCountList(bookmark_count,comment_count,like_count);
+            post.setCountList(comment_count,like_count);
         });
     }
 
-    private void setIsLikeAndBookmarkSearchPost(Long accountId, List<PostResponseDto.PostSearchMain> searchPost) {
-        searchPost.forEach((post) -> {
-            boolean isLike = postLikesRepository.existByAccountIdAndPostId(accountId, post.getAccount_id());
-            boolean isBookmark = postBookMarkRepository.existByAccountIdAndPostId(accountId, post.getAccount_id());
-            post.setIsLikeAndBookmark(isLike, isBookmark);
-        });
-    }
 }
