@@ -5,8 +5,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class ArtWorkResponseDto {
@@ -157,12 +157,6 @@ public class ArtWorkResponseDto {
     public static class ArtWorkSimilarWork {
         private Long artwork_id;
         private String artwork_title;
-        private String account_nickname;
-        private String acccount_tendency;
-        private String linkedIn;
-        private String brunch;
-        private String instagram;
-
         private String img;
 
         public ArtWorkSimilarWork(final Long artwork_id,final String artwork_title,final String img) {

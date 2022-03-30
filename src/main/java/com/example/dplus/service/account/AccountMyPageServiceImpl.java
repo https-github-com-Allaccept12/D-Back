@@ -11,6 +11,7 @@ import com.example.dplus.dto.request.ArtWorkRequestDto.ArtWorkPortFolioUpdate;
 import com.example.dplus.dto.request.HistoryRequestDto.HistoryUpdateList;
 import com.example.dplus.dto.response.AccountResponseDto;
 import com.example.dplus.dto.response.AccountResponseDto.AccountInfo;
+import com.example.dplus.dto.response.AccountResponseDto.MyPost;
 import com.example.dplus.dto.response.ArtWorkResponseDto;
 import com.example.dplus.dto.response.HistoryResponseDto;
 import com.example.dplus.repository.account.AccountRepository;
@@ -19,7 +20,6 @@ import com.example.dplus.repository.account.history.HistoryRepository;
 import com.example.dplus.repository.artwork.ArtWorkRepository;
 import com.example.dplus.repository.post.PostRepository;
 import com.example.dplus.repository.post.answer.PostAnswerRepository;
-import com.example.dplus.repository.post.bookmark.PostBookMarkRepository;
 import com.example.dplus.repository.post.comment.PostCommentRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -43,7 +43,6 @@ public class AccountMyPageServiceImpl implements AccountMyPageService {
     private final FollowRepository followRepository;
     private final PostRepository postRepository;
     private final PostAnswerRepository postAnswerRepository;
-    private final PostBookMarkRepository postBookMarkRepository;
     private final PostCommentRepository postCommentRepository;
 
     //마이페이지
@@ -149,9 +148,9 @@ public class AccountMyPageServiceImpl implements AccountMyPageService {
     }
 
     @Transactional(readOnly = true)
-    public List<AccountResponseDto.MyPost> getMyPost(Long accountId, String board) {
+    public List<MyPost> getMyPost(Long accountId, String board) {
         Pageable pageable = PageRequest.of(0,5);
-        List<AccountResponseDto.MyPost> myPosts = postRepository.findPostByAccountIdAndBoard(accountId, board, pageable);
+        List<MyPost> myPosts = postRepository.findPostByAccountIdAndBoard(accountId, board, pageable);
         if (board.equals("QNA")) {
             setQnaInfo(myPosts);
         } else if (board.equals("INFO")) {
@@ -161,9 +160,9 @@ public class AccountMyPageServiceImpl implements AccountMyPageService {
     }
 
     @Transactional(readOnly = true)
-    public List<AccountResponseDto.MyPost> getMyBookMarkPost(Long accountId, String board) {
+    public List<MyPost> getMyBookMarkPost(Long accountId, String board) {
         Pageable pageable = PageRequest.of(0,5);
-        List<AccountResponseDto.MyPost> myBookMarkPost = postRepository.findPostBookMarkByAccountId(accountId, board, pageable);
+        List<MyPost> myBookMarkPost = postRepository.findPostBookMarkByAccountId(accountId, board, pageable);
         setPostInfo(myBookMarkPost);
         return myBookMarkPost;
     }
@@ -193,23 +192,17 @@ public class AccountMyPageServiceImpl implements AccountMyPageService {
         }
     }
 
-    private void setQnaInfo(List<AccountResponseDto.MyPost> myPosts) {
+    private void setQnaInfo(List<MyPost> myPosts) {
         myPosts.forEach((myPost) -> {
             Long answerCount = postAnswerRepository.countByPostId(myPost.getPost_id());
             myPost.setAnswer_count(answerCount);
-
-            Long bookMarkCount = postBookMarkRepository.countByPostId(myPost.getPost_id());
-            myPost.setBookmark_count(bookMarkCount);
         });
     }
 
-    private void setPostInfo(List<AccountResponseDto.MyPost> myPosts) {
+    private void setPostInfo(List<MyPost> myPosts) {
         myPosts.forEach((myPost) -> {
             Long commentCount = postCommentRepository.countByPostId(myPost.getPost_id());
             myPost.setAnswer_count(commentCount);
-
-            Long bookMarkCount = postBookMarkRepository.countByPostId(myPost.getPost_id());
-            myPost.setBookmark_count(bookMarkCount);
         });
     }
 

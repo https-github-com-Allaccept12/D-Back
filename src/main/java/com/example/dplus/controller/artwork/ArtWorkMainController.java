@@ -28,9 +28,16 @@ public class ArtWorkMainController {
 
     @GetMapping
     public ResponseEntity<Success> main(@AuthenticationPrincipal UserDetailsImpl user) {
-        Long accountId = getaLong(user);
+        Long accountId ;
+        String interest = "default";
+        if (user != null) {
+            accountId = user.getUser().getId();
+            interest = user.getUser().getInterest();
+        } else {
+            accountId = 0L;
+        }
         return new ResponseEntity<>(new Success("메인 페이지",
-                artworkMainService.mostPopularArtWork(accountId)), HttpStatus.OK);
+                artworkMainService.mostPopularArtWork(accountId,interest)), HttpStatus.OK);
     }
 
     @GetMapping("/api/artwork/{last_artwork_id}")
