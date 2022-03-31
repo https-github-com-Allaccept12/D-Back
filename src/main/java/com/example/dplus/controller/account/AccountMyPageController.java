@@ -2,9 +2,9 @@ package com.example.dplus.controller.account;
 
 
 import com.example.dplus.dto.Success;
+import com.example.dplus.dto.request.AccountRequestDto.AccountMasterPiece;
 import com.example.dplus.dto.request.AccountRequestDto.UpdateAccountIntro;
 import com.example.dplus.dto.request.AccountRequestDto.UpdateSpecialty;
-import com.example.dplus.dto.request.ArtWorkRequestDto.ArtWorkPortFolioUpdate;
 import com.example.dplus.dto.request.HistoryRequestDto.HistoryUpdateList;
 import com.example.dplus.jwt.UserDetailsImpl;
 import com.example.dplus.service.account.AccountMyPageService;
@@ -34,13 +34,10 @@ public class AccountMyPageController {
                 accountMyPageService.showAccountInfo(ownerAccountId, accountId)), HttpStatus.OK);
     }
 
-    @GetMapping("/career-feed/{last_artwork_id}")
-    public ResponseEntity<Success> accountCareerFeed(@AuthenticationPrincipal UserDetailsImpl user,
-                                                     @RequestParam("owner_account_id") Long ownerAccountId,
-                                                     @PathVariable Long last_artwork_id) {
-        Long accountId = getaLong(user);
+    @GetMapping("/career-feed")
+    public ResponseEntity<Success> accountCareerFeed(@RequestParam("owner_account_id") Long ownerAccountId) {
         return new ResponseEntity<>(new Success("마이페이지 커리어피드 조회",
-                accountMyPageService.showAccountCareerFeed(last_artwork_id,ownerAccountId,accountId)), HttpStatus.OK);
+                accountMyPageService.showAccountCareerFeed(ownerAccountId)), HttpStatus.OK);
     }
 
     @GetMapping("/history")
@@ -88,7 +85,6 @@ public class AccountMyPageController {
         return new ResponseEntity<>(new Success("작품 북마크 목록",
                 accountMyPageService.showAccountArtWorkBookMark(last_artwork_id,user.getUser().getId())),HttpStatus.OK);
     }
-
     //단건
     @PostMapping(value = "/masterpiece/{artwork_id}")
     public ResponseEntity<Success> masterpieceSelect(@PathVariable Long artwork_id,
@@ -97,13 +93,19 @@ public class AccountMyPageController {
         return new ResponseEntity<>(new Success("포트폴리오 작품 선택",""),HttpStatus.OK);
     }
 
-    @PatchMapping(value = "/masterpiece/{artwork_id}")
+    @DeleteMapping(value = "/masterpiece/{artwork_id}")
     public ResponseEntity<Success> masterpieceClear(@PathVariable Long artwork_id,
                                                      @AuthenticationPrincipal UserDetailsImpl user) {
         accountMyPageService.nonMasterAccountCareerFeed(artwork_id,user.getUser());
         return new ResponseEntity<>(new Success("포트폴리오 작품 해지",""),HttpStatus.OK);
     }
-
+    @PatchMapping(value = "/masterpiece/{artwork_id}")
+    public ResponseEntity<Success> updateMasterpiece(@PathVariable Long artwork_id,
+                                                     @RequestBody AccountMasterPiece prev_artwork_id,
+                                                     @AuthenticationPrincipal UserDetailsImpl user) {
+        accountMyPageService.updateMasterAccountCareerFeed(artwork_id,prev_artwork_id.getPrev_artwork_id(),user.getUser());
+        return new ResponseEntity<>(new Success("포트폴리오 작품 수정",""),HttpStatus.OK);
+    }
     //보이기
     @PostMapping(value = "/hidepiece/{artwork_id}")
     public ResponseEntity<Success> hidepieceSelect(@PathVariable Long artwork_id,
@@ -121,28 +123,28 @@ public class AccountMyPageController {
 
     @GetMapping("/community/myPost/{board}")
     public ResponseEntity<Success> myPost(@PathVariable String board,
-                                          @AuthenticationPrincipal UserDetailsImpl user,
-                                          @RequestParam("start") int start) {
-        return new ResponseEntity<>(new Success("나의 Post",accountMyPageService.getMyPost(user.getUser().getId(), board, start)),HttpStatus.OK);
+                                          @RequestParam("start") int start,
+                                          @AuthenticationPrincipal UserDetailsImpl user) {
+        return new ResponseEntity<>(new Success("나의 Post",accountMyPageService.getMyPost(user.getUser().getId(), board,start)),HttpStatus.OK);
     }
 
     @GetMapping("/community/post/bookmark/{board}")
     public ResponseEntity<Success> myMyBookMarkPost(@PathVariable String board,
-                                                    @AuthenticationPrincipal UserDetailsImpl user,
-                                                    @RequestParam("start") int start) {
-        return new ResponseEntity<>(new Success("내가 스크랩한 글",accountMyPageService.getMyBookMarkPost(user.getUser().getId(), board, start)),HttpStatus.OK);
+                                                    @RequestParam("start") int start,
+                                                    @AuthenticationPrincipal UserDetailsImpl user) {
+        return new ResponseEntity<>(new Success("내가 스크랩한 글",accountMyPageService.getMyBookMarkPost(user.getUser().getId(), board,start)),HttpStatus.OK);
     }
 
     @GetMapping("/community/myanswer")
     public ResponseEntity<Success> getMyAnswer(@AuthenticationPrincipal UserDetailsImpl user,
                                                @RequestParam("start") int start) {
-        return new ResponseEntity<>(new Success("나의 답글",accountMyPageService.getMyAnswer(user.getUser().getId(), start)),HttpStatus.OK);
+        return new ResponseEntity<>(new Success("나의 답글",accountMyPageService.getMyAnswer(user.getUser().getId(),start)),HttpStatus.OK);
     }
 
     @GetMapping("/community/mycomment")
     public ResponseEntity<Success> getMyComment(@AuthenticationPrincipal UserDetailsImpl user,
                                                 @RequestParam("start") int start) {
-        return new ResponseEntity<>(new Success("나의 댓글",accountMyPageService.getMyComment(user.getUser().getId(), start)),HttpStatus.OK);
+        return new ResponseEntity<>(new Success("나의 댓글",accountMyPageService.getMyComment(user.getUser().getId(),start)),HttpStatus.OK);
     }
     private Long getaLong(UserDetailsImpl user) {
         Long accountId ;

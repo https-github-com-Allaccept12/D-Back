@@ -1,8 +1,9 @@
 package com.example.dplus.repository.artwork;
 
 import com.example.dplus.dto.response.ArtWorkResponseDto;
+import com.example.dplus.dto.response.ArtWorkResponseDto.ArtWorkFeed;
 import com.example.dplus.dto.response.ArtWorkResponseDto.ArtworkMain;
-import com.querydsl.core.types.OrderSpecifier;
+import com.example.dplus.dto.response.ArtWorkResponseDto.MyArtWork;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -24,27 +25,37 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<ArtWorkResponseDto.ArtWorkFeed> findByArtWorkImageAndAccountId(Long lastArtWorkId, Pageable paging,
-                                                                               Long visitAccountId, Long accountId, boolean isPortfolio) {
+    public List<ArtWorkFeed> findByMasterArtWorkImageAndAccountId(Long visitAccountId) {
         return queryFactory
-                .select(Projections.constructor(
-                        ArtWorkResponseDto.ArtWorkFeed.class,
+                .select(Projections.constructor(ArtWorkFeed.class,
                         artWorks.id,
-                        artWorks.scope,
                         artWorks.thumbnail,
                         artWorks.isMaster
                 ))
                 .from(artWorks)
-                .offset(paging.getOffset())
-                .limit(paging.getPageSize())
-                .where(isPortfolio(isPortfolio),
-                        artWorks.account.id.eq(visitAccountId),
-                        artWorks.scope.isTrue(),
-                        isVisitor(visitAccountId, accountId),
-                        isLastArtworkId(lastArtWorkId))
+                .limit(4)
+                .where(artWorks.account.id.eq(visitAccountId)
+                        .and(artWorks.isMaster.isTrue()))
                 .groupBy(artWorks.id)
                 .orderBy(artWorks.created.desc())
                 .fetch();
+    }
+
+    @Override
+    public List<MyArtWork> findByArtWork(Long lastArtWorkId, Pageable pageable, Long visitAccountId, Long accountId) {
+        return queryFactory
+                .select(Projections.constructor(MyArtWork.class,
+                        artWorks.id,
+                        artWorks.thumbnail,
+                        artWorks.scope))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .from(artWorks)
+                .where(isVisitor(visitAccountId,accountId),
+                        isLastArtworkId(lastArtWorkId))
+                .orderBy(artWorks.created.desc())
+                .fetch();
+
     }
 
     @Override
@@ -177,7 +188,7 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
                 .where(isCategory(category),
                         artWorks.scope.isTrue())
                 .groupBy(artWorks.id)
-                .orderBy(artWorkLikes.count().desc())
+                .orderBy(artWorkLikes.count().desc(),artWorks.created.desc())
                 .fetch();
     }
 
@@ -295,30 +306,6 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
 
 
 
-    @Override
-    public void updateArtWorkIdMasterToFalse(Long artWorkId) {
-        queryFactory
-                .update(artWorks)
-                .set(artWorks.isMaster, false)
-                .where(artWorks.id.eq(artWorkId))
-                .execute();
-    }
-
-    //in절을 통한 List 벌크
-    @Override
-    public void updateAllArtWorkIsMasterToTrue(List<Long> artworkIdList) {
-        queryFactory
-                .update(artWorks)
-                .set(artWorks.isMaster, true)
-                .set(artWorks.scope, true)
-                .where(artWorks.id.in(artworkIdList))
-                .execute();
-    }
-
-    private OrderSpecifier<?> isArtWorkSort(int sortSign) {
-        return sortSign == 1 ? artWorks.created.desc() : artWorkLikes.count().desc();
-    }
-
     private BooleanExpression isCategory(String category) {
         return category.isEmpty() ? null : artWorks.category.eq(category);
     }
@@ -337,8 +324,6 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
         return visitAccountId.equals(accountId) ? null : artWorks.scope.isTrue();
     }
 
-    private BooleanExpression isPortfolio(boolean isPortfolio) {
-        return isPortfolio ? artWorks.isMaster.isTrue() : null;
-    }
+
 
 }

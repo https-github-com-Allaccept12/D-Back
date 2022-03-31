@@ -7,12 +7,13 @@ import com.example.dplus.domain.account.History;
 import com.example.dplus.domain.artwork.ArtWorks;
 import com.example.dplus.dto.request.AccountRequestDto.UpdateAccountIntro;
 import com.example.dplus.dto.request.AccountRequestDto.UpdateSpecialty;
-import com.example.dplus.dto.request.ArtWorkRequestDto.ArtWorkPortFolioUpdate;
 import com.example.dplus.dto.request.HistoryRequestDto.HistoryUpdateList;
-import com.example.dplus.dto.response.AccountResponseDto;
 import com.example.dplus.dto.response.AccountResponseDto.AccountInfo;
+import com.example.dplus.dto.response.AccountResponseDto.MyAnswer;
+import com.example.dplus.dto.response.AccountResponseDto.MyComment;
 import com.example.dplus.dto.response.AccountResponseDto.MyPost;
 import com.example.dplus.dto.response.ArtWorkResponseDto;
+import com.example.dplus.dto.response.ArtWorkResponseDto.MyArtWork;
 import com.example.dplus.dto.response.HistoryResponseDto;
 import com.example.dplus.repository.account.AccountRepository;
 import com.example.dplus.repository.account.follow.FollowRepository;
@@ -48,7 +49,7 @@ public class AccountMyPageServiceImpl implements AccountMyPageService {
     private final PostAnswerRepository postAnswerRepository;
     private final PostCommentRepository postCommentRepository;
 
-    //마이페이지
+    //마이페이지 조회
     @Transactional(readOnly = true)
     @Cacheable(value="accountInfo", key="#visitAccountId")
     public AccountInfo showAccountInfo(Long visitAccountId, Long accountId) {
@@ -58,7 +59,7 @@ public class AccountMyPageServiceImpl implements AccountMyPageService {
         final boolean isFollow= followRepository.existsByFollowerIdAndFollowingId(visitAccountId,accountId);
         return AccountInfo.from(findAccount,follower,following, isFollow,visitAccountId.equals(accountId));
     }
-    //연혁
+    //연혁 조히
     @Transactional(readOnly = true)
     @Cacheable(value="accountHistory", key="#accountId")
     public List<HistoryResponseDto.History> showAccountHistory(Long accountId) {
@@ -70,11 +71,9 @@ public class AccountMyPageServiceImpl implements AccountMyPageService {
     //작업물 - 포트폴리오
     @Transactional(readOnly = true)
     @Cacheable(value="portfolio", key="#visitAccountId")
-    public List<ArtWorkResponseDto.ArtWorkFeed> showAccountCareerFeed(Long LastArtWorkId,Long visitAccountId, Long accountId) {
-        Pageable pageable = PageRequest.of(0,10);
-        return artWorkRepository.findByArtWorkImageAndAccountId(LastArtWorkId,pageable,visitAccountId,accountId,true);
+    public List<ArtWorkResponseDto.ArtWorkFeed> showAccountCareerFeed(Long visitAccountId) {
+        return artWorkRepository.findByMasterArtWorkImageAndAccountId(visitAccountId);
     }
-
     //포트폴리오 - 기본 소개 수정
     @Transactional
     @CacheEvict(value="accountInfo", key="#accountId")
@@ -91,6 +90,7 @@ public class AccountMyPageServiceImpl implements AccountMyPageService {
         account.updateSpecialty(dto);
     }
 
+    // 히스토리 수정
     @Transactional
     @CacheEvict(value="accountHistory", key="#accountId")
     public void updateAccountHistory(HistoryUpdateList dto, Long accountId) {
@@ -104,24 +104,33 @@ public class AccountMyPageServiceImpl implements AccountMyPageService {
         historyRepository.saveAll(collect);
     }
 
-    //내 작품탭에서 올리기 단건
+    //내 작품탭에서 대표작으로 올리기
     @Transactional
     @CacheEvict(value="portfolio", key="#account.id")
     public void masterAccountCareerFeed(Long artWorkId,Account account) {
         ArtWorks artWorks = getArtWorks(artWorkId);
         createValid(account, artWorks);
         artWorks.updateArtWorkIsMaster(true);
+        artWorks.updateArtWorkIsScope(true);
     }
-    //내 작품탭에서 내리기
+    //내 대표작에서 내리기
     @Transactional
     @CacheEvict(value="portfolio", key="#account.id")
     public void nonMasterAccountCareerFeed(Long artWorkId,Account account) {
         ArtWorks artWorks = getArtWorks(artWorkId);
         createValid(account, artWorks);
         artWorks.updateArtWorkIsMaster(false);
-        artWorks.updateArtWorkIsScope(false);
     }
 
+    // 내 대표작 수정
+    @Transactional
+    public void updateMasterAccountCareerFeed(Long artWorkId,Long prevArtWorkId,Account account) {
+        ArtWorks artWorks = getArtWorks(artWorkId);
+        ArtWorks prevArtWork = getArtWorks(prevArtWorkId);
+        createValid(account, artWorks);
+        artWorks.updateArtWorkIsMaster(true);
+        prevArtWork.updateArtWorkIsMaster(false);
+    }
     //작품 보이기
     @Transactional
     @Caching(evict={@CacheEvict(value="portfolio", key="#account.id"), @CacheEvict(value="myArtworks", key="#account.id", allEntries = true)})
@@ -137,14 +146,15 @@ public class AccountMyPageServiceImpl implements AccountMyPageService {
         ArtWorks artWorks = getArtWorks(artWorkId);
         createValid(account,artWorks);
         artWorks.updateArtWorkIsScope(false);
+        artWorks.updateArtWorkIsMaster(false);
     }
 
     //마이페이지/유저작품
     @Transactional(readOnly = true)
     @Cacheable(value="myArtworks", key="{#visitAccountId, #lastArtWorkId}")
-    public List<ArtWorkResponseDto.ArtWorkFeed> showAccountArtWork(final Long lastArtWorkId,final Long visitAccountId, final Long accountId) {
-        Pageable pageable = PageRequest.of(0,10);
-        return artWorkRepository.findByArtWorkImageAndAccountId(lastArtWorkId, pageable, visitAccountId, accountId, false);
+    public List<MyArtWork> showAccountArtWork(final Long lastArtWorkId, final Long visitAccountId, final Long accountId) {
+        Pageable pageable = PageRequest.of(0,5);
+        return artWorkRepository.findByArtWork(lastArtWorkId, pageable, visitAccountId, accountId);
     }
 
     //마이페이지/북마크
@@ -157,7 +167,7 @@ public class AccountMyPageServiceImpl implements AccountMyPageService {
 
     @Transactional(readOnly = true)
     @Cacheable(value="myPost", key="{#accountId, #board, #start}")
-    public List<MyPost> getMyPost(Long accountId, String board, int start) {
+    public List<MyPost> getMyPost(Long accountId, String board,int start) {
         Pageable pageable = PageRequest.of(start,5);
         List<MyPost> myPosts = postRepository.findPostByAccountIdAndBoard(accountId, board, pageable);
         if (board.equals("QNA")) {
@@ -170,7 +180,7 @@ public class AccountMyPageServiceImpl implements AccountMyPageService {
 
     @Transactional(readOnly = true)
     @Cacheable(value="myBookmarkPost", key="{#accountId, #start}")
-    public List<MyPost> getMyBookMarkPost(Long accountId, String board, int start) {
+    public List<MyPost> getMyBookMarkPost(Long accountId, String board,int start) {
         Pageable pageable = PageRequest.of(start,5);
         List<MyPost> myBookMarkPost = postRepository.findPostBookMarkByAccountId(accountId, board, pageable);
         setPostInfo(myBookMarkPost);
@@ -179,15 +189,15 @@ public class AccountMyPageServiceImpl implements AccountMyPageService {
 
     @Transactional(readOnly = true)
     @Cacheable(value="myAnswer", key="{#accountId, #start}")
-    public List<AccountResponseDto.MyAnswer> getMyAnswer(Long accountId, int start) {
+    public List<MyAnswer> getMyAnswer(Long accountId,int start) {
         Pageable pageable = PageRequest.of(start,5);
         return postAnswerRepository.findPostAnswerByAccountId(accountId, pageable);
     }
 
     @Transactional(readOnly = true)
     @Cacheable(value="myComment", key="{#accountId, #start}")
-    public List<AccountResponseDto.MyComment> getMyComment(Long accountId, int start) {
-        Pageable pageable = PageRequest.of(start,5);
+    public List<MyComment> getMyComment(Long accountId, int start) {
+        Pageable pageable= PageRequest.of(start, 5);
         return postCommentRepository.findPostCommentByAccountId(accountId, pageable);
     }
 
@@ -199,7 +209,7 @@ public class AccountMyPageServiceImpl implements AccountMyPageService {
         return artWorkRepository.findById(artWorkId).orElseThrow(() -> new ErrorCustomException(ErrorCode.NONEXISTENT_ERROR));
     }
     private void createValid(Account account, ArtWorks artWorks) {
-        if(account.getId().equals(artWorks.getId())){
+        if(!account.getId().equals(artWorks.getAccount().getId())){
             throw new ErrorCustomException(ErrorCode.NO_AUTHORIZATION_ERROR);
         }
     }

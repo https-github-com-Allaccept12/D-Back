@@ -23,7 +23,6 @@ public class ArtWorkResponseDto {
         private String img;
         private Long view_count;
         private Long like_count;
-        private Boolean is_like;
         private Timestamp create_time;
 
         @Builder
@@ -39,9 +38,7 @@ public class ArtWorkResponseDto {
             this.category = category;
             this.account_nickname = account_nickname;
         }
-        public void setLikeCountAndIsLike(Boolean is_like) {
-            this.is_like = is_like;
-        }
+
     }
 
     @Getter
@@ -137,16 +134,29 @@ public class ArtWorkResponseDto {
     public static class ArtWorkFeed {
 
         private Long artwork_id;
-        private Boolean scope;
         private String img;
         private Boolean is_master;
 
         @Builder
-        public ArtWorkFeed(final Long artwork_id,final Boolean scope,final String img, final Boolean is_master) {
+        public ArtWorkFeed(final Long artwork_id,final String img, final Boolean is_master) {
             this.artwork_id = artwork_id;
-            this.scope = scope;
             this.img = img;
             this.is_master = is_master;
+        }
+    }
+    @Getter
+    @NoArgsConstructor
+    public static class MyArtWork {
+
+        private Long artwork_id;
+        private String img;
+        private Boolean scope;
+
+        @Builder
+        public MyArtWork(final Long artwork_id,final String img, final Boolean is_scope) {
+            this.artwork_id = artwork_id;
+            this.img = img;
+            this.scope = is_scope;
         }
     }
 
