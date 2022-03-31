@@ -44,7 +44,7 @@ public class ArtWorkMainController {
     public ResponseEntity<Success> artWorkMain(@AuthenticationPrincipal UserDetailsImpl user,
                                                @PathVariable Long last_artwork_id) {
         Long accountId = getaLong(user);
-        return new ResponseEntity<>(new Success("둘러보기",
+        return new ResponseEntity<>(new Success("모아보기",
                 artworkMainService.showArtworkMain(accountId,last_artwork_id,"")),HttpStatus.OK);
     }
 

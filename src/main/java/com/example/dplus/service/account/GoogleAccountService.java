@@ -108,7 +108,7 @@ public class GoogleAccountService {
     private LoginResponseDto registerGoogleUserIfNeeded(GoogleUserInfoDto googleUserInfo) {
         // DB 에 중복된 Google Id 가 있는지 확인
         String email = googleUserInfo.getEmail();
-        String username = googleUserInfo.getEmail();
+        String username = googleUserInfo.getUsername();
 
         Account googleUser = accountRepository.findByAccountName(username)
                 .orElse(null);

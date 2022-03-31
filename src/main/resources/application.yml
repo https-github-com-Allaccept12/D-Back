@@ -21,7 +21,7 @@ spring:
       max-active: 8
     port: 6379
     host: localhost
-#
+
 #logging.level:
 #  org.hibernate.SQL: debug
 

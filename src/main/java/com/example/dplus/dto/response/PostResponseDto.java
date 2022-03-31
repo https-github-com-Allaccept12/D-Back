@@ -337,8 +337,8 @@ public class PostResponseDto {
         private Timestamp modify_time;
         private Boolean is_selected;
         private Long like_count;
-        private Boolean is_like;
-        private Boolean is_follow;
+        private Boolean is_like = false;
+        private Boolean is_follow = false;
 
         @Builder
         public PostAnswer(final Long answer_id, final Long account_id, final String account_nickname, final String account_profile_img,

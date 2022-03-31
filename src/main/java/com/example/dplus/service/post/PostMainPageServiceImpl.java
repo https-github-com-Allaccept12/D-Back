@@ -25,6 +25,8 @@ import com.example.dplus.repository.post.tag.PostTagRepository;
 import com.example.dplus.service.file.FileProcessService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -97,6 +99,7 @@ public class PostMainPageServiceImpl implements PostMainPageService{
 
     // 게시글 작성
     @Transactional
+    @CacheEvict(value="myPost", key="{#accountId, #dto.board}", allEntries = true)
     public int createPost(Long accountId, PostRequestDto.PostCreate dto, List<MultipartFile> imgFile) {
         Account account = accountRepository.findById(accountId).orElseThrow(() -> new ErrorCustomException(ErrorCode.NO_USER_ERROR));
         if (account.getPostCreateCount() >= 5) {
@@ -120,6 +123,7 @@ public class PostMainPageServiceImpl implements PostMainPageService{
 
     // 게시물 수정
     @Transactional
+    @CacheEvict(value="myPost", key="{#accountId, #dto.board}", allEntries = true)
     public Long updatePost(Account account, Long postId, PostRequestDto.PostUpdate dto, List<MultipartFile> imgFile){
         Post post = postAuthValidation(account.getId(), postId);
 
@@ -155,6 +159,7 @@ public class PostMainPageServiceImpl implements PostMainPageService{
 
     // 게시글 삭제
     @Transactional
+    @CacheEvict(value="myPost", key="{#accountId, #dto.board}", allEntries = true)
     public void deletePost(Long accountId, Long postId){
         Post post = postAuthValidation(accountId, postId);
         List<PostImage> postImages = postImageRepository.findByPostId(postId);
@@ -218,18 +223,16 @@ public class PostMainPageServiceImpl implements PostMainPageService{
         return result;
     }
 
-        // #단위로 끊어서 해쉬태그 들어옴 (dto -> 받을 때)
-        private void  setPostTag(List<CommonDto.PostTagDto> dto, Post post){
-            dto.forEach((tag) -> {
-                System.out.println("태그 : "+ tag);
-                PostTag postTag = PostTag.builder()
-                        .post(post)
-                        .hashTag(tag.getTag())
-                        .build();
-                postTagRepository.save(postTag);
-            });
-        }
-
+    // #단위로 끊어서 해쉬태그 들어옴 (dto -> 받을 때)
+    private void  setPostTag(List<CommonDto.PostTagDto> dto, Post post){
+        dto.forEach((tag) -> {
+            PostTag postTag = PostTag.builder()
+                    .post(post)
+                    .hashTag(tag.getTag())
+                    .build();
+            postTagRepository.save(postTag);
+        });
+    }
 
     // post 수정, 삭제 권한 확인
     private Post postAuthValidation(Long accountId, Long postId){
@@ -241,7 +244,6 @@ public class PostMainPageServiceImpl implements PostMainPageService{
     }
     private void isFollow(Long accountId, List<PostAnswer> postAnswerList) {
         postAnswerList.forEach((postAnswer) -> {
-            postAnswer.setIsFollow(false);
             boolean isFollow = followRepository.existsByFollowerIdAndFollowingId(accountId, postAnswer.getAccount_id());
             if (isFollow)
                 postAnswer.setIsFollow(true);
@@ -250,7 +252,6 @@ public class PostMainPageServiceImpl implements PostMainPageService{
 
     private void setIsLike(Long accountId, List<PostAnswer> postAnswerList) {
         postAnswerList.forEach((postAnswer) -> {
-            postAnswer.setLikeCountAndIsLike(false);
             if(postAnswerLikesRepository.existByAccountIdAndPostAnswerId(accountId, postAnswer.getAnswer_id())) {
                 postAnswer.setLikeCountAndIsLike(true);
             }
