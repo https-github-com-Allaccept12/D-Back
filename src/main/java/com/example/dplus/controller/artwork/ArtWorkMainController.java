@@ -26,7 +26,7 @@ public class ArtWorkMainController {
 
     private final ArtworkMainService artworkMainService;
 
-    @GetMapping
+    @GetMapping("/")
     public ResponseEntity<Success> main(@AuthenticationPrincipal UserDetailsImpl user) {
         Long accountId ;
         String interest = "default";
@@ -44,7 +44,7 @@ public class ArtWorkMainController {
     public ResponseEntity<Success> artWorkMain(@AuthenticationPrincipal UserDetailsImpl user,
                                                @PathVariable Long last_artwork_id) {
         Long accountId = getaLong(user);
-        return new ResponseEntity<>(new Success("둘러보기",
+        return new ResponseEntity<>(new Success("모아보기",
                 artworkMainService.showArtworkMain(accountId,last_artwork_id,"")),HttpStatus.OK);
     }
 
@@ -75,7 +75,6 @@ public class ArtWorkMainController {
                     artworkMainService.findByFollowerArtWork(user.getUser().getId(), category, last_artwork_id)), HttpStatus.OK);
         }
         throw new ErrorCustomException(ErrorCode.NO_AUTHENTICATION_ERROR);
-
     }
 
     @PostMapping("/api/artwork")

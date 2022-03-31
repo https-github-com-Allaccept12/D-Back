@@ -50,7 +50,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                 .where(post.board.eq(PostBoard.valueOf(board)),
                         isCategory(category))
                 .groupBy(post.id)
-                .orderBy(post.postLikeList.size().desc(), post.created.desc())
+                .orderBy(post.postLikeList.size().desc(),post.created.desc())
                 .fetch();
 
     }
@@ -93,19 +93,29 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
     }
 
     @Override
-    public List<Post> findPostBySearchKeyWord(String keyword, Long lastPostId, Pageable pageable, String board) {
+    public List<PostResponseDto.PostPageMain> findPostBySearchKeyWord(String keyword, Long lastPostId, Pageable pageable, String board) {
         return queryFactory
-                .selectFrom(post)
-                .innerJoin(post.account,account)
-                .leftJoin(postTag).on(post.id.eq(postTag.post.id))
+                .select(Projections.constructor(PostResponseDto.PostPageMain.class,
+                        post.id,
+                        account.id,
+                        account.nickname,
+                        account.profileImg,
+                        post.title,
+                        post.content,
+                        post.category,
+                        post.created,
+                        postTag.hashTag
+                        ))
+                .from(post)
+                .join(account).on(account.id.eq(post.account.id))
+                .leftJoin(postTag).on(postTag.post.eq(post))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
-                .where(isLastPostId(lastPostId).and(post.board.eq(PostBoard.valueOf(board))),
-                        (post.title.contains(keyword))
-                                .or(post.account.nickname.contains(keyword))
-                                .or(post.content.contains(keyword))
-                                .or(postTag.hashTag.contains(keyword)))
-                .groupBy(post.id)
+                .where(isLastPostId(lastPostId),post.board.eq(PostBoard.valueOf(board)),
+                        post.title.contains(keyword),
+                        post.account.nickname.contains(keyword),
+                        post.content.contains(keyword),
+                        postTag.hashTag.contains(keyword))
                 .orderBy(post.created.desc())
                 .fetch();
     }
@@ -118,7 +128,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                 .innerJoin(post.account)
                 .limit(10)
                 .groupBy(post.id)
-                .orderBy(post.postLikeList.size().desc())
+                .orderBy(post.postLikeList.size().desc(),post.created.desc())
                 .fetch();
     }
 

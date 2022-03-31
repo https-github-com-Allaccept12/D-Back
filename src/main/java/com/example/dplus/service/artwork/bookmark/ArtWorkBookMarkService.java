@@ -9,6 +9,7 @@ import com.example.dplus.domain.artwork.ArtWorks;
 import com.example.dplus.domain.artwork.ArtWorkBookMark;
 import com.example.dplus.repository.artwork.bookmark.ArtWorkBookMarkRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +21,7 @@ public class ArtWorkBookMarkService {
     private final ArtWorkRepository artWorkRepository;
 
     @Transactional
+    @CacheEvict(value="myBookmarkArtworks", key="#account.id", allEntries = true)
     public void doBookMark(Account account, Long artWorkId) {
         ArtWorks artWorks = getArtWorks(artWorkId);
         if (artWorkBookMarkRepository.existByAccountIdAndArtWorkId(account.getId(), artWorkId)) {
@@ -34,6 +36,7 @@ public class ArtWorkBookMarkService {
     }
 
     @Transactional
+    @CacheEvict(value="myBookmarkArtworks", key="#account.id", allEntries = true)
     public void unBookMark(Account account, Long artWorkId) {
         ArtWorks artWorks = getArtWorks(artWorkId);
         if (!artWorkBookMarkRepository.existByAccountIdAndArtWorkId(account.getId(), artWorkId)) {

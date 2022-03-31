@@ -96,14 +96,14 @@ public class AccountRequestDto {
 
     @Getter
     @NoArgsConstructor
-    public static class setAccountMasterPiece {
-        private String img_url_fir;
-        private String img_url_sec;
+    public static class AccountVisit {
+        private Long account_id;
     }
 
     @Getter
     @NoArgsConstructor
-    public static class AccountVisit {
-        private Long account_id;
+    public static class AccountMasterPiece {
+        private Long prev_artwork_id;
     }
+
 }
