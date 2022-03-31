@@ -111,9 +111,6 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
         if (account.getArtWorkCreateCount() >= 5) {
             throw new ApiRequestException(ErrorCode.DAILY_WRITE_UP_BURN_ERROR);
         }
-        if (multipartFiles == null) {
-            throw new ApiRequestException(ErrorCode.PHOTO_UPLOAD_ERROR);
-        }
         ArtWorks saveArtwork = artWorkRepository.save(ArtWorks.of(account, dto));
         s3ImageUpload(multipartFiles,dto,saveArtwork);
         account.upArtworkCountCreate();

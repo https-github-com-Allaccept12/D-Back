@@ -1,6 +1,7 @@
 package com.example.dplus.controller.artwork;
 
 
+import com.example.dplus.advice.ApiRequestException;
 import com.example.dplus.advice.BadArgumentsValidException;
 import com.example.dplus.advice.ErrorCode;
 import com.example.dplus.dto.Success;
@@ -75,11 +76,12 @@ public class ArtWorkMainController {
     public ResponseEntity<Success> createArtWork(@AuthenticationPrincipal UserDetailsImpl user,
                                                  @RequestPart ArtWorkCreate data,
                                                  @RequestPart List<MultipartFile> imgFile) {
-        if (user != null) {
+
+        if (imgFile.size() >= 2) {
             return new ResponseEntity<>(new Success("작품 등록 완료"
                     ,artworkMainService.createArtwork(user.getUser().getId(),data, imgFile)),HttpStatus.OK);
         }
-        throw new BadArgumentsValidException(ErrorCode.NO_AUTHENTICATION_ERROR);
+        throw new ApiRequestException(ErrorCode.PHOTO_UPLOAD_ERROR);
     }
 
     @PatchMapping("/api/artwork/{artwork_id}")
