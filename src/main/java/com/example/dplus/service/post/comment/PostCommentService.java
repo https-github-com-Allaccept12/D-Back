@@ -22,7 +22,7 @@ public class PostCommentService {
     private final PostCommentLikesRepository postCommentLikesRepository;
 
     @Transactional
-    @CacheEvict(value="myComment", key="#account.id")
+    @CacheEvict(value="myComment", key="#account.id", allEntries = true)
     public Long createComment(Account account, Long postId, PostRequestDto.PostComment dto) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new ErrorCustomException(ErrorCode.NONEXISTENT_ERROR));
         PostComment postComment = PostComment.builder().post(post).account(account).content(dto.getContent()).build();
@@ -31,7 +31,7 @@ public class PostCommentService {
     }
 
     @Transactional
-    @CacheEvict(value="myComment", key="#accountId")
+    @CacheEvict(value="myComment", key="#accountId", allEntries = true)
     public Long updateComment(Long accountId, Long commentId, PostRequestDto.PostComment dto) {
         PostComment postComment = commentValidation(accountId, commentId);
         postComment.updateComment(dto);
@@ -39,7 +39,7 @@ public class PostCommentService {
     }
 
     @Transactional
-    @CacheEvict(value="myComment", key="#accountId")
+    @CacheEvict(value="myComment", key="#accountId", allEntries = true)
     public void deleteComment(Long accountId, Long postCommentId) {
         commentValidation(accountId, postCommentId);
         postCommentLikesRepository.deleteAllByPostCommentId(postCommentId);

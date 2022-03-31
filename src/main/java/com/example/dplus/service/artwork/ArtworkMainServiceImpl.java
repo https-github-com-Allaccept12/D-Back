@@ -113,7 +113,7 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
     }
 
     @Transactional
-    @Caching(evict = {@CacheEvict(value="mainByInterest", key="#dto.specialty"), @CacheEvict(value="myArtworks", key="#accountId")})
+    @Caching(evict = {@CacheEvict(value="mainByInterest", key="#dto.specialty"), @CacheEvict(value="myArtworks", key="#accountId", allEntries = true)})
     public int createArtwork(Long accountId, ArtWorkCreate dto, List<MultipartFile> multipartFiles) {
         Account account = accountRepository.findById(accountId).orElseThrow(() -> new ErrorCustomException(ErrorCode.NO_USER_ERROR));
         if (account.getArtWorkCreateCount() >= 5) {
@@ -129,7 +129,7 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
     }
 
     @Transactional
-    @Caching(evict = {@CacheEvict(value="mainByInterest", key="#dto.specialty"), @CacheEvict(value="myArtworks", key="#accountId")})
+    @Caching(evict = {@CacheEvict(value="mainByInterest", key="#dto.specialty"), @CacheEvict(value="myArtworks", key="#accountId", allEntries = true)})
     public Long updateArtwork(Long accountId, Long artworkId, ArtWorkUpdate dto, List<MultipartFile> multipartFiles) {
         ArtWorks artWorks = artworkValidation(accountId, artworkId);
         updateImg(multipartFiles, artWorks, dto);
@@ -139,7 +139,7 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
     }
 
     @Transactional
-    @Caching(evict = {@CacheEvict(value="mainByInterest", key="#dto.specialty"), @CacheEvict(value="myArtworks", key="#accountId")})
+    @Caching(evict = {@CacheEvict(value="mainByInterest", key="#dto.specialty"), @CacheEvict(value="myArtworks", key="#accountId", allEntries = true)})
     public void deleteArtwork(Long accountId, Long artworkId) {
         ArtWorks artWorks = artworkValidation(accountId, artworkId);
         List<ArtWorkImage> artWorkImages = artWorkImageRepository.findByArtWorksId(artWorks.getId());

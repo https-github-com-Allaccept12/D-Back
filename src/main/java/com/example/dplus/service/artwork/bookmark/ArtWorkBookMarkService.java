@@ -21,7 +21,7 @@ public class ArtWorkBookMarkService {
     private final ArtWorkRepository artWorkRepository;
 
     @Transactional
-    @CacheEvict(value="myBookmarkArtworks", key="#account.id")
+    @CacheEvict(value="myBookmarkArtworks", key="#account.id", allEntries = true)
     public void doBookMark(Account account, Long artWorkId) {
         ArtWorks artWorks = getArtWorks(artWorkId);
         if (artWorkBookMarkRepository.existByAccountIdAndArtWorkId(account.getId(), artWorkId)) {
@@ -36,7 +36,7 @@ public class ArtWorkBookMarkService {
     }
 
     @Transactional
-    @CacheEvict(value="myBookmarkArtworks", key="#account.id")
+    @CacheEvict(value="myBookmarkArtworks", key="#account.id", allEntries = true)
     public void unBookMark(Account account, Long artWorkId) {
         ArtWorks artWorks = getArtWorks(artWorkId);
         if (!artWorkBookMarkRepository.existByAccountIdAndArtWorkId(account.getId(), artWorkId)) {

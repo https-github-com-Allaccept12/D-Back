@@ -37,12 +37,12 @@ public interface AccountMyPageService {
 
     List<ArtWorkResponseDto.ArtWorkBookMark> showAccountArtWorkBookMark(final Long lastArtWorkId,final Long accountId);
 
-    List<AccountResponseDto.MyPost> getMyPost(Long accountId, String board);
+    List<AccountResponseDto.MyPost> getMyPost(Long accountId, String board, int start);
 
-    List<AccountResponseDto.MyPost> getMyBookMarkPost(Long accountId, String board);
+    List<AccountResponseDto.MyPost> getMyBookMarkPost(Long accountId, String board, int start);
 
-    List<AccountResponseDto.MyAnswer> getMyAnswer(Long accountId);
+    List<AccountResponseDto.MyAnswer> getMyAnswer(Long accountId, int start);
 
-    List<AccountResponseDto.MyComment> getMyComment(Long accountId);
+    List<AccountResponseDto.MyComment> getMyComment(Long accountId, int start);
 
 }
