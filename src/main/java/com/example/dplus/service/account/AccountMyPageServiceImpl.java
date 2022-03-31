@@ -124,6 +124,7 @@ public class AccountMyPageServiceImpl implements AccountMyPageService {
 
     // 내 대표작 수정
     @Transactional
+    @CacheEvict(value="portfolio", key="#account.id")
     public void updateMasterAccountCareerFeed(Long artWorkId,Long prevArtWorkId,Account account) {
         ArtWorks artWorks = getArtWorks(artWorkId);
         ArtWorks prevArtWork = getArtWorks(prevArtWorkId);

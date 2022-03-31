@@ -27,6 +27,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -57,6 +58,7 @@ public class PostMainPageServiceImpl implements PostMainPageService{
 
     // 메인 페이지 (최신순)
     @Transactional(readOnly = true)
+    @Cacheable(value="postMain", key="{#board, #category, #lastPostId}")
     public PostMainResponseDto showPostMain(Long lastPostId, String board, String category) {
         Pageable pageable = PageRequest.of(0, 12);
         List<Post> postList = postRepository.findAllPostOrderByCreatedDesc(lastPostId, pageable, board, category);
@@ -65,6 +67,7 @@ public class PostMainPageServiceImpl implements PostMainPageService{
     }
 
     @Transactional(readOnly = true)
+    @Cacheable(value="postMainLikeSort", key="{#board, #category, #start}")
     public PostMainResponseDto showPostMainLikeSort(int start, String board, String category) {
         Pageable pageable = PageRequest.of(start, 12);
         List<Post> postList = postRepository.findAllPostOrderByLikeDesc(pageable, board, category);
@@ -99,7 +102,11 @@ public class PostMainPageServiceImpl implements PostMainPageService{
 
     // 게시글 작성
     @Transactional
-    @CacheEvict(value="myPost", key="{#accountId, #dto.board}", allEntries = true)
+    @Caching(evict = {
+            @CacheEvict(value = "myPost", key = "{#accountId, #dto.board}", allEntries = true),
+            @CacheEvict(value = "postMain", key = "{#dto.board, #dto.category}", allEntries = true),
+            @CacheEvict(value = "postMainLikeSort", key = "{#dto.board, #dto.category}", allEntries = true)
+    })
     public int createPost(Long accountId, PostRequestDto.PostCreate dto, List<MultipartFile> imgFile) {
         Account account = accountRepository.findById(accountId).orElseThrow(() -> new ErrorCustomException(ErrorCode.NO_USER_ERROR));
         if (account.getPostCreateCount() >= 5) {
@@ -123,7 +130,11 @@ public class PostMainPageServiceImpl implements PostMainPageService{
 
     // 게시물 수정
     @Transactional
-    @CacheEvict(value="myPost", key="{#accountId, #dto.board}", allEntries = true)
+    @Caching(evict = {
+            @CacheEvict(value = "myPost", key = "{#accountId, #dto.board}", allEntries = true),
+            @CacheEvict(value = "postMain", key = "{#dto.board, #dto.category}", allEntries = true),
+            @CacheEvict(value = "postMainLikeSort", key = "{#dto.board, #dto.category}", allEntries = true)
+    })
     public Long updatePost(Account account, Long postId, PostRequestDto.PostUpdate dto, List<MultipartFile> imgFile){
         Post post = postAuthValidation(account.getId(), postId);
 
@@ -159,7 +170,11 @@ public class PostMainPageServiceImpl implements PostMainPageService{
 
     // 게시글 삭제
     @Transactional
-    @CacheEvict(value="myPost", key="{#accountId, #dto.board}", allEntries = true)
+    @Caching(evict = {
+            @CacheEvict(value = "myPost", key = "{#accountId, #dto.board}", allEntries = true),
+            @CacheEvict(value = "postMain", key = "{#dto.board, #dto.category}", allEntries = true),
+            @CacheEvict(value = "postMainLikeSort", key = "{#dto.board, #dto.category}", allEntries = true)
+    })
     public void deletePost(Long accountId, Long postId){
         Post post = postAuthValidation(accountId, postId);
         List<PostImage> postImages = postImageRepository.findByPostId(postId);
