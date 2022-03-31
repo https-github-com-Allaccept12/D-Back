@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 env:
-  S3_BUCKET_NAME: dplus-jar
+  S3_BUCKET_NAME: dplus-jar-real
   PROJECT_NAME: TeamDplus-code
 
 
@@ -56,7 +56,6 @@ jobs:
             cloud.aws.credentials.secretKey: ${{secrets.AWS_S3_SECRET_KEY}}
 
 
-
       - name: Build with Gradle
         uses: gradle/gradle-build-action@937999e9cc2425eddc7fd62d1053baf041147db7
         with:
@@ -98,6 +97,6 @@ jobs:
       - name: Upload to S3
         run: aws s3 cp --region ap-northeast-2 ./$GITHUB_SHA.zip s3://$S3_BUCKET_NAME/$GITHUB_SHA.zip
 
-      - name: Code Deploy
-        run: aws deploy create-deployment --application-name dplus-deploy --deployment-config-name CodeDeployDefault.AllAtOnce --deployment-group-name develop --s3-location bucket=$S3_BUCKET_NAME,bundleType=zip,key=$GITHUB_SHA.zip
+#      - name: Code Deploy
+#        run: aws deploy create-deployment --application-name dplus-deploy --deployment-config-name CodeDeployDefault.AllAtOnce --deployment-group-name develop --s3-location bucket=$S3_BUCKET_NAME,bundleType=zip,key=$GITHUB_SHA.zip
 
