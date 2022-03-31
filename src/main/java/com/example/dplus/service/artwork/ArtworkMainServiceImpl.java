@@ -16,7 +16,6 @@ import com.example.dplus.dto.response.ArtWorkResponseDto.ArtworkMain;
 import com.example.dplus.dto.response.MainResponseDto;
 import com.example.dplus.repository.account.AccountRepository;
 import com.example.dplus.repository.account.follow.FollowRepository;
-import com.example.dplus.repository.account.rank.RankerRepository;
 import com.example.dplus.repository.artwork.ArtWorkRepository;
 import com.example.dplus.repository.artwork.bookmark.ArtWorkBookMarkRepository;
 import com.example.dplus.repository.artwork.comment.ArtWorkCommentRepository;
@@ -25,6 +24,7 @@ import com.example.dplus.repository.artwork.like.ArtWorkLikesRepository;
 import com.example.dplus.service.file.FileProcessService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -48,13 +48,9 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
     private final AccountRepository accountRepository;
     private final FileProcessService fileProcessService;
 
-    private final RankerRepository rankerRepository;
-
-    //비회원 일경우 모든작품 카테고리에서 탑10
-    //회원 일경우 관심사 카테고리중에서 탑10
     @Transactional(readOnly = true)
     public MainResponseDto mostPopularArtWork(Long accountId, String interest) {
-        //회원인지 비회원인지
+
         if (accountId != 0) {
             Account account = accountRepository.findById(accountId).orElseThrow(() -> new ErrorCustomException(ErrorCode.NO_USER_ERROR));
             List<ArtworkMain> artWorkList = getArtworkList(account.getInterest());
@@ -74,8 +70,8 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
     }
 
     @Transactional(readOnly = true)
-    public List<ArtworkMain> showArtWorkLikeSort(Long accountId, String category,int start) {
-        Pageable pageable = PageRequest.of(start,10);
+    public Page<ArtworkMain> showArtWorkLikeSort(Long accountId, String category, int page,int size) {
+        Pageable pageable = PageRequest.of(page,size);
         return artWorkRepository.showArtWorkLikeSort(category,pageable);
     }
 

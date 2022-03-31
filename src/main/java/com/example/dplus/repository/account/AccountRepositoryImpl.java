@@ -31,7 +31,8 @@ public class AccountRepositoryImpl implements AccountRepositoryCustom {
     public List<Account> findTopArtist() {
         return queryFactory
                 .selectFrom(account)
-                .where(ranker.rankerId.eq(account.id))
+                .leftJoin(ranker).on(account.id.eq(ranker.rankerId))
+                .where(account.id.eq(ranker.rankerId))
                 .fetch();
 
     }

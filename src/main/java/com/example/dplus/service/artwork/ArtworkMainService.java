@@ -6,6 +6,7 @@ import com.example.dplus.dto.request.ArtWorkRequestDto.ArtWorkUpdate;
 import com.example.dplus.dto.response.ArtWorkResponseDto;
 import com.example.dplus.dto.response.ArtWorkResponseDto.ArtworkMain;
 import com.example.dplus.dto.response.MainResponseDto;
+import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -14,7 +15,7 @@ public interface ArtworkMainService {
 
     List<ArtworkMain> showArtworkMain(Long accountId, Long artworkId,String category);
 
-    List<ArtworkMain> showArtWorkLikeSort(Long accountId, String category,int start );
+    Page<ArtworkMain> showArtWorkLikeSort(Long accountId, String category, int page,int size);
 
     int createArtwork(Long accountId, ArtWorkCreate artWorkCreate, List<MultipartFile> multipartFiles);
 

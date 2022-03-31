@@ -137,16 +137,29 @@ public class ArtWorkResponseDto {
     public static class ArtWorkFeed {
 
         private Long artwork_id;
-        private Boolean scope;
         private String img;
         private Boolean is_master;
 
         @Builder
-        public ArtWorkFeed(final Long artwork_id,final Boolean scope,final String img, final Boolean is_master) {
+        public ArtWorkFeed(final Long artwork_id,final String img, final Boolean is_master) {
             this.artwork_id = artwork_id;
-            this.scope = scope;
             this.img = img;
             this.is_master = is_master;
+        }
+    }
+    @Getter
+    @NoArgsConstructor
+    public static class MyArtWork {
+
+        private Long artwork_id;
+        private String img;
+        private Boolean scope;
+
+        @Builder
+        public MyArtWork(final Long artwork_id,final String img, final Boolean is_scope) {
+            this.artwork_id = artwork_id;
+            this.img = img;
+            this.scope = is_scope;
         }
     }
 

@@ -77,7 +77,7 @@ public class ArtWorks extends BaseEntity {
         this.specialty = specialty;
         this.copyright = copyright;
         this.thumbnail = thumbnail;
-        account.getArtWorksList().add(this);
+        //account.getArtWorksList().add(this);
     }
 
     public void addViewCount() {

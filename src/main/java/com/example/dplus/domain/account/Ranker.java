@@ -15,9 +15,10 @@ public class Ranker {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ranker_id")
+    @Column(name = "rankers_id")
     private Long id;
 
+    @Column(nullable = false)
     private Long rankerId;
 
     @Builder
