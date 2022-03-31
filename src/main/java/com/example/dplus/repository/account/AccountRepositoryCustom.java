@@ -6,7 +6,8 @@ import java.util.List;
 
 public interface AccountRepositoryCustom {
 
-    List<Account> findTopArtist(String interest);
+    List<Account> newTopArtist();
+    List<Account> findTopArtist();
     void accountCreateCountInitialization();
 
 }

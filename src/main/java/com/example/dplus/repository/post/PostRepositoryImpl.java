@@ -50,7 +50,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                 .where(post.board.eq(PostBoard.valueOf(board)),
                         isCategory(category))
                 .groupBy(post.id)
-                .orderBy(post.postLikeList.size().desc())
+                .orderBy(post.postLikeList.size().desc(),post.created.desc())
                 .fetch();
 
     }
@@ -128,7 +128,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                 .innerJoin(post.account)
                 .limit(10)
                 .groupBy(post.id)
-                .orderBy(post.postLikeList.size().desc())
+                .orderBy(post.postLikeList.size().desc(),post.created.desc())
                 .fetch();
     }
 

@@ -128,7 +128,6 @@ public class AccountResponseDto {
         private String content;
         private Long answer_count;
         private Long like_count;
-        private Long bookmark_count;
         private Timestamp create_time;
         private Timestamp modify_time;
         private String profileImg;
@@ -150,9 +149,6 @@ public class AccountResponseDto {
             this.answer_count = answer_count;
         }
 
-        public void setBookmark_count(Long bookmark_count) {
-            this.bookmark_count = bookmark_count;
-        }
     }
 
     @Getter

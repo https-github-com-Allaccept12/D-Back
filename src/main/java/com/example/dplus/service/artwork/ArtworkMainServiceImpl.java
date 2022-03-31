@@ -47,20 +47,18 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
     private final AccountRepository accountRepository;
     private final FileProcessService fileProcessService;
 
-    //비회원 일경우 모든작품 카테고리에서 탑10
-    //회원 일경우 관심사 카테고리중에서 탑10
     @Transactional(readOnly = true)
     public MainResponseDto mostPopularArtWork(Long accountId, String interest) {
-        //회원인지 비회원인지
+
         if (accountId != 0) {
             Account account = accountRepository.findById(accountId).orElseThrow(() -> new ErrorCustomException(ErrorCode.NO_USER_ERROR));
             List<ArtworkMain> artWorkList = getArtworkList(account.getInterest());
-            List<TopArtist> topArtist = getTopArtist(account.getInterest());
+            List<TopArtist> topArtist = getTopArtist();
             isFollow(accountId,topArtist);
             return MainResponseDto.builder().artwork(artWorkList).top_artist(topArtist).build();
         }
         List<ArtworkMain> artworkList = getArtworkList("");
-        List<TopArtist> topArtist = getTopArtist("");
+        List<TopArtist> topArtist = getTopArtist();
         return MainResponseDto.builder().artwork(artworkList).top_artist(topArtist).build();
     }
     //모아보기
@@ -71,7 +69,7 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
     }
 
     @Transactional(readOnly = true)
-    public List<ArtworkMain> showArtWorkLikeSort(Long accountId, String category,int start) {
+    public List<ArtworkMain> showArtWorkLikeSort(Long accountId, String category, int start) {
         Pageable pageable = PageRequest.of(start,10);
         return artWorkRepository.showArtWorkLikeSort(category,pageable);
     }
@@ -196,8 +194,8 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
             }
         }
     }
-    private List<TopArtist> getTopArtist(String interest) {
-        List<Account> topArtist = accountRepository.findTopArtist(interest);
+    private List<TopArtist> getTopArtist() {
+        List<Account> topArtist = accountRepository.findTopArtist();
         return topArtist.stream()
                 .map(TopArtist::new)
                 .collect(Collectors.toList());

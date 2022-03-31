@@ -58,8 +58,6 @@ public class ArtWorks extends BaseEntity {
     @JoinColumn(name = "account_id")
     private Account account;
 
-//    @OneToMany(mappedBy = "artWorks")
-//    private List<ArtWorkImage> artWorkImageList;
 
     @Builder
     public ArtWorks(final Boolean scope, final String title, final String content, final String category,
@@ -77,7 +75,7 @@ public class ArtWorks extends BaseEntity {
         this.specialty = specialty;
         this.copyright = copyright;
         this.thumbnail = thumbnail;
-        account.getArtWorksList().add(this);
+        //account.getArtWorksList().add(this);
     }
 
     public void addViewCount() {
