@@ -91,4 +91,5 @@ public class Post extends BaseEntity {
     public void doIsSelected(final boolean isSelected) {
         this.isSelected = isSelected;
     }
+
 }
