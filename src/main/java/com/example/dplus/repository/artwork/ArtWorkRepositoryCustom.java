@@ -1,7 +1,6 @@
 package com.example.dplus.repository.artwork;
 
 import com.example.dplus.dto.response.ArtWorkResponseDto.*;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
@@ -19,7 +18,7 @@ public interface ArtWorkRepositoryCustom {
 
     List<ArtworkMain> findAllArtWork(Long lastArtWorkId,String category, Pageable pageable);
 
-    Page<ArtworkMain> showArtWorkLikeSort(String category, Pageable pageable);
+    List<ArtworkMain> showArtWorkLikeSort(String category, Pageable pageable);
 
     List<ArtWorkSimilarWork> findSimilarArtWork(Long accountId, Long artWorkId, Pageable pageable);
 

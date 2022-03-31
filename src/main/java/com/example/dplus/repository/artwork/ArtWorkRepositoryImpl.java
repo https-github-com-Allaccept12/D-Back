@@ -8,8 +8,6 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
@@ -169,8 +167,8 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
     }
 
     @Override
-    public Page<ArtworkMain> showArtWorkLikeSort(String category, Pageable pageable) {
-        List<ArtworkMain> result = queryFactory
+    public List<ArtworkMain> showArtWorkLikeSort(String category, Pageable pageable) {
+        return queryFactory
                 .select(Projections.constructor(ArtworkMain.class,
                         artWorks.id,
                         account.id,
@@ -190,9 +188,8 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
                 .where(isCategory(category),
                         artWorks.scope.isTrue())
                 .groupBy(artWorks.id)
-                .orderBy(artWorkLikes.count().desc())
+                .orderBy(artWorkLikes.count().desc(),artWorks.created.desc())
                 .fetch();
-        return new PageImpl<>(result,pageable,result.size());
     }
 
     @Override

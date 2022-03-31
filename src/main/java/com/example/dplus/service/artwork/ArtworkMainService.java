@@ -3,10 +3,9 @@ package com.example.dplus.service.artwork;
 
 import com.example.dplus.dto.request.ArtWorkRequestDto.ArtWorkCreate;
 import com.example.dplus.dto.request.ArtWorkRequestDto.ArtWorkUpdate;
-import com.example.dplus.dto.response.ArtWorkResponseDto;
+import com.example.dplus.dto.response.ArtWorkResponseDto.ArtWorkDetail;
 import com.example.dplus.dto.response.ArtWorkResponseDto.ArtworkMain;
 import com.example.dplus.dto.response.MainResponseDto;
-import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -15,7 +14,7 @@ public interface ArtworkMainService {
 
     List<ArtworkMain> showArtworkMain(Long accountId, Long artworkId,String category);
 
-    Page<ArtworkMain> showArtWorkLikeSort(Long accountId, String category, int page,int size);
+    List<ArtworkMain> showArtWorkLikeSort(Long accountId, String category, int start);
 
     int createArtwork(Long accountId, ArtWorkCreate artWorkCreate, List<MultipartFile> multipartFiles);
 
@@ -23,7 +22,7 @@ public interface ArtworkMainService {
 
     void deleteArtwork(Long accountId, Long artworkId);
 
-    ArtWorkResponseDto.ArtWorkDetail detailArtWork(Long accountId, Long artWorkId);
+    ArtWorkDetail detailArtWork(Long accountId, Long artWorkId);
 
     MainResponseDto mostPopularArtWork(Long accountId,String interest);
 

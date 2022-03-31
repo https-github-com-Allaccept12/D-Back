@@ -60,11 +60,10 @@ public class ArtWorkMainController {
     @GetMapping("/api/artwork/sort/{category}")
     public ResponseEntity<Success> artWorkLikeSort(@AuthenticationPrincipal UserDetailsImpl user,
                                                    @PathVariable String category,
-                                                   @RequestParam("page") int page,
-                                                   @RequestParam("size") int size) {
+                                                   @RequestParam("start") int start) {
         Long accountId = getaLong(user);
         return new ResponseEntity<>(new Success("좋아요 정렬한 작업물",
-                artworkMainService.showArtWorkLikeSort(accountId,category,page,size)),HttpStatus.OK);
+                artworkMainService.showArtWorkLikeSort(accountId,category,start)),HttpStatus.OK);
     }
 
     @GetMapping("/api/artwork/sort-follow/{category}/{last_artwork_id}")

@@ -42,12 +42,12 @@ public interface AccountMyPageService {
 
     List<ArtWorkBookMark> showAccountArtWorkBookMark(final Long lastArtWorkId, final Long accountId);
 
-    List<MyPost> getMyPost(Long accountId, String board);
+    List<MyPost> getMyPost(Long accountId, String board,int start);
 
-    List<MyPost> getMyBookMarkPost(Long accountId, String board);
+    List<MyPost> getMyBookMarkPost(Long accountId, String board,int start);
 
-    List<MyAnswer> getMyAnswer(Long accountId);
+    List<MyAnswer> getMyAnswer(Long accountId,int start);
 
-    List<MyComment> getMyComment(Long accountId);
+    List<MyComment> getMyComment(Long accountId,int start);
 
 }

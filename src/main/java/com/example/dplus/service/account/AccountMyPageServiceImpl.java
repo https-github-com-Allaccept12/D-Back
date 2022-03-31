@@ -151,8 +151,8 @@ public class AccountMyPageServiceImpl implements AccountMyPageService {
     }
 
     @Transactional(readOnly = true)
-    public List<MyPost> getMyPost(Long accountId, String board) {
-        Pageable pageable = PageRequest.of(0,5);
+    public List<MyPost> getMyPost(Long accountId, String board,int start) {
+        Pageable pageable = PageRequest.of(start,5);
         List<MyPost> myPosts = postRepository.findPostByAccountIdAndBoard(accountId, board, pageable);
         if (board.equals("QNA")) {
             setQnaInfo(myPosts);
@@ -163,22 +163,22 @@ public class AccountMyPageServiceImpl implements AccountMyPageService {
     }
 
     @Transactional(readOnly = true)
-    public List<MyPost> getMyBookMarkPost(Long accountId, String board) {
-        Pageable pageable = PageRequest.of(0,5);
+    public List<MyPost> getMyBookMarkPost(Long accountId, String board,int start) {
+        Pageable pageable = PageRequest.of(start,5);
         List<MyPost> myBookMarkPost = postRepository.findPostBookMarkByAccountId(accountId, board, pageable);
         setPostInfo(myBookMarkPost);
         return myBookMarkPost;
     }
 
     @Transactional(readOnly = true)
-    public List<MyAnswer> getMyAnswer(Long accountId) {
-        Pageable pageable = PageRequest.of(0,5);
+    public List<MyAnswer> getMyAnswer(Long accountId,int start) {
+        Pageable pageable = PageRequest.of(start,5);
         return postAnswerRepository.findPostAnswerByAccountId(accountId, pageable);
     }
 
     @Transactional(readOnly = true)
-    public List<MyComment> getMyComment(Long accountId) {
-        Pageable pageable = PageRequest.of(0,5);
+    public List<MyComment> getMyComment(Long accountId, int start) {
+        Pageable pageable= PageRequest.of(start, 5);
         return postCommentRepository.findPostCommentByAccountId(accountId, pageable);
     }
 

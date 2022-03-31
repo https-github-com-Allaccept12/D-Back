@@ -23,7 +23,6 @@ public class ArtWorkResponseDto {
         private String img;
         private Long view_count;
         private Long like_count;
-        private Boolean is_like;
         private Timestamp create_time;
 
         @Builder
@@ -39,9 +38,7 @@ public class ArtWorkResponseDto {
             this.category = category;
             this.account_nickname = account_nickname;
         }
-        public void setLikeCountAndIsLike(Boolean is_like) {
-            this.is_like = is_like;
-        }
+
     }
 
     @Getter
