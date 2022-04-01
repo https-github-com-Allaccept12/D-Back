@@ -37,7 +37,6 @@ public class PostMainController {
                 postMainPageService.showPostMain(last_post_id, board, "")), HttpStatus.OK);
     }
 
-
     // 전체 목록 (카테고리별)
     @GetMapping("/category/{category}/{last_post_id}/{board}")
     public ResponseEntity<Success> postMainByCategory(@PathVariable String category,
