@@ -66,7 +66,7 @@ public class AccountInitialService {
         if (account != null){
             throw new ErrorCustomException(ErrorCode.ALREADY_NICKNAME_ERROR);
         }
-        if (!Pattern.matches("^[A-Za-z0-9]{3,}$", nickname)){
+        if (!Pattern.matches("^[A-Za-z0-9가-힣]{3,10}$", nickname)){
             throw new ErrorCustomException(ErrorCode.BAD_CONDITION_NICKNAME_ERROR); //닉네임 조건에 맞지않음
         }
     }
