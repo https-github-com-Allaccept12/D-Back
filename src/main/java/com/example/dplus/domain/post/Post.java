@@ -57,7 +57,6 @@ public class Post extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private PostBoard board;
 
-
     @Builder
     public Post(final String title, final String content, final String category,
                 final Account account, final Long view, final boolean isSelected, final PostBoard board) {
@@ -92,4 +91,5 @@ public class Post extends BaseEntity {
     public void doIsSelected(final boolean isSelected) {
         this.isSelected = isSelected;
     }
+
 }

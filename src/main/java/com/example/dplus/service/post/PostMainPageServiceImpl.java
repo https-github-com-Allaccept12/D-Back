@@ -11,6 +11,7 @@ import com.example.dplus.dto.request.PostRequestDto;
 import com.example.dplus.dto.response.PostMainResponseDto;
 import com.example.dplus.dto.response.PostResponseDto;
 import com.example.dplus.dto.response.PostResponseDto.*;
+import com.example.dplus.dto.response.PostSearchResponseDto;
 import com.example.dplus.repository.account.AccountRepository;
 import com.example.dplus.repository.account.follow.FollowRepository;
 import com.example.dplus.repository.post.PostRepository;
@@ -174,9 +175,10 @@ public class PostMainPageServiceImpl implements PostMainPageService{
 
     // 게시글 검색
     @Transactional(readOnly = true)
-    public List<PostPageMain> findBySearchKeyWord(String keyword, Long lastArtWorkId, Long accountId, String board) {
+    public PostSearchResponseDto findBySearchKeyWord(String keyword, Long lastPostId, Long accountId, String board) {
         Pageable pageable = PageRequest.of(0,5);
-        return postRepository.findPostBySearchKeyWord(keyword,lastArtWorkId,pageable, board);
+        List<Post> postLists = postRepository.findPostBySearchKeyWord( keyword,  lastPostId,  pageable,  board);
+        return PostSearchResponseDto.from(postLists);
     }
 
     // 디모 QnA 상세페이지
