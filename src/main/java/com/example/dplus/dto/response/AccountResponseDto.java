@@ -19,6 +19,7 @@ public class AccountResponseDto {
 
         private Long account_id;
         private String nickname;
+        private String account_name;
         private String profile_img;
         private Long exp;
         private String title_content;
@@ -42,7 +43,7 @@ public class AccountResponseDto {
                                  final String tendency,final String title_content,final String sub_content,
                                  final String linked_in,final String brunch,final String insta, String work_email,
                                  final String work_time,final Long follower_count,final Long following_count,final boolean is_follow,
-                                 final String specialty, final boolean is_mypage, final String other, final String job) {
+                                 final String specialty, final boolean is_mypage, final String other, final String job,final String account_name) {
             this.account_id = account_id;
             this.nickname = nickname;
             this.profile_img = profile_img;
@@ -62,6 +63,7 @@ public class AccountResponseDto {
             this.is_mypage = is_mypage;
             this.other_specialty = other;
             this.job = job;
+            this.account_name = account_name;
         }
         public static AccountInfo from(final Account account, final Long follower, final Long following,
                                        final Boolean is_follow, final Boolean is_mypage) {
@@ -85,6 +87,7 @@ public class AccountResponseDto {
                     .is_mypage(is_mypage)
                     .other(account.getOther())
                     .job(account.getJob())
+                    .account_name(account.getAccountName())
                     .build();
         }
     }
