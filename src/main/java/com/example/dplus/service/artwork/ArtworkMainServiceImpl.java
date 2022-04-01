@@ -51,7 +51,7 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
     private final FileProcessService fileProcessService;
 
     @Transactional(readOnly = true)
-    @Cacheable(value="mainByInterest", key="#interest")
+    @Cacheable(value="mainByInterest", key="#interest",condition="#interest != null")
     public MainResponseDto mostPopularArtWork(Long accountId, String interest) {
 
         if (accountId != 0) {
@@ -111,14 +111,11 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
     }
 
     @Transactional
-    @Caching(evict = {@CacheEvict(value="mainByInterest", key="#dto.specialty"), @CacheEvict(value="myArtworks", key="#accountId", allEntries = true)})
+    @Caching(evict = {@CacheEvict(value="mainByInterest", key="#dto.category"), @CacheEvict(value="myArtworks", key="#accountId", allEntries = true)})
     public int createArtwork(Long accountId, ArtWorkCreate dto, List<MultipartFile> multipartFiles) {
         Account account = accountRepository.findById(accountId).orElseThrow(() -> new ErrorCustomException(ErrorCode.NO_USER_ERROR));
         if (account.getArtWorkCreateCount() >= 5) {
             throw new ErrorCustomException(ErrorCode.DAILY_WRITE_UP_BURN_ERROR);
-        }
-        if (multipartFiles == null) {
-            throw new ErrorCustomException(ErrorCode.PHOTO_UPLOAD_ERROR);
         }
         ArtWorks saveArtwork = artWorkRepository.save(ArtWorks.of(account, dto));
         s3ImageUpload(multipartFiles,dto,saveArtwork);
@@ -127,7 +124,7 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
     }
 
     @Transactional
-    @Caching(evict = {@CacheEvict(value="mainByInterest", key="#dto.specialty"), @CacheEvict(value="myArtworks", key="#accountId", allEntries = true)})
+    @Caching(evict = {@CacheEvict(value="mainByInterest", key="#dto.category"), @CacheEvict(value="myArtworks", key="#accountId", allEntries = true)})
     public Long updateArtwork(Long accountId, Long artworkId, ArtWorkUpdate dto, List<MultipartFile> multipartFiles) {
         ArtWorks artWorks = artworkValidation(accountId, artworkId);
         updateImg(multipartFiles, artWorks, dto);
@@ -137,7 +134,7 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
     }
 
     @Transactional
-    @Caching(evict = {@CacheEvict(value="mainByInterest", key="#dto.specialty"), @CacheEvict(value="myArtworks", key="#accountId", allEntries = true)})
+    @Caching(evict = {@CacheEvict(value="mainByInterest", key="#dto.category"), @CacheEvict(value="myArtworks", key="#accountId", allEntries = true)})
     public void deleteArtwork(Long accountId, Long artworkId) {
         ArtWorks artWorks = artworkValidation(accountId, artworkId);
         List<ArtWorkImage> artWorkImages = artWorkImageRepository.findByArtWorksId(artWorks.getId());
