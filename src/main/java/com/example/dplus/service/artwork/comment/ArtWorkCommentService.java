@@ -1,7 +1,7 @@
 package com.example.dplus.service.artwork.comment;
 
 
-import com.example.dplus.advice.BadArgumentsValidException;
+import com.example.dplus.advice.ErrorCustomException;
 import com.example.dplus.advice.ErrorCode;
 import com.example.dplus.domain.account.Account;
 import com.example.dplus.repository.artwork.ArtWorkRepository;
@@ -23,7 +23,7 @@ public class ArtWorkCommentService {
 
     @Transactional
     public Long createComment(ArtWorkRequestDto.ArtWorkComment dto, Long artWorkId, Account account) {
-        ArtWorks artWorks = artWorkRepository.findById(artWorkId).orElseThrow(() -> new BadArgumentsValidException(ErrorCode.NONEXISTENT_ERROR));
+        ArtWorks artWorks = artWorkRepository.findById(artWorkId).orElseThrow(() -> new ErrorCustomException(ErrorCode.NONEXISTENT_ERROR));
         ArtWorkComment artWorkComment = ArtWorkComment.builder().artWorks(artWorks).account(account).content(dto.getContent()).build();
         ArtWorkComment save = artWorkCommentRepository.save(artWorkComment);
         return save.getId();
@@ -43,9 +43,9 @@ public class ArtWorkCommentService {
 
     private ArtWorkComment commentValid(Long commentId, Long accountId) {
         ArtWorkComment artWorkComment = artWorkCommentRepository.findById(commentId)
-                .orElseThrow(() -> new BadArgumentsValidException(ErrorCode.NONEXISTENT_ERROR));
+                .orElseThrow(() -> new ErrorCustomException(ErrorCode.NONEXISTENT_ERROR));
         if (!artWorkComment.getAccount().getId().equals(accountId)) {
-            throw new BadArgumentsValidException(ErrorCode.NO_AUTHORIZATION_ERROR);
+            throw new ErrorCustomException(ErrorCode.NO_AUTHORIZATION_ERROR);
         }
         return artWorkComment;
     }

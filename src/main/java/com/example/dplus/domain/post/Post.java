@@ -11,6 +11,8 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -43,9 +45,17 @@ public class Post extends BaseEntity {
     @Column(columnDefinition = "TINYINT default 0")
     private boolean isSelected;
 
+    @OneToMany(mappedBy = "post",orphanRemoval = true)
+    private List<PostTag> postTagList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "post",orphanRemoval = true)
+    private List<PostLikes> postLikeList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "post",orphanRemoval = true)
+    private List<PostComment> postCommentList = new ArrayList<>();
+
     @Enumerated(EnumType.STRING)
     private PostBoard board;
-
 
     @Builder
     public Post(final String title, final String content, final String category,
@@ -81,4 +91,5 @@ public class Post extends BaseEntity {
     public void doIsSelected(final boolean isSelected) {
         this.isSelected = isSelected;
     }
+
 }

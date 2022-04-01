@@ -50,7 +50,6 @@ public class ArtWorks extends BaseEntity {
     @Column(columnDefinition = "TINYINT default 0")
     private Boolean isMaster;
 
-    @Embedded
     private String specialty;
 
     private String thumbnail;
@@ -59,10 +58,11 @@ public class ArtWorks extends BaseEntity {
     @JoinColumn(name = "account_id")
     private Account account;
 
+
     @Builder
-    public ArtWorks(final Boolean scope,final String title,final String content,final String category,
-                    final Long view,final String workStart,final String workEnd,final Account account,
-                    final Boolean isMaster, final String specialty,final String copyright) {
+    public ArtWorks(final Boolean scope, final String title, final String content, final String category,
+                    final Long view, final String workStart, final String workEnd, final Account account,
+                    final Boolean isMaster, final String specialty, final String copyright, final String thumbnail) {
         this.scope = scope;
         this.title = title;
         this.content = content;
@@ -74,6 +74,8 @@ public class ArtWorks extends BaseEntity {
         this.isMaster = isMaster;
         this.specialty = specialty;
         this.copyright = copyright;
+        this.thumbnail = thumbnail;
+        //account.getArtWorksList().add(this);
     }
 
     public void addViewCount() {
@@ -90,9 +92,11 @@ public class ArtWorks extends BaseEntity {
         this.isMaster = dto.getMaster();
         this.copyright = dto.getCopyright();
     }
+
     public void updateArtWorkIsMaster(boolean isMaster) {
         this.isMaster = isMaster;
     }
+
     public void updateArtWorkIsScope(boolean isScope) {
         this.scope = isScope;
     }
@@ -103,6 +107,10 @@ public class ArtWorks extends BaseEntity {
 
     public void updateArtWorkThumbnail(String thumbnail) {
         this.thumbnail = thumbnail;
+    }
+
+    public void deleteArtWork() {
+        this.account.getArtWorksList().remove(this);
     }
 
     public static ArtWorks of(Account account, ArtWorkCreate dto) {
@@ -117,6 +125,7 @@ public class ArtWorks extends BaseEntity {
                 .isMaster(dto.getMaster())
                 .specialty(dto.getSpecialty())
                 .copyright(dto.getCopyright())
+                .thumbnail(dto.getThumbnail())
                 .view(0L)
                 .build();
     }

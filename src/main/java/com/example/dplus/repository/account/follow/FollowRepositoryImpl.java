@@ -24,7 +24,7 @@ public class FollowRepositoryImpl implements FollowRepositoryCustom{
                         follow.followerId,
                         account.profileImg))
                 .from(follow)
-                .join(account).on(account.id.eq(follow.followerId))
+                .join(account).on(follow.followerId.eq(account.id))
                 .where(follow.followingId.eq(followingId))
                 .fetch();
     }
@@ -36,7 +36,7 @@ public class FollowRepositoryImpl implements FollowRepositoryCustom{
                         follow.followingId,
                         account.profileImg))
                 .from(follow)
-                .join(account).on(account.id.eq(follow.followingId))
+                .join(account).on(follow.followingId.eq(account.id))
                 .where(follow.followerId.eq(followerId))
                 .fetch();
     }

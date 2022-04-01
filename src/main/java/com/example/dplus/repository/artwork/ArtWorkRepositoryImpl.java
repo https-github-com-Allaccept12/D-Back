@@ -1,8 +1,9 @@
 package com.example.dplus.repository.artwork;
 
 import com.example.dplus.dto.response.ArtWorkResponseDto;
+import com.example.dplus.dto.response.ArtWorkResponseDto.ArtWorkFeed;
 import com.example.dplus.dto.response.ArtWorkResponseDto.ArtworkMain;
-import com.querydsl.core.types.OrderSpecifier;
+import com.example.dplus.dto.response.ArtWorkResponseDto.MyArtWork;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -10,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
+import java.util.Objects;
 
 import static com.example.dplus.domain.account.QAccount.account;
 import static com.example.dplus.domain.account.QFollow.follow;
@@ -24,27 +26,37 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<ArtWorkResponseDto.ArtWorkFeed> findByArtWorkImageAndAccountId(Long lastArtWorkId, Pageable paging,
-                                                                               Long visitAccountId, Long accountId, boolean isPortfolio) {
+    public List<ArtWorkFeed> findByMasterArtWorkImageAndAccountId(Long visitAccountId) {
         return queryFactory
-                .select(Projections.constructor(
-                        ArtWorkResponseDto.ArtWorkFeed.class,
+                .select(Projections.constructor(ArtWorkFeed.class,
                         artWorks.id,
-                        artWorks.scope,
                         artWorks.thumbnail,
                         artWorks.isMaster
                 ))
                 .from(artWorks)
-                .offset(paging.getOffset())
-                .limit(paging.getPageSize())
-                .where(isPortfolio(isPortfolio),
-                        artWorks.account.id.eq(visitAccountId),
-                        artWorks.scope.isTrue(),
-                        isVisitor(visitAccountId, accountId),
-                        isLastArtworkId(lastArtWorkId))
+                .limit(4)
+                .where(artWorks.account.id.eq(visitAccountId)
+                        .and(artWorks.isMaster.isTrue()))
                 .groupBy(artWorks.id)
                 .orderBy(artWorks.created.desc())
                 .fetch();
+    }
+
+    @Override
+    public List<MyArtWork> findByArtWork(Long lastArtWorkId, Pageable pageable, Long visitAccountId, Long accountId) {
+        return queryFactory
+                .select(Projections.constructor(MyArtWork.class,
+                        artWorks.id,
+                        artWorks.thumbnail,
+                        artWorks.scope))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .from(artWorks)
+                .where(isVisitor(visitAccountId,accountId),
+                        isLastArtworkId(lastArtWorkId))
+                .orderBy(artWorks.created.desc())
+                .fetch();
+
     }
 
     @Override
@@ -63,7 +75,8 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
                 .leftJoin(artWorkLikes).on(artWorkLikes.artWorks.eq(artWorks))
                 .offset(paging.getOffset())
                 .limit(paging.getPageSize())
-                .where(artWorkBookMark.account.id.eq(accountId).and(artWorks.scope.isTrue()),
+                .where(artWorkBookMark.account.id.eq(accountId)
+                                .and(artWorks.scope.isTrue()),
                         isLastArtworkId(lastArtWorkId))
                 .groupBy(artWorks.id)
                 .orderBy(artWorks.created.desc())
@@ -72,32 +85,39 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
 
     //개선 필요
     @Override
-    public List<ArtworkMain> findArtWorkByMostViewAndMostLike(String interest, Pageable pageable) {
-
-        List<ArtworkMain> fetch = queryFactory
-                .select(
-                        Projections.constructor(ArtworkMain.class,
-                                artWorks.id,
-                                account.id,
-                                account.nickname,
-                                account.profileImg,
-                                artWorks.thumbnail,
-                                artWorks.view,
-                                artWorkLikes.count(),
-                                artWorks.category,
-                                artWorks.created))
+    public List<ArtworkMain> findArtWorkByMostViewAndMostLike(String interest) {
+        List<Long> Separator = queryFactory
+                .select(artWorks.id)
                 .from(artWorks)
-                .join(artWorks.account, account)
                 .leftJoin(artWorkLikes).on(artWorkLikes.artWorks.eq(artWorks))
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .where(isInterest(interest),
-                        artWorks.scope.isTrue())
-                .groupBy(artWorks.id)
-                .orderBy(artWorkLikes.count().desc(), artWorks.view.desc())
+                .limit(10)
+                .where(isInterest(interest))
                 .fetch();
 
-        if (fetch.size() < 10) {
+        //10개
+        if (Separator.size() >= 10) {
+            return queryFactory
+                    .select(
+                            Projections.constructor(ArtworkMain.class,
+                                    artWorks.id,
+                                    account.id,
+                                    account.nickname,
+                                    account.profileImg,
+                                    artWorks.thumbnail,
+                                    artWorks.view,
+                                    artWorkLikes.count(),
+                                    artWorks.category,
+                                    artWorks.created))
+                    .from(artWorks)
+                    .join(artWorks.account, account)
+                    .leftJoin(artWorkLikes).on(artWorkLikes.artWorks.eq(artWorks))
+                    .limit(10)
+                    .where(isInterest(interest),
+                            artWorks.scope.isTrue())
+                    .groupBy(artWorks.id)
+                    .orderBy(artWorkLikes.count().desc())
+                    .fetch();
+        }
             return queryFactory
                     .select(
                             Projections.constructor(ArtworkMain.class,
@@ -114,19 +134,14 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
                     .from(artWorks)
                     .join(artWorks.account, account)
                     .leftJoin(artWorkLikes).on(artWorkLikes.artWorks.eq(artWorks))
-                    .offset(pageable.getOffset())
-                    .limit(pageable.getPageSize())
+                    .limit(10)
                     .groupBy(artWorks.id)
                     .where(artWorks.scope.isTrue())
-                    .orderBy(artWorkLikes.count().desc(), artWorks.view.desc())
+                    .orderBy(artWorkLikes.count().desc())
                     .fetch();
-        }
-        return fetch;
-
     }
-
     @Override
-    public List<ArtworkMain> findAllArtWork(Long lastArtworkId, String category, Pageable paging,int sortSign) {
+    public List<ArtworkMain> findAllArtWork(Long lastArtworkId, String category, Pageable paging) {
         return queryFactory
                 .select(Projections.constructor(ArtworkMain.class,
                         artWorks.id,
@@ -148,11 +163,35 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
                         isCategory(category),
                         artWorks.scope.isTrue())
                 .groupBy(artWorks.id)
-                .orderBy(isArtWorkSort(sortSign))
+                .orderBy(artWorks.created.desc())
                 .fetch();
     }
 
-
+    @Override
+    public List<ArtworkMain> showArtWorkLikeSort(String category, Pageable pageable) {
+        return queryFactory
+                .select(Projections.constructor(ArtworkMain.class,
+                        artWorks.id,
+                        account.id,
+                        account.nickname,
+                        account.profileImg,
+                        artWorks.thumbnail,
+                        artWorks.view,
+                        artWorkLikes.count(),
+                        artWorks.category,
+                        artWorks.created
+                ))
+                .from(artWorks)
+                .join(account).on(account.id.eq(artWorks.account.id))
+                .leftJoin(artWorkLikes).on(artWorkLikes.artWorks.eq(artWorks))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .where(isCategory(category),
+                        artWorks.scope.isTrue())
+                .groupBy(artWorks.id)
+                .orderBy(artWorkLikes.count().desc(),artWorks.created.desc())
+                .fetch();
+    }
 
     @Override
     public List<ArtworkMain> findByFollowerArtWork(Long accountId,String category, Long lastArtWorkId, Pageable paging) {
@@ -217,8 +256,6 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
                 .fetchOne();
     }
 
-
-
     @Override
     public List<ArtWorkResponseDto.ArtWorkSimilarWork> findSimilarArtWork(Long accountId,Long artWorkId, Pageable pageable) {
         return  queryFactory
@@ -230,7 +267,8 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
                 .join(artWorks.account, account)
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
-                .where(artWorks.account.id.eq(accountId).and(artWorks.id.ne(artWorkId)),
+                .where(artWorks.account.id.eq(accountId)
+                                .and(artWorks.id.ne(artWorkId)),
                         artWorks.scope.isTrue())
                 .orderBy(artWorks.created.desc())
                 .fetch();
@@ -239,7 +277,8 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
     }
 
     @Override
-    public List<ArtworkMain> findBySearchKeyWord(String keyword, Long lastArtWorkId, Pageable pageable) {
+    public List<ArtworkMain> findBySearchKeyWord(String keyword,Long lastArtWorkId, Pageable pageable) {
+
         return queryFactory
                 .select(Projections.constructor(ArtworkMain.class,
                         artWorks.id,
@@ -257,10 +296,10 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .where(isLastArtworkId(lastArtWorkId),
-                        artWorks.title.contains(keyword),
-                        artWorks.content.contains(keyword),
-                        artWorks.account.nickname.contains(keyword),
-                        artWorks.scope.isTrue())
+                        (artWorks.title.contains(keyword)
+                                .or(artWorks.content.contains(keyword))
+                                .or(artWorks.account.nickname.contains(keyword)))
+                        .and(artWorks.scope.isTrue()))
                 .groupBy(artWorks.id)
                 .orderBy(artWorks.created.desc())
                 .fetch();
@@ -268,37 +307,13 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
 
 
 
-    @Override
-    public void updateArtWorkIdMasterToFalse(Long artWorkId) {
-        queryFactory
-                .update(artWorks)
-                .set(artWorks.isMaster, false)
-                .where(artWorks.id.eq(artWorkId))
-                .execute();
-    }
-
-    //in절을 통한 List 벌크
-    @Override
-    public void updateAllArtWorkIsMasterToTrue(List<Long> artworkIdList) {
-        queryFactory
-                .update(artWorks)
-                .set(artWorks.isMaster, true)
-                .set(artWorks.scope, true)
-                .where(artWorks.id.in(artworkIdList))
-                .execute();
-    }
-
-    private OrderSpecifier<?> isArtWorkSort(int sortSign) {
-        return sortSign == 1 ? artWorks.created.desc() : artWorkLikes.count().desc();
-    }
-
     private BooleanExpression isCategory(String category) {
         return category.isEmpty() ? null : artWorks.category.eq(category);
     }
 
     //account의 interest를 확인하고 메인페이지에 뿌려줄 top10
     private BooleanExpression isInterest(String interest) {
-        return interest != null ? artWorks.category.eq(interest) : null;
+        return !Objects.equals(interest, "default") ? artWorks.category.eq(interest) : null;
     }
 
     private BooleanExpression isLastArtworkId(Long lastArtWorkId) {
@@ -310,8 +325,6 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
         return visitAccountId.equals(accountId) ? null : artWorks.scope.isTrue();
     }
 
-    private BooleanExpression isPortfolio(boolean isPortfolio) {
-        return isPortfolio ? artWorks.isMaster.isTrue() : null;
-    }
+
 
 }
