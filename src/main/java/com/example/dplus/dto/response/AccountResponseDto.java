@@ -20,7 +20,6 @@ public class AccountResponseDto {
         private Long account_id;
         private String account_name;
         private String nickname;
-        private String account_name;
         private String profile_img;
         private Long exp;
         private String title_content;

@@ -174,8 +174,7 @@ public class PostMainPageServiceImpl implements PostMainPageService{
     // 게시글 검색
     @Transactional(readOnly = true)
     public PostSearchResponseDto findBySearchKeyWord(String keyword, Long lastPostId, Long accountId, String board) {
-        Pageable pageable = PageRequest.of(0,5);
-        List<Post> postLists = postRepository.findPostBySearchKeyWord( keyword,  lastPostId,  pageable,  board);
+        List<Post> postLists = postRepository.findPostBySearchKeyWord( keyword,  lastPostId,  board);
         return PostSearchResponseDto.from(postLists);
     }
 
