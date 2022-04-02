@@ -26,7 +26,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -66,14 +65,12 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
     }
     //모아보기
     @Transactional(readOnly = true)
-    @Cacheable(value="artworkMain", key="{#category, #lastArtWorkId}", condition="#category != null and #lastArtWorkId != null")
     public List<ArtworkMain> showArtworkMain(Long accountId, Long lastArtWorkId,String category){
         Pageable pageable = PageRequest.of(0,10);
         return artWorkRepository.findAllArtWork(lastArtWorkId,category,pageable);
     }
 
     @Transactional(readOnly = true)
-    @Cacheable(value="artworkLikeSort", key="{#category, #start}", condition="#category != null and #start != null")
     public List<ArtworkMain> showArtWorkLikeSort(Long accountId, String category, int start) {
         Pageable pageable = PageRequest.of(start,10);
         return artWorkRepository.showArtWorkLikeSort(category,pageable);
@@ -113,12 +110,6 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
     }
 
     @Transactional
-    @Caching(evict = {
-            @CacheEvict(value="mainByInterest", key="#dto.category"),
-            @CacheEvict(value="myArtworks", key="#accountId"),
-            @CacheEvict(value="artworkMain", key="#dto.category"),
-            @CacheEvict(value="artworkLikeSort", key="#dto.category")
-    })
     public int createArtwork(Long accountId, ArtWorkCreate dto, List<MultipartFile> multipartFiles) {
         Account account = accountRepository.findById(accountId).orElseThrow(() -> new ErrorCustomException(ErrorCode.NO_USER_ERROR));
         if (account.getArtWorkCreateCount() >= 5) {
@@ -134,12 +125,7 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
     }
 
     @Transactional
-    @Caching(evict = {
-            @CacheEvict(value="mainByInterest", key="#dto.category"),
-            @CacheEvict(value="myArtworks", key="#accountId"),
-            @CacheEvict(value="artworkMain", key="#dto.category"),
-            @CacheEvict(value="artworkLikeSort", key="#dto.category")
-    })
+    @CacheEvict(value="mainByInterest", key="#category")
     public Long updateArtwork(Long accountId, Long artworkId, ArtWorkUpdate dto, List<MultipartFile> multipartFiles) {
         ArtWorks artWorks = artworkValidation(accountId, artworkId);
         updateImg(multipartFiles, artWorks, dto);
@@ -149,12 +135,7 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
     }
 
     @Transactional
-    @Caching(evict = {
-            @CacheEvict(value="mainByInterest", key="#category"),
-            @CacheEvict(value="myArtworks", key="#accountId"),
-            @CacheEvict(value="artworkMain", key="#category"),
-            @CacheEvict(value="artworkLikeSort", key="#category")
-    })
+    @CacheEvict(value="mainByInterest", key="#category")
     public void deleteArtwork(Long accountId, Long artworkId, String category) {
         ArtWorks artWorks = artworkValidation(accountId, artworkId);
         List<ArtWorkImage> artWorkImages = artWorkImageRepository.findByArtWorksId(artWorks.getId());
@@ -176,7 +157,6 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
     }
 
     @Transactional(readOnly = true)
-    @Cacheable(value="followerArtwork", key="{#accountId, #category, #lastArtWorkId}", condition="#accountId != null and #category != null and #lastArtWorkId != null")
     public List<ArtworkMain> findByFollowerArtWork(Long accountId, String category, Long lastArtWorkId) {
         Pageable pageable = PageRequest.of(0,10);
         return artWorkRepository.findByFollowerArtWork(accountId, category, lastArtWorkId, pageable);
