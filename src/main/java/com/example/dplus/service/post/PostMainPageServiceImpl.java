@@ -113,7 +113,7 @@ public class PostMainPageServiceImpl implements PostMainPageService{
             });
         }
 
-        setPostTag(dto.getHashTag(), savedPost);
+        setPostTag(dto.getHash_tag(), savedPost);
         account.upPostCountCreate();
         return 5 - account.getPostCreateCount();
     }
@@ -146,9 +146,9 @@ public class PostMainPageServiceImpl implements PostMainPageService{
         post.updatePost(dto);
 
         // 태그도 지우고 다시 세팅
-        if(dto.getHashTag()!=null){
+        if(dto.getHash_tag()!=null){
             postTagRepository.deleteAllByPostId(postId);
-            setPostTag(dto.getHashTag(), post);
+            setPostTag(dto.getHash_tag(), post);
         }
         return post.getId();
     }
