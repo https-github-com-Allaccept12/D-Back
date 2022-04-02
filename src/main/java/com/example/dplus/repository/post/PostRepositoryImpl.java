@@ -4,7 +4,6 @@ import com.example.dplus.domain.post.Post;
 import com.example.dplus.domain.post.PostBoard;
 import com.example.dplus.dto.response.AccountResponseDto;
 import com.example.dplus.dto.response.PostResponseDto;
-import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -72,10 +71,10 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                 .leftJoin(postTag).on(postTag.post.eq(post))
                 .limit(12)
                 .where(isLastPostId(lastPostId),post.board.eq(PostBoard.valueOf(board)),
-                        post.title.contains(keyword),
-                        post.account.nickname.contains(keyword),
-                        post.content.contains(keyword),
-                        postTag.hashTag.contains(keyword))
+                        (post.title.contains(keyword)
+                                .or(post.account.nickname.contains(keyword))
+                                .or(post.content.contains(keyword))
+                                .or(postTag.hashTag.contains(keyword))))
                 .orderBy(post.created.desc())
                 .fetch();
     }
