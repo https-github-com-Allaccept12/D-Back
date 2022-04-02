@@ -10,20 +10,16 @@ import java.util.List;
 public interface PostRepositoryCustom {
 
     // 포스트 메인페이지 출력 (최신순, 좋아요)
-    List<Post> findAllPostOrderByCreatedDesc(Long lastPostId, Pageable pageable, String board,  String category);
+    List<Post> findAllPostOrderByCreatedDesc(Long lastPostId, String board, String category);
 
     List<Post> findAllPostOrderByLikeDesc(Pageable pageable, String board, String category);
-
-    // 상세페이지 서브
-    Post findByPostDetail (Long postId);
 
     // 조회수 + 라이크 찾기
     List<Post> findPostByMostViewAndMostLike();
 
     // 검색
-    List<Post> findPostBySearchKeyWord(String keyword, Long lastPostId, Pageable pageable, String board);
 
-    PostResponseDto.PostAnswerSubDetail findByPostAnswerSubDetail(Long postId);
+    List<Post> findPostBySearchKeyWord(String keyword, Long lastPostId, Pageable pageable, String board);
 
     List<Post> findBySimilarPost(String category, String board, Long postId);
 

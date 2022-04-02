@@ -31,9 +31,13 @@ public interface AccountMyPageService {
     void updateAccountSpecialty(final AccountRequestDto.UpdateSpecialty dto, final Long accountId);
 
     void masterAccountCareerFeed(Long artWorkId, Account account);
-    void nonMasterAccountCareerFeed(Long artWorkId,Account account);
-    void updateMasterAccountCareerFeed(Long artWorkId,Long prevArtWorkId,Account account);
+
+    void nonMasterAccountCareerFeed(Long artWorkId, Account account);
+
+    void updateMasterAccountCareerFeed(Long artWorkId, Long prevArtWorkId, Account account);
+
     void hideArtWorkScope(Long artWorkId, Account account);
+
     void nonHideArtWorkScope(Long artWorkId, Account account);
 
     //void setAccountMasterPiece(final Long accountId, final AccountRequestDto.setAccountMasterPiece materPiece);
@@ -42,12 +46,12 @@ public interface AccountMyPageService {
 
     List<ArtWorkBookMark> showAccountArtWorkBookMark(final Long lastArtWorkId, final Long accountId);
 
-    List<MyPost> getMyPost(Long accountId, String board,int start);
+    List<MyPost> getMyPost(Long accountId, String board, int start);
 
-    List<MyPost> getMyBookMarkPost(Long accountId, String board,int start);
+    List<MyPost> getMyBookMarkPost(Long accountId, String board, int start);
 
-    List<MyAnswer> getMyAnswer(Long accountId,int start);
+    List<MyAnswer> getMyAnswer(Long accountId, int start);
 
-    List<MyComment> getMyComment(Long accountId,int start);
+    List<MyComment> getMyComment(Long accountId, int start);
 
 }

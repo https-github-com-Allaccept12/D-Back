@@ -27,7 +27,6 @@ import com.example.dplus.service.file.FileProcessService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -59,8 +58,7 @@ public class PostMainPageServiceImpl implements PostMainPageService{
     // 메인 페이지 (최신순)
     @Transactional(readOnly = true)
     public PostMainResponseDto showPostMain(Long lastPostId, String board, String category) {
-        Pageable pageable = PageRequest.of(0, 12);
-        List<Post> postList = postRepository.findAllPostOrderByCreatedDesc(lastPostId, pageable, board, category);
+        List<Post> postList = postRepository.findAllPostOrderByCreatedDesc(lastPostId, board, category);
         List<Post> postRecommendation = postRepository.findPostByMostViewAndMostLike();
         return PostMainResponseDto.of(postList,postRecommendation);
     }
@@ -125,8 +123,8 @@ public class PostMainPageServiceImpl implements PostMainPageService{
     // 게시물 수정
     @Transactional
     @CacheEvict(value="myPost", key="{#accountId, #dto.board}", allEntries = true)
-    public Long updatePost(Account account, Long postId, PostRequestDto.PostUpdate dto, List<MultipartFile> imgFile){
-        Post post = postAuthValidation(account.getId(), postId);
+    public Long updatePost(Long accountId, Long postId, PostRequestDto.PostUpdate dto, List<MultipartFile> imgFile){
+        Post post = postAuthValidation(accountId, postId);
 
         // 삭제할 이미지가 있다면, 이미지 주소를 직접 하나씩 지운다
         if(dto.getDelete_img()!=null){
