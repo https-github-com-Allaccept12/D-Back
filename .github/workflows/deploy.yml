@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 env:
-  S3_BUCKET_NAME: dplus-jar
+  S3_BUCKET_NAME: dplus-jar-real
   PROJECT_NAME: TeamDplus-code
 
 

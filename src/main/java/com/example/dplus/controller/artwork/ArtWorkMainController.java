@@ -16,7 +16,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -76,23 +75,25 @@ public class ArtWorkMainController {
         }
         throw new ErrorCustomException(ErrorCode.NO_AUTHENTICATION_ERROR);
     }
-
+//
     @PostMapping("/api/artwork")
     public ResponseEntity<Success> createArtWork(@AuthenticationPrincipal UserDetailsImpl user,
-                                                 @RequestPart ArtWorkCreate data,
-                                                 @RequestPart List<MultipartFile> imgFile) {
-        if (user != null) {
+                                                 @RequestPart List<MultipartFile> imgFile,
+                                                 @RequestPart ArtWorkCreate data) {
+
+        //이미지 파일 개수가 총 두개 이상일때 업로드 가능 -> 썸네일도 하나의 파일로 인식이 되기때문에 섬네일제외 파일하나를 더 업로드 해야함.
+        if (imgFile.size() >= 2) {
             return new ResponseEntity<>(new Success("작품 등록 완료"
-                    ,artworkMainService.createArtwork(user.getUser().getId(),data, imgFile)),HttpStatus.OK);
+                    , artworkMainService.createArtwork(user.getUser().getId(), data, imgFile)), HttpStatus.OK);
         }
-        throw new ErrorCustomException(ErrorCode.NO_AUTHENTICATION_ERROR);
+        throw new ErrorCustomException(ErrorCode.PHOTO_UPLOAD_ERROR);
     }
 
     @PatchMapping("/api/artwork/{artwork_id}")
     public ResponseEntity<Success> updateArtWork(@AuthenticationPrincipal UserDetailsImpl user,
                                                  @PathVariable Long artwork_id,
-                                                 @Valid @RequestPart ArtWorkUpdate data,
-                                                 @RequestPart List<MultipartFile> imgFile) {
+                                                 @RequestPart ArtWorkUpdate data,
+                                                 @RequestPart("imgFile") List<MultipartFile> imgFile) {
         if (user != null) {
             return new ResponseEntity<>(new Success("작품 수정 완료",
                     artworkMainService.updateArtwork(user.getUser().getId(),artwork_id,data, imgFile)),HttpStatus.OK);

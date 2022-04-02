@@ -50,9 +50,8 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
     private final FileProcessService fileProcessService;
 
     @Transactional(readOnly = true)
-    @Cacheable(value="mainByInterest", key="#interest", condition="#interest != null")
+    @Cacheable(value="mainByInterest", key="#interest",condition="#interest != null")
     public MainResponseDto mostPopularArtWork(Long accountId, String interest) {
-
         if (accountId != 0) {
             List<ArtworkMain> artWorkList = getArtworkList(interest);
             List<TopArtist> topArtist = getTopArtist();
@@ -114,9 +113,6 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
         Account account = accountRepository.findById(accountId).orElseThrow(() -> new ErrorCustomException(ErrorCode.NO_USER_ERROR));
         if (account.getArtWorkCreateCount() >= 5) {
             throw new ErrorCustomException(ErrorCode.DAILY_WRITE_UP_BURN_ERROR);
-        }
-        if (multipartFiles == null) {
-            throw new ErrorCustomException(ErrorCode.PHOTO_UPLOAD_ERROR);
         }
         ArtWorks saveArtwork = artWorkRepository.save(ArtWorks.of(account, dto));
         s3ImageUpload(multipartFiles,dto,saveArtwork);

@@ -4,6 +4,7 @@ import com.example.dplus.domain.account.Account;
 import com.example.dplus.dto.request.PostRequestDto;
 import com.example.dplus.dto.response.PostMainResponseDto;
 import com.example.dplus.dto.response.PostResponseDto;
+import com.example.dplus.dto.response.PostSearchResponseDto;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -18,7 +19,7 @@ public interface PostMainPageService {
     int createPost(Long accountId, PostRequestDto.PostCreate dto, List<MultipartFile> imageFile);
 
     // 게시글 검색
-    List<PostResponseDto.PostPageMain> findBySearchKeyWord(String keyword, Long lastArtWorkId, Long accountId, String board);
+    PostSearchResponseDto findBySearchKeyWord(String keyword, Long lastArtWorkId, Long accountId, String board);
 
     // 상세 게시글
     PostResponseDto.PostDetailPage showPostDetail(Long accountId, Long postId);
