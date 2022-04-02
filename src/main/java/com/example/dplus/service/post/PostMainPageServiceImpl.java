@@ -26,7 +26,6 @@ import com.example.dplus.repository.post.tag.PostTagRepository;
 import com.example.dplus.service.file.FileProcessService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -98,7 +97,6 @@ public class PostMainPageServiceImpl implements PostMainPageService{
 
     // 게시글 작성
     @Transactional
-    @CacheEvict(value="myPost", key="{#accountId, #dto.board}", allEntries = true)
     public int createPost(Long accountId, PostRequestDto.PostCreate dto, List<MultipartFile> imgFile) {
         Account account = accountRepository.findById(accountId).orElseThrow(() -> new ErrorCustomException(ErrorCode.NO_USER_ERROR));
         if (account.getPostCreateCount() >= 5) {
@@ -122,7 +120,6 @@ public class PostMainPageServiceImpl implements PostMainPageService{
 
     // 게시물 수정
     @Transactional
-    @CacheEvict(value="myPost", key="{#accountId, #dto.board}", allEntries = true)
     public Long updatePost(Long accountId, Long postId, PostRequestDto.PostUpdate dto, List<MultipartFile> imgFile){
         Post post = postAuthValidation(accountId, postId);
 
@@ -158,8 +155,7 @@ public class PostMainPageServiceImpl implements PostMainPageService{
 
     // 게시글 삭제
     @Transactional
-    @CacheEvict(value="myPost", key="{#accountId, #dto.board}", allEntries = true)
-    public void deletePost(Long accountId, Long postId){
+    public void deletePost(Long accountId, Long postId, String category, String board){
         Post post = postAuthValidation(accountId, postId);
         List<PostImage> postImages = postImageRepository.findByPostId(postId);
         postImages.forEach((img) -> {

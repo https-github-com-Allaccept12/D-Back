@@ -8,7 +8,6 @@ import com.example.dplus.repository.post.PostRepository;
 import com.example.dplus.domain.post.PostBookMark;
 import com.example.dplus.repository.post.bookmark.PostBookMarkRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,7 +19,6 @@ public class PostBookMarkService {
     private final PostRepository postRepository;
 
     @Transactional
-    @CacheEvict(value="myBookmarkPost", key="#account.id", allEntries = true)
     public void doBookMark(Account account, Long postId) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new ErrorCustomException(ErrorCode.NONEXISTENT_ERROR));
         if (postBookMarkRepository.existByAccountIdAndPostId(account.getId(), postId)) {
@@ -31,7 +29,6 @@ public class PostBookMarkService {
     }
 
     @Transactional
-    @CacheEvict(value="myBookmarkPost", key="#account.id", allEntries = true)
     public void unBookMark(Account account, Long postId) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new ErrorCustomException(ErrorCode.NONEXISTENT_ERROR));
         if (!postBookMarkRepository.existByAccountIdAndPostId(account.getId(), postId)) {

@@ -20,7 +20,7 @@ public interface ArtworkMainService {
 
     Long updateArtwork(Long account, Long artworkId, ArtWorkUpdate artWorkUpdate, List<MultipartFile> multipartFiles);
 
-    void deleteArtwork(Long accountId, Long artworkId);
+    void deleteArtwork(Long accountId, Long artworkId, String category);
 
     ArtWorkDetail detailArtWork(Long accountId, Long artWorkId);
 

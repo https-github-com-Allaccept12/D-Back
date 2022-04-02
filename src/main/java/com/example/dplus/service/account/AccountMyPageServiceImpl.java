@@ -51,7 +51,7 @@ public class AccountMyPageServiceImpl implements AccountMyPageService {
 
     //마이페이지 조회
     @Transactional(readOnly = true)
-    @Cacheable(value="accountInfo", key="#visitAccountId")
+    @Cacheable(value="accountInfo", key="#visitAccountId", condition="#visitAccountId != null")
     public AccountInfo showAccountInfo(Long visitAccountId, Long accountId) {
         final Account findAccount = getAccount(visitAccountId);
         final Long follower = followRepository.countByFollowerId(findAccount.getId());
@@ -61,7 +61,7 @@ public class AccountMyPageServiceImpl implements AccountMyPageService {
     }
     //연혁 조히
     @Transactional(readOnly = true)
-    @Cacheable(value="accountHistory", key="#accountId")
+    @Cacheable(value="accountHistory", key="#accountId", condition="#accountId != null")
     public List<HistoryResponseDto.History> showAccountHistory(Long accountId) {
         final List<History> history = historyRepository.findAllByAccountId(accountId);
         return history.stream()
@@ -70,7 +70,7 @@ public class AccountMyPageServiceImpl implements AccountMyPageService {
     }
     //작업물 - 포트폴리오
     @Transactional(readOnly = true)
-    @Cacheable(value="portfolio", key="#visitAccountId")
+    @Cacheable(value="portfolio", key="#visitAccountId", condition="#visitAccountId != null")
     public List<ArtWorkResponseDto.ArtWorkFeed> showAccountCareerFeed(Long visitAccountId) {
         return artWorkRepository.findByMasterArtWorkImageAndAccountId(visitAccountId);
     }
@@ -124,6 +124,7 @@ public class AccountMyPageServiceImpl implements AccountMyPageService {
 
     // 내 대표작 수정
     @Transactional
+    @CacheEvict(value="portfolio", key="#account.id")
     public void updateMasterAccountCareerFeed(Long artWorkId,Long prevArtWorkId,Account account) {
         ArtWorks artWorks = getArtWorks(artWorkId);
         ArtWorks prevArtWork = getArtWorks(prevArtWorkId);
@@ -133,7 +134,7 @@ public class AccountMyPageServiceImpl implements AccountMyPageService {
     }
     //작품 보이기
     @Transactional
-    @Caching(evict={@CacheEvict(value="portfolio", key="#account.id"), @CacheEvict(value="myArtworks", key="#account.id", allEntries = true)})
+    @CacheEvict(value="portfolio", key="#account.id")
     public void nonHideArtWorkScope(Long artWorkId, Account account) {
         ArtWorks artWorks = getArtWorks(artWorkId);
         createValid(account,artWorks);
@@ -141,7 +142,7 @@ public class AccountMyPageServiceImpl implements AccountMyPageService {
     }
     //작품 숨김
     @Transactional
-    @Caching(evict={@CacheEvict(value="portfolio", key="#account.id"), @CacheEvict(value="myArtworks", key="#account.id", allEntries = true)})
+    @CacheEvict(value="portfolio", key="#account.id")
     public void hideArtWorkScope(Long artWorkId, Account account) {
         ArtWorks artWorks = getArtWorks(artWorkId);
         createValid(account,artWorks);
@@ -151,20 +152,17 @@ public class AccountMyPageServiceImpl implements AccountMyPageService {
 
     //마이페이지/유저작품
     @Transactional(readOnly = true)
-    @Cacheable(value="myArtworks", key="{#visitAccountId, #lastArtWorkId}")
     public List<MyArtWork> showAccountArtWork(final Long lastArtWorkId, final Long visitAccountId, final Long accountId) {
         return artWorkRepository.findByArtWork(lastArtWorkId, visitAccountId, accountId);
     }
 
     //마이페이지/북마크
     @Transactional(readOnly = true)
-    @Cacheable(value="myBookmarkArtworks", key="{#accountId, #lastArtWorkId}")
     public List<ArtWorkResponseDto.ArtWorkBookMark> showAccountArtWorkBookMark(Long lastArtWorkId,final Long accountId) {
         return artWorkRepository.findArtWorkBookMarkByAccountId(lastArtWorkId,accountId);
     }
 
     @Transactional(readOnly = true)
-    @Cacheable(value="myPost", key="{#accountId, #board, #start}")
     public List<MyPost> getMyPost(Long accountId, String board,int start) {
         Pageable pageable = PageRequest.of(start,5);
         List<MyPost> myPosts = postRepository.findPostByAccountIdAndBoard(accountId, board, pageable);
@@ -177,7 +175,6 @@ public class AccountMyPageServiceImpl implements AccountMyPageService {
     }
 
     @Transactional(readOnly = true)
-    @Cacheable(value="myBookmarkPost", key="{#accountId, #start}")
     public List<MyPost> getMyBookMarkPost(Long accountId, String board,int start) {
         Pageable pageable = PageRequest.of(start,5);
         List<MyPost> myBookMarkPost = postRepository.findPostBookMarkByAccountId(accountId, board, pageable);
@@ -186,14 +183,12 @@ public class AccountMyPageServiceImpl implements AccountMyPageService {
     }
 
     @Transactional(readOnly = true)
-    @Cacheable(value="myAnswer", key="{#accountId, #start}")
     public List<MyAnswer> getMyAnswer(Long accountId,int start) {
         Pageable pageable = PageRequest.of(start,5);
         return postAnswerRepository.findPostAnswerByAccountId(accountId, pageable);
     }
 
     @Transactional(readOnly = true)
-    @Cacheable(value="myComment", key="{#accountId, #start}")
     public List<MyComment> getMyComment(Long accountId, int start) {
         Pageable pageable= PageRequest.of(start, 5);
         return postCommentRepository.findPostCommentByAccountId(accountId, pageable);
