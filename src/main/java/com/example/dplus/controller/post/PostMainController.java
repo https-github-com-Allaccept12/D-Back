@@ -86,7 +86,7 @@ public class PostMainController {
 
         if (user != null) {
             return new ResponseEntity<>(new Success("디플 게시물 수정",
-                    postMainPageService.updatePost(user.getUser(), post_id, data, imgFile)), HttpStatus.OK);
+                    postMainPageService.updatePost(user.getUser().getId(), post_id, data, imgFile)), HttpStatus.OK);
         }
         throw new ErrorCustomException(ErrorCode.NO_AUTHENTICATION_ERROR);
     }

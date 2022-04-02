@@ -50,11 +50,11 @@ public class HistoryRequestDto {
 
         public static History toEntity(HistoryRequestDto.HistoryUpdate dto, Account account) {
             return History.builder()
-                    .companyName(dto.company_name)
-                    .companyDepartment(dto.company_department)
-                    .companyPosition(dto.company_position)
+                    .companyName(dto.getCompany_name())
+                    .companyDepartment(dto.getCompany_department())
+                    .companyPosition(dto.getCompany_position())
                     .achievements(dto.getAchievements())
-                    .workStart(dto.getAchievements())
+                    .workStart(dto.getWork_start())
                     .workEnd(dto.getWork_end())
                     .account(account)
                     .build();

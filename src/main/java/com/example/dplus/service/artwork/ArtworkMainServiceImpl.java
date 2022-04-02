@@ -67,8 +67,7 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
     //모아보기
     @Transactional(readOnly = true)
     public List<ArtworkMain> showArtworkMain(Long accountId, Long lastArtWorkId,String category){
-        Pageable pageable = PageRequest.of(0,10);
-        return artWorkRepository.findAllArtWork(lastArtWorkId,category,pageable);
+        return artWorkRepository.findAllArtWork(lastArtWorkId,category);
     }
 
     @Transactional(readOnly = true)
@@ -91,9 +90,8 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
         //작품 코멘트 가져오기
         List<ArtWorkComment> commentList = artWorkCommentRepository.findArtWorkCommentByArtWorksId(artWorksSub.getArtwork_id());
         //해당 유저의 다른 작품들 가져오기
-        Pageable pageable = PageRequest.of(0, 5);
         List<ArtWorkResponseDto.ArtWorkSimilarWork> similarList = artWorkRepository
-                .findSimilarArtWork(artWorks.getAccount().getId(),artWorks.getId(),pageable);
+                .findSimilarArtWork(artWorks.getAccount().getId(),artWorks.getId());
         boolean isLike = false;
         boolean isBookmark = false;
         boolean isFollow = false;
@@ -151,14 +149,12 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
     //작품 검색
     @Transactional(readOnly = true)
     public List<ArtworkMain> findBySearchKeyWord(String keyword,Long lastArtWorkId,Long accountId) {
-        Pageable pageable = PageRequest.of(0,10);
-        return artWorkRepository.findBySearchKeyWord(keyword,lastArtWorkId,pageable);
+        return artWorkRepository.findBySearchKeyWord(keyword,lastArtWorkId);
     }
 
     @Transactional(readOnly = true)
     public List<ArtworkMain> findByFollowerArtWork(Long accountId, String category, Long lastArtWorkId) {
-        Pageable pageable = PageRequest.of(0,10);
-        return artWorkRepository.findByFollowerArtWork(accountId, category, lastArtWorkId, pageable);
+        return artWorkRepository.findByFollowerArtWork(accountId, category, lastArtWorkId);
     }
 
     private void s3ImageUpload(List<MultipartFile> multipartFiles,ArtWorkCreate dto, ArtWorks saveArtwork) {
