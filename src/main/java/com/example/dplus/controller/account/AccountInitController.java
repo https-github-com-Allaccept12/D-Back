@@ -1,8 +1,6 @@
 package com.example.dplus.controller.account;
 
 
-import com.example.dplus.advice.ErrorCode;
-import com.example.dplus.advice.ErrorCustomException;
 import com.example.dplus.dto.Success;
 import com.example.dplus.dto.request.AccountRequestDto.InitInterestSetting;
 import com.example.dplus.dto.request.AccountRequestDto.InitProfileSetting;
@@ -26,18 +24,15 @@ public class AccountInitController {
     //프로필 설정
     @PostMapping("/profile")
     public ResponseEntity<Success<Long>> initProfile(@RequestPart InitProfileSetting data,
-                                                     @RequestPart MultipartFile imgFile,
+                                                     @RequestPart(required = false) MultipartFile imgFile,
                                                      @AuthenticationPrincipal UserDetailsImpl user) {
-        if (imgFile != null) {
-            return new ResponseEntity<>(new Success<>("프로필 설정 완료",
-                    accountInitialService.setInitProfile(imgFile,data,user.getUser().getId())), HttpStatus.OK);
-        }
-        throw new ErrorCustomException(ErrorCode.PHOTO_UPLOAD_ERROR);
+        return new ResponseEntity<>(new Success<>("프로필 설정 완료",
+                accountInitialService.setInitProfile(imgFile, data, user.getUser().getId())), HttpStatus.OK);
     }
     //프로필 수정
     @PatchMapping("/profile")
     public ResponseEntity<Success<Long>> updateProfile(@RequestPart InitProfileSetting data,
-                                                       @RequestPart MultipartFile imgFile,
+                                                       @RequestPart(required = false) MultipartFile imgFile,
                                                        @AuthenticationPrincipal UserDetailsImpl user) {
 
         return new ResponseEntity<>(new Success<>("프로필 설정 완료",

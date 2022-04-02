@@ -26,12 +26,11 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
 
     // 전체 페이지 최신순
     @Override
-    public List<Post> findAllPostOrderByCreatedDesc(Long lastPostId, Pageable pageable, String board, String category) {
+    public List<Post> findAllPostOrderByCreatedDesc(Long lastPostId,String board, String category) {
         return queryFactory
                 .selectFrom(post)
                 .innerJoin(post.account,account)
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
+                .limit(12)
                 .where(isLastPostId(lastPostId),
                         post.board.eq(PostBoard.valueOf(board)),
                         isCategory(category))
@@ -54,44 +53,6 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                 .fetch();
 
     }
-
-    // 상세페이지 서브 정보
-    @Override
-    public Post findByPostDetail(Long postId) {
-        return queryFactory
-                .selectFrom(post)
-                .innerJoin(post.account, account)
-                .where(post.id.eq(postId))
-                .groupBy(post.id)
-                .fetchOne();
-    }
-
-    // 질문 상세페이지 정보
-    @Override
-    public PostResponseDto.PostAnswerSubDetail findByPostAnswerSubDetail(Long postId) {
-        return queryFactory
-                .select(Projections.constructor(PostResponseDto.PostAnswerSubDetail.class,
-                        post.id,
-                        account.id,
-                        account.profileImg,
-                        account.nickname,
-                        post.title,
-                        post.content,
-                        post.view,
-                        postLikes.count(),
-                        post.category,
-                        post.created,
-                        post.modified,
-                        post.isSelected
-                ))
-                .from(post)
-                .innerJoin(post.account, account)
-                .leftJoin(postLikes).on(postLikes.post.eq(post))
-                .where(post.id.eq(postId))
-                .groupBy(post.id)
-                .fetchOne();
-    }
-
     @Override
     public List<Post> findPostBySearchKeyWord(String keyword, Long lastPostId, Pageable pageable, String board) {
         return queryFactory
@@ -187,9 +148,6 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                 .groupBy(post.id)
                 .orderBy(post.created.desc())
                 .fetch();
-    }
-    private OrderSpecifier<?> isPostSort(int sortSign) {
-        return sortSign == 1 ? post.created.desc() : postLikes.count().desc();
     }
     private BooleanExpression isCategory(String category) {
         return category.isEmpty() ? null : post.category.eq(category);

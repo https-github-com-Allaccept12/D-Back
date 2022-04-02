@@ -18,6 +18,7 @@ public class AccountResponseDto {
     public static class AccountInfo {
 
         private Long account_id;
+        private String account_name;
         private String nickname;
         private String account_name;
         private String profile_img;
@@ -63,7 +64,7 @@ public class AccountResponseDto {
             this.is_mypage = is_mypage;
             this.other_specialty = other;
             this.job = job;
-            this.account_name = account_name;
+            this.account_name =account_name;
         }
         public static AccountInfo from(final Account account, final Long follower, final Long following,
                                        final Boolean is_follow, final Boolean is_mypage) {
