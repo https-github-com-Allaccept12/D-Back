@@ -52,12 +52,12 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
 
     }
     @Override
-    public List<Post> findPostBySearchKeyWord(String keyword, Long lastPostId, String board) {
+    public List<Post> findPostBySearchKeyWord(String keyword, Long lastPostId,  String board) {
         return queryFactory
                 .selectFrom(post)
                 .innerJoin(post.account,account)
                 .leftJoin(postTag).on(postTag.post.id.eq(post.id))
-                .limit(10)
+                .limit(5)
                 .where(isLastPostId(lastPostId),post.board.eq(PostBoard.valueOf(board)),
                         (post.title.contains(keyword)
                                 .or(post.account.nickname.contains(keyword))
