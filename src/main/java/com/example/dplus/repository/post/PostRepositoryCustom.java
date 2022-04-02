@@ -18,7 +18,8 @@ public interface PostRepositoryCustom {
     List<Post> findPostByMostViewAndMostLike();
 
     // 검색
-    List<PostResponseDto.PostPageMain> findPostBySearchKeyWord(String keyword, Long lastPostId, String board);
+
+    List<Post> findPostBySearchKeyWord(String keyword, Long lastPostId, Pageable pageable, String board);
 
     List<Post> findBySimilarPost(String category, String board, Long postId);
 

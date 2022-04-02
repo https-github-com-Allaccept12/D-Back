@@ -4,6 +4,7 @@ import com.example.dplus.domain.post.Post;
 import com.example.dplus.domain.post.PostBoard;
 import com.example.dplus.dto.response.AccountResponseDto;
 import com.example.dplus.dto.response.PostResponseDto;
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -53,28 +54,19 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
 
     }
     @Override
-    public List<PostResponseDto.PostPageMain> findPostBySearchKeyWord(String keyword, Long lastPostId,String board) {
+    public List<Post> findPostBySearchKeyWord(String keyword, Long lastPostId, Pageable pageable, String board) {
         return queryFactory
-                .select(Projections.constructor(PostResponseDto.PostPageMain.class,
-                        post.id,
-                        account.id,
-                        account.nickname,
-                        account.profileImg,
-                        post.title,
-                        post.content,
-                        post.category,
-                        post.created,
-                        postTag.hashTag
-                        ))
-                .from(post)
-                .join(account).on(account.id.eq(post.account.id))
-                .leftJoin(postTag).on(postTag.post.eq(post))
-                .limit(12)
+                .selectFrom(post)
+                .innerJoin(post.account,account)
+                .leftJoin(postTag).on(postTag.post.id.eq(post.id))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .where(isLastPostId(lastPostId),post.board.eq(PostBoard.valueOf(board)),
                         (post.title.contains(keyword)
                                 .or(post.account.nickname.contains(keyword))
                                 .or(post.content.contains(keyword))
                                 .or(postTag.hashTag.contains(keyword))))
+                .groupBy(post.id)
                 .orderBy(post.created.desc())
                 .fetch();
     }
