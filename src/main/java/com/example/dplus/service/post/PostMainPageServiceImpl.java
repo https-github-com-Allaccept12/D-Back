@@ -113,7 +113,7 @@ public class PostMainPageServiceImpl implements PostMainPageService{
             });
         }
 
-        setPostTag(dto.getHashTag(), savedPost);
+        setPostTag(dto.getHash_tag(), savedPost);
         account.upPostCountCreate();
         return 5 - account.getPostCreateCount();
     }
