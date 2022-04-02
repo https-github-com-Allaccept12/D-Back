@@ -3,8 +3,6 @@ package com.example.dplus.repository.post;
 import com.example.dplus.domain.post.Post;
 import com.example.dplus.domain.post.PostBoard;
 import com.example.dplus.dto.response.AccountResponseDto;
-import com.example.dplus.dto.response.PostResponseDto;
-import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -54,13 +52,12 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
 
     }
     @Override
-    public List<Post> findPostBySearchKeyWord(String keyword, Long lastPostId, Pageable pageable, String board) {
+    public List<Post> findPostBySearchKeyWord(String keyword, Long lastPostId,  String board) {
         return queryFactory
                 .selectFrom(post)
                 .innerJoin(post.account,account)
                 .leftJoin(postTag).on(postTag.post.id.eq(post.id))
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
+                .limit(5)
                 .where(isLastPostId(lastPostId),post.board.eq(PostBoard.valueOf(board)),
                         (post.title.contains(keyword)
                                 .or(post.account.nickname.contains(keyword))
