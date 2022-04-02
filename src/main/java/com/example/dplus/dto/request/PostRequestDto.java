@@ -57,6 +57,8 @@ public class PostRequestDto {
 
         private Boolean is_selected;
 
+        private PostBoard board;
+
     }
 
     @Getter

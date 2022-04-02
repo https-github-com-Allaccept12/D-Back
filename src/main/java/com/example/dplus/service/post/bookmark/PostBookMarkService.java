@@ -20,7 +20,7 @@ public class PostBookMarkService {
     private final PostRepository postRepository;
 
     @Transactional
-    @CacheEvict(value="myBookmarkPost", key="#account.id", allEntries = true)
+    @CacheEvict(value="myBookmarkPost", key="#account.id")
     public void doBookMark(Account account, Long postId) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new ErrorCustomException(ErrorCode.NONEXISTENT_ERROR));
         if (postBookMarkRepository.existByAccountIdAndPostId(account.getId(), postId)) {
@@ -31,7 +31,7 @@ public class PostBookMarkService {
     }
 
     @Transactional
-    @CacheEvict(value="myBookmarkPost", key="#account.id", allEntries = true)
+    @CacheEvict(value="myBookmarkPost", key="#account.id")
     public void unBookMark(Account account, Long postId) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new ErrorCustomException(ErrorCode.NONEXISTENT_ERROR));
         if (!postBookMarkRepository.existByAccountIdAndPostId(account.getId(), postId)) {

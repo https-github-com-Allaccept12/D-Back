@@ -94,9 +94,11 @@ public class PostMainController {
     // 게시물 삭제
     @DeleteMapping("/{post_id}")
     public ResponseEntity<Success> deletePost(@AuthenticationPrincipal UserDetailsImpl user,
-                                              @PathVariable Long post_id) {
+                                              @PathVariable Long post_id,
+                                              @RequestParam("category") String category,
+                                              @RequestParam("board") String board) {
         if (user != null) {
-            postMainPageService.deletePost(user.getUser().getId(), post_id);
+            postMainPageService.deletePost(user.getUser().getId(), post_id, category, board);
             return new ResponseEntity<>(new Success("디플 게시물 삭제", ""), HttpStatus.OK);
         }
         throw new ErrorCustomException(ErrorCode.NO_AUTHENTICATION_ERROR);

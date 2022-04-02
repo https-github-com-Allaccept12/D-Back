@@ -51,7 +51,7 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
     private final FileProcessService fileProcessService;
 
     @Transactional(readOnly = true)
-    @Cacheable(value="mainByInterest", key="#interest")
+    @Cacheable(value="mainByInterest", key="#interest", condition="#interest != null")
     public MainResponseDto mostPopularArtWork(Long accountId, String interest) {
 
         if (accountId != 0) {
@@ -66,14 +66,14 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
     }
     //모아보기
     @Transactional(readOnly = true)
-    @Cacheable(value="artworkMain", key="{#category, #lastArtWorkId}")
+    @Cacheable(value="artworkMain", key="{#category, #lastArtWorkId}", condition="#category != null and #lastArtWorkId != null")
     public List<ArtworkMain> showArtworkMain(Long accountId, Long lastArtWorkId,String category){
         Pageable pageable = PageRequest.of(0,10);
         return artWorkRepository.findAllArtWork(lastArtWorkId,category,pageable);
     }
 
     @Transactional(readOnly = true)
-    @Cacheable(value="artworkLikeSort", key="{#category, #start}")
+    @Cacheable(value="artworkLikeSort", key="{#category, #start}", condition="#category != null and #start != null")
     public List<ArtworkMain> showArtWorkLikeSort(Long accountId, String category, int start) {
         Pageable pageable = PageRequest.of(start,10);
         return artWorkRepository.showArtWorkLikeSort(category,pageable);
@@ -115,9 +115,9 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
     @Transactional
     @Caching(evict = {
             @CacheEvict(value="mainByInterest", key="#dto.category"),
-            @CacheEvict(value="myArtworks", key="#accountId", allEntries = true),
-            @CacheEvict(value="artworkMain", key="#dto.category", allEntries = true),
-            @CacheEvict(value="artworkLikeSort", key="#dto.category", allEntries = true)
+            @CacheEvict(value="myArtworks", key="#accountId"),
+            @CacheEvict(value="artworkMain", key="#dto.category"),
+            @CacheEvict(value="artworkLikeSort", key="#dto.category")
     })
     public int createArtwork(Long accountId, ArtWorkCreate dto, List<MultipartFile> multipartFiles) {
         Account account = accountRepository.findById(accountId).orElseThrow(() -> new ErrorCustomException(ErrorCode.NO_USER_ERROR));
@@ -136,9 +136,9 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
     @Transactional
     @Caching(evict = {
             @CacheEvict(value="mainByInterest", key="#dto.category"),
-            @CacheEvict(value="myArtworks", key="#accountId", allEntries = true),
-            @CacheEvict(value="artworkMain", key="#dto.category", allEntries = true),
-            @CacheEvict(value="artworkLikeSort", key="#dto.category", allEntries = true)
+            @CacheEvict(value="myArtworks", key="#accountId"),
+            @CacheEvict(value="artworkMain", key="#dto.category"),
+            @CacheEvict(value="artworkLikeSort", key="#dto.category")
     })
     public Long updateArtwork(Long accountId, Long artworkId, ArtWorkUpdate dto, List<MultipartFile> multipartFiles) {
         ArtWorks artWorks = artworkValidation(accountId, artworkId);
@@ -150,12 +150,12 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
 
     @Transactional
     @Caching(evict = {
-            @CacheEvict(value="mainByInterest", key="#dto.category"),
-            @CacheEvict(value="myArtworks", key="#accountId", allEntries = true),
-            @CacheEvict(value="artworkMain", key="#dto.category", allEntries = true),
-            @CacheEvict(value="artworkLikeSort", key="#dto.category", allEntries = true)
+            @CacheEvict(value="mainByInterest", key="#category"),
+            @CacheEvict(value="myArtworks", key="#accountId"),
+            @CacheEvict(value="artworkMain", key="#category"),
+            @CacheEvict(value="artworkLikeSort", key="#category")
     })
-    public void deleteArtwork(Long accountId, Long artworkId) {
+    public void deleteArtwork(Long accountId, Long artworkId, String category) {
         ArtWorks artWorks = artworkValidation(accountId, artworkId);
         List<ArtWorkImage> artWorkImages = artWorkImageRepository.findByArtWorksId(artWorks.getId());
         artWorkImages.forEach((img) -> {
@@ -176,7 +176,7 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
     }
 
     @Transactional(readOnly = true)
-    @Cacheable(value="followerArtwork", key="{#accountId, #category, #lastArtWorkId}")
+    @Cacheable(value="followerArtwork", key="{#accountId, #category, #lastArtWorkId}", condition="#accountId != null and #category != null and #lastArtWorkId != null")
     public List<ArtworkMain> findByFollowerArtWork(Long accountId, String category, Long lastArtWorkId) {
         Pageable pageable = PageRequest.of(0,10);
         return artWorkRepository.findByFollowerArtWork(accountId, category, lastArtWorkId, pageable);

@@ -9,6 +9,7 @@ import com.example.dplus.domain.account.Follow;
 import com.example.dplus.repository.account.follow.FollowRepository;
 import com.example.dplus.dto.response.FollowResponseDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +23,7 @@ public class FollowService {
     private final AccountRepository accountRepository;
 
     @Transactional
+    @CacheEvict(value="followerArtwork", key="{#accountId}")
     public void follow(Long following_id, Long accountId) {
         Account account = getAccount(following_id);
         if (followRepository.existsByFollowerIdAndFollowingId(account.getId(),following_id)) {
@@ -33,6 +35,7 @@ public class FollowService {
     }
 
     @Transactional
+    @CacheEvict(value="followerArtwork", key="{#accountId}")
     public void unFollow(Long unFollowing_id, Long accountId) {
         Account account = getAccount(unFollowing_id);
         if (!followRepository.existsByFollowerIdAndFollowingId(account.getId(), unFollowing_id)) {

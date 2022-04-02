@@ -58,7 +58,7 @@ public class PostMainPageServiceImpl implements PostMainPageService{
 
     // 메인 페이지 (최신순)
     @Transactional(readOnly = true)
-    @Cacheable(value="postMain", key="{#board, #category, #lastPostId}")
+    @Cacheable(value="postMain", key="{#board, #category, #lastPostId}", condition="#board != null and #category != null and #lastPostId != null")
     public PostMainResponseDto showPostMain(Long lastPostId, String board, String category) {
         Pageable pageable = PageRequest.of(0, 12);
         List<Post> postList = postRepository.findAllPostOrderByCreatedDesc(lastPostId, pageable, board, category);
@@ -67,7 +67,7 @@ public class PostMainPageServiceImpl implements PostMainPageService{
     }
 
     @Transactional(readOnly = true)
-    @Cacheable(value="postMainLikeSort", key="{#board, #category, #start}")
+    @Cacheable(value="postMainLikeSort", key="{#board, #category, #start}", condition="#board != null and #category != null and #start != null")
     public PostMainResponseDto showPostMainLikeSort(int start, String board, String category) {
         Pageable pageable = PageRequest.of(start, 12);
         List<Post> postList = postRepository.findAllPostOrderByLikeDesc(pageable, board, category);
@@ -103,9 +103,9 @@ public class PostMainPageServiceImpl implements PostMainPageService{
     // 게시글 작성
     @Transactional
     @Caching(evict = {
-            @CacheEvict(value = "myPost", key = "{#accountId, #dto.board}", allEntries = true),
-            @CacheEvict(value = "postMain", key = "{#dto.board, #dto.category}", allEntries = true),
-            @CacheEvict(value = "postMainLikeSort", key = "{#dto.board, #dto.category}", allEntries = true)
+            @CacheEvict(value = "myPost", key = "{#accountId, #dto.board}"),
+            @CacheEvict(value = "postMain", key = "{#dto.board, #dto.category}"),
+            @CacheEvict(value = "postMainLikeSort", key = "{#dto.board, #dto.category}")
     })
     public int createPost(Long accountId, PostRequestDto.PostCreate dto, List<MultipartFile> imgFile) {
         Account account = accountRepository.findById(accountId).orElseThrow(() -> new ErrorCustomException(ErrorCode.NO_USER_ERROR));
@@ -131,9 +131,9 @@ public class PostMainPageServiceImpl implements PostMainPageService{
     // 게시물 수정
     @Transactional
     @Caching(evict = {
-            @CacheEvict(value = "myPost", key = "{#accountId, #dto.board}", allEntries = true),
-            @CacheEvict(value = "postMain", key = "{#dto.board, #dto.category}", allEntries = true),
-            @CacheEvict(value = "postMainLikeSort", key = "{#dto.board, #dto.category}", allEntries = true)
+            @CacheEvict(value = "myPost", key = "{#account.id, #dto.board}"),
+            @CacheEvict(value = "postMain", key = "{#dto.board, #dto.category}"),
+            @CacheEvict(value = "postMainLikeSort", key = "{#dto.board, #dto.category}")
     })
     public Long updatePost(Account account, Long postId, PostRequestDto.PostUpdate dto, List<MultipartFile> imgFile){
         Post post = postAuthValidation(account.getId(), postId);
@@ -171,11 +171,11 @@ public class PostMainPageServiceImpl implements PostMainPageService{
     // 게시글 삭제
     @Transactional
     @Caching(evict = {
-            @CacheEvict(value = "myPost", key = "{#accountId, #dto.board}", allEntries = true),
-            @CacheEvict(value = "postMain", key = "{#dto.board, #dto.category}", allEntries = true),
-            @CacheEvict(value = "postMainLikeSort", key = "{#dto.board, #dto.category}", allEntries = true)
+            @CacheEvict(value = "myPost", key = "{#accountId, #board}"),
+            @CacheEvict(value = "postMain", key = "{#board, #category}"),
+            @CacheEvict(value = "postMainLikeSort", key = "{#board, #category}")
     })
-    public void deletePost(Long accountId, Long postId){
+    public void deletePost(Long accountId, Long postId, String category, String board){
         Post post = postAuthValidation(accountId, postId);
         List<PostImage> postImages = postImageRepository.findByPostId(postId);
         postImages.forEach((img) -> {

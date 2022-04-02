@@ -102,9 +102,10 @@ public class ArtWorkMainController {
 
     @DeleteMapping("/api/artwork/{artwork_id}")
     public ResponseEntity<Success> deleteArtWork(@AuthenticationPrincipal UserDetailsImpl user,
-                                                 @PathVariable Long artwork_id) {
+                                                 @PathVariable Long artwork_id,
+                                                 @RequestParam("category") String category) {
         if (user != null) {
-            artworkMainService.deleteArtwork(user.getUser().getId(), artwork_id);
+            artworkMainService.deleteArtwork(user.getUser().getId(), artwork_id, category);
             return new ResponseEntity<>(new Success("작품 삭제",""),HttpStatus.OK);
         }
         throw new ErrorCustomException(ErrorCode.NO_AUTHENTICATION_ERROR);

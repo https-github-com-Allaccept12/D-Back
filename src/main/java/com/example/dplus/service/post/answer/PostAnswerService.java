@@ -24,7 +24,7 @@ public class PostAnswerService {
     private final AccountRepository accountRepository;
 
     @Transactional
-    @CacheEvict(value="myAnswer", key="#accountId", allEntries = true)
+    @CacheEvict(value="myAnswer", key="#accountId")
     public Long createAnswer(PostRequestDto.PostAnswer dto, Long postId, Long accountId) {
         Account account = accountRepository.findById(accountId).orElseThrow(() -> new ErrorCustomException(ErrorCode.NO_USER_ERROR));
         Post post = postRepository.findById(postId).orElseThrow(() -> new ErrorCustomException(ErrorCode.NONEXISTENT_ERROR));
@@ -35,7 +35,7 @@ public class PostAnswerService {
     }
 
     @Transactional
-    @CacheEvict(value="myAnswer", key="#accountId", allEntries = true)
+    @CacheEvict(value="myAnswer", key="#accountId")
     public Long updateAnswer(PostRequestDto.PostAnswer dto, Long answerId, Long accountId) {
         PostAnswer postAnswer = postAnswerRepository.findById(answerId)
                 .orElseThrow(() -> new ErrorCustomException(ErrorCode.NONEXISTENT_ERROR));
@@ -49,7 +49,7 @@ public class PostAnswerService {
     }
 
     @Transactional
-    @CacheEvict(value="myAnswer", key="#accountId", allEntries = true)
+    @CacheEvict(value="myAnswer", key="#accountId")
     public void deleteAnswer(Long answerId, Long accountId) {
         PostAnswer postAnswer = postAnswerRepository.findById(answerId)
                 .orElseThrow(() -> new ErrorCustomException(ErrorCode.NONEXISTENT_ERROR));
