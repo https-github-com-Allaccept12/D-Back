@@ -62,7 +62,7 @@ public class History  {
                 .companyDepartment(dto.getCompany_department())
                 .companyPosition(dto.getCompany_position())
                 .achievements(dto.getAchievements())
-                .workStart(dto.getAchievements())
+                .workStart(dto.getWork_start())
                 .workEnd(dto.getWork_end())
                 .account(account)
                 .build();
