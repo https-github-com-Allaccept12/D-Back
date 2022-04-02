@@ -26,7 +26,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -53,7 +52,6 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
     @Transactional(readOnly = true)
     @Cacheable(value="mainByInterest", key="#interest",condition="#interest != null")
     public MainResponseDto mostPopularArtWork(Long accountId, String interest) {
-
         if (accountId != 0) {
             List<ArtworkMain> artWorkList = getArtworkList(interest);
             List<TopArtist> topArtist = getTopArtist();
@@ -109,7 +107,6 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
     }
 
     @Transactional
-    @Caching(evict = {@CacheEvict(value="mainByInterest", key="#dto.category"), @CacheEvict(value="myArtworks", key="#accountId", allEntries = true)})
     public int createArtwork(Long accountId, ArtWorkCreate dto, List<MultipartFile> multipartFiles) {
         Account account = accountRepository.findById(accountId).orElseThrow(() -> new ErrorCustomException(ErrorCode.NO_USER_ERROR));
         if (account.getArtWorkCreateCount() >= 5) {
@@ -122,7 +119,7 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
     }
 
     @Transactional
-    @Caching(evict = {@CacheEvict(value="mainByInterest", key="#dto.category"), @CacheEvict(value="myArtworks", key="#accountId", allEntries = true)})
+    @CacheEvict(value="mainByInterest", key="#category")
     public Long updateArtwork(Long accountId, Long artworkId, ArtWorkUpdate dto, List<MultipartFile> multipartFiles) {
         ArtWorks artWorks = artworkValidation(accountId, artworkId);
         updateImg(multipartFiles, artWorks, dto);
@@ -132,8 +129,8 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
     }
 
     @Transactional
-    @Caching(evict = {@CacheEvict(value="mainByInterest", key="#dto.category"), @CacheEvict(value="myArtworks", key="#accountId", allEntries = true)})
-    public void deleteArtwork(Long accountId, Long artworkId) {
+    @CacheEvict(value="mainByInterest", key="#category")
+    public void deleteArtwork(Long accountId, Long artworkId, String category) {
         ArtWorks artWorks = artworkValidation(accountId, artworkId);
         List<ArtWorkImage> artWorkImages = artWorkImageRepository.findByArtWorksId(artWorks.getId());
         artWorkImages.forEach((img) -> {

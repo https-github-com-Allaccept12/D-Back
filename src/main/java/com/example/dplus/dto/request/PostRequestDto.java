@@ -29,7 +29,7 @@ public class PostRequestDto {
 
         private List<CommonDto.uploadImgDto> img; // filename
 
-        private List<CommonDto.PostTagDto> hashTag;
+        private List<CommonDto.PostTagDto> hash_tag;
 
         private Boolean is_selected;
 
@@ -53,9 +53,11 @@ public class PostRequestDto {
 
         private List<CommonDto.uploadImgDto> delete_img;
 
-        private List<CommonDto.PostTagDto> hashTag;
+        private List<CommonDto.PostTagDto> hash_tag;
 
         private Boolean is_selected;
+
+        private PostBoard board;
 
     }
 

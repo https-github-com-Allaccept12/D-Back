@@ -10,7 +10,6 @@ import com.example.dplus.domain.post.PostAnswer;
 import com.example.dplus.repository.post.answer.PostAnswerRepository;
 import com.example.dplus.dto.request.PostRequestDto;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,7 +23,6 @@ public class PostAnswerService {
     private final AccountRepository accountRepository;
 
     @Transactional
-    @CacheEvict(value="myAnswer", key="#accountId", allEntries = true)
     public Long createAnswer(PostRequestDto.PostAnswer dto, Long postId, Long accountId) {
         Account account = accountRepository.findById(accountId).orElseThrow(() -> new ErrorCustomException(ErrorCode.NO_USER_ERROR));
         Post post = postRepository.findById(postId).orElseThrow(() -> new ErrorCustomException(ErrorCode.NONEXISTENT_ERROR));
@@ -35,7 +33,6 @@ public class PostAnswerService {
     }
 
     @Transactional
-    @CacheEvict(value="myAnswer", key="#accountId", allEntries = true)
     public Long updateAnswer(PostRequestDto.PostAnswer dto, Long answerId, Long accountId) {
         PostAnswer postAnswer = postAnswerRepository.findById(answerId)
                 .orElseThrow(() -> new ErrorCustomException(ErrorCode.NONEXISTENT_ERROR));
@@ -49,7 +46,6 @@ public class PostAnswerService {
     }
 
     @Transactional
-    @CacheEvict(value="myAnswer", key="#accountId", allEntries = true)
     public void deleteAnswer(Long answerId, Long accountId) {
         PostAnswer postAnswer = postAnswerRepository.findById(answerId)
                 .orElseThrow(() -> new ErrorCustomException(ErrorCode.NONEXISTENT_ERROR));
