@@ -43,24 +43,25 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
     }
 
     @Override
-    public List<MyArtWork> findByArtWork(Long lastArtWorkId, Pageable pageable, Long visitAccountId, Long accountId) {
+    public List<MyArtWork> findByArtWork(Long lastArtWorkId,Long visitAccountId, Long accountId) {
         return queryFactory
                 .select(Projections.constructor(MyArtWork.class,
                         artWorks.id,
                         artWorks.thumbnail,
-                        artWorks.scope))
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
+                        artWorks.scope,
+                        artWorks.isMaster))
+                .limit(10)
                 .from(artWorks)
+                .innerJoin(artWorks.account,account)
                 .where(isVisitor(visitAccountId,accountId),
-                        isLastArtworkId(lastArtWorkId))
+                        isLastArtworkId(lastArtWorkId),
+                        account.id.eq(visitAccountId))
                 .orderBy(artWorks.created.desc())
                 .fetch();
-
     }
 
     @Override
-    public List<ArtWorkResponseDto.ArtWorkBookMark> findArtWorkBookMarkByAccountId(Long lastArtWorkId, Pageable paging, Long accountId) {
+    public List<ArtWorkResponseDto.ArtWorkBookMark> findArtWorkBookMarkByAccountId(Long lastArtWorkId, Long accountId) {
         return queryFactory
                 .select(Projections.constructor(ArtWorkResponseDto.ArtWorkBookMark.class,
                         artWorks.id,
@@ -73,8 +74,7 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
                 .join(artWorkBookMark).on(artWorkBookMark.artWorks.eq(artWorks))
                 .join(artWorkImage).on(artWorkImage.artWorks.eq(artWorks))
                 .leftJoin(artWorkLikes).on(artWorkLikes.artWorks.eq(artWorks))
-                .offset(paging.getOffset())
-                .limit(paging.getPageSize())
+                .limit(10)
                 .where(artWorkBookMark.account.id.eq(accountId)
                                 .and(artWorks.scope.isTrue()),
                         isLastArtworkId(lastArtWorkId))
@@ -141,7 +141,7 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
                     .fetch();
     }
     @Override
-    public List<ArtworkMain> findAllArtWork(Long lastArtworkId, String category, Pageable paging) {
+    public List<ArtworkMain> findAllArtWork(Long lastArtworkId, String category) {
         return queryFactory
                 .select(Projections.constructor(ArtworkMain.class,
                         artWorks.id,
@@ -157,8 +157,7 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
                 .from(artWorks)
                 .join(account).on(account.id.eq(artWorks.account.id))
                 .leftJoin(artWorkLikes).on(artWorkLikes.artWorks.eq(artWorks))
-                .offset(paging.getOffset())
-                .limit(paging.getPageSize())
+                .limit(10)
                 .where(isLastArtworkId(lastArtworkId),
                         isCategory(category),
                         artWorks.scope.isTrue())
@@ -194,7 +193,7 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
     }
 
     @Override
-    public List<ArtworkMain> findByFollowerArtWork(Long accountId,String category, Long lastArtWorkId, Pageable paging) {
+    public List<ArtworkMain> findByFollowerArtWork(Long accountId,String category, Long lastArtWorkId) {
          //accountId가 팔로우한 사람 아이디들이 나옴.
         List<Long> followingId = queryFactory
                 .select(follow.followingId)
@@ -218,8 +217,7 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
                 .from(artWorks)
                 .join(artWorks.account,account)
                 .leftJoin(artWorkLikes).on(artWorkLikes.artWorks.eq(artWorks))
-                .offset(paging.getOffset())
-                .limit(paging.getPageSize())
+                .limit(10)
                 .where(isLastArtworkId(lastArtWorkId),
                         isCategory(category),
                         artWorks.scope.isTrue(),
@@ -257,7 +255,7 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
     }
 
     @Override
-    public List<ArtWorkResponseDto.ArtWorkSimilarWork> findSimilarArtWork(Long accountId,Long artWorkId, Pageable pageable) {
+    public List<ArtWorkResponseDto.ArtWorkSimilarWork> findSimilarArtWork(Long accountId,Long artWorkId) {
         return  queryFactory
                 .select(Projections.constructor(ArtWorkResponseDto.ArtWorkSimilarWork.class,
                         artWorks.id,
@@ -265,19 +263,16 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
                         artWorks.thumbnail))
                 .from(artWorks)
                 .join(artWorks.account, account)
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
+                .limit(5)
                 .where(artWorks.account.id.eq(accountId)
                                 .and(artWorks.id.ne(artWorkId)),
                         artWorks.scope.isTrue())
                 .orderBy(artWorks.created.desc())
                 .fetch();
-
-
     }
 
     @Override
-    public List<ArtworkMain> findBySearchKeyWord(String keyword,Long lastArtWorkId, Pageable pageable) {
+    public List<ArtworkMain> findBySearchKeyWord(String keyword,Long lastArtWorkId) {
 
         return queryFactory
                 .select(Projections.constructor(ArtworkMain.class,
@@ -293,8 +288,7 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
                 .from(artWorks)
                 .join(account).on(account.id.eq(artWorks.account.id))
                 .leftJoin(artWorkLikes).on(artWorkLikes.artWorks.eq(artWorks))
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
+                .limit(10)
                 .where(isLastArtworkId(lastArtWorkId),
                         (artWorks.title.contains(keyword)
                                 .or(artWorks.content.contains(keyword))

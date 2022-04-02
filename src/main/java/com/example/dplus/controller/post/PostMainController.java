@@ -37,7 +37,6 @@ public class PostMainController {
                 postMainPageService.showPostMain(last_post_id, board, "")), HttpStatus.OK);
     }
 
-
     // 전체 목록 (카테고리별)
     @GetMapping("/category/{category}/{last_post_id}/{board}")
     public ResponseEntity<Success> postMainByCategory(@PathVariable String category,
@@ -86,7 +85,7 @@ public class PostMainController {
 
         if (user != null) {
             return new ResponseEntity<>(new Success("디플 게시물 수정",
-                    postMainPageService.updatePost(user.getUser(), post_id, data, imgFile)), HttpStatus.OK);
+                    postMainPageService.updatePost(user.getUser().getId(), post_id, data, imgFile)), HttpStatus.OK);
         }
         throw new ErrorCustomException(ErrorCode.NO_AUTHENTICATION_ERROR);
     }

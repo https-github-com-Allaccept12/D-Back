@@ -153,15 +153,13 @@ public class AccountMyPageServiceImpl implements AccountMyPageService {
     //마이페이지/유저작품
     @Transactional(readOnly = true)
     public List<MyArtWork> showAccountArtWork(final Long lastArtWorkId, final Long visitAccountId, final Long accountId) {
-        Pageable pageable = PageRequest.of(0,5);
-        return artWorkRepository.findByArtWork(lastArtWorkId, pageable, visitAccountId, accountId);
+        return artWorkRepository.findByArtWork(lastArtWorkId, visitAccountId, accountId);
     }
 
     //마이페이지/북마크
     @Transactional(readOnly = true)
     public List<ArtWorkResponseDto.ArtWorkBookMark> showAccountArtWorkBookMark(Long lastArtWorkId,final Long accountId) {
-        Pageable pageable = PageRequest.of(0,10);
-        return artWorkRepository.findArtWorkBookMarkByAccountId(lastArtWorkId,pageable,accountId);
+        return artWorkRepository.findArtWorkBookMarkByAccountId(lastArtWorkId,accountId);
     }
 
     @Transactional(readOnly = true)

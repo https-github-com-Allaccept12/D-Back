@@ -1,6 +1,5 @@
 package com.example.dplus.service.post;
 
-import com.example.dplus.domain.account.Account;
 import com.example.dplus.dto.request.PostRequestDto;
 import com.example.dplus.dto.response.PostMainResponseDto;
 import com.example.dplus.dto.response.PostResponseDto;
@@ -25,7 +24,7 @@ public interface PostMainPageService {
     PostResponseDto.PostDetailPage showPostDetail(Long accountId, Long postId);
 
     // 게시글 수정
-    Long updatePost(Account account, Long postId, PostRequestDto.PostUpdate dto, List<MultipartFile> imgFile);
+    Long updatePost(Long accountId, Long postId, PostRequestDto.PostUpdate dto, List<MultipartFile> imgFile);
 
     // 게시글 삭제
     void deletePost(Long accountId, Long postId, String category, String board);
