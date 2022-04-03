@@ -109,7 +109,7 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
     @Transactional
     public int createArtwork(Long accountId, ArtWorkCreate dto, List<MultipartFile> multipartFiles) {
         Account account = accountRepository.findById(accountId).orElseThrow(() -> new ErrorCustomException(ErrorCode.NO_USER_ERROR));
-        if (account.getArtWorkCreateCount() >= 5) {
+        if (account.getArtWorkCreateCount() >= 1000) {
             throw new ErrorCustomException(ErrorCode.DAILY_WRITE_UP_BURN_ERROR);
         }
         ArtWorks saveArtwork = artWorkRepository.save(ArtWorks.of(account, dto));

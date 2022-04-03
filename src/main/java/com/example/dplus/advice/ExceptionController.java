@@ -19,7 +19,7 @@ public class ExceptionController {
     public ResponseEntity<Fail> customErrorException(ErrorCustomException ex) {
         Fail apiException = new Fail(ex.getErrorCode());
         log.error("에러발생 :" + ex.getErrorCode());
-        return new ResponseEntity<>(apiException, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(apiException, HttpStatus.OK);
     }
 
     @ExceptionHandler(value = {MethodArgumentNotValidException.class})

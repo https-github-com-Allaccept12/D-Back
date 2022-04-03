@@ -99,7 +99,7 @@ public class PostMainPageServiceImpl implements PostMainPageService{
     @Transactional
     public int createPost(Long accountId, PostRequestDto.PostCreate dto, List<MultipartFile> imgFile) {
         Account account = accountRepository.findById(accountId).orElseThrow(() -> new ErrorCustomException(ErrorCode.NO_USER_ERROR));
-        if (account.getPostCreateCount() >= 5) {
+        if (account.getPostCreateCount() >= 1000) {
             throw new ErrorCustomException(ErrorCode.DAILY_POST_WRITE_UP_BURN_ERROR);
         }
 
