@@ -14,7 +14,7 @@ public interface PostRepositoryCustom {
     List<Post> findAllPostOrderByLikeDesc(Pageable pageable, String board, String category);
 
     // 조회수 + 라이크 찾기
-    List<Post> findPostByMostViewAndMostLike();
+    List<Post> findPostByMostViewAndMostLike(String board);
 
     // 검색
     List<Post> findPostBySearchKeyWord(String keyword, Long lastPostId, String board);
