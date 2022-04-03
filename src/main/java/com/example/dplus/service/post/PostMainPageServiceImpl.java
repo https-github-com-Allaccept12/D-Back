@@ -99,7 +99,8 @@ public class PostMainPageServiceImpl implements PostMainPageService{
     @Transactional
     public int createPost(Long accountId, PostRequestDto.PostCreate dto, List<MultipartFile> imgFile) {
         Account account = accountRepository.findById(accountId).orElseThrow(() -> new ErrorCustomException(ErrorCode.NO_USER_ERROR));
-        if (account.getPostCreateCount() >= 5) {
+        //임시 데벨롭
+        if (account.getPostCreateCount() >= 1000) {
             throw new ErrorCustomException(ErrorCode.DAILY_POST_WRITE_UP_BURN_ERROR);
         }
 
@@ -146,9 +147,9 @@ public class PostMainPageServiceImpl implements PostMainPageService{
         post.updatePost(dto);
 
         // 태그도 지우고 다시 세팅
-        if(dto.getHash_tag()!=null){
+        if(dto.getHashTag()!=null){
             postTagRepository.deleteAllByPostId(postId);
-            setPostTag(dto.getHash_tag(), post);
+            setPostTag(dto.getHashTag(), post);
         }
         return post.getId();
     }

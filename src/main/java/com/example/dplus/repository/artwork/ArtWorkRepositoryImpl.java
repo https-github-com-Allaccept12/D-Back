@@ -44,6 +44,12 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
 
     @Override
     public List<MyArtWork> findByArtWork(Long lastArtWorkId,Long visitAccountId, Long accountId) {
+//        queryFactory
+//                .select(artWorks.id)
+//                .limit(10)
+//                .from(artWorks)
+//                .where()
+
         return queryFactory
                 .select(Projections.constructor(MyArtWork.class,
                         artWorks.id,
