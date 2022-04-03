@@ -59,6 +59,7 @@ public class AccountMyPageController {
     public ResponseEntity<Success> accountArtWorkList(@PathVariable Long last_artwork_id,
                                                       @AuthenticationPrincipal UserDetailsImpl user,
                                                       @RequestParam("owner_account_id") Long ownerAccountId) {
+        System.out.println(user.getUser().getId());
         Long accountId = getaLong(user);
         return new ResponseEntity<>(new Success("유저 작품 목록",
                 accountMyPageService.showAccountArtWork(last_artwork_id,ownerAccountId,accountId)),HttpStatus.OK);
