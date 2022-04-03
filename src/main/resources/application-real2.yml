@@ -5,7 +5,7 @@ server:
 spring:
   config:
     activate:
-      on-profile: real1
+      on-profile: real2
 
   datasource:
     #mysql setting
