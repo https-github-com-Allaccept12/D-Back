@@ -14,6 +14,7 @@ import com.example.dplus.dto.response.PostMainResponseDto;
 import com.example.dplus.dto.response.PostResponseDto;
 import com.example.dplus.dto.response.PostResponseDto.*;
 import com.example.dplus.dto.response.PostSearchResponseDto;
+import com.example.dplus.repository.BatchInsertRepository;
 import com.example.dplus.repository.account.AccountRepository;
 import com.example.dplus.repository.account.follow.FollowRepository;
 import com.example.dplus.repository.post.PostRepository;
@@ -34,6 +35,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -54,6 +56,7 @@ public class PostMainPageServiceImpl implements PostMainPageService{
     private final PostAnswerLikesRepository postAnswerLikesRepository;
     private final FileProcessService fileProcessService;
     private final AccountRepository accountRepository;
+    private final BatchInsertRepository batchInsertRepository;
 
     // 디모페이지 추천피드
     @Transactional(readOnly = true)
@@ -109,17 +112,9 @@ public class PostMainPageServiceImpl implements PostMainPageService{
         if (account.getPostCreateCount() >= 1000) {
             throw new ErrorCustomException(ErrorCode.DAILY_POST_WRITE_UP_BURN_ERROR);
         }
-
         Post post = Post.of(account, dto);
         Post savedPost = postRepository.save(post);
-        if(imgFile!=null){
-            imgFile.forEach((file) -> {
-                String img_url = fileProcessService.uploadImage(file);
-                PostImage postImage = PostImage.builder().post(post).postImg(img_url).build();
-                postImageRepository.save(postImage);
-            });
-        }
-
+        setPostImage(imgFile, post);
         setPostTag(dto.getHash_tag(), savedPost);
         account.upPostCountCreate();
         return 5 - account.getPostCreateCount();
@@ -129,34 +124,20 @@ public class PostMainPageServiceImpl implements PostMainPageService{
     @Transactional
     public Long updatePost(Long accountId, Long postId, PostUpdate dto, List<MultipartFile> imgFile){
         Post post = postAuthValidation(accountId, postId);
-
         // 삭제할 이미지가 있다면, 이미지 주소를 직접 하나씩 지운다
         if(dto.getDelete_img()!=null){
             for(int i = 0; i < dto.getDelete_img().size(); i++){
                 String deleteImage = dto.getDelete_img().get(i).getFilename();
-                // 서버 파일 삭제
                 fileProcessService.deleteImage(deleteImage);
-                // db 삭제
                 postImageRepository.deleteByPostImg(deleteImage);
             }
         }
-        // 업로드할 이미지가 있다면, 이미지를 업로드한다.
-        if(imgFile!=null){
-            imgFile.forEach((file) -> {
-                String img_url = fileProcessService.uploadImage(file);
-                PostImage postImage = PostImage.builder().post(post).postImg(img_url).build();
-                postImageRepository.save(postImage);
-            });
-        }
-
-        // 게시글을 업데이트 한다
-        post.updatePost(dto);
-
-        // 태그도 지우고 다시 세팅
+        setPostImage(imgFile, post);
         if(dto.getHash_tag()!=null){
             postTagRepository.deleteAllByPostId(postId);
             setPostTag(dto.getHash_tag(), post);
         }
+        post.updatePost(dto);
         return post.getId();
     }
 
@@ -166,7 +147,6 @@ public class PostMainPageServiceImpl implements PostMainPageService{
         Post post = postAuthValidation(accountId, postId);
         List<PostImage> postImages = postImageRepository.findByPostId(postId);
         postImages.forEach((img) -> {
-            // S3 이미지 삭제
             fileProcessService.deleteImage(img.getPostImg());
         });
         postImageRepository.deleteAllByPostId(postId);
@@ -225,17 +205,32 @@ public class PostMainPageServiceImpl implements PostMainPageService{
         return result;
     }
 
-    // #단위로 끊어서 해쉬태그 들어옴 (dto -> 받을 때)
-    private void  setPostTag(List<CommonDto.PostTagDto> dto, Post post){
-        dto.forEach((tag) -> {
-            PostTag postTag = PostTag.builder()
-                    .post(post)
-                    .hashTag(tag.getTag())
-                    .build();
-            postTagRepository.save(postTag);
-        });
+    private void setPostImage(List<MultipartFile> imgFile, Post post) {
+        if(imgFile !=null){
+            List<PostImage> imgList = new ArrayList<>();
+            imgFile.forEach((file) -> {
+                String img_url = fileProcessService.uploadImage(file);
+                PostImage postImage = PostImage.builder().post(post).postImg(img_url).build();
+                imgList.add(postImage);
+            });
+            batchInsertRepository.postImageSaveAll(imgList);
+        }
     }
 
+    // #단위로 끊어서 해쉬태그 들어옴 (dto -> 받을 때)
+    private void  setPostTag(List<CommonDto.PostTagDto> dto, Post post){
+        if (dto.size() != 0) {
+            List<PostTag> tagList = new ArrayList<>();
+            dto.forEach((tag) -> {
+                PostTag postTag = PostTag.builder()
+                        .post(post)
+                        .hashTag(tag.getTag())
+                        .build();
+                tagList.add(postTag);
+            });
+            batchInsertRepository.postTagImageSaveAll(tagList);
+        }
+    }
     // post 수정, 삭제 권한 확인
     private Post postAuthValidation(Long accountId, Long postId){
         Post post = postRepository.findById(postId).orElseThrow(() -> new ErrorCustomException(ErrorCode.NONEXISTENT_ERROR));
