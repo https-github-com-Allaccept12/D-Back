@@ -85,7 +85,7 @@ public class AccountMyPageController {
         return new ResponseEntity<>(new Success("작품 북마크 목록",
                 accountMyPageService.showAccountArtWorkBookMark(last_artwork_id,user.getUser().getId())),HttpStatus.OK);
     }
-    //단건
+
     @PostMapping(value = "/masterpiece/{artwork_id}")
     public ResponseEntity<Success> masterpieceSelect(@PathVariable Long artwork_id,
                                                      @AuthenticationPrincipal UserDetailsImpl user) {
