@@ -30,7 +30,7 @@ public class PostMainController {
     private final PostMainPageService postMainPageService;
 
     // 디모 페이지 추천 피드
-    @GetMapping("/{board}")
+    @GetMapping("/recomend/{board}")
     public ResponseEntity<Success> postMain(@PathVariable String board) {
         return new ResponseEntity<>(new Success("디플 메인 페이지",
                 postMainPageService.showPostRecommendation(board)), HttpStatus.OK);
