@@ -7,7 +7,6 @@ spring:
       on-profile: real2
 
   datasource:
-
     #mysql setting
     driver-class-name: com.mysql.cj.jdbc.Driver
     # DB Source
@@ -44,11 +43,10 @@ cloud:
     credentials:
       accessKey: ${aws.s3.accesskey}
       secretKey: ${aws.s3.secretkey}
-
+jwt:
+  secret: ${jwt.secret}
+  header: Authorization
 
 logging.level:
   org.hibernate.SQL: debug
 
-jwt:
-  secret: ${jwt.secrets}
-  header: Authorization

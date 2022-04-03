@@ -43,11 +43,10 @@ cloud:
     credentials:
       accessKey: ${aws.s3.accesskey}
       secretKey: ${aws.s3.secretkey}
-
+jwt:
+  secret: ${jwt.secret}
+  header: Authorization
 
 logging.level:
   org.hibernate.SQL: debug
 
-jwt:
-  secret: ${jwt.secrets}
-  header: Authorization
