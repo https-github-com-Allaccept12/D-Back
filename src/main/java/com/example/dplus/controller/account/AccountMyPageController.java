@@ -149,6 +149,7 @@ public class AccountMyPageController {
     private Long getaLong(UserDetailsImpl user) {
         Long accountId ;
         if (user != null) {
+            log.info(String.valueOf(user.getUser().getId()));
             accountId = user.getUser().getId();
         } else {
             accountId = 0L;
