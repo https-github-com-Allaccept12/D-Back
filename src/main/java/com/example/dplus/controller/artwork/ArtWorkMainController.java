@@ -95,7 +95,7 @@ public class ArtWorkMainController {
     public ResponseEntity<Success> updateArtWork(@AuthenticationPrincipal UserDetailsImpl user,
                                                  @PathVariable Long artwork_id,
                                                  @RequestPart ArtWorkUpdate data,
-                                                 @RequestPart("imgFile") List<MultipartFile> imgFile) {
+                                                 @RequestPart(value = "imgFile",required = false) List<MultipartFile> imgFile) {
         if (user != null) {
             return new ResponseEntity<>(new Success("작품 수정 완료",
                     artworkMainService.updateArtwork(user.getUser().getId(),artwork_id,data, imgFile)),HttpStatus.OK);
@@ -103,10 +103,10 @@ public class ArtWorkMainController {
         throw new ErrorCustomException(ErrorCode.NO_AUTHENTICATION_ERROR);
     }
 
-    @DeleteMapping("/api/artwork/{artwork_id}")
+    @DeleteMapping("/api/artwork/{artwork_id}/{category}")
     public ResponseEntity<Success> deleteArtWork(@AuthenticationPrincipal UserDetailsImpl user,
                                                  @PathVariable Long artwork_id,
-                                                 @RequestParam("category") String category) {
+                                                 @PathVariable String category) {
         if (user != null) {
             artworkMainService.deleteArtwork(user.getUser().getId(), artwork_id, category);
             return new ResponseEntity<>(new Success("작품 삭제",""),HttpStatus.OK);
