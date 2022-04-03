@@ -56,6 +56,7 @@ public class KakaoAccountService {
         body.add("client_id", "5c2af632e5eb943eadbf20d0c4006bdb");
 //        body.add("redirect_uri", "https://dplusday.com/user/kakao/callback");
         body.add("redirect_uri", "http://localhost:3000/user/kakao/callback");
+        //body.add("redirect_uri", "http://localhost:8081/user/kakao/callback");
         body.add("code", code);
 
         // HTTP 요청 보내기
