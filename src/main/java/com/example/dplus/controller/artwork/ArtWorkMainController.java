@@ -37,7 +37,7 @@ public class ArtWorkMainController {
         } else {
             accountId = 0L;
         }
-        return new ResponseEntity<>(new Success("메인 페이지",
+        return new ResponseEntity<>(new Success("메인 페이지 바뀌는거확인",
                 artworkMainService.mostPopularArtWork(accountId,interest)), HttpStatus.OK);
     }
 
