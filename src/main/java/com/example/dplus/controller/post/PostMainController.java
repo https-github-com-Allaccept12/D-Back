@@ -35,7 +35,6 @@ public class PostMainController {
         return new ResponseEntity<>(new Success("디플 메인 페이지",
                 postMainPageService.showPostRecommendation(board)), HttpStatus.OK);
     }
-
     // 카테고리별 최신순
     @GetMapping("/category/{category}/{last_post_id}/{board}")
     public ResponseEntity<Success> postMainByCategory(@PathVariable String category,
