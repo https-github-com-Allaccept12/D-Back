@@ -20,6 +20,7 @@ import com.example.dplus.repository.artwork.ArtWorkRepository;
 import com.example.dplus.repository.artwork.bookmark.ArtWorkBookMarkRepository;
 import com.example.dplus.repository.artwork.comment.ArtWorkCommentRepository;
 import com.example.dplus.repository.artwork.image.ArtWorkImageRepository;
+import com.example.dplus.repository.BatchInsertRepository;
 import com.example.dplus.repository.artwork.like.ArtWorkLikesRepository;
 import com.example.dplus.service.file.FileProcessService;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +33,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -48,6 +50,7 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
     private final FollowRepository followRepository;
     private final AccountRepository accountRepository;
     private final FileProcessService fileProcessService;
+    private final BatchInsertRepository batchInsertRepository;
 
     @Transactional(readOnly = true)
     @Cacheable(value="mainByInterest", key="#interest",condition="#interest != null")
@@ -154,7 +157,9 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
         return artWorkRepository.findByFollowerArtWork(accountId, category, lastArtWorkId);
     }
 
+
     private void s3ImageUpload(List<MultipartFile> multipartFiles,ArtWorkCreate dto, ArtWorks saveArtwork) {
+        List<ArtWorkImage> imgList = new ArrayList<>();
         for (MultipartFile file : multipartFiles) {
             boolean thumbnail = Objects.equals(file.getOriginalFilename(), dto.getThumbnail());
             String imgUrl = fileProcessService.uploadImage(file);
@@ -163,9 +168,9 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
                 continue;
             }
             ArtWorkImage img = ArtWorkImage.builder().artWorks(saveArtwork).artworkImg(imgUrl).build();
-            artWorkImageRepository.save(img);
-
+            imgList.add(img);
         }
+        batchInsertRepository.artWorkImageSaveAll(imgList);
     }
 
     private void updateImg( List<MultipartFile> multipartFiles, ArtWorks findArtWork, ArtWorkUpdate dto) {
@@ -176,6 +181,7 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
             });
         }
         if (multipartFiles != null) {
+            List<ArtWorkImage> imgList = new ArrayList<>();
             for (MultipartFile file : multipartFiles) {
                 boolean thumbnail = Objects.equals(file.getOriginalFilename(), dto.getThumbnail());
                 String imgUrl = fileProcessService.uploadImage(file);
@@ -185,9 +191,9 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
                     continue;
                 }
                 ArtWorkImage img = ArtWorkImage.builder().artWorks(findArtWork).artworkImg(imgUrl).build();
-                artWorkImageRepository.save(img);
-
+                imgList.add(img);
             }
+            batchInsertRepository.artWorkImageSaveAll(imgList);
         }
     }
     private List<TopArtist> getTopArtist() {

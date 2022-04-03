@@ -30,8 +30,6 @@ public class PostRequestDto {
         @NotEmpty(message = "내용을 입력해주세요.")
         private String content;
 
-        private List<uploadImgDto> img; // filename
-
         private List<PostTagDto> hash_tag;
 
         private Boolean is_selected;

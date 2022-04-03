@@ -9,6 +9,7 @@ import com.example.dplus.repository.post.PostRepository;
 import com.example.dplus.domain.post.PostAnswer;
 import com.example.dplus.repository.post.answer.PostAnswerRepository;
 import com.example.dplus.dto.request.PostRequestDto;
+import com.example.dplus.repository.post.like.PostAnswerLikesRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +21,7 @@ public class PostAnswerService {
 
     private final PostRepository postRepository;
     private final PostAnswerRepository postAnswerRepository;
+    private final PostAnswerLikesRepository postAnswerLikesRepository;
     private final AccountRepository accountRepository;
 
     @Transactional
@@ -53,7 +55,7 @@ public class PostAnswerService {
         if (!postAnswer.getAccount().getId().equals(accountId)) {
             throw new ErrorCustomException(ErrorCode.NO_AUTHORIZATION_ERROR);
         }
-
+        postAnswerLikesRepository.deleteByPostAnswerIdAndAccountId(answerId,accountId);
         postAnswerRepository.deleteById(answerId);
     }
 
