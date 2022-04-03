@@ -9,6 +9,7 @@ import com.example.dplus.domain.post.PostTag;
 import com.example.dplus.dto.common.CommonDto;
 import com.example.dplus.dto.request.PostRequestDto;
 import com.example.dplus.dto.response.PostMainReccomendationDto;
+import com.example.dplus.dto.request.PostRequestDto.PostUpdate;
 import com.example.dplus.dto.response.PostMainResponseDto;
 import com.example.dplus.dto.response.PostResponseDto;
 import com.example.dplus.dto.response.PostResponseDto.*;
@@ -105,7 +106,6 @@ public class PostMainPageServiceImpl implements PostMainPageService{
     @Transactional
     public int createPost(Long accountId, PostRequestDto.PostCreate dto, List<MultipartFile> imgFile) {
         Account account = accountRepository.findById(accountId).orElseThrow(() -> new ErrorCustomException(ErrorCode.NO_USER_ERROR));
-        //임시 데벨롭
         if (account.getPostCreateCount() >= 1000) {
             throw new ErrorCustomException(ErrorCode.DAILY_POST_WRITE_UP_BURN_ERROR);
         }
@@ -127,7 +127,7 @@ public class PostMainPageServiceImpl implements PostMainPageService{
 
     // 게시물 수정
     @Transactional
-    public Long updatePost(Long accountId, Long postId, PostRequestDto.PostUpdate dto, List<MultipartFile> imgFile){
+    public Long updatePost(Long accountId, Long postId, PostUpdate dto, List<MultipartFile> imgFile){
         Post post = postAuthValidation(accountId, postId);
 
         // 삭제할 이미지가 있다면, 이미지 주소를 직접 하나씩 지운다
