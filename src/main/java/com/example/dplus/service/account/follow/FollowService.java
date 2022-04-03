@@ -24,7 +24,7 @@ public class FollowService {
     @Transactional
     public void follow(Long following_id, Long accountId) {
         Account account = getAccount(following_id);
-        if (followRepository.existsByFollowerIdAndFollowingId(account.getId(),following_id)) {
+        if (followRepository.existsByFollowerIdAndFollowingId(accountId,following_id)) {
             throw new ErrorCustomException(ErrorCode.EXIST_FOLLOW_ERROR);
         }
         account.getRank().upRankScore();
@@ -35,7 +35,7 @@ public class FollowService {
     @Transactional
     public void unFollow(Long unFollowing_id, Long accountId) {
         Account account = getAccount(unFollowing_id);
-        if (!followRepository.existsByFollowerIdAndFollowingId(account.getId(), unFollowing_id)) {
+        if (!followRepository.existsByFollowerIdAndFollowingId(accountId, unFollowing_id)) {
           throw new ErrorCustomException(ErrorCode.EXIST_FOLLOW_ERROR);
         }
         account.getRank().downRankScore();
