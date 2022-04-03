@@ -4,6 +4,7 @@ package com.example.dplus.dto.request;
 import com.example.dplus.domain.post.PostBoard;
 import com.example.dplus.dto.common.CommonDto.PostTagDto;
 import com.example.dplus.dto.common.CommonDto.uploadImgDto;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -76,6 +77,7 @@ public class PostRequestDto {
     @Getter
     @NoArgsConstructor
     @Data
+    @JsonAutoDetect
     public static class PostAnswer {
 
         @NotEmpty(message = "답글 내용을 입력해주세요.")
