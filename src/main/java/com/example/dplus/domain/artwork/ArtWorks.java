@@ -122,7 +122,7 @@ public class ArtWorks extends BaseEntity {
                 .title(dto.getTitle())
                 .workStart(dto.getWork_start())
                 .workEnd(dto.getWork_end())
-                .isMaster(dto.getMaster())
+                .isMaster(dto.getIs_master())
                 .specialty(dto.getSpecialty())
                 .copyright(dto.getCopyright())
                 .thumbnail(dto.getThumbnail())

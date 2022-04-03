@@ -114,7 +114,7 @@ public class AccountMyPageController {
         return new ResponseEntity<>(new Success("작품 보이기",""),HttpStatus.OK);
     }
     //숨기기
-    @PatchMapping(value = "/hidepiece/{artwork_id}")
+    @DeleteMapping(value = "/hidepiece/{artwork_id}")
     public ResponseEntity<Success> hidePieceClear(@PathVariable Long artwork_id,
                                                    @AuthenticationPrincipal UserDetailsImpl user) {
         accountMyPageService.hideArtWorkScope(artwork_id,user.getUser());
