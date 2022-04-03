@@ -108,14 +108,14 @@ public class AccountMyPageController {
     }
     //보이기
     @PostMapping(value = "/hidepiece/{artwork_id}")
-    public ResponseEntity<Success> hidepieceSelect(@PathVariable Long artwork_id,
+    public ResponseEntity<Success> hidePieceSelect(@PathVariable Long artwork_id,
                                                    @AuthenticationPrincipal UserDetailsImpl user) {
         accountMyPageService.nonHideArtWorkScope(artwork_id,user.getUser());
         return new ResponseEntity<>(new Success("작품 보이기",""),HttpStatus.OK);
     }
     //숨기기
     @PatchMapping(value = "/hidepiece/{artwork_id}")
-    public ResponseEntity<Success> hidepieceClear(@PathVariable Long artwork_id,
+    public ResponseEntity<Success> hidePieceClear(@PathVariable Long artwork_id,
                                                    @AuthenticationPrincipal UserDetailsImpl user) {
         accountMyPageService.hideArtWorkScope(artwork_id,user.getUser());
         return new ResponseEntity<>(new Success("작품 숨기기",""),HttpStatus.OK);

@@ -44,11 +44,14 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
 
     @Override
     public List<MyArtWork> findByArtWork(Long lastArtWorkId,Long visitAccountId, Long accountId) {
-//        queryFactory
-//                .select(artWorks.id)
-//                .limit(10)
-//                .from(artWorks)
-//                .where()
+        List<Long> cover = queryFactory
+                .select(artWorks.id)
+                .from(artWorks)
+                .limit(10)
+                .where(isVisitor(visitAccountId, accountId),
+                        isLastArtworkId(lastArtWorkId))
+                .orderBy(artWorks.created.desc())
+                .fetch();
 
         return queryFactory
                 .select(Projections.constructor(MyArtWork.class,
@@ -56,13 +59,10 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
                         artWorks.thumbnail,
                         artWorks.scope,
                         artWorks.isMaster))
-                .limit(10)
                 .from(artWorks)
                 .innerJoin(artWorks.account,account)
-                .where(isVisitor(visitAccountId,accountId),
-                        isLastArtworkId(lastArtWorkId),
+                .where(artWorks.id.in(cover),
                         account.id.eq(visitAccountId))
-                .orderBy(artWorks.created.desc())
                 .fetch();
     }
 
