@@ -54,7 +54,7 @@ public class PostRequestDto {
 
         private List<uploadImgDto> delete_img;
 
-        private List<PostTagDto> hashTag;
+        private List<PostTagDto> hash_tag;
 
         private Boolean is_selected;
 
