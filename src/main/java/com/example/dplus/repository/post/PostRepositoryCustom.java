@@ -8,10 +8,11 @@ import java.util.List;
 
 public interface PostRepositoryCustom {
 
-    // 포스트 메인페이지 출력 (최신순, 좋아요)
-    List<Post> findAllPostOrderByCreatedDesc(Long lastPostId, String board, String category);
+    // 포스트 카테고리별 출력(최신순)
+    List<Post> findCategoryPostOrderByCreated(Long lastPostId,String board, String category);
 
-    List<Post> findAllPostOrderByLikeDesc(Pageable pageable, String board, String category);
+    // 포스트 카테고리별 출력(좋아요순)
+    List<Post> findCategoryPostOrderByLikeDesc(Pageable pageable, String board, String category);
 
     // 조회수 + 라이크 찾기
     List<Post> findPostByMostViewAndMostLike(String board);

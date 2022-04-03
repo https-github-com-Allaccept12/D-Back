@@ -1,6 +1,7 @@
 package com.example.dplus.service.post;
 
 import com.example.dplus.dto.request.PostRequestDto;
+import com.example.dplus.dto.response.PostMainReccomendationDto;
 import com.example.dplus.dto.response.PostMainResponseDto;
 import com.example.dplus.dto.response.PostResponseDto;
 import com.example.dplus.dto.response.PostSearchResponseDto;
@@ -9,9 +10,14 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 public interface PostMainPageService {
-    // 전체 게시물 조회 (최신순)
+
+    // 디모페이지 추천피드
+    PostMainReccomendationDto showPostRecommendation(String board);
+
+    // 디모페이지 카테고리별 최신순
     PostMainResponseDto showPostMain(Long lastPostId, String board, String category);
 
+    // 디모페이지 카테고리별 좋아요
     PostMainResponseDto showPostMainLikeSort(int start, String board, String category);
 
     // 게시글 작성

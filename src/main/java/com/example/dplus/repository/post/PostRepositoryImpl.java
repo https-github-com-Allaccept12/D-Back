@@ -22,9 +22,9 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
 
     private final JPAQueryFactory queryFactory;
 
-    // 전체 페이지 최신순
+    // 카테고리별 최신순
     @Override
-    public List<Post> findAllPostOrderByCreatedDesc(Long lastPostId,String board, String category) {
+    public List<Post> findCategoryPostOrderByCreated(Long lastPostId,String board, String category) {
         return queryFactory
                 .selectFrom(post)
                 .innerJoin(post.account,account)
@@ -37,8 +37,9 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                 .fetch();
     }
 
+    // 카테고리별 좋아요순
     @Override
-    public List<Post> findAllPostOrderByLikeDesc(Pageable pageable, String board, String category) {
+    public List<Post> findCategoryPostOrderByLikeDesc(Pageable pageable, String board, String category) {
         return queryFactory
                 .selectFrom(post)
                 .innerJoin(post.account,account)

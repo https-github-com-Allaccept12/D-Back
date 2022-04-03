@@ -54,7 +54,6 @@ public class PostResponseDto {
                     .collect(Collectors.toList());
             this.comment_count = comment_count;
         }
-
     }
 
 
