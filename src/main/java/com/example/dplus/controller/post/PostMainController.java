@@ -29,15 +29,14 @@ public class PostMainController {
 
     private final PostMainPageService postMainPageService;
 
-    // 전체 목록
-    @GetMapping("/{last_post_id}/{board}")
-    public ResponseEntity<Success> postMain(@PathVariable Long last_post_id,
-                                            @PathVariable String board) {
+    // 디모 페이지 추천 피드
+    @GetMapping("/{board}")
+    public ResponseEntity<Success> postMain(@PathVariable String board) {
         return new ResponseEntity<>(new Success("디플 메인 페이지",
-                postMainPageService.showPostMain(last_post_id, board, "")), HttpStatus.OK);
+                postMainPageService.showPostRecommendation(board)), HttpStatus.OK);
     }
 
-    // 전체 목록 (카테고리별)
+    // 카테고리별 최신순
     @GetMapping("/category/{category}/{last_post_id}/{board}")
     public ResponseEntity<Success> postMainByCategory(@PathVariable String category,
                                                       @PathVariable Long last_post_id,
@@ -47,7 +46,7 @@ public class PostMainController {
     }
 
     // 카테고리별 좋아요
-    @GetMapping("/sort/{category}/{board}")
+    @GetMapping("/category/like/{category}/{board}")
     public ResponseEntity<Success> postSortByCategory(@RequestParam("start") int start,
                                                       @PathVariable String board,
                                                       @PathVariable String category) {
