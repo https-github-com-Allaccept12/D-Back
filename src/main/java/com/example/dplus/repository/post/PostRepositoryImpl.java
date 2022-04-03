@@ -70,11 +70,12 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
 
     // 좋아요 + 조회수 탑 10
     @Override
-    public List<Post> findPostByMostViewAndMostLike() {
+    public List<Post> findPostByMostViewAndMostLike(String board) {
         return queryFactory
                 .selectFrom(post)
-                .innerJoin(post.account)
+                .innerJoin(post.account,account)
                 .limit(10)
+                .where(post.board.eq(PostBoard.valueOf(board)))
                 .groupBy(post.id)
                 .orderBy(post.postLikeList.size().desc(),post.created.desc())
                 .fetch();

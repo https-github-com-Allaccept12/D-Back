@@ -59,7 +59,7 @@ public class PostMainPageServiceImpl implements PostMainPageService{
     @Transactional(readOnly = true)
     public PostMainResponseDto showPostMain(Long lastPostId, String board, String category) {
         List<Post> postList = postRepository.findAllPostOrderByCreatedDesc(lastPostId, board, category);
-        List<Post> postRecommendation = postRepository.findPostByMostViewAndMostLike();
+        List<Post> postRecommendation = postRepository.findPostByMostViewAndMostLike(board);
         return PostMainResponseDto.of(postList,postRecommendation);
     }
 
@@ -67,7 +67,7 @@ public class PostMainPageServiceImpl implements PostMainPageService{
     public PostMainResponseDto showPostMainLikeSort(int start, String board, String category) {
         Pageable pageable = PageRequest.of(start, 12);
         List<Post> postList = postRepository.findAllPostOrderByLikeDesc(pageable, board, category);
-        List<Post> postRecommendation = postRepository.findPostByMostViewAndMostLike();
+        List<Post> postRecommendation = postRepository.findPostByMostViewAndMostLike(board);
         return PostMainResponseDto.of(postList,postRecommendation);
     }
 
