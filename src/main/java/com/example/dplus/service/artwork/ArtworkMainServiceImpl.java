@@ -20,6 +20,7 @@ import com.example.dplus.repository.artwork.ArtWorkRepository;
 import com.example.dplus.repository.artwork.bookmark.ArtWorkBookMarkRepository;
 import com.example.dplus.repository.artwork.comment.ArtWorkCommentRepository;
 import com.example.dplus.repository.artwork.image.ArtWorkImageRepository;
+import com.example.dplus.repository.artwork.image.ArtWorkImageSaveRepository;
 import com.example.dplus.repository.artwork.like.ArtWorkLikesRepository;
 import com.example.dplus.service.file.FileProcessService;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +33,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -153,19 +155,24 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
     public List<ArtworkMain> findByFollowerArtWork(Long accountId, String category, Long lastArtWorkId) {
         return artWorkRepository.findByFollowerArtWork(accountId, category, lastArtWorkId);
     }
+    private final ArtWorkImageSaveRepository imageSaveRepository;
 
     private void s3ImageUpload(List<MultipartFile> multipartFiles,ArtWorkCreate dto, ArtWorks saveArtwork) {
+        List<ArtWorkImage> imgList = new ArrayList<>();
         for (MultipartFile file : multipartFiles) {
-            boolean thumbnail = Objects.equals(file.getOriginalFilename(), dto.getThumbnail());
-            String imgUrl = fileProcessService.uploadImage(file);
+//            boolean thumbnail = Objects.equals(file.getOriginalFilename(), dto.getThumbnail());
+            boolean thumbnail = Objects.equals(file.getOriginalFilename(), "xxxzc.PNG");
+//            String imgUrl = fileProcessService.uploadImage(file);
+            String imgUrl = "xxxzc.PNG";
             if (thumbnail) {
                 saveArtwork.updateArtWorkThumbnail(imgUrl);
                 continue;
             }
             ArtWorkImage img = ArtWorkImage.builder().artWorks(saveArtwork).artworkImg(imgUrl).build();
+            //imgList.add(img);
             artWorkImageRepository.save(img);
-
         }
+        //imageSaveRepository.saveAll(imgList);
     }
 
     private void updateImg( List<MultipartFile> multipartFiles, ArtWorks findArtWork, ArtWorkUpdate dto) {
