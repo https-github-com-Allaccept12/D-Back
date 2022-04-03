@@ -17,6 +17,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     private final AccountRepository accountRepository;
 
     public UserDetails loadUserByUsername(String userPk) throws UsernameNotFoundException {
+        System.out.println(userPk);
         Account user = accountRepository.findById(Long.parseLong(userPk))
                 .orElseThrow(() -> new ErrorCustomException(ErrorCode.NO_AUTHENTICATION_ERROR));
         return new UserDetailsImpl(user);
