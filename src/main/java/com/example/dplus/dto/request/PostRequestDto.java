@@ -2,7 +2,8 @@ package com.example.dplus.dto.request;
 
 
 import com.example.dplus.domain.post.PostBoard;
-import com.example.dplus.dto.common.CommonDto;
+import com.example.dplus.dto.common.CommonDto.PostTagDto;
+import com.example.dplus.dto.common.CommonDto.uploadImgDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -27,9 +28,9 @@ public class PostRequestDto {
         @NotEmpty(message = "내용을 입력해주세요.")
         private String content;
 
-        private List<CommonDto.uploadImgDto> img; // filename
+        private List<uploadImgDto> img; // filename
 
-        private List<CommonDto.PostTagDto> hash_tag;
+        private List<PostTagDto> hash_tag;
 
         private Boolean is_selected;
 
@@ -51,9 +52,9 @@ public class PostRequestDto {
         @NotEmpty(message = "내용을 입력해주세요.")
         private String content;
 
-        private List<CommonDto.uploadImgDto> delete_img;
+        private List<uploadImgDto> delete_img;
 
-        private List<CommonDto.PostTagDto> hash_tag;
+        private List<PostTagDto> hashTag;
 
         private Boolean is_selected;
 
