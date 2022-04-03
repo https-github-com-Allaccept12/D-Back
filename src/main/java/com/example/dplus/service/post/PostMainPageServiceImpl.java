@@ -8,6 +8,7 @@ import com.example.dplus.domain.post.PostImage;
 import com.example.dplus.domain.post.PostTag;
 import com.example.dplus.dto.common.CommonDto;
 import com.example.dplus.dto.request.PostRequestDto;
+import com.example.dplus.dto.response.PostMainReccomendationDto;
 import com.example.dplus.dto.response.PostMainResponseDto;
 import com.example.dplus.dto.response.PostResponseDto;
 import com.example.dplus.dto.response.PostResponseDto.*;
@@ -53,21 +54,26 @@ public class PostMainPageServiceImpl implements PostMainPageService{
     private final FileProcessService fileProcessService;
     private final AccountRepository accountRepository;
 
-
-    // 메인 페이지 (최신순)
+    // 디모페이지 추천피드
     @Transactional(readOnly = true)
-    public PostMainResponseDto showPostMain(Long lastPostId, String board, String category) {
-        List<Post> postList = postRepository.findAllPostOrderByCreatedDesc(lastPostId, board, category);
+    public PostMainReccomendationDto showPostRecommendation(String board){
         List<Post> postRecommendation = postRepository.findPostByMostViewAndMostLike(board);
-        return PostMainResponseDto.of(postList,postRecommendation);
+        return PostMainReccomendationDto.from(postRecommendation);
     }
 
+    // 디모페이지 카테고리별 최신순
+    @Transactional(readOnly = true)
+    public PostMainResponseDto showPostMain(Long lastPostId, String board, String category) {
+        List<Post> postList = postRepository.findCategoryPostOrderByCreated(lastPostId, board, category);
+        return PostMainResponseDto.from(postList);
+    }
+
+    // 디모페이지 카테고리별 좋아요
     @Transactional(readOnly = true)
     public PostMainResponseDto showPostMainLikeSort(int start, String board, String category) {
         Pageable pageable = PageRequest.of(start, 12);
-        List<Post> postList = postRepository.findAllPostOrderByLikeDesc(pageable, board, category);
-        List<Post> postRecommendation = postRepository.findPostByMostViewAndMostLike(board);
-        return PostMainResponseDto.of(postList,postRecommendation);
+        List<Post> postList = postRepository.findCategoryPostOrderByLikeDesc(pageable, board, category);
+        return PostMainResponseDto.from(postList);
     }
 
     // 상세 게시글 (디플 - 정보공유)

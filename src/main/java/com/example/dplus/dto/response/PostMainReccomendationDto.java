@@ -1,7 +1,6 @@
 package com.example.dplus.dto.response;
 
 import com.example.dplus.domain.post.Post;
-import com.example.dplus.dto.response.PostResponseDto.PostPageMain;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,17 +10,19 @@ import java.util.stream.Collectors;
 
 @Getter
 @NoArgsConstructor
-public class PostMainResponseDto {
-    private List<PostPageMain> postMainPage;
+public class PostMainReccomendationDto {
+
+    private List<PostResponseDto.PostPageMain> postRecommendationFeed;
 
     @Builder
-    public PostMainResponseDto(List<PostPageMain> postMainPage) {
-        this.postMainPage = postMainPage;
+    public PostMainReccomendationDto(List<PostResponseDto.PostPageMain> postRecommendationFeed) {
+        this.postRecommendationFeed = postRecommendationFeed;
     }
-    public static PostMainResponseDto from(List<Post> postList) {
-        return PostMainResponseDto.builder()
-                .postMainPage(postList.stream()
-                        .map(post -> new PostPageMain(post.getId(),
+
+    public static PostMainReccomendationDto from(List<Post> postRecommendationFeed) {
+        return PostMainReccomendationDto.builder()
+                .postRecommendationFeed(postRecommendationFeed.stream()
+                        .map(post -> new PostResponseDto.PostPageMain(post.getId(),
                                 post.getAccount().getId(),
                                 post.getAccount().getNickname(),
                                 post.getAccount().getProfileImg(),
@@ -35,6 +36,7 @@ public class PostMainResponseDto {
                                 (long) post.getPostCommentList().size()))
                         .collect(Collectors.toList()))
                 .build();
-    }
 
+
+    }
 }
