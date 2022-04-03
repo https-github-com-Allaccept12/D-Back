@@ -34,12 +34,12 @@ jobs:
              files: ./src/main/resources/application-real1.yml
         env:
           spring.datasource.url: ${{ secrets.RDS_HOST }}
-          jwt.secret: ${{ secrets.JWT_SECRET }}
           spring.datasource.username: ${{ secrets.RDS_USERNAME }}
           spring.datasource.password: ${{ secrets.RDS_PASSWORD }}
           cloud.aws.s3.bucket: ${{secrets.AWS_S3_BUCKET_NAME}}
           cloud.aws.credentials.accessKey: ${{secrets.AWS_S3_ACCESS_KEY}}
           cloud.aws.credentials.secretKey: ${{secrets.AWS_S3_SECRET_KEY}}
+          jwt.secret: ${{ secrets.JWT_SECRET }}
 
 
       - name: Set Yaml-2
@@ -48,12 +48,12 @@ jobs:
              files: ./src/main/resources/application-real2.yml
         env:
           spring.datasource.url: ${{ secrets.RDS_HOST }}
-          jwt.secret: ${{ secrets.JWT_SECRET }}
           spring.datasource.username: ${{ secrets.RDS_USERNAME }}
           spring.datasource.password: ${{ secrets.RDS_PASSWORD }}
           cloud.aws.s3.bucket: ${{secrets.AWS_S3_BUCKET_NAME}}
           cloud.aws.credentials.accessKey: ${{secrets.AWS_S3_ACCESS_KEY}}
           cloud.aws.credentials.secretKey: ${{secrets.AWS_S3_SECRET_KEY}}
+          jwt.secret: ${{ secrets.JWT_SECRET }}
 
 
       - name: Build with Gradle
