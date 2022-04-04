@@ -26,12 +26,13 @@ public class ArtWorkCommentRepositoryImpl implements ArtWorkCommentRepositoryCus
                         artWorkComment.id,
                         artWorkComment.content,
                         artWorkComment.modified,
-                        artWorks.account.nickname,
-                        artWorks.account.profileImg
+                        account.nickname,
+                        account.profileImg
                         ))
                 .from(artWorkComment)
-                .join(artWorkComment.artWorks,artWorks).on(artWorks.id.eq(artWorkId))
-                .join(artWorks.account, account)
+                .join(artWorkComment.account,account)
+                .join(artWorkComment.artWorks,artWorks)
+                .where(artWorks.id.eq(artWorkId))
                 .fetch();
     }
 }
