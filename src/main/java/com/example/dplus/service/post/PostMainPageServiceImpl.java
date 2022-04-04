@@ -143,12 +143,19 @@ public class PostMainPageServiceImpl implements PostMainPageService{
 
     // 게시글 삭제
     @Transactional
-    public void deletePost(Long accountId, Long postId, String category, String board){
+    public void deletePost(Long accountId, Long postId, String board){
         Post post = postAuthValidation(accountId, postId);
         List<PostImage> postImages = postImageRepository.findByPostId(postId);
         postImages.forEach((img) -> {
             fileProcessService.deleteImage(img.getPostImg());
         });
+        if (board.equals("QNA")){
+            List<com.example.dplus.domain.post.PostAnswer> postAnswerList = postAnswerRepository.findAllByPostId(postId);
+            postAnswerList.forEach((postAnswer) ->
+                    postAnswerLikesRepository.deleteAllByPostAnswerId(postAnswer.getId())
+            );
+            postAnswerRepository.deleteAllByPostId(postId);
+        }
         postImageRepository.deleteAllByPostId(postId);
         postBookMarkRepository.deleteAllByPostId(postId);
         postRepository.delete(post);
