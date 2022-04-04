@@ -86,7 +86,7 @@ public class AccountMyPageController {
                 accountMyPageService.showAccountArtWorkBookMark(last_artwork_id,user.getUser().getId())),HttpStatus.OK);
     }
 
-    @PatchMapping("/masterpiece/{artwork_id}")
+    @PutMapping("/masterpiece/{artwork_id}")
     public ResponseEntity<Success> masterpieceSelect(@PathVariable Long artwork_id,
                                                      @AuthenticationPrincipal UserDetailsImpl user) {
         System.out.println("포트폴리오 작품 설정"+user.getUser().getId());
