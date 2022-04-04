@@ -53,7 +53,7 @@ public class PostMainController {
                 postMainPageService.showPostMainLikeSort(start, board, category)), HttpStatus.OK);
     }
 
-    // 상세 목록
+    // 상세
     @GetMapping("/{post_id}")
     public ResponseEntity<Success> postDetail(@RequestParam(value = "visitor_account_id",required = false) Long user,
                                               @PathVariable Long post_id) {
@@ -103,16 +103,14 @@ public class PostMainController {
 
     // 게시물 검색
     @GetMapping("/search/{last_post_id}/{board}/{keyword}")
-    public ResponseEntity<Success> postSearch(@RequestParam(value = "visitor_account_id",required = false) Long user,
-                                              @PathVariable Long last_post_id,
+    public ResponseEntity<Success> postSearch(@PathVariable Long last_post_id,
                                               @PathVariable String board,
                                               @PathVariable String keyword) {
-        Long accountId = getaLong(user);
         if (keyword == null) {
             throw new ErrorCustomException(ErrorCode.NON_KEYWORD_ERROR);
         }
         return new ResponseEntity<>(new Success("게시물 검색 완료",
-                postMainPageService.findBySearchKeyWord(keyword, last_post_id, accountId, board)), HttpStatus.OK);
+                postMainPageService.findBySearchKeyWord(keyword, last_post_id, board)), HttpStatus.OK);
 
     }
 
@@ -127,12 +125,10 @@ public class PostMainController {
 
     // 유사한 질문 조회
     @GetMapping("/question/similar/{category}/{post_id}")
-    public ResponseEntity<Success> similarQuestion (@RequestParam(value = "visitor_account_id",required = false) Long user,
-                                                    @PathVariable String category,
+    public ResponseEntity<Success> similarQuestion (@PathVariable String category,
                                                     @PathVariable Long post_id){
-        Long accountId = getaLong(user);
         return new ResponseEntity<>(new Success("유사한 질문 리스트",
-                postMainPageService.similarQuestion(category, accountId, post_id)), HttpStatus.OK);
+                postMainPageService.similarQuestion(category, post_id)), HttpStatus.OK);
 
     }
     private Long getaLong(Long user) {

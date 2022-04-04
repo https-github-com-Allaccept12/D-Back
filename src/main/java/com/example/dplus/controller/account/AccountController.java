@@ -39,9 +39,4 @@ public class AccountController {
                 "토큰 재발급 성공", securityService.refresh(accessToken, refreshToken)), HttpStatus.OK);
     }
 
-    @GetMapping("/loginTest")
-    public void loginTest(@AuthenticationPrincipal UserDetailsImpl user) {
-        System.out.println(user.getUser().getId());
-    }
-
 }

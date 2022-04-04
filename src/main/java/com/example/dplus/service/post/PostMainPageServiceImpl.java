@@ -163,8 +163,8 @@ public class PostMainPageServiceImpl implements PostMainPageService{
 
     // 게시글 검색
     @Transactional(readOnly = true)
-    public PostSearchResponseDto findBySearchKeyWord(String keyword, Long lastPostId, Long accountId, String board) {
-        List<Post> postLists = postRepository.findPostBySearchKeyWord( keyword,  lastPostId,    board);
+    public PostSearchResponseDto findBySearchKeyWord(String keyword, Long lastPostId, String board) {
+        List<Post> postLists = postRepository.findPostBySearchKeyWord( keyword,  lastPostId, board);
         return PostSearchResponseDto.from(postLists);
     }
 
@@ -200,7 +200,7 @@ public class PostMainPageServiceImpl implements PostMainPageService{
 
     // 디모 QnA 유사한질문 조회
     @Transactional(readOnly = true)
-    public List<PostSimilarQuestion> similarQuestion(String category, Long accountId, Long postId) {
+    public List<PostSimilarQuestion> similarQuestion(String category, Long postId) {
         List<Post> postSimilarList = postRepository.findBySimilarPost(category, "QNA", postId);
         List<PostSimilarQuestion> result = postSimilarList.stream()
                 .map(PostSimilarQuestion::of)

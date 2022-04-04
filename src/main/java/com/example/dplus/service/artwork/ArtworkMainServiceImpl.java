@@ -67,12 +67,12 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
     }
     //모아보기
     @Transactional(readOnly = true)
-    public List<ArtworkMain> showArtworkMain(Long accountId, Long lastArtWorkId,String category){
+    public List<ArtworkMain> showArtworkMain(Long lastArtWorkId,String category){
         return artWorkRepository.findAllArtWork(lastArtWorkId,category);
     }
 
     @Transactional(readOnly = true)
-    public List<ArtworkMain> showArtWorkLikeSort(Long accountId, String category, int start) {
+    public List<ArtworkMain> showArtWorkLikeSort(String category, int start) {
         Pageable pageable = PageRequest.of(start,10);
         return artWorkRepository.showArtWorkLikeSort(category,pageable);
     }
@@ -148,7 +148,7 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
 
     //작품 검색
     @Transactional(readOnly = true)
-    public List<ArtworkMain> findBySearchKeyWord(String keyword,Long lastArtWorkId,Long accountId) {
+    public List<ArtworkMain> findBySearchKeyWord(String keyword,Long lastArtWorkId) {
         return artWorkRepository.findBySearchKeyWord(keyword,lastArtWorkId);
     }
 

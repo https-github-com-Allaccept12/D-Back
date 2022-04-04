@@ -24,7 +24,7 @@ public interface PostMainPageService {
     int createPost(Long accountId, PostRequestDto.PostCreate dto, List<MultipartFile> imageFile);
 
     // 게시글 검색
-    PostSearchResponseDto findBySearchKeyWord(String keyword, Long lastArtWorkId, Long accountId, String board);
+    PostSearchResponseDto findBySearchKeyWord(String keyword, Long lastArtWorkId, String board);
 
     // 상세 게시글
     PostResponseDto.PostDetailPage showPostDetail(Long accountId, Long postId);
@@ -35,11 +35,10 @@ public interface PostMainPageService {
     // 게시글 삭제
     void deletePost(Long accountId, Long postId,  String board);
 
-
     // 상세 질문글
     PostResponseDto.PostAnswerDetailPage detailAnswer(Long accountId, Long postId);
 
     // 유사한 질문 리스트
-    List<PostResponseDto.PostSimilarQuestion> similarQuestion(String category, Long accountId, Long postId);
+    List<PostResponseDto.PostSimilarQuestion> similarQuestion(String category,Long postId);
 
 }
