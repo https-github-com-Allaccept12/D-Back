@@ -21,7 +21,6 @@ public enum ErrorCode {
 
     // Validation 체크 에러
     ALREADY_NICKNAME_ERROR(400, "V001","이미 사용중인 닉네임입니다."),
-
     PHOTO_UPLOAD_ERROR(400, "V002","작품 업로드는 섬네일포함 최소 두개를 해주세요."),
     BAD_CONDITION_NICKNAME_ERROR(400, "V003","닉네임 조건에 맞지 않습니다."),
     CONVERTING_FILE_ERROR(400,"V004","파일 변환 중 에러가 발생했습니다"),
