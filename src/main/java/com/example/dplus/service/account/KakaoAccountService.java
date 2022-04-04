@@ -54,8 +54,6 @@ public class KakaoAccountService {
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("grant_type", "authorization_code");
         body.add("client_id", "5c2af632e5eb943eadbf20d0c4006bdb");
-//        body.add("redirect_uri", "https://dplusday.com/user/kakao/callback");
-        //body.add("redirect_uri", "http://localhost:3000/user/kakao/callback");
         body.add("redirect_uri", "http://localhost:8081/user/kakao/callback");
         body.add("code", code);
 
@@ -105,7 +103,6 @@ public class KakaoAccountService {
                 .get("email").asText();
         String username = id + email;
 
-        //System.out.println("카카오 사용자 정보: " + id + ", " + username + ", " + nickname + ", " + profileImage + ", " + email);
         return new KakaoUserInfoDto(id, nickname, profileImage, email, username);
     }
 

@@ -22,9 +22,8 @@ import java.util.regex.Pattern;
 @Slf4j
 public class AccountInitialService {
 
-
-    private final AccountRepository accountRepository;
     private final FileProcessService fileProcessService;
+    private final AccountRepository accountRepository;
 
     @Transactional
     public Long setInitProfile(MultipartFile profileImg, InitProfileSetting dto, Long accountId) {
@@ -36,6 +35,7 @@ public class AccountInitialService {
         account.setInitProfile(dto);
         return account.getId();
     }
+
     @Transactional
     public Long updateProfile(MultipartFile profileImg, InitProfileSetting dto, Long accountId) {
         Account account = getAccount(accountId);
@@ -46,8 +46,8 @@ public class AccountInitialService {
         }
         account.setInitProfile(dto);
         return account.getId();
-
     }
+
     @Transactional
     public Long setInitTendency(InitTendencySetting dto, Long accountId) {
         Account account = getAccount(accountId);
@@ -61,6 +61,7 @@ public class AccountInitialService {
         account.updateInterest(dto.getInterest());
         return account.getId();
     }
+
     @Transactional(readOnly = true)
     public void getNickNameValidation(String nickname) {
         Account account = accountRepository.findByNickname(nickname).orElse(null);

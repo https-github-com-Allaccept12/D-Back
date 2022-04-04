@@ -37,8 +37,6 @@ public class SecurityService {
             throw new ErrorCustomException(ErrorCode.TOKEN_EXPIRATION_ERROR);
         }
 
-//        String getRefreshToken = account.getRefreshToken();
-        
         if (!refreshToken.equals(getRefreshToken)) {
             throw new ErrorCustomException(ErrorCode.NO_MATCH_ITEM_ERROR);
         }
@@ -47,7 +45,6 @@ public class SecurityService {
         String updateRefreshToken = jwtTokenProvider.createRefreshToken(Long.toString(account.getId()));
         redisService.delValues(userPk);
         redisService.setValues(updateRefreshToken, userPk);
-//        account.refreshToken(updateRefreshToken);
 
         return TokenResponseDto.builder()
                 .accessToken(updateToken)

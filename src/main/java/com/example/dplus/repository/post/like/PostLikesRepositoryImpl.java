@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 
 import static com.example.dplus.domain.post.QPostLikes.postLikes;
 
-
 @RequiredArgsConstructor
 public class PostLikesRepositoryImpl implements PostLikesRepositoryCustom {
 

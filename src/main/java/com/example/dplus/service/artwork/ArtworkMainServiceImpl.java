@@ -1,39 +1,34 @@
 package com.example.dplus.service.artwork;
 
-import com.example.dplus.advice.ErrorCode;
-import com.example.dplus.advice.ErrorCustomException;
-import com.example.dplus.domain.account.Account;
+import com.example.dplus.repository.account.follow.FollowRepository;
+import com.example.dplus.repository.artwork.comment.ArtWorkCommentRepository;
 import com.example.dplus.domain.artwork.ArtWorkImage;
+import com.example.dplus.repository.artwork.image.ArtWorkImageRepository;
+import com.example.dplus.repository.artwork.like.ArtWorkLikesRepository;
+import com.example.dplus.advice.ErrorCustomException;
+import com.example.dplus.advice.ErrorCode;
+import com.example.dplus.domain.account.Account;
+import com.example.dplus.repository.account.AccountRepository;
+import com.example.dplus.repository.artwork.ArtWorkRepository;
 import com.example.dplus.domain.artwork.ArtWorks;
+import com.example.dplus.repository.artwork.bookmark.ArtWorkBookMarkRepository;
 import com.example.dplus.dto.request.ArtWorkRequestDto.ArtWorkCreate;
 import com.example.dplus.dto.request.ArtWorkRequestDto.ArtWorkUpdate;
-import com.example.dplus.dto.response.AccountResponseDto.TopArtist;
+
 import com.example.dplus.dto.response.ArtWorkResponseDto;
-import com.example.dplus.dto.response.ArtWorkResponseDto.ArtWorkComment;
+import com.example.dplus.dto.response.AccountResponseDto.TopArtist;
 import com.example.dplus.dto.response.ArtWorkResponseDto.ArtWorkDetail;
-import com.example.dplus.dto.response.ArtWorkResponseDto.ArtWorkSubDetail;
 import com.example.dplus.dto.response.ArtWorkResponseDto.ArtworkMain;
 import com.example.dplus.dto.response.MainResponseDto;
-import com.example.dplus.repository.account.AccountRepository;
-import com.example.dplus.repository.account.follow.FollowRepository;
-import com.example.dplus.repository.artwork.ArtWorkRepository;
-import com.example.dplus.repository.artwork.bookmark.ArtWorkBookMarkRepository;
-import com.example.dplus.repository.artwork.comment.ArtWorkCommentRepository;
-import com.example.dplus.repository.artwork.image.ArtWorkImageRepository;
-import com.example.dplus.repository.BatchInsertRepository;
-import com.example.dplus.repository.artwork.like.ArtWorkLikesRepository;
 import com.example.dplus.service.file.FileProcessService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -50,31 +45,33 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
     private final FollowRepository followRepository;
     private final AccountRepository accountRepository;
     private final FileProcessService fileProcessService;
-    private final BatchInsertRepository batchInsertRepository;
 
+    //비회원 일경우 모든작품 카테고리에서 탑10
+    //회원 일경우 관심사 카테고리중에서 탑10
     @Transactional(readOnly = true)
-    @Cacheable(value="mainByInterest", key="#interest",condition="#interest != null")
-    public MainResponseDto mostPopularArtWork(Long accountId, String interest) {
+    public MainResponseDto mostPopularArtWork(Long accountId) {
+        //회원인지 비회원인지
         if (accountId != 0) {
-            List<ArtworkMain> artWorkList = getArtworkList(interest);
-            List<TopArtist> topArtist = getTopArtist();
+            Account account = accountRepository.findById(accountId).orElseThrow(() -> new ErrorCustomException(ErrorCode.NO_USER_ERROR));
+            List<ArtworkMain> artWorkList = getArtworkList(account.getInterest());
+            List<TopArtist> topArtist = getTopArtist(account.getInterest());
             isFollow(accountId,topArtist);
+            setIsLike(accountId,artWorkList);
             return MainResponseDto.builder().artwork(artWorkList).top_artist(topArtist).build();
         }
         List<ArtworkMain> artworkList = getArtworkList("");
-        List<TopArtist> topArtist = getTopArtist();
+        List<TopArtist> topArtist = getTopArtist("");
         return MainResponseDto.builder().artwork(artworkList).top_artist(topArtist).build();
     }
-    //모아보기
-    @Transactional(readOnly = true)
-    public List<ArtworkMain> showArtworkMain(Long accountId, Long lastArtWorkId,String category){
-        return artWorkRepository.findAllArtWork(lastArtWorkId,category);
-    }
 
+    //둘러보기
     @Transactional(readOnly = true)
-    public List<ArtworkMain> showArtWorkLikeSort(Long accountId, String category, int start) {
-        Pageable pageable = PageRequest.of(start,10);
-        return artWorkRepository.showArtWorkLikeSort(category,pageable);
+    public List<ArtworkMain> showArtworkMain(Long accountId, Long lastArtWorkId,String category,int sortSign){
+        Pageable pageable = PageRequest.of(0,10);
+        List<ArtworkMain> artWorkList = artWorkRepository.findAllArtWork(lastArtWorkId,category,pageable,sortSign);
+        if (accountId != 0)
+            setIsLike(accountId, artWorkList);
+        return artWorkList;
     }
 
     @Transactional
@@ -85,14 +82,15 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
         //조회수
         artWorks.addViewCount();
         //작품 좋아요개수와 작품 기본정보 가져오기
-        ArtWorkSubDetail artWorksSub = artWorkRepository.findByArtWorkSubDetail(artWorkId);
+        ArtWorkResponseDto.ArtWorkSubDetail artWorksSub = artWorkRepository.findByArtWorkSubDetail(artWorkId);
         //작품 이미지들 가져오기
         List<ArtWorkImage> imgList = artWorkImageRepository.findByArtWorksId(artWorksSub.getArtwork_id());
         //작품 코멘트 가져오기
-        List<ArtWorkComment> commentList = artWorkCommentRepository.findArtWorkCommentByArtWorksId(artWorksSub.getArtwork_id());
+        List<ArtWorkResponseDto.ArtWorkComment> commentList = artWorkCommentRepository.findArtWorkCommentByArtWorksId(artWorksSub.getArtwork_id());
         //해당 유저의 다른 작품들 가져오기
+        Pageable pageable = PageRequest.of(0, 5);
         List<ArtWorkResponseDto.ArtWorkSimilarWork> similarList = artWorkRepository
-                .findSimilarArtWork(artWorks.getAccount().getId(),artWorks.getId());
+                .findSimilarArtWork(artWorks.getAccount().getId(),artWorks.getId(),pageable);
         boolean isLike = false;
         boolean isBookmark = false;
         boolean isFollow = false;
@@ -112,8 +110,11 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
     @Transactional
     public int createArtwork(Long accountId, ArtWorkCreate dto, List<MultipartFile> multipartFiles) {
         Account account = accountRepository.findById(accountId).orElseThrow(() -> new ErrorCustomException(ErrorCode.NO_USER_ERROR));
-        if (account.getArtWorkCreateCount() >= 1000) {
+        if (account.getArtWorkCreateCount() >= 5) {
             throw new ErrorCustomException(ErrorCode.DAILY_WRITE_UP_BURN_ERROR);
+        }
+        if (multipartFiles == null) {
+            throw new ErrorCustomException(ErrorCode.PHOTO_UPLOAD_ERROR);
         }
         ArtWorks saveArtwork = artWorkRepository.save(ArtWorks.of(account, dto));
         s3ImageUpload(multipartFiles,dto,saveArtwork);
@@ -122,7 +123,6 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
     }
 
     @Transactional
-    @CacheEvict(value="mainByInterest", key="#category")
     public Long updateArtwork(Long accountId, Long artworkId, ArtWorkUpdate dto, List<MultipartFile> multipartFiles) {
         ArtWorks artWorks = artworkValidation(accountId, artworkId);
         updateImg(multipartFiles, artWorks, dto);
@@ -132,8 +132,7 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
     }
 
     @Transactional
-    @CacheEvict(value="mainByInterest", key="#category")
-    public void deleteArtwork(Long accountId, Long artworkId, String category) {
+    public void deleteArtwork(Long accountId, Long artworkId) {
         ArtWorks artWorks = artworkValidation(accountId, artworkId);
         List<ArtWorkImage> artWorkImages = artWorkImageRepository.findByArtWorksId(artWorks.getId());
         artWorkImages.forEach((img) -> {
@@ -149,17 +148,23 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
     //작품 검색
     @Transactional(readOnly = true)
     public List<ArtworkMain> findBySearchKeyWord(String keyword,Long lastArtWorkId,Long accountId) {
-        return artWorkRepository.findBySearchKeyWord(keyword,lastArtWorkId);
+        Pageable pageable = PageRequest.of(0,10);
+        List<ArtworkMain> artWorkList = artWorkRepository.findBySearchKeyWord(keyword,lastArtWorkId,pageable);
+        if(accountId != null)
+            setIsLike(accountId,artWorkList);
+        return artWorkList;
     }
 
     @Transactional(readOnly = true)
     public List<ArtworkMain> findByFollowerArtWork(Long accountId, String category, Long lastArtWorkId) {
-        return artWorkRepository.findByFollowerArtWork(accountId, category, lastArtWorkId);
+        Pageable pageable = PageRequest.of(0,10);
+        List<ArtworkMain> artWorkList = artWorkRepository.findByFollowerArtWork(accountId, category, lastArtWorkId, pageable);
+        if(accountId != null)
+            setIsLike(accountId,artWorkList);
+        return artWorkList;
     }
 
-
     private void s3ImageUpload(List<MultipartFile> multipartFiles,ArtWorkCreate dto, ArtWorks saveArtwork) {
-        List<ArtWorkImage> imgList = new ArrayList<>();
         for (MultipartFile file : multipartFiles) {
             boolean thumbnail = Objects.equals(file.getOriginalFilename(), dto.getThumbnail());
             String imgUrl = fileProcessService.uploadImage(file);
@@ -168,9 +173,9 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
                 continue;
             }
             ArtWorkImage img = ArtWorkImage.builder().artWorks(saveArtwork).artworkImg(imgUrl).build();
-            imgList.add(img);
+            artWorkImageRepository.save(img);
+
         }
-        batchInsertRepository.artWorkImageSaveAll(imgList);
     }
 
     private void updateImg( List<MultipartFile> multipartFiles, ArtWorks findArtWork, ArtWorkUpdate dto) {
@@ -181,7 +186,6 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
             });
         }
         if (multipartFiles != null) {
-            List<ArtWorkImage> imgList = new ArrayList<>();
             for (MultipartFile file : multipartFiles) {
                 boolean thumbnail = Objects.equals(file.getOriginalFilename(), dto.getThumbnail());
                 String imgUrl = fileProcessService.uploadImage(file);
@@ -191,13 +195,14 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
                     continue;
                 }
                 ArtWorkImage img = ArtWorkImage.builder().artWorks(findArtWork).artworkImg(imgUrl).build();
-                imgList.add(img);
+                artWorkImageRepository.save(img);
+
             }
-            batchInsertRepository.artWorkImageSaveAll(imgList);
         }
     }
-    private List<TopArtist> getTopArtist() {
-        List<Account> topArtist = accountRepository.findTopArtist();
+
+    private List<TopArtist> getTopArtist(String interest) {
+        List<Account> topArtist = accountRepository.findTopArtist(interest);
         return topArtist.stream()
                 .map(TopArtist::new)
                 .collect(Collectors.toList());
@@ -219,6 +224,13 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
             boolean isFollow = followRepository.existsByFollowerIdAndFollowingId(accountId, artist.getAccount_id());
             if (isFollow)
                 artist.setIsFollow();
+        });
+    }
+
+    private void setIsLike(Long accountId, List<ArtworkMain> artWorkList) {
+        artWorkList.forEach((artWork) -> {
+            artWork.setLikeCountAndIsLike(artWorkLikesRepository.
+                    existByAccountIdAndArtWorkId(accountId, artWork.getArtwork_id()));
         });
     }
 }

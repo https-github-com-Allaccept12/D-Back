@@ -69,7 +69,7 @@ dependencies {
 	// Thymeleaf (뷰 템플릿 엔진)
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 
-
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
 }
 
@@ -91,4 +91,3 @@ configurations {
 compileQuerydsl {
 	options.annotationProcessorPath = configurations.querydsl
 }
-

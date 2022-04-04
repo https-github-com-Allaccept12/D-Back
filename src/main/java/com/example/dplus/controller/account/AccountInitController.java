@@ -2,11 +2,11 @@ package com.example.dplus.controller.account;
 
 
 import com.example.dplus.dto.Success;
+import com.example.dplus.jwt.UserDetailsImpl;
+import com.example.dplus.service.account.init.AccountInitialService;
 import com.example.dplus.dto.request.AccountRequestDto.InitInterestSetting;
 import com.example.dplus.dto.request.AccountRequestDto.InitProfileSetting;
 import com.example.dplus.dto.request.AccountRequestDto.InitTendencySetting;
-import com.example.dplus.jwt.UserDetailsImpl;
-import com.example.dplus.service.account.init.AccountInitialService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

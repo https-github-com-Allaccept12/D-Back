@@ -6,7 +6,7 @@ import com.example.dplus.domain.account.Account;
 import com.example.dplus.domain.post.PostComment;
 import com.example.dplus.repository.post.comment.PostCommentRepository;
 import com.example.dplus.domain.post.PostCommentLikes;
-import com.example.dplus.repository.post.comment.PostCommentLikesRepository;
+import com.example.dplus.repository.post.like.PostCommentLikesRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

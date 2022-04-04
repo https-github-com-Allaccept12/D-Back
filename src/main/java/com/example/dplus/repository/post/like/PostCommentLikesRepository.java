@@ -1,4 +1,4 @@
-package com.example.dplus.repository.post.comment;
+package com.example.dplus.repository.post.like;
 
 import com.example.dplus.domain.post.PostCommentLikes;
 import org.springframework.data.jpa.repository.JpaRepository;

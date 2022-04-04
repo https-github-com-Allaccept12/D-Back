@@ -1,12 +1,8 @@
 package com.example.dplus.controller.post;
 
-
-
 import com.example.dplus.advice.ErrorCustomException;
 import com.example.dplus.dto.Success;
-
 import com.example.dplus.advice.ErrorCode;
-
 import com.example.dplus.dto.request.PostRequestDto;
 import com.example.dplus.jwt.UserDetailsImpl;
 import com.example.dplus.service.post.PostMainPageService;
@@ -65,7 +61,7 @@ public class PostMainController {
     // 게시물 등록
     @PostMapping("")
     public ResponseEntity<Success> createPost(@AuthenticationPrincipal UserDetailsImpl user,
-                                              @RequestPart PostRequestDto.PostCreate data,
+                                              @Valid @RequestPart PostRequestDto.PostCreate data,
                                               @RequestPart(required = false) List<MultipartFile> imgFile) {
 
         if (user != null) {

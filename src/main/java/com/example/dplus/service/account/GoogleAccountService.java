@@ -101,7 +101,6 @@ public class GoogleAccountService {
         String email = jsonNode.get("email").asText();
         String username = id + email;
 
-        System.out.println("구글 사용자 정보: " + id + ", " + username + ", " + name + ", " + profileImage + ", " + email);
         return new GoogleUserInfoDto(id, name, profileImage, email, username);
     }
 

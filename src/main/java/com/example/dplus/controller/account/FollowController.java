@@ -2,9 +2,9 @@ package com.example.dplus.controller.account;
 
 
 import com.example.dplus.dto.Success;
-import com.example.dplus.dto.request.AccountRequestDto.AccountVisit;
 import com.example.dplus.jwt.UserDetailsImpl;
 import com.example.dplus.service.account.follow.FollowService;
+import com.example.dplus.dto.request.AccountRequestDto.AccountVisit;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -4,9 +4,9 @@ package com.example.dplus.controller.artwork;
 import com.example.dplus.advice.ErrorCode;
 import com.example.dplus.advice.ErrorCustomException;
 import com.example.dplus.dto.Success;
-import com.example.dplus.dto.request.ArtWorkRequestDto.ArtWorkComment;
 import com.example.dplus.jwt.UserDetailsImpl;
 import com.example.dplus.service.artwork.comment.ArtWorkCommentService;
+import com.example.dplus.dto.request.ArtWorkRequestDto.ArtWorkComment;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,13 +35,19 @@ public class ArtWorkCommentController {
     public ResponseEntity<Success> updateComment(@PathVariable Long comment_id,
                                                  @Valid @RequestBody ArtWorkComment data,
                                                  @AuthenticationPrincipal UserDetailsImpl user) {
-        artWorkCommentService.updateComment(comment_id,data,user.getUser().getId());
-        return new ResponseEntity<>(new Success("코멘트 수정 완료","" ), HttpStatus.OK);
+        if (user != null) {
+            artWorkCommentService.updateComment(comment_id, data, user.getUser().getId());
+            return new ResponseEntity<>(new Success("코멘트 수정 완료", ""), HttpStatus.OK);
+        }
+        throw new ErrorCustomException(ErrorCode.NO_AUTHENTICATION_ERROR);
     }
     @DeleteMapping("{comment_id}")
     public ResponseEntity<Success> updateComment(@PathVariable Long comment_id,
                                                  @AuthenticationPrincipal UserDetailsImpl user) {
-        artWorkCommentService.deleteComment(comment_id,user.getUser().getId());
-        return new ResponseEntity<>(new Success("코멘트 삭제 완료","" ), HttpStatus.OK);
+        if (user != null) {
+            artWorkCommentService.deleteComment(comment_id, user.getUser().getId());
+            return new ResponseEntity<>(new Success("코멘트 삭제 완료", ""), HttpStatus.OK);
+        }
+        throw new ErrorCustomException(ErrorCode.NO_AUTHENTICATION_ERROR);
     }
 }
