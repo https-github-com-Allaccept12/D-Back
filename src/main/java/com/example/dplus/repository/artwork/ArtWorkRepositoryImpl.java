@@ -1,6 +1,7 @@
 package com.example.dplus.repository.artwork;
 
 import com.example.dplus.dto.response.ArtWorkResponseDto;
+import com.example.dplus.dto.response.ArtWorkResponseDto.ArtWorkBookMark;
 import com.example.dplus.dto.response.ArtWorkResponseDto.ArtWorkFeed;
 import com.example.dplus.dto.response.ArtWorkResponseDto.ArtworkMain;
 import com.example.dplus.dto.response.ArtWorkResponseDto.MyArtWork;
@@ -16,7 +17,6 @@ import java.util.Objects;
 import static com.example.dplus.domain.account.QAccount.account;
 import static com.example.dplus.domain.account.QFollow.follow;
 import static com.example.dplus.domain.artwork.QArtWorkBookMark.artWorkBookMark;
-import static com.example.dplus.domain.artwork.QArtWorkImage.artWorkImage;
 import static com.example.dplus.domain.artwork.QArtWorkLikes.artWorkLikes;
 import static com.example.dplus.domain.artwork.QArtWorks.artWorks;
 
@@ -71,18 +71,17 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
     }
 
     @Override
-    public List<ArtWorkResponseDto.ArtWorkBookMark> findArtWorkBookMarkByAccountId(Long lastArtWorkId, Long accountId) {
+    public List<ArtWorkBookMark> findArtWorkBookMarkByAccountId(Long lastArtWorkId, Long accountId) {
         return queryFactory
-                .select(Projections.constructor(ArtWorkResponseDto.ArtWorkBookMark.class,
+                .select(Projections.constructor(ArtWorkBookMark.class,
                         artWorks.id,
                         artWorks.account.nickname,
-                        artWorkImage.artworkImg,
+                        artWorks.thumbnail,
                         artWorks.view,
                         artWorkLikes.count()
                 ))
                 .from(artWorks)
                 .join(artWorkBookMark).on(artWorkBookMark.artWorks.eq(artWorks))
-                .join(artWorkImage).on(artWorkImage.artWorks.eq(artWorks))
                 .leftJoin(artWorkLikes).on(artWorkLikes.artWorks.eq(artWorks))
                 .limit(10)
                 .where(artWorkBookMark.account.id.eq(accountId)
@@ -191,7 +190,7 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
                         artWorks.created
                 ))
                 .from(artWorks)
-                .join(account).on(account.id.eq(artWorks.account.id))
+                .join(artWorks.account,account)
                 .leftJoin(artWorkLikes).on(artWorkLikes.artWorks.eq(artWorks))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())

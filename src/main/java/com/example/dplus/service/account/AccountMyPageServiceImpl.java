@@ -14,6 +14,7 @@ import com.example.dplus.dto.response.AccountResponseDto.MyAnswer;
 import com.example.dplus.dto.response.AccountResponseDto.MyComment;
 import com.example.dplus.dto.response.AccountResponseDto.MyPost;
 import com.example.dplus.dto.response.ArtWorkResponseDto;
+import com.example.dplus.dto.response.ArtWorkResponseDto.ArtWorkBookMark;
 import com.example.dplus.dto.response.ArtWorkResponseDto.MyArtWork;
 import com.example.dplus.dto.response.HistoryResponseDto;
 import com.example.dplus.repository.account.AccountRepository;
@@ -152,7 +153,7 @@ public class AccountMyPageServiceImpl implements AccountMyPageService {
 
     //마이페이지/북마크
     @Transactional(readOnly = true)
-    public List<ArtWorkResponseDto.ArtWorkBookMark> showAccountArtWorkBookMark(Long lastArtWorkId,final Long accountId) {
+    public List<ArtWorkBookMark> showAccountArtWorkBookMark(final Long lastArtWorkId, final Long accountId) {
         return artWorkRepository.findArtWorkBookMarkByAccountId(lastArtWorkId,accountId);
     }
 
