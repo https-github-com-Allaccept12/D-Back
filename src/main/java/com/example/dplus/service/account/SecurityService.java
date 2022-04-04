@@ -10,7 +10,7 @@ import com.example.dplus.service.RedisService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -20,13 +20,12 @@ public class SecurityService {
     private final JwtTokenProvider jwtTokenProvider;
     private final RedisService redisService;
 
-    @Transactional
+    @Transactional(readOnly = true)
     public TokenResponseDto refresh(String accessToken, String refreshToken) {
         // 리프레시 토큰 기간 만료 에러
         if (!jwtTokenProvider.validateRefreshToken(refreshToken)) {
-            throw new ErrorCustomException(ErrorCode.TOKEN_EXPIRATION_ERROR);
+            throw new ErrorCustomException(ErrorCode.REFRESH_EXPIRATION_ERROR);
         }
-
         Long userPk = Long.parseLong(jwtTokenProvider.getUserPk(refreshToken));
         String getRefreshToken = redisService.getValues(userPk);
         Account account = accountRepository.findById(userPk)

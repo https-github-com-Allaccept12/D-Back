@@ -90,11 +90,6 @@ public class ArtWorkRequestDto {
 
     }
 
-    @Getter
-    @NoArgsConstructor
-    public static class ArtWorkPortFolioUpdate {
-        private List<Long> artwork_feed;
-    }
 
 
 

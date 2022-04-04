@@ -12,9 +12,9 @@ import java.util.List;
 
 public interface ArtworkMainService {
 
-    List<ArtworkMain> showArtworkMain(Long accountId, Long artworkId,String category);
+    List<ArtworkMain> showArtworkMain(Long artworkId,String category);
 
-    List<ArtworkMain> showArtWorkLikeSort(Long accountId, String category, int start);
+    List<ArtworkMain> showArtWorkLikeSort(String category, int start);
 
     int createArtwork(Long accountId, ArtWorkCreate artWorkCreate, List<MultipartFile> multipartFiles);
 
@@ -26,7 +26,7 @@ public interface ArtworkMainService {
 
     MainResponseDto mostPopularArtWork(Long accountId,String interest);
 
-    List<ArtworkMain> findBySearchKeyWord(String keyword,Long lastId,  Long accountId);
+    List<ArtworkMain> findBySearchKeyWord(String keyword,Long lastId);
 
     List<ArtworkMain> findByFollowerArtWork(Long accountId,String category, Long lastArtWorkId);
 

@@ -47,14 +47,6 @@ public class History  {
         this.account = account;
     }
 
-    public void updateHistory(final HistoryRequestDto.HistoryUpdate dto) {
-        this.companyName = dto.getCompany_name();
-        this.companyDepartment = dto.getCompany_department();
-        this.companyPosition = dto.getCompany_position();
-        this.workStart = dto.getWork_start();
-        this.workEnd = dto.getWork_end();
-        this.achievements = dto.getAchievements();
-    }
 
     public static History toEntity(HistoryRequestDto.HistoryUpdate dto, Account account) {
         return History.builder()

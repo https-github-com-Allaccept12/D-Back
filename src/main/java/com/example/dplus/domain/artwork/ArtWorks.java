@@ -109,9 +109,6 @@ public class ArtWorks extends BaseEntity {
         this.thumbnail = thumbnail;
     }
 
-    public void deleteArtWork() {
-        this.account.getArtWorksList().remove(this);
-    }
 
     public static ArtWorks of(Account account, ArtWorkCreate dto) {
         return ArtWorks.builder()

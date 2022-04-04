@@ -1,13 +1,12 @@
 package com.example.dplus.dto.response;
-
 import com.example.dplus.domain.artwork.ArtWorkImage;
 import com.example.dplus.dto.common.CommonDto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class ArtWorkResponseDto {
@@ -24,7 +23,6 @@ public class ArtWorkResponseDto {
         private String img;
         private Long view_count;
         private Long like_count;
-        private Boolean is_like;
         private Timestamp create_time;
 
         @Builder
@@ -40,9 +38,7 @@ public class ArtWorkResponseDto {
             this.category = category;
             this.account_nickname = account_nickname;
         }
-        public void setLikeCountAndIsLike(Boolean is_like) {
-            this.is_like = is_like;
-        }
+
     }
 
     @Getter
@@ -138,16 +134,33 @@ public class ArtWorkResponseDto {
     public static class ArtWorkFeed {
 
         private Long artwork_id;
-        private Boolean scope;
         private String img;
         private Boolean is_master;
 
         @Builder
-        public ArtWorkFeed(final Long artwork_id,final Boolean scope,final String img, final Boolean is_master) {
+        public ArtWorkFeed(final Long artwork_id,final String img, final Boolean is_master) {
             this.artwork_id = artwork_id;
-            this.scope = scope;
             this.img = img;
             this.is_master = is_master;
+        }
+    }
+    @Getter
+    @NoArgsConstructor
+    public static class MyArtWork {
+
+        private Long artwork_id;
+        private String img;
+        private Boolean scope;
+        private Boolean is_master;
+        private String category;
+
+        @Builder
+        public MyArtWork(final Long artwork_id,final String img, final Boolean is_scope,final Boolean is_master,final String category) {
+            this.artwork_id = artwork_id;
+            this.img = img;
+            this.scope = is_scope;
+            this.is_master = is_master;
+            this.category = category;
         }
     }
 
@@ -158,11 +171,6 @@ public class ArtWorkResponseDto {
     public static class ArtWorkSimilarWork {
         private Long artwork_id;
         private String artwork_title;
-        private String account_nickname;
-        private String acccount_tendency;
-        private String linkedIn;
-        private String brunch;
-        private String instagram;
         private String img;
 
         public ArtWorkSimilarWork(final Long artwork_id,final String artwork_title,final String img) {
@@ -197,15 +205,20 @@ public class ArtWorkResponseDto {
     public static class ArtWorkComment {
         private Long account_id;
         private Long comment_id;
+        private String account_nickname;
+        private String account_profile;
         private String content;
         private Timestamp modify_time;
 
         @Builder
-        public ArtWorkComment(final Long account_id, final Long comment_id, final String content, final Timestamp modify_time) {
+        public ArtWorkComment(final Long account_id, final Long comment_id, final String content, final Timestamp modify_time,
+                              final String account_nickname, final String account_profile) {
             this.account_id = account_id;
             this.comment_id = comment_id;
             this.content = content;
             this.modify_time = modify_time;
+            this.account_nickname = account_nickname;
+            this.account_profile = account_profile;
         }
     }
 

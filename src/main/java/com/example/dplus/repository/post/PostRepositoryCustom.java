@@ -1,7 +1,6 @@
 package com.example.dplus.repository.post;
 
 import com.example.dplus.domain.post.Post;
-import com.example.dplus.dto.response.AccountResponseDto;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
@@ -22,7 +21,7 @@ public interface PostRepositoryCustom {
 
     List<Post> findBySimilarPost(String category, String board, Long postId);
 
-    List<AccountResponseDto.MyPost> findPostByAccountIdAndBoard(Long accountId, String board, Pageable pageable);
+    List<Post> findPostByAccountIdAndBoard(Long accountId, String board, Pageable pageable);
 
-    List<AccountResponseDto.MyPost> findPostBookMarkByAccountId(Long accountId, String board, Pageable pageable);
+    List<Post> findPostBookMarkByAccountId(Long accountId, String board, Pageable pageable);
 }

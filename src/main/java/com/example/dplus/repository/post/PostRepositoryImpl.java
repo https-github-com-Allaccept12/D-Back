@@ -2,8 +2,6 @@ package com.example.dplus.repository.post;
 
 import com.example.dplus.domain.post.Post;
 import com.example.dplus.domain.post.PostBoard;
-import com.example.dplus.dto.response.AccountResponseDto;
-import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +12,6 @@ import java.util.List;
 import static com.example.dplus.domain.account.QAccount.account;
 import static com.example.dplus.domain.post.QPost.post;
 import static com.example.dplus.domain.post.QPostBookMark.postBookMark;
-import static com.example.dplus.domain.post.QPostLikes.postLikes;
 import static com.example.dplus.domain.post.QPostTag.postTag;
 
 @RequiredArgsConstructor
@@ -82,9 +79,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                 .fetch();
     }
 
-    public BooleanExpression isLastPostId(Long lastPostId){
-        return lastPostId != 0 ? post.id.lt(lastPostId) : null;
-    }
+
 
     // 유사한 질문
     @Override
@@ -104,19 +99,10 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
 
     // 나의 질문
     @Override
-    public List<AccountResponseDto.MyPost> findPostByAccountIdAndBoard(Long accountId, String board, Pageable pageable) {
+    public List<Post> findPostByAccountIdAndBoard(Long accountId, String board, Pageable pageable) {
         return queryFactory
-                .select(Projections.constructor(AccountResponseDto.MyPost.class,
-                        post.id,
-                        post.title,
-                        post.content,
-                        postLikes.count(),
-                        post.created,
-                        post.modified,
-                        account.profileImg))
-                .from(post)
+                .selectFrom(post)
                 .join(post.account, account).on(account.id.eq(accountId))
-                .leftJoin(postLikes).on(postLikes.post.eq(post))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .where(post.board.eq(PostBoard.valueOf(board)))
@@ -127,28 +113,21 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
 
     // 내가 스크랩한 글
     @Override
-    public List<AccountResponseDto.MyPost> findPostBookMarkByAccountId(Long accountId, String board, Pageable pageable) {
+    public List<Post> findPostBookMarkByAccountId(Long accountId, String board, Pageable pageable) {
         return queryFactory
-                .select(Projections.constructor(AccountResponseDto.MyPost.class,
-                        post.id,
-                        post.title,
-                        post.content,
-                        postLikes.count(),
-                        post.created,
-                        post.modified,
-                        post.account.profileImg
-                ))
-                .from(post)
+                .selectFrom(post)
                 .join(postBookMark).on(postBookMark.post.eq(post))
-                .leftJoin(postLikes).on(postLikes.post.eq(post))
-                .where(postBookMark.account.id.eq(accountId), post.board.eq(PostBoard.valueOf(board)))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
+                .where(postBookMark.account.id.eq(accountId), post.board.eq(PostBoard.valueOf(board)))
                 .groupBy(post.id)
                 .orderBy(post.created.desc())
                 .fetch();
     }
     private BooleanExpression isCategory(String category) {
         return category.isEmpty() ? null : post.category.eq(category);
+    }
+    public BooleanExpression isLastPostId(Long lastPostId){
+        return lastPostId != 0 ? post.id.lt(lastPostId) : null;
     }
 }

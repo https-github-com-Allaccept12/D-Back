@@ -32,17 +32,17 @@ public class FollowController {
         followService.unFollow(accountId.getAccount_id(),user.getUser().getId());
         return new ResponseEntity<>(new Success("언 팔로우 했습니다.", ""), HttpStatus.OK);
     }
-    //팔로워리스트
-    @GetMapping("/follower")
-    public ResponseEntity<Success> followerList(@RequestBody AccountVisit dto) {
-        return new ResponseEntity<>(new Success("팔로워 리스트",
-                followService.findFollowingList(dto.getAccount_id())),HttpStatus.OK);
-    }
     //팔로잉리스트
     @GetMapping("/following")
-    public ResponseEntity<Success> followingList(@RequestBody AccountVisit dto) {
+    public ResponseEntity<Success> followerList(@RequestParam("account_id") Long accountId) {
+        return new ResponseEntity<>(new Success("팔로워 리스트",
+                followService.findFollowingList(accountId)),HttpStatus.OK);
+    }
+    //팔로워리스트
+    @GetMapping("/follower")
+    public ResponseEntity<Success> followingList(@RequestParam("account_id") Long accountId) {
         return new ResponseEntity<>(new Success("팔로잉 리스트",
-                followService.findFollowerList(dto.getAccount_id())),HttpStatus.OK);
+                followService.findFollowerList(accountId)),HttpStatus.OK);
     }
 }
 

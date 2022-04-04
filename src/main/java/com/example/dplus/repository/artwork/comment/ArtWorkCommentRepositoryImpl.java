@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
+import static com.example.dplus.domain.account.QAccount.account;
 import static com.example.dplus.domain.artwork.QArtWorkComment.artWorkComment;
 import static com.example.dplus.domain.artwork.QArtWorks.artWorks;
 
@@ -23,10 +24,14 @@ public class ArtWorkCommentRepositoryImpl implements ArtWorkCommentRepositoryCus
                         artWorkComment.account.id,
                         artWorkComment.id,
                         artWorkComment.content,
-                        artWorkComment.modified
+                        artWorkComment.modified,
+                        account.nickname,
+                        account.profileImg
                         ))
                 .from(artWorkComment)
-                .join(artWorkComment.artWorks,artWorks).on(artWorks.id.eq(artWorkId))
+                .join(artWorkComment.account,account)
+                .join(artWorkComment.artWorks,artWorks)
+                .where(artWorks.id.eq(artWorkId))
                 .fetch();
     }
 }

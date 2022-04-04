@@ -8,5 +8,6 @@ import java.util.List;
 public interface PostAnswerRepository extends JpaRepository<PostAnswer, Long>, PostAnswerRepositoryCustom {
     Long countByPostId(Long postId);
     void deleteAllByPostId(Long postId);
+
     List<PostAnswer> findAllByPostId(Long postId);
 }

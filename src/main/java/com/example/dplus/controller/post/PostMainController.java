@@ -31,7 +31,6 @@ public class PostMainController {
         return new ResponseEntity<>(new Success("디플 메인 페이지",
                 postMainPageService.showPostRecommendation(board)), HttpStatus.OK);
     }
-
     // 카테고리별 최신순
     @GetMapping("/category/{category}/{last_post_id}/{board}")
     public ResponseEntity<Success> postMainByCategory(@PathVariable String category,
@@ -50,9 +49,9 @@ public class PostMainController {
                 postMainPageService.showPostMainLikeSort(start, board, category)), HttpStatus.OK);
     }
 
-    // 상세 목록
+    // 상세
     @GetMapping("/{post_id}")
-    public ResponseEntity<Success> postDetail(@AuthenticationPrincipal UserDetailsImpl user,
+    public ResponseEntity<Success> postDetail(@RequestParam(value = "visitor_account_id",required = false) Long user,
                                               @PathVariable Long post_id) {
         Long accountId = getaLong(user);
         return new ResponseEntity<>(new Success("디플 상세 페이지",
@@ -100,22 +99,20 @@ public class PostMainController {
 
     // 게시물 검색
     @GetMapping("/search/{last_post_id}/{board}/{keyword}")
-    public ResponseEntity<Success> postSearch(@AuthenticationPrincipal UserDetailsImpl user,
-                                              @PathVariable Long last_post_id,
+    public ResponseEntity<Success> postSearch(@PathVariable Long last_post_id,
                                               @PathVariable String board,
                                               @PathVariable String keyword) {
-        Long accountId = getaLong(user);
         if (keyword == null) {
             throw new ErrorCustomException(ErrorCode.NON_KEYWORD_ERROR);
         }
         return new ResponseEntity<>(new Success("게시물 검색 완료",
-                postMainPageService.findBySearchKeyWord(keyword, last_post_id, accountId, board)), HttpStatus.OK);
+                postMainPageService.findByPostSearchKeyWord(keyword, last_post_id, board)), HttpStatus.OK);
 
     }
 
     // 질문글 상세 조회
     @GetMapping("/question/{post_id}")
-    public ResponseEntity<Success> postQuestionDetail (@AuthenticationPrincipal UserDetailsImpl user,
+    public ResponseEntity<Success> postQuestionDetail (@RequestParam(value = "visitor_account_id",required = false) Long user,
                                                        @PathVariable Long post_id){
         Long accountId = getaLong(user);
         return new ResponseEntity<>(new Success("디플 질문 상세페이지 조회",
@@ -124,20 +121,16 @@ public class PostMainController {
 
     // 유사한 질문 조회
     @GetMapping("/question/similar/{category}/{post_id}")
-    public ResponseEntity<Success> similarQuestion (@AuthenticationPrincipal UserDetailsImpl user,
-                                                    @PathVariable String category,
+    public ResponseEntity<Success> similarQuestion (@PathVariable String category,
                                                     @PathVariable Long post_id){
-        Long accountId = getaLong(user);
         return new ResponseEntity<>(new Success("유사한 질문 리스트",
-                postMainPageService.similarQuestion(category, accountId, post_id)), HttpStatus.OK);
+                postMainPageService.similarQuestion(category, post_id)), HttpStatus.OK);
 
     }
-    private Long getaLong(UserDetailsImpl user) {
-        Long accountId ;
+    private Long getaLong(Long user) {
+        long accountId = 0L ;
         if (user != null) {
-            accountId = user.getUser().getId();
-        } else {
-            accountId = 0L;
+            accountId = user;
         }
         return accountId;
     }

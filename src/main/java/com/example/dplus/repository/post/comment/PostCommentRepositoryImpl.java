@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 import static com.example.dplus.domain.account.QAccount.account;
+import static com.example.dplus.domain.post.QPost.post;
 import static com.example.dplus.domain.post.QPostComment.postComment;
 import static com.example.dplus.domain.post.QPostCommentLikes.postCommentLikes;
 
@@ -48,10 +49,12 @@ public class PostCommentRepositoryImpl implements PostCommentRepositoryCustom{
                         postCommentLikes.count(),
                         postComment.created,
                         postComment.modified,
-                        account.profileImg
+                        account.profileImg,
+                        post.id
                 ))
                 .from(postComment)
                 .join(postComment.account, account).on(account.id.eq(accountId))
+                .join(postComment.post, post).on(post.account.id.eq(accountId))
                 .leftJoin(postCommentLikes).on(postComment.id.eq(postCommentLikes.postComment.id))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())

@@ -20,10 +20,10 @@ import javax.validation.Valid;
 public class PostAnswerController {
     private final PostAnswerService postAnswerService;
 
-    @PostMapping("/answer/{post_id}")
+    @PostMapping(value = "/answer/{post_id}",produces = "application/json;charset=utf-8")
     public ResponseEntity<Success> createPostAnswer(@AuthenticationPrincipal UserDetailsImpl user,
                                                     @PathVariable Long post_id,
-                                                    @Valid @RequestBody PostRequestDto.PostAnswer dto) {
+                                                    @RequestBody PostRequestDto.PostAnswer dto) {
         if (user != null) {
             return new ResponseEntity<>(new Success("질문글 답변 등록 완료",
                     postAnswerService.createAnswer(dto, post_id, user.getUser().getId())), HttpStatus.OK);

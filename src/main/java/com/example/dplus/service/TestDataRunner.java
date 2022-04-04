@@ -1,17 +1,14 @@
 package com.example.dplus.service;
 
-import com.example.dplus.domain.account.Account;
-import com.example.dplus.domain.account.Rank;
-import com.example.dplus.domain.post.*;
 import com.example.dplus.repository.account.AccountRepository;
 import com.example.dplus.repository.account.rank.RankRepository;
 import com.example.dplus.repository.post.PostRepository;
 import com.example.dplus.repository.post.answer.PostAnswerRepository;
 import com.example.dplus.repository.post.bookmark.PostBookMarkRepository;
-import com.example.dplus.repository.post.comment.PostCommentLikesRepository;
 import com.example.dplus.repository.post.comment.PostCommentRepository;
 import com.example.dplus.repository.post.image.PostImageRepository;
 import com.example.dplus.repository.post.like.PostAnswerLikesRepository;
+import com.example.dplus.repository.post.like.PostCommentLikesRepository;
 import com.example.dplus.repository.post.like.PostLikesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;

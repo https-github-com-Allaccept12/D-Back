@@ -3,13 +3,8 @@ package com.example.dplus.repository.post.tag;
 import com.example.dplus.domain.post.PostTag;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.List;
-import java.util.Optional;
-
-public interface PostTagRepository extends JpaRepository<PostTag, Long>, PostTagRepositoryCustom {
+public interface PostTagRepository extends JpaRepository<PostTag, Long> {
 
     void deleteAllByPostId(Long postId);
-
-    List<PostTag> findPostTagsByPostId(Long postId);
 
 }

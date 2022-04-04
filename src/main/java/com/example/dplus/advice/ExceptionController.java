@@ -26,19 +26,19 @@ public class ExceptionController {
     public ResponseEntity<Fail> handleApiRequestErrorException(MethodArgumentNotValidException ex) {
         Fail restApiException = new Fail(ex + " " + ex.getLocalizedMessage() );
         log.error(ex.getMessage());
-        return new ResponseEntity<>(restApiException, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(restApiException, HttpStatus.OK);
     }
     @ExceptionHandler(value = {MissingServletRequestParameterException.class})
     public ResponseEntity<Fail> handleMissingRequestParameterErrorException(MethodArgumentNotValidException ex) {
         Fail restApiException = new Fail("API 파라미터값을 잘못입력했거나 입력하지 않았습니다.");
         log.error(ex.getMessage());
-        return new ResponseEntity<>(restApiException, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(restApiException, HttpStatus.OK);
     }
     @ExceptionHandler(value = {HttpRequestMethodNotSupportedException.class})
     public ResponseEntity<Fail> handleNotSupportedRequestErrorException(MethodArgumentNotValidException ex) {
         Fail restApiException = new Fail("Request 메서드 입력을 잘 못했습니다");
         log.error(ex.getMessage());
-        return new ResponseEntity<>(restApiException, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(restApiException, HttpStatus.OK);
     }
 
 //    @ExceptionHandler(Exception.class)
