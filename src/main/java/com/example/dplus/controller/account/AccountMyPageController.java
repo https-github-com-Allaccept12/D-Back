@@ -27,7 +27,7 @@ public class AccountMyPageController {
 
 
     @GetMapping("")
-    public ResponseEntity<Success> accountInfo(@AuthenticationPrincipal UserDetailsImpl user,
+    public ResponseEntity<Success> accountInfo(@RequestParam(value = "visitor_account_id",required = false) Long user,
                                                @RequestParam("owner_account_id") Long ownerAccountId) {
         Long accountId = getaLong(user);
         return new ResponseEntity<>(new Success("마이페이지 기본정보 조회",
@@ -57,7 +57,7 @@ public class AccountMyPageController {
 
     @GetMapping("/artwork/{last_artwork_id}")
     public ResponseEntity<Success> accountArtWorkList(@PathVariable Long last_artwork_id,
-                                                      @AuthenticationPrincipal UserDetailsImpl user,
+                                                      @RequestParam(value = "visitor_account_id",required = false) Long user,
                                                       @RequestParam("owner_account_id") Long ownerAccountId) {
         Long accountId = getaLong(user);
         return new ResponseEntity<>(new Success("유저 작품 목록",
@@ -81,9 +81,9 @@ public class AccountMyPageController {
     //내 북마크
     @GetMapping("/bookmark/{last_artwork_id}")
     public ResponseEntity<Success> ArtWorkBookmarkList(@PathVariable Long last_artwork_id,
-                                                       @AuthenticationPrincipal UserDetailsImpl user) {
+                                                       @RequestParam(value = "visitor_account_id",required = false) Long user) {
         return new ResponseEntity<>(new Success("작품 북마크 목록",
-                accountMyPageService.showAccountArtWorkBookMark(last_artwork_id,user.getUser().getId())),HttpStatus.OK);
+                accountMyPageService.showAccountArtWorkBookMark(last_artwork_id,user)),HttpStatus.OK);
     }
 
     @DeleteMapping("/masterpiece/{artwork_id}")
@@ -126,38 +126,36 @@ public class AccountMyPageController {
     @GetMapping("/community/myPost/{board}")
     public ResponseEntity<Success> myPost(@PathVariable String board,
                                           @RequestParam("start") int start,
-                                          @AuthenticationPrincipal UserDetailsImpl user) {
+                                          @RequestParam("visitor_account_id") Long user) {
         return new ResponseEntity<>(new Success("나의 Post",
-                accountMyPageService.getMyPost(user.getUser().getId(), board,start)),HttpStatus.OK);
+                accountMyPageService.getMyPost(user,board,start)),HttpStatus.OK);
     }
 
     @GetMapping("/community/post/bookmark/{board}")
     public ResponseEntity<Success> myMyBookMarkPost(@PathVariable String board,
                                                     @RequestParam("start") int start,
-                                                    @AuthenticationPrincipal UserDetailsImpl user) {
+                                                    @RequestParam("visitor_account_id") Long user) {
         return new ResponseEntity<>(new Success("내가 스크랩한 글",
-                accountMyPageService.getMyBookMarkPost(user.getUser().getId(), board,start)),HttpStatus.OK);
+                accountMyPageService.getMyBookMarkPost(user,board,start)),HttpStatus.OK);
     }
 
     @GetMapping("/community/myanswer")
-    public ResponseEntity<Success> getMyAnswer(@AuthenticationPrincipal UserDetailsImpl user,
+    public ResponseEntity<Success> getMyAnswer(@RequestParam("visitor_account_id") Long user,
                                                @RequestParam("start") int start) {
         return new ResponseEntity<>(new Success("나의 답글",
-                accountMyPageService.getMyAnswer(user.getUser().getId(),start)),HttpStatus.OK);
+                accountMyPageService.getMyAnswer(user,start)),HttpStatus.OK);
     }
 
     @GetMapping("/community/mycomment")
-    public ResponseEntity<Success> getMyComment(@AuthenticationPrincipal UserDetailsImpl user,
+    public ResponseEntity<Success> getMyComment(@RequestParam("visitor_account_id") Long user,
                                                 @RequestParam("start") int start) {
         return new ResponseEntity<>(new Success("나의 댓글",
-                accountMyPageService.getMyComment(user.getUser().getId(),start)),HttpStatus.OK);
+                accountMyPageService.getMyComment(user,start)),HttpStatus.OK);
     }
-    private Long getaLong(UserDetailsImpl user) {
-        Long accountId ;
+    private Long getaLong(Long user) {
+        long accountId  = 0L;
         if (user != null) {
-            accountId = user.getUser().getId();
-        } else {
-            accountId = 0L;
+            accountId = user;
         }
         return accountId;
     }

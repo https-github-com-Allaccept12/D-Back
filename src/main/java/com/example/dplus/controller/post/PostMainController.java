@@ -55,7 +55,7 @@ public class PostMainController {
 
     // 상세 목록
     @GetMapping("/{post_id}")
-    public ResponseEntity<Success> postDetail(@AuthenticationPrincipal UserDetailsImpl user,
+    public ResponseEntity<Success> postDetail(@RequestParam(value = "visitor_account_id",required = false) Long user,
                                               @PathVariable Long post_id) {
         Long accountId = getaLong(user);
         return new ResponseEntity<>(new Success("디플 상세 페이지",
@@ -104,7 +104,7 @@ public class PostMainController {
 
     // 게시물 검색
     @GetMapping("/search/{last_post_id}/{board}/{keyword}")
-    public ResponseEntity<Success> postSearch(@AuthenticationPrincipal UserDetailsImpl user,
+    public ResponseEntity<Success> postSearch(@RequestParam(value = "visitor_account_id",required = false) Long user,
                                               @PathVariable Long last_post_id,
                                               @PathVariable String board,
                                               @PathVariable String keyword) {
@@ -119,7 +119,7 @@ public class PostMainController {
 
     // 질문글 상세 조회
     @GetMapping("/question/{post_id}")
-    public ResponseEntity<Success> postQuestionDetail (@AuthenticationPrincipal UserDetailsImpl user,
+    public ResponseEntity<Success> postQuestionDetail (@RequestParam(value = "visitor_account_id",required = false) Long user,
                                                        @PathVariable Long post_id){
         Long accountId = getaLong(user);
         return new ResponseEntity<>(new Success("디플 질문 상세페이지 조회",
@@ -128,7 +128,7 @@ public class PostMainController {
 
     // 유사한 질문 조회
     @GetMapping("/question/similar/{category}/{post_id}")
-    public ResponseEntity<Success> similarQuestion (@AuthenticationPrincipal UserDetailsImpl user,
+    public ResponseEntity<Success> similarQuestion (@RequestParam(value = "visitor_account_id",required = false) Long user,
                                                     @PathVariable String category,
                                                     @PathVariable Long post_id){
         Long accountId = getaLong(user);
@@ -136,12 +136,10 @@ public class PostMainController {
                 postMainPageService.similarQuestion(category, accountId, post_id)), HttpStatus.OK);
 
     }
-    private Long getaLong(UserDetailsImpl user) {
-        Long accountId ;
+    private Long getaLong(Long user) {
+        long accountId = 0L ;
         if (user != null) {
-            accountId = user.getUser().getId();
-        } else {
-            accountId = 0L;
+            accountId = user;
         }
         return accountId;
     }

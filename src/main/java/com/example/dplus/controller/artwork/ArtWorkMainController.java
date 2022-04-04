@@ -28,21 +28,20 @@ public class ArtWorkMainController {
     private final ArtworkMainService artworkMainService;
 
     @GetMapping("/")
-    public ResponseEntity<Success> main(@AuthenticationPrincipal UserDetailsImpl user) {
-        Long accountId ;
-        String interest = "default";
+    public ResponseEntity<Success> main(@RequestParam(value = "visitor_account_id",required = false) Long user,
+                                        @RequestParam(value = "interest",required = false) String interest) {
+        long accountId = 0L ;
+        String interested = "default";
         if (user != null) {
-            accountId = user.getUser().getId();
-            interest = user.getUser().getInterest();
-        } else {
-            accountId = 0L;
+            accountId = user;
+            interested = interest;
         }
         return new ResponseEntity<>(new Success("메인 페이지",
-                artworkMainService.mostPopularArtWork(accountId,interest)), HttpStatus.OK);
+                artworkMainService.mostPopularArtWork(accountId,interested)), HttpStatus.OK);
     }
 
     @GetMapping("/api/artwork/{last_artwork_id}")
-    public ResponseEntity<Success> artWorkMain(@AuthenticationPrincipal UserDetailsImpl user,
+    public ResponseEntity<Success> artWorkMain(@RequestParam(value = "visitor_account_id",required = false) Long user,
                                                @PathVariable Long last_artwork_id) {
         Long accountId = getaLong(user);
         return new ResponseEntity<>(new Success("모아보기",
@@ -50,7 +49,7 @@ public class ArtWorkMainController {
     }
 
     @GetMapping("/api/artwork/category/{category}/{last_artwork_id}")
-    public ResponseEntity<Success> artWorkCategory(@AuthenticationPrincipal UserDetailsImpl user,
+    public ResponseEntity<Success> artWorkCategory(@RequestParam(value = "visitor_account_id",required = false) Long user,
                                                    @PathVariable String category,
                                                    @PathVariable Long last_artwork_id) {
         Long accountId = getaLong(user);
@@ -59,7 +58,7 @@ public class ArtWorkMainController {
     }
 
     @GetMapping("/api/artwork/sort/{category}")
-    public ResponseEntity<Success> artWorkLikeSort(@AuthenticationPrincipal UserDetailsImpl user,
+    public ResponseEntity<Success> artWorkLikeSort(@RequestParam(value = "visitor_account_id",required = false) Long user,
                                                    @PathVariable String category,
                                                    @RequestParam("start") int start) {
         Long accountId = getaLong(user);
@@ -68,12 +67,12 @@ public class ArtWorkMainController {
     }
 
     @GetMapping("/api/artwork/sort-follow/{category}/{last_artwork_id}")
-    public ResponseEntity<Success> artWorkSortFollow(@AuthenticationPrincipal UserDetailsImpl user,
+    public ResponseEntity<Success> artWorkSortFollow(@RequestParam(value = "visitor_account_id") Long user,
                                                      @PathVariable Long last_artwork_id,
                                                      @PathVariable String category) {
         if (user != null) {
             return new ResponseEntity<>(new Success("팔로우한 작가 작업물",
-                    artworkMainService.findByFollowerArtWork(user.getUser().getId(), category, last_artwork_id)), HttpStatus.OK);
+                    artworkMainService.findByFollowerArtWork(user, category, last_artwork_id)), HttpStatus.OK);
         }
         throw new ErrorCustomException(ErrorCode.NO_AUTHENTICATION_ERROR);
     }
@@ -115,7 +114,7 @@ public class ArtWorkMainController {
     }
 
     @GetMapping("/api/artwork/detail/{artwork_id}")
-    public ResponseEntity<Success> artWorkDetail(@AuthenticationPrincipal UserDetailsImpl user,
+    public ResponseEntity<Success> artWorkDetail(@RequestParam(value = "visitor_account_id",required = false) Long user,
                                                  @PathVariable Long artwork_id) {
         Long accountId = getaLong(user);
         return new ResponseEntity<>(new Success("작품 상세",
@@ -123,7 +122,7 @@ public class ArtWorkMainController {
     }
 
     @GetMapping("/api/artwork/search/{last_artwork_id}/{keyword}")
-    public ResponseEntity<Success> artWorkSearch(@AuthenticationPrincipal UserDetailsImpl user,
+    public ResponseEntity<Success> artWorkSearch(@RequestParam(value = "visitor_account_id",required = false) Long user,
                                                  @PathVariable Long last_artwork_id,
                                                  @PathVariable String keyword) {
         Long accountId = getaLong(user);
@@ -134,12 +133,10 @@ public class ArtWorkMainController {
                 artworkMainService.findBySearchKeyWord(keyword,last_artwork_id,accountId)),HttpStatus.OK);
     }
 
-    private Long getaLong(UserDetailsImpl user) {
-        Long accountId ;
+    private Long getaLong(Long user) {
+        long accountId = 0L;
         if (user != null) {
-            accountId = user.getUser().getId();
-        } else {
-            accountId = 0L;
+            accountId = user;
         }
         return accountId;
     }
