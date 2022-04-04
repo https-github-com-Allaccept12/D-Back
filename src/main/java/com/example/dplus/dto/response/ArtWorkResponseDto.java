@@ -203,15 +203,20 @@ public class ArtWorkResponseDto {
     public static class ArtWorkComment {
         private Long account_id;
         private Long comment_id;
+        private String account_nickname;
+        private String account_profile;
         private String content;
         private Timestamp modify_time;
 
         @Builder
-        public ArtWorkComment(final Long account_id, final Long comment_id, final String content, final Timestamp modify_time) {
+        public ArtWorkComment(final Long account_id, final Long comment_id, final String content, final Timestamp modify_time,
+                              final String account_nickname, final String account_profile) {
             this.account_id = account_id;
             this.comment_id = comment_id;
             this.content = content;
             this.modify_time = modify_time;
+            this.account_nickname = account_nickname;
+            this.account_profile = account_profile;
         }
     }
 

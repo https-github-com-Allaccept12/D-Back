@@ -24,7 +24,6 @@ public class PostAnswerController {
     public ResponseEntity<Success> createPostAnswer(@AuthenticationPrincipal UserDetailsImpl user,
                                                     @PathVariable Long post_id,
                                                     @RequestBody PostRequestDto.PostAnswer dto) {
-        System.out.println(dto.getContent());
         if (user != null) {
             return new ResponseEntity<>(new Success("질문글 답변 등록 완료",
                     postAnswerService.createAnswer(dto, post_id, user.getUser().getId())), HttpStatus.OK);
