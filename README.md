@@ -8,7 +8,7 @@
 [디플러스 바로가기](https:/링크.com/)**<br>
 
 <br>
-<img width="800px" alt="a753bd0a774f9e7b" src="<img width="905" alt="플러스하다" src="https://user-images.githubusercontent.com/79740505/161506903-b0293b49-3a24-4d3f-94f2-64af559c512d.png">">
+<img width="905" alt="플러스하다" src="https://user-images.githubusercontent.com/79740505/161507027-ac3024b5-44cb-48e2-a1b8-f2f609336e97.png">
 
 📌 **시연 영상** : [시연영상](시연영상 링크) <br>
 📌 **발표 자료** : [구글 프레젠테이션으로 이동](발표자료 링크)
