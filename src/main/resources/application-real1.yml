@@ -5,6 +5,7 @@ spring:
   config:
     activate:
       on-profile: real1
+
   servlet:
     multipart:
       maxFileSize: 20MB
