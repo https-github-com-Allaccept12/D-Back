@@ -33,6 +33,8 @@ public class AccountController {
 
     @PostMapping("/user/refresh")
     public ResponseEntity<Success> refresh(@RequestBody TokenResponseDto token) {
+        System.out.println(token.getAccessToken());
+        System.out.println(token.getRefreshToken());
         return new ResponseEntity<>(new Success<>(
                 "토큰 재발급 성공", securityService.refresh(token.getAccessToken(), token.getRefreshToken())), HttpStatus.OK);
     }
