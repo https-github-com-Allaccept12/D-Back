@@ -38,7 +38,7 @@ public interface AccountMyPageService {
 
     void hideArtWorkScope(Long artWorkId, Account account);
 
-    void nonHideArtWorkScope(Long artWorkId, Account account);
+    //void nonHideArtWorkScope(Long artWorkId, Account account);
 
     //void setAccountMasterPiece(final Long accountId, final AccountRequestDto.setAccountMasterPiece materPiece);
 

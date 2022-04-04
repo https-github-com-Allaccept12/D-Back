@@ -111,26 +111,12 @@ public class AccountMyPageServiceImpl implements AccountMyPageService {
         ArtWorks artWorks = getArtWorks(artWorkId);
         createValid(account, artWorks);
         if (artWorks.getIsMaster()) {
-            System.out.println("대표 끄기 ");
-            System.out.println(artWorks.getIsMaster());
-            System.out.println(artWorks.getId());
             artWorks.updateArtWorkIsMaster(false);
         }else{
-            System.out.println("대표 키기 ");
             artWorks.updateArtWorkIsMaster(true);
             artWorks.updateArtWorkIsScope(true);
         }
-
     }
-    //내 대표작에서 내리기
-//    @Transactional
-//    @CacheEvict(value="portfolio", key="#account.id")
-//    public void nonMasterAccountCareerFeed(Long artWorkId,Account account) {
-//        ArtWorks artWorks = getArtWorks(artWorkId);
-//        createValid(account, artWorks);
-//        artWorks.updateArtWorkIsMaster(false);
-//    }
-
     // 내 대표작 수정
     @Transactional
     @CacheEvict(value="portfolio", key="#account.id")
@@ -142,21 +128,27 @@ public class AccountMyPageServiceImpl implements AccountMyPageService {
         prevArtWork.updateArtWorkIsMaster(false);
     }
     //작품 보이기
-    @Transactional
-    @CacheEvict(value="portfolio", key="#account.id")
-    public void nonHideArtWorkScope(Long artWorkId, Account account) {
-        ArtWorks artWorks = getArtWorks(artWorkId);
-        createValid(account,artWorks);
-        artWorks.updateArtWorkIsScope(true);
-    }
+//    @Transactional
+//    @CacheEvict(value="portfolio", key="#account.id")
+//    public void nonHideArtWorkScope(Long artWorkId, Account account) {
+//        ArtWorks artWorks = getArtWorks(artWorkId);
+//        createValid(account,artWorks);
+//        artWorks.updateArtWorkIsScope(true);
+//    }
     //작품 숨김
     @Transactional
     @CacheEvict(value="portfolio", key="#account.id")
     public void hideArtWorkScope(Long artWorkId, Account account) {
         ArtWorks artWorks = getArtWorks(artWorkId);
         createValid(account,artWorks);
-        artWorks.updateArtWorkIsScope(false);
-        artWorks.updateArtWorkIsMaster(false);
+        if (artWorks.getScope()) {
+            artWorks.updateArtWorkIsScope(false);
+            artWorks.updateArtWorkIsMaster(false);
+        } else {
+            artWorks.updateArtWorkIsScope(true);
+
+        }
+
     }
 
     //마이페이지/유저작품
