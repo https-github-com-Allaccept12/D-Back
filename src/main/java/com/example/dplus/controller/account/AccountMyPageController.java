@@ -86,7 +86,7 @@ public class AccountMyPageController {
                 accountMyPageService.showAccountArtWorkBookMark(last_artwork_id,user.getUser().getId())),HttpStatus.OK);
     }
 
-    @PostMapping(value = "/masterpiece/{artwork_id}")
+    @PostMapping("/masterpiece/{artwork_id}")
     public ResponseEntity<Success> masterpieceSelect(@PathVariable Long artwork_id,
                                                      @AuthenticationPrincipal UserDetailsImpl user) {
         System.out.println("포트폴리오 작품 설정"+user.getUser().getId());
@@ -94,7 +94,7 @@ public class AccountMyPageController {
         return new ResponseEntity<>(new Success("포트폴리오 작품 선택",""),HttpStatus.OK);
     }
 
-    @DeleteMapping(value = "/masterpiece/{artwork_id}")
+    @DeleteMapping("/masterpiece/{artwork_id}")
     public ResponseEntity<Success> masterpieceClear(@PathVariable Long artwork_id,
                                                      @AuthenticationPrincipal UserDetailsImpl user) {
         System.out.println("포트폴리오 작품 해지"+user.getUser().getId());
