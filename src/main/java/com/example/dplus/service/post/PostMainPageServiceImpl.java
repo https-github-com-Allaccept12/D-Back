@@ -143,15 +143,36 @@ public class PostMainPageServiceImpl implements PostMainPageService{
 
     // 게시글 삭제
     @Transactional
-    public void deletePost(Long accountId, Long postId, String category, String board){
+    public void deletePost(Long accountId, Long postId, String board){
         Post post = postAuthValidation(accountId, postId);
         List<PostImage> postImages = postImageRepository.findByPostId(postId);
         postImages.forEach((img) -> {
+            // S3 이미지 삭제
             fileProcessService.deleteImage(img.getPostImg());
         });
-        postImageRepository.deleteAllByPostId(postId);
-        postBookMarkRepository.deleteAllByPostId(postId);
-        postRepository.delete(post);
+        if (board.equals("QNA")){
+            List<com.example.dplus.domain.post.PostAnswer> postAnswerList = postAnswerRepository.findAllByPostId(postId);
+            System.out.println("사이즈" + postAnswerList.size());
+            postAnswerList.forEach((postAnswer) ->
+                    postAnswerLikesRepository.deleteAllByPostAnswerId(postAnswer.getId())
+            );
+            System.out.println("여기");
+            postAnswerRepository.deleteAllByPostId(postId);
+            System.out.println("여기2");
+            postImageRepository.deleteAllByPostId(postId);
+            System.out.println("여기3");
+            postBookMarkRepository.deleteAllByPostId(postId);
+            postRepository.delete(post);
+        } else {
+            List<com.example.dplus.domain.post.PostComment> postCommentList = postCommentRepository.findAllByPostId(postId);
+            System.out.println("여기4");
+            postCommentList.forEach((postComment) ->
+                    postCommentLikesRepository.deleteAllByPostCommentId(postComment.getId())
+            );
+            postImageRepository.deleteAllByPostId(postId);
+            postBookMarkRepository.deleteAllByPostId(postId);
+            postRepository.delete(post);
+        }
     }
 
     // 게시글 검색
