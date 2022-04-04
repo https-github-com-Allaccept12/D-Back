@@ -26,7 +26,6 @@ public class SecurityService {
         if (!jwtTokenProvider.validateRefreshToken(refreshToken)) {
             throw new ErrorCustomException(ErrorCode.REFRESH_EXPIRATION_ERROR);
         }
-
         Long userPk = Long.parseLong(jwtTokenProvider.getUserPk(refreshToken));
         String getRefreshToken = redisService.getValues(userPk);
         Account account = accountRepository.findById(userPk)
