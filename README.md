@@ -30,7 +30,7 @@
 - Java 8 
 - SpringBoot - 2.6.4
 - Spring Security
-- Gradle
+- Gradle - 7.4
 - JPA
 - Spring Data Jpa
 - QueryDSL
