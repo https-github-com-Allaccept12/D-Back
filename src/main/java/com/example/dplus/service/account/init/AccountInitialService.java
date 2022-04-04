@@ -11,6 +11,7 @@ import com.example.dplus.repository.account.AccountRepository;
 import com.example.dplus.service.file.FileProcessService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -27,6 +28,7 @@ public class AccountInitialService {
     private final FileProcessService fileProcessService;
 
     @Transactional
+    @CacheEvict(value="accountInfo", key="#accountId")
     public Long setInitProfile(MultipartFile profileImg, InitProfileSetting dto, Long accountId) {
         Account account = getAccount(accountId);
         if (profileImg != null) {
@@ -37,6 +39,7 @@ public class AccountInitialService {
         return account.getId();
     }
     @Transactional
+    @CacheEvict(value="accountInfo", key="#accountId")
     public Long updateProfile(MultipartFile profileImg, InitProfileSetting dto, Long accountId) {
         Account account = getAccount(accountId);
         if (profileImg != null) {
@@ -49,6 +52,7 @@ public class AccountInitialService {
 
     }
     @Transactional
+    @CacheEvict(value="accountInfo", key="#accountId")
     public Long setInitTendency(InitTendencySetting dto, Long accountId) {
         Account account = getAccount(accountId);
         account.initTendency(dto.getTendency());
@@ -56,6 +60,7 @@ public class AccountInitialService {
     }
 
     @Transactional
+    @CacheEvict(value="accountInfo", key="#accountId")
     public Long setInitInterest(InitInterestSetting dto, Long accountId) {
         Account account = getAccount(accountId);
         account.updateInterest(dto.getInterest());
