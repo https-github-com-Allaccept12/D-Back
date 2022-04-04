@@ -16,7 +16,6 @@ import java.util.Objects;
 import static com.example.dplus.domain.account.QAccount.account;
 import static com.example.dplus.domain.account.QFollow.follow;
 import static com.example.dplus.domain.artwork.QArtWorkBookMark.artWorkBookMark;
-import static com.example.dplus.domain.artwork.QArtWorkImage.artWorkImage;
 import static com.example.dplus.domain.artwork.QArtWorkLikes.artWorkLikes;
 import static com.example.dplus.domain.artwork.QArtWorks.artWorks;
 
@@ -72,13 +71,12 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
                 .select(Projections.constructor(ArtWorkResponseDto.ArtWorkBookMark.class,
                         artWorks.id,
                         artWorks.account.nickname,
-                        artWorkImage.artworkImg,
+                        artWorks.thumbnail,
                         artWorks.view,
                         artWorkLikes.count()
                 ))
                 .from(artWorks)
                 .join(artWorkBookMark).on(artWorkBookMark.artWorks.eq(artWorks))
-                .join(artWorkImage).on(artWorkImage.artWorks.eq(artWorks))
                 .leftJoin(artWorkLikes).on(artWorkLikes.artWorks.eq(artWorks))
                 .limit(10)
                 .where(artWorkBookMark.account.id.eq(accountId)

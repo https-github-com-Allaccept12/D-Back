@@ -81,9 +81,9 @@ public class AccountMyPageController {
     //내 북마크
     @GetMapping("/bookmark/{last_artwork_id}")
     public ResponseEntity<Success> ArtWorkBookmarkList(@PathVariable Long last_artwork_id,
-                                                       @AuthenticationPrincipal UserDetailsImpl user) {
+                                                       @RequestParam("owner_account_id") Long user) {
         return new ResponseEntity<>(new Success("작품 북마크 목록",
-                accountMyPageService.showAccountArtWorkBookMark(last_artwork_id,user.getUser().getId())),HttpStatus.OK);
+                accountMyPageService.showAccountArtWorkBookMark(last_artwork_id,user)),HttpStatus.OK);
     }
 
     @PostMapping(value = "/masterpiece/{artwork_id}")
