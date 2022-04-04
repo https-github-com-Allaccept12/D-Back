@@ -152,20 +152,15 @@ public class PostMainPageServiceImpl implements PostMainPageService{
         });
         if (board.equals("QNA")){
             List<com.example.dplus.domain.post.PostAnswer> postAnswerList = postAnswerRepository.findAllByPostId(postId);
-            System.out.println("사이즈" + postAnswerList.size());
             postAnswerList.forEach((postAnswer) ->
                     postAnswerLikesRepository.deleteAllByPostAnswerId(postAnswer.getId())
             );
-            System.out.println("여기");
             postAnswerRepository.deleteAllByPostId(postId);
-            System.out.println("여기2");
             postImageRepository.deleteAllByPostId(postId);
-            System.out.println("여기3");
             postBookMarkRepository.deleteAllByPostId(postId);
             postRepository.delete(post);
         } else {
             List<com.example.dplus.domain.post.PostComment> postCommentList = postCommentRepository.findAllByPostId(postId);
-            System.out.println("여기4");
             postCommentList.forEach((postComment) ->
                     postCommentLikesRepository.deleteAllByPostCommentId(postComment.getId())
             );
