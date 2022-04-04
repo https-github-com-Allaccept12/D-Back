@@ -49,7 +49,7 @@
 - AWS S3
 
 ## 4. 아키텍쳐
-![아키텍쳐](https://user-images.githubusercontent.com/79740505/161596891-9d62feb4-8f53-496b-9347-61debdc803af.PNG)
+![아키텍쳐](https://user-images.githubusercontent.com/79740505/161598916-18fae697-6ff7-478a-8446-aa8cc60cfd7c.PNG)
 
 ## 5. 개발 포인트
 - 위키 유알엘 기입
