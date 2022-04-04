@@ -13,6 +13,7 @@ public enum ErrorCode {
 
     NO_AUTHENTICATION_ERROR(401, "A002","로그인 사용자만 사용할 수 있습니다."),
     TOKEN_EXPIRATION_ERROR(400,"A003","로그인 정보가 만료되었습니다."),
+    REFRESH_EXPIRATION_ERROR(445,"A003","리프레시 토큰이 만료되었습니다."),
     NO_TOKEN_ERROR(400, "A004","토큰이 존재하지 않습니다."),
     NO_AUTHORIZATION_ERROR(403,"A005","접근 권한이 없습니다."),
     NO_MATCH_ITEM_ERROR(400, "A006","일치하는 토큰값이 없습니다."),

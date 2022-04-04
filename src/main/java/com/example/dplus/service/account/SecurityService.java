@@ -24,7 +24,7 @@ public class SecurityService {
     public TokenResponseDto refresh(String accessToken, String refreshToken) {
         // 리프레시 토큰 기간 만료 에러
         if (!jwtTokenProvider.validateRefreshToken(refreshToken)) {
-            throw new ErrorCustomException(ErrorCode.TOKEN_EXPIRATION_ERROR);
+            throw new ErrorCustomException(ErrorCode.REFRESH_EXPIRATION_ERROR);
         }
 
         Long userPk = Long.parseLong(jwtTokenProvider.getUserPk(refreshToken));
