@@ -85,10 +85,11 @@ public class AccountMyPageController {
         return new ResponseEntity<>(new Success("작품 북마크 목록",
                 accountMyPageService.showAccountArtWorkBookMark(last_artwork_id,user.getUser().getId())),HttpStatus.OK);
     }
-    //단건
+
     @PostMapping(value = "/masterpiece/{artwork_id}")
     public ResponseEntity<Success> masterpieceSelect(@PathVariable Long artwork_id,
                                                      @AuthenticationPrincipal UserDetailsImpl user) {
+        System.out.println("포트폴리오 작품 설정"+user.getUser().getId());
         accountMyPageService.masterAccountCareerFeed(artwork_id,user.getUser());
         return new ResponseEntity<>(new Success("포트폴리오 작품 선택",""),HttpStatus.OK);
     }
