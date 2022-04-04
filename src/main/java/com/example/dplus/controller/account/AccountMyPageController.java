@@ -97,6 +97,7 @@ public class AccountMyPageController {
     @DeleteMapping(value = "/masterpiece/{artwork_id}")
     public ResponseEntity<Success> masterpieceClear(@PathVariable Long artwork_id,
                                                      @AuthenticationPrincipal UserDetailsImpl user) {
+        System.out.println("포트폴리오 작품 해지"+user.getUser().getId());
         accountMyPageService.nonMasterAccountCareerFeed(artwork_id,user.getUser());
         return new ResponseEntity<>(new Success("포트폴리오 작품 해지",""),HttpStatus.OK);
     }
