@@ -32,7 +32,7 @@ public interface AccountMyPageService {
 
     void masterAccountCareerFeed(Long artWorkId, Account account);
 
-    void nonMasterAccountCareerFeed(Long artWorkId, Account account);
+    //void nonMasterAccountCareerFeed(Long artWorkId, Account account);
 
     void updateMasterAccountCareerFeed(Long artWorkId, Long prevArtWorkId, Account account);
 
