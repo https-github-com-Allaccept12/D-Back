@@ -33,7 +33,7 @@ public interface PostMainPageService {
     Long updatePost(Long accountId, Long postId, PostRequestDto.PostUpdate dto, List<MultipartFile> imgFile);
 
     // 게시글 삭제
-    void deletePost(Long accountId, Long postId, String category, String board);
+    void deletePost(Long accountId, Long postId, String board);
 
     // 상세 질문글
     PostResponseDto.PostAnswerDetailPage detailAnswer(Long accountId, Long postId);
