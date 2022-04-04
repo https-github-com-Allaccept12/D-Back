@@ -115,9 +115,12 @@ public class AccountMyPageServiceImpl implements AccountMyPageService {
             System.out.println(artWorks.getIsMaster());
             System.out.println(artWorks.getId());
             artWorks.updateArtWorkIsMaster(false);
+        }else{
+            System.out.println("대표 키기 ");
+            artWorks.updateArtWorkIsMaster(true);
+            artWorks.updateArtWorkIsScope(true);
         }
-        System.out.println("대표 키기 ");
-        artWorks.updateArtWorkIsScope(true);
+
     }
     //내 대표작에서 내리기
 //    @Transactional
