@@ -1,6 +1,11 @@
 
 # Team_D+ 
 
+
+
+
+
+
 ## 기술 스택
 **`Back-end`**
 - Java 8
@@ -16,4 +21,4 @@
 - Nginx
 - AWS EC2
 - AWS RDB 
-- AWS Redis - 추가예정
+- AWS Redis
