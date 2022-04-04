@@ -111,8 +111,12 @@ public class AccountMyPageServiceImpl implements AccountMyPageService {
         ArtWorks artWorks = getArtWorks(artWorkId);
         createValid(account, artWorks);
         if (artWorks.getIsMaster()) {
+            System.out.println("대표 끄기 ");
+            System.out.println(artWorks.getIsMaster());
+            System.out.println(artWorks.getId());
             artWorks.updateArtWorkIsMaster(false);
         }
+        System.out.println("대표 키기 ");
         artWorks.updateArtWorkIsScope(true);
     }
     //내 대표작에서 내리기
