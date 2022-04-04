@@ -102,11 +102,10 @@ public class JwtTokenProvider {
     // 토큰의 유효성 + 만료일자 확인  // -> 토큰이 expire되지 않았는지 True/False로 반환해줌.
     public boolean validateRefreshToken(String jwtToken) {
         try {
-            System.out.println(jwtToken);
             Jws<Claims> claims = Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(jwtToken);
             return !claims.getBody().getExpiration().before(new Date());
         } catch (Exception e) {
-            System.out.println("확인용 ");
+
             return false;
         }
     }
