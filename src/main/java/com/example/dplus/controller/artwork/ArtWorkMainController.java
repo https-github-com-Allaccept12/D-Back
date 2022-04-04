@@ -111,6 +111,7 @@ public class ArtWorkMainController {
     public ResponseEntity<Success> artWorkDetail(@RequestParam(value = "visitor_account_id",required = false) Long user,
                                                  @PathVariable Long artwork_id) {
         Long accountId = getaLong(user);
+        System.out.println(user);
         return new ResponseEntity<>(new Success("작품 상세",
                 artworkMainService.detailArtWork(accountId,artwork_id)),HttpStatus.OK);
     }

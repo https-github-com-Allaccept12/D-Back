@@ -111,7 +111,7 @@ public class AccountMyPageController {
     public ResponseEntity<Success> myPost(@PathVariable String board,
                                           @RequestParam("start") int start,
                                           @RequestParam("visitor_account_id") Long user) {
-        return new ResponseEntity<>(new Success("나의 Post",
+        return new ResponseEntity<>(new Success("나의 게시글 목록",
                 accountMyPageService.getMyPost(user,board,start)),HttpStatus.OK);
     }
 
@@ -119,21 +119,21 @@ public class AccountMyPageController {
     public ResponseEntity<Success> myMyBookMarkPost(@PathVariable String board,
                                                     @RequestParam("start") int start,
                                                     @RequestParam("visitor_account_id") Long user) {
-        return new ResponseEntity<>(new Success("내가 스크랩한 글",
+        return new ResponseEntity<>(new Success("내가 스크랩한 글 목록",
                 accountMyPageService.getMyBookMarkPost(user,board,start)),HttpStatus.OK);
     }
 
     @GetMapping("/community/myanswer")
     public ResponseEntity<Success> getMyAnswer(@RequestParam("visitor_account_id") Long user,
                                                @RequestParam("start") int start) {
-        return new ResponseEntity<>(new Success("나의 답글",
+        return new ResponseEntity<>(new Success("내 답글 목록",
                 accountMyPageService.getMyAnswer(user,start)),HttpStatus.OK);
     }
 
     @GetMapping("/community/mycomment")
     public ResponseEntity<Success> getMyComment(@RequestParam("visitor_account_id") Long user,
                                                 @RequestParam("start") int start) {
-        return new ResponseEntity<>(new Success("나의 댓글",
+        return new ResponseEntity<>(new Success("내 댓글 목록",
                 accountMyPageService.getMyComment(user,start)),HttpStatus.OK);
     }
     private Long getaLong(Long user) {
