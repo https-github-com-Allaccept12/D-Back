@@ -69,4 +69,13 @@ public class AccountRequestDto {
         private Long prev_artwork_id;
     }
 
+    @Getter
+    @NoArgsConstructor
+    public static class ToKen {
+
+        private String access_token;
+        private String refresh_token;
+    }
+
+
 }
