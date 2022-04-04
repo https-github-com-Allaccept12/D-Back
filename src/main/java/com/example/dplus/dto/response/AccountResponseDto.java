@@ -2,6 +2,8 @@ package com.example.dplus.dto.response;
 
 import com.example.dplus.domain.account.Account;
 import com.example.dplus.domain.artwork.ArtWorks;
+import com.example.dplus.domain.post.Post;
+import com.example.dplus.dto.common.CommonDto.PostTagDto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -134,11 +136,13 @@ public class AccountResponseDto {
         private Timestamp create_time;
         private Timestamp modify_time;
         private String profileImg;
+        private String category;
+        private List<PostTagDto> hash_tag;
 
         @Builder
         public MyPost(final Long post_id, final String title, final String content,
-                          final Long like_count, final Timestamp create_time,
-                          final Timestamp modify_time, final String profileImg) {
+                      final Long like_count, final Timestamp create_time,
+                      final Timestamp modify_time, final String profileImg, final String category, final List<PostTagDto> tagList) {
             this.post_id = post_id;
             this.title = title;
             this.content = content;
@@ -146,10 +150,28 @@ public class AccountResponseDto {
             this.create_time = create_time;
             this.modify_time = modify_time;
             this.profileImg = profileImg;
+            this.category = category;
+            this.hash_tag = tagList;
         }
 
         public void setAnswer_count(Long answer_count) {
             this.answer_count = answer_count;
+        }
+
+        public static MyPost from(Post post) {
+            return MyPost.builder()
+                    .post_id(post.getId())
+                    .title(post.getTitle())
+                    .content(post.getContent())
+                    .like_count((long) post.getPostLikeList().size())
+                    .create_time(post.getCreated())
+                    .modify_time(post.getModified())
+                    .profileImg(post.getAccount().getProfileImg())
+                    .category(post.getCategory())
+                    .tagList(post.getPostTagList().stream()
+                            .map(tag -> new PostTagDto(tag.getHashTag()))
+                            .collect(Collectors.toList()))
+                    .build();
         }
 
     }
@@ -163,16 +185,23 @@ public class AccountResponseDto {
         private Timestamp create_time;
         private Timestamp modify_time;
         private String profileImg;
+        private String post_title;
+        private Boolean is_selected;
+        private Long post_id;
 
         @Builder
         public MyAnswer(final Long post_answer_id, final String content, final Long like_count,
-                        final Timestamp create_time, final Timestamp modify_time, final String profileImg) {
+                        final Timestamp create_time, final Timestamp modify_time, final String profileImg,
+                        final String post_title, final Boolean is_selected,final Long post_id) {
             this.post_answer_id = post_answer_id;
             this.content = content;
             this.like_count = like_count;
             this.create_time = create_time;
             this.modify_time = modify_time;
             this.profileImg = profileImg;
+            this.post_title = post_title;
+            this.is_selected = is_selected;
+            this.post_id = post_id;
         }
 
     }
@@ -186,16 +215,19 @@ public class AccountResponseDto {
         private Timestamp create_time;
         private Timestamp modify_time;
         private String profileImg;
+        private Long post_id;
 
         @Builder
         public MyComment(final Long post_comment_id, final String content, final Long like_count,
-                         final Timestamp create_time, final Timestamp modify_time, final String profileImg) {
+                         final Timestamp create_time, final Timestamp modify_time, final String profileImg,
+                         final Long post_id) {
             this.post_comment_id = post_comment_id;
             this.content = content;
             this.like_count = like_count;
             this.create_time = create_time;
             this.modify_time = modify_time;
             this.profileImg = profileImg;
+            this.post_id = post_id;
         }
     }
 

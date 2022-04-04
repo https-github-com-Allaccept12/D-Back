@@ -58,7 +58,8 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
                         artWorks.id,
                         artWorks.thumbnail,
                         artWorks.scope,
-                        artWorks.isMaster))
+                        artWorks.isMaster,
+                        artWorks.category))
                 .from(artWorks)
                 .limit(10)
                 .innerJoin(artWorks.account,account)

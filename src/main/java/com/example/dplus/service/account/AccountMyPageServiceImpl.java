@@ -5,6 +5,7 @@ import com.example.dplus.advice.ErrorCustomException;
 import com.example.dplus.domain.account.Account;
 import com.example.dplus.domain.account.History;
 import com.example.dplus.domain.artwork.ArtWorks;
+import com.example.dplus.domain.post.Post;
 import com.example.dplus.dto.request.AccountRequestDto.UpdateAccountIntro;
 import com.example.dplus.dto.request.AccountRequestDto.UpdateSpecialty;
 import com.example.dplus.dto.request.HistoryRequestDto.HistoryUpdateList;
@@ -26,7 +27,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -165,7 +165,11 @@ public class AccountMyPageServiceImpl implements AccountMyPageService {
     @Transactional(readOnly = true)
     public List<MyPost> getMyPost(Long accountId, String board,int start) {
         Pageable pageable = PageRequest.of(start,5);
-        List<MyPost> myPosts = postRepository.findPostByAccountIdAndBoard(accountId, board, pageable);
+        List<Post> post = postRepository.findPostByAccountIdAndBoard(accountId, board, pageable);
+        List<MyPost> myPosts = post
+                .stream()
+                .map(MyPost::from)
+                .collect(Collectors.toList());
         if (board.equals("QNA")) {
             setQnaInfo(myPosts);
         } else if (board.equals("INFO")) {
@@ -177,9 +181,13 @@ public class AccountMyPageServiceImpl implements AccountMyPageService {
     @Transactional(readOnly = true)
     public List<MyPost> getMyBookMarkPost(Long accountId, String board,int start) {
         Pageable pageable = PageRequest.of(start,5);
-        List<MyPost> myBookMarkPost = postRepository.findPostBookMarkByAccountId(accountId, board, pageable);
-        setPostInfo(myBookMarkPost);
-        return myBookMarkPost;
+        List<Post> bookMarkPost = postRepository.findPostBookMarkByAccountId(accountId, board, pageable);
+        List<MyPost> myPosts = bookMarkPost
+                .stream()
+                .map(MyPost::from)
+                .collect(Collectors.toList());
+        setPostInfo(myPosts);
+        return myPosts;
     }
 
     @Transactional(readOnly = true)
