@@ -19,7 +19,7 @@
 > 블라블라
 
 ## 2. Team D+ 소개
-|  [홍다응](https://github.com/tmddusgood)  |  [최정혜](https://github.com/Code-Angler)  |  [김기윤](https://github.com/BlossomWhale) | 
+|  [홍다응](https://github.com/Allaccpet12)  |  [최정혜](https://github.com/RobiiinChoi)  |  [김기윤](https://github.com/keeeeeey) | 
 | :----------: |  :--------:  |  :---------: | 
 | ![다응](https://user-images.githubusercontent.com/79740505/161508788-489b64ff-2b87-4ab1-b1a4-ce8d34fb18e3.png)| ![KakaoTalk_Photo_2022-03-30-14-34-07](https://user-images.githubusercontent.com/79740505/161509052-e061d894-e441-4f5d-8987-2a8c82eea643.png) | ![KakaoTalk_Photo_2022-03-30-14-41-33](https://user-images.githubusercontent.com/79740505/161509182-6a56457f-b0e6-45f0-b40e-d95cbf48619c.png)
  |
