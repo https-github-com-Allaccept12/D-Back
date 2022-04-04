@@ -110,17 +110,19 @@ public class AccountMyPageServiceImpl implements AccountMyPageService {
     public void masterAccountCareerFeed(Long artWorkId,Account account) {
         ArtWorks artWorks = getArtWorks(artWorkId);
         createValid(account, artWorks);
-        artWorks.updateArtWorkIsMaster(true);
+        if (artWorks.getIsMaster()) {
+            artWorks.updateArtWorkIsMaster(false);
+        }
         artWorks.updateArtWorkIsScope(true);
     }
     //내 대표작에서 내리기
-    @Transactional
-    @CacheEvict(value="portfolio", key="#account.id")
-    public void nonMasterAccountCareerFeed(Long artWorkId,Account account) {
-        ArtWorks artWorks = getArtWorks(artWorkId);
-        createValid(account, artWorks);
-        artWorks.updateArtWorkIsMaster(false);
-    }
+//    @Transactional
+//    @CacheEvict(value="portfolio", key="#account.id")
+//    public void nonMasterAccountCareerFeed(Long artWorkId,Account account) {
+//        ArtWorks artWorks = getArtWorks(artWorkId);
+//        createValid(account, artWorks);
+//        artWorks.updateArtWorkIsMaster(false);
+//    }
 
     // 내 대표작 수정
     @Transactional
