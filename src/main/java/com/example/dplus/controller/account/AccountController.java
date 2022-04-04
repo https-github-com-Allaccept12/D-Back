@@ -1,6 +1,7 @@
 package com.example.dplus.controller.account;
 
 import com.example.dplus.dto.Success;
+import com.example.dplus.dto.response.TokenResponseDto;
 import com.example.dplus.service.account.GoogleAccountService;
 import com.example.dplus.service.account.KakaoAccountService;
 import com.example.dplus.service.account.SecurityService;
@@ -31,10 +32,10 @@ public class AccountController {
     }
 
     @PostMapping("/user/refresh")
-    public ResponseEntity<Success> refresh(@RequestHeader(name = "AccessAuthorization") String accessToken,
-                                           @RequestHeader(name = "RefreshAuthorization") String refreshToken) {
+    public ResponseEntity<Success> refresh(@RequestBody TokenResponseDto token) {
+
         return new ResponseEntity<>(new Success<>(
-                "토큰 재발급 성공", securityService.refresh(accessToken, refreshToken)), HttpStatus.OK);
+                "토큰 재발급 성공", securityService.refresh(token.getAccessToken(), token.getRefreshToken())), HttpStatus.OK);
     }
 
 }
