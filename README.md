@@ -21,7 +21,8 @@
 ## 2. Team D+ 소개
 |  [홍다응](https://github.com/tmddusgood)  |  [최정혜](https://github.com/Code-Angler)  |  [김기윤](https://github.com/BlossomWhale) | 
 | :----------: |  :--------:  |  :---------: | 
-| ![다응](https://user-images.githubusercontent.com/79740505/161508788-489b64ff-2b87-4ab1-b1a4-ce8d34fb18e3.png)/> | ![KakaoTalk_Photo_2022-03-30-14-34-07](https://user-images.githubusercontent.com/79740505/161509052-e061d894-e441-4f5d-8987-2a8c82eea643.png) width="100px" alt="정혜"/> | <img src="https://user-images.githubusercontent.com/70243735/131817961-fe1ad30c-4ba5-44e4-9f09-1de7ea8ae7ab.png" width="100px" alt="기윤"/> |
+| ![다응](https://user-images.githubusercontent.com/79740505/161508788-489b64ff-2b87-4ab1-b1a4-ce8d34fb18e3.png)| ![KakaoTalk_Photo_2022-03-30-14-34-07](https://user-images.githubusercontent.com/79740505/161509052-e061d894-e441-4f5d-8987-2a8c82eea643.png) | ![KakaoTalk_Photo_2022-03-30-14-41-33](https://user-images.githubusercontent.com/79740505/161509182-6a56457f-b0e6-45f0-b40e-d95cbf48619c.png)
+ |
 
 ## D+ 주요기능
 
