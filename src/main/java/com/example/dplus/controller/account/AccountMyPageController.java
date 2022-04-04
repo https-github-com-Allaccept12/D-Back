@@ -25,7 +25,6 @@ public class AccountMyPageController {
 
     private final AccountMyPageService accountMyPageService;
 
-
     @GetMapping("")
     public ResponseEntity<Success> accountInfo(@RequestParam(value = "visitor_account_id",required = false) Long user,
                                                @RequestParam("owner_account_id") Long ownerAccountId) {
@@ -86,12 +85,11 @@ public class AccountMyPageController {
                 accountMyPageService.showAccountArtWorkBookMark(last_artwork_id,user)),HttpStatus.OK);
     }
 
-    @DeleteMapping("/masterpiece/{artwork_id}")
+    @PostMapping("/masterpiece/{artwork_id}")
     public ResponseEntity<Success> masterpieceSelect(@PathVariable Long artwork_id,
                                                      @AuthenticationPrincipal UserDetailsImpl user) {
-        System.out.println("포트폴리오 작품 설정/해지"+user.getUser().getId());
         accountMyPageService.masterAccountCareerFeed(artwork_id,user.getUser());
-        return new ResponseEntity<>(new Success("포트폴리오 작품 선택",""),HttpStatus.OK);
+        return new ResponseEntity<>(new Success("포트폴리오 작품 선택/해지",""),HttpStatus.OK);
     }
 
     @PatchMapping("/masterpiece/{artwork_id}")
@@ -102,15 +100,7 @@ public class AccountMyPageController {
         return new ResponseEntity<>(new Success("포트폴리오 작품 수정",""),HttpStatus.OK);
     }
 
-//    //보이기
-//    @PostMapping("/hidepiece/{artwork_id}")
-//    public ResponseEntity<Success> hidePieceSelect(@PathVariable Long artwork_id,
-//                                                   @AuthenticationPrincipal UserDetailsImpl user) {
-//        accountMyPageService.nonHideArtWorkScope(artwork_id,user.getUser());
-//        return new ResponseEntity<>(new Success("작품 보이기",""),HttpStatus.OK);
-//    }
-    //숨기기
-    @DeleteMapping("/hidepiece/{artwork_id}")
+    @PostMapping("/hidepiece/{artwork_id}")
     public ResponseEntity<Success> hidePieceClear(@PathVariable Long artwork_id,
                                                    @AuthenticationPrincipal UserDetailsImpl user) {
         accountMyPageService.hideArtWorkScope(artwork_id,user.getUser());

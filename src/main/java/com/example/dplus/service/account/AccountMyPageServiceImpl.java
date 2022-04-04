@@ -127,14 +127,7 @@ public class AccountMyPageServiceImpl implements AccountMyPageService {
         artWorks.updateArtWorkIsMaster(true);
         prevArtWork.updateArtWorkIsMaster(false);
     }
-    //작품 보이기
-//    @Transactional
-//    @CacheEvict(value="portfolio", key="#account.id")
-//    public void nonHideArtWorkScope(Long artWorkId, Account account) {
-//        ArtWorks artWorks = getArtWorks(artWorkId);
-//        createValid(account,artWorks);
-//        artWorks.updateArtWorkIsScope(true);
-//    }
+
     //작품 숨김
     @Transactional
     @CacheEvict(value="portfolio", key="#account.id")
