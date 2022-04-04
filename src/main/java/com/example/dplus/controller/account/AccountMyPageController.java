@@ -94,13 +94,13 @@ public class AccountMyPageController {
         return new ResponseEntity<>(new Success("포트폴리오 작품 선택",""),HttpStatus.OK);
     }
 
-    @PostMapping("/masterpiece/{artwork_id}")
-    public ResponseEntity<Success> masterpieceClear(@PathVariable Long artwork_id,
-                                                     @AuthenticationPrincipal UserDetailsImpl user) {
-        System.out.println("포트폴리오 작품 해지"+user.getUser().getId());
-        accountMyPageService.nonMasterAccountCareerFeed(artwork_id,user.getUser());
-        return new ResponseEntity<>(new Success("포트폴리오 작품 해지",""),HttpStatus.OK);
-    }
+//    @PostMapping("/masterpiece/{artwork_id}")
+//    public ResponseEntity<Success> masterpieceClear(@PathVariable Long artwork_id,
+//                                                     @AuthenticationPrincipal UserDetailsImpl user) {
+//        System.out.println("포트폴리오 작품 해지"+user.getUser().getId());
+//        accountMyPageService.nonMasterAccountCareerFeed(artwork_id,user.getUser());
+//        return new ResponseEntity<>(new Success("포트폴리오 작품 해지",""),HttpStatus.OK);
+//    }
     @PatchMapping("/masterpiece/{artwork_id}")
     public ResponseEntity<Success> updateMasterpiece(@PathVariable Long artwork_id,
                                                      @RequestBody AccountMasterPiece prev_artwork_id,
