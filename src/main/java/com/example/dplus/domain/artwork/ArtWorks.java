@@ -89,7 +89,7 @@ public class ArtWorks extends BaseEntity {
         this.category = dto.getCategory();
         this.workStart = dto.getWork_start();
         this.workEnd = dto.getWork_end();
-        this.isMaster = dto.getMaster();
+        this.isMaster = dto.getIs_master();
         this.copyright = dto.getCopyright();
     }
 
