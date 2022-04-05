@@ -10,7 +10,6 @@ public enum ErrorCode {
 
     // 로그인 및 권한 관련에러
     NO_USER_ERROR(404, "A001","해당 유저를 찾을 수 없습니다."),
-
     NO_AUTHENTICATION_ERROR(401, "A002","로그인 사용자만 사용할 수 있습니다."),
     TOKEN_EXPIRATION_ERROR(400,"A003","로그인 정보가 만료되었습니다."),
     REFRESH_EXPIRATION_ERROR(445,"A003","리프레시 토큰이 만료되었습니다."),
