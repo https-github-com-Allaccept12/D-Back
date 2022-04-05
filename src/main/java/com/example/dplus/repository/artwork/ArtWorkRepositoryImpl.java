@@ -245,6 +245,7 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
                         account.id,
                         artWorks.title,
                         artWorks.content,
+                        artWorks.thumbnail,
                         artWorks.view,
                         artWorkLikes.count(),
                         artWorks.category,

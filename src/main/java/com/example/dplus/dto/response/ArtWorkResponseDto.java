@@ -90,6 +90,7 @@ public class ArtWorkResponseDto {
 
         private Long artwork_id;
         private Long account_id;
+        private String thumbnail;
         private String account_nickname;
         private String account_profile_img;
         private String title;
@@ -104,8 +105,8 @@ public class ArtWorkResponseDto {
         private String specialty;
 
         @Builder
-        public ArtWorkSubDetail(final Long artwork_id,final Long account_id,final String title,final String content,final Long view_count,
-                                final Long like_count,final String category,final Timestamp create_time,
+        public ArtWorkSubDetail(final Long artwork_id,final Long account_id,final String title,final String content,final String thumbnail,
+                                final Long view_count,final Long like_count,final String category,final Timestamp create_time,
                                 final Timestamp modify_time,final String specialty,final String account_nickname,
                                 final String account_profile_img,final String copyright) {
             this.artwork_id = artwork_id;
@@ -113,6 +114,7 @@ public class ArtWorkResponseDto {
             this.title = title;
             this.content = content;
             this.view_count = view_count;
+            this.thumbnail = thumbnail;
             this.like_count = like_count;
             this.category = category;
             this.create_time = create_time;
