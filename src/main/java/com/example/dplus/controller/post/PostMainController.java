@@ -65,7 +65,7 @@ public class PostMainController {
     @PostMapping("")
     public ResponseEntity<Success> createPost(@AuthenticationPrincipal UserDetailsImpl user,
                                               @RequestPart PostRequestDto.PostCreate data,
-                                              @RequestPart(required = false) List<MultipartFile> imgFile) {
+                                              @RequestPart List<MultipartFile> imgFile) {
 
         if (user != null) {
             return new ResponseEntity<>(new Success("디플 게시물 등록",
