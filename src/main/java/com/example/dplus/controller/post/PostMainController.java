@@ -78,7 +78,7 @@ public class PostMainController {
     @PatchMapping("/{post_id}")
     public ResponseEntity<Success> updatePost(@AuthenticationPrincipal UserDetailsImpl user,
                                               @PathVariable Long post_id,
-                                              @Valid @RequestPart PostRequestDto.PostUpdate data,
+                                              @RequestPart PostRequestDto.PostUpdate data,
                                               @RequestPart(required = false) List<MultipartFile> imgFile) {
 
         if (user != null) {
