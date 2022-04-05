@@ -125,7 +125,7 @@ public class PostMainPageServiceImpl implements PostMainPageService{
     public Long updatePost(Long accountId, Long postId, PostUpdate dto, List<MultipartFile> imgFile){
         Post post = postAuthValidation(accountId, postId);
         // 삭제할 이미지가 있다면, 이미지 주소를 직접 하나씩 지운다
-        if(dto.getDelete_img()!=null){
+        if(dto.getDelete_img().size() != 0){
             for(int i = 0; i < dto.getDelete_img().size(); i++){
                 String deleteImage = dto.getDelete_img().get(i).getFilename();
                 fileProcessService.deleteImage(deleteImage);
@@ -133,7 +133,7 @@ public class PostMainPageServiceImpl implements PostMainPageService{
             }
         }
         setPostImage(imgFile, post);
-        if(dto.getHash_tag()!=null){
+        if(dto.getHash_tag().size() != 0){
             postTagRepository.deleteAllByPostId(postId);
             setPostTag(dto.getHash_tag(), post);
         }
