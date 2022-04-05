@@ -127,7 +127,7 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
         ArtWorks artWorks = artworkValidation(accountId, artworkId);
         updateImg(multipartFiles, artWorks, dto);
         artWorks.updateArtWork(dto);
-        artWorks.setThumbnail(dto.getThumbnail());
+        //artWorks.setThumbnail(dto.getThumbnail());
         return artWorks.getId();
     }
 
