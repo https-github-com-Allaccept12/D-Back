@@ -155,6 +155,11 @@ public class PostMainPageServiceImpl implements PostMainPageService{
                     postAnswerLikesRepository.deleteAllByPostAnswerId(postAnswer.getId())
             );
             postAnswerRepository.deleteAllByPostId(postId);
+        }else{
+            List<com.example.dplus.domain.post.PostComment> postCommentList = postCommentRepository.findAllByPostId(postId);
+            postCommentList.forEach((postComment) ->
+                    postCommentLikesRepository.deleteAllByPostCommentId(postComment.getId())
+            );
         }
         postImageRepository.deleteAllByPostId(postId);
         postBookMarkRepository.deleteAllByPostId(postId);
