@@ -10,6 +10,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
 @Slf4j
 @RestControllerAdvice
@@ -46,6 +47,14 @@ public class ExceptionController {
         log.error(ex.getMessage());
         return new ResponseEntity<>(restApiException, HttpStatus.OK);
     }
+
+    @ExceptionHandler(value = {MissingServletRequestPartException.class})
+    public ResponseEntity<Fail> handleMissingRequestParameterErrorException(MissingServletRequestPartException ex) {
+        Fail restApiException = new Fail("이미지 파일이 첨부되지 않았습니다.");
+        log.error(ex.getMessage());
+        return new ResponseEntity<>(restApiException, HttpStatus.OK);
+    }
+
 
 //    @ExceptionHandler(Exception.class)
 //    public ResponseEntity<Fail> defaultException(Exception ex) {
