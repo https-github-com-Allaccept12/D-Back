@@ -126,11 +126,10 @@ public class PostMainPageServiceImpl implements PostMainPageService{
         Post post = postAuthValidation(accountId, postId);
         // 삭제할 이미지가 있다면, 이미지 주소를 직접 하나씩 지운다
         if(dto.getDelete_img().size() != 0){
-            for(int i = 0; i < dto.getDelete_img().size(); i++){
-                String deleteImage = dto.getDelete_img().get(i).getFilename();
-                fileProcessService.deleteImage(deleteImage);
-                postImageRepository.deleteByPostImg(deleteImage);
-            }
+            dto.getDelete_img().forEach(img -> {
+                fileProcessService.deleteImage(img.getFilename());
+                postImageRepository.deleteByPostImg(img.getFilename());
+            });
         }
         setPostImage(imgFile, post);
         if(dto.getHash_tag().size() != 0){

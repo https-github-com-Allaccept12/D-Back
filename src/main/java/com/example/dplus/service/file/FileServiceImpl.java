@@ -32,7 +32,7 @@ public class FileServiceImpl implements FileService{
     public void deleteFile(String fileName) {
         int separator = fileName.lastIndexOf("/") + 1; //uuid 인덱스 번호 확인
         String substring = fileName.substring(separator);
-        System.out.println("s3:url->"+ " " + substring);
+        System.out.println(substring);
         amazonS3Client.deleteObject(new DeleteObjectRequest(amazonS3Component.getBucket(), substring));
     }
 
