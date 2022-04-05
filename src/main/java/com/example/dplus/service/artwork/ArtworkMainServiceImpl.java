@@ -183,6 +183,7 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
         if (multipartFiles != null) {
             List<ArtWorkImage> imgList = new ArrayList<>();
             for (MultipartFile file : multipartFiles) {
+                log.info(file.getOriginalFilename());
                 boolean thumbnail = Objects.equals(file.getOriginalFilename(), dto.getThumbnail());
                 String imgUrl = fileProcessService.uploadImage(file);
                 if (thumbnail) {
