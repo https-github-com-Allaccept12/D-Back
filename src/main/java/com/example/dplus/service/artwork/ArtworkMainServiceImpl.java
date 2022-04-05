@@ -122,7 +122,7 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
     }
 
     @Transactional
-    @CacheEvict(value="mainByInterest", key="#category")
+    @CacheEvict(value="mainByInterest", key="#dto.category")
     public Long updateArtwork(Long accountId, Long artworkId, ArtWorkUpdate dto, List<MultipartFile> multipartFiles) {
         ArtWorks artWorks = artworkValidation(accountId, artworkId);
         updateImg(multipartFiles, artWorks, dto);
