@@ -176,6 +176,7 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
     private void updateImg( List<MultipartFile> multipartFiles, ArtWorks findArtWork, ArtWorkUpdate dto) {
         if(dto.getDelete_img().size() != 0){
             dto.getDelete_img().forEach((img) -> {
+                log.info(img.getImg_url());
                 artWorkImageRepository.deleteByArtworkImg(img.getImg_url());
                 fileProcessService.deleteImage(img.getImg_url());
             });
