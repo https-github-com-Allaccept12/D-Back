@@ -62,7 +62,6 @@ public class PostMainController {
     public ResponseEntity<Success> createPost(@AuthenticationPrincipal UserDetailsImpl user,
                                               @RequestPart PostRequestDto.PostCreate data,
                                               @RequestPart(required = false) List<MultipartFile> imgFile) {
-
         if (user != null) {
             return new ResponseEntity<>(new Success("디플 게시물 등록",
                     postMainPageService.createPost(user.getUser().getId(), data, imgFile)), HttpStatus.OK);
