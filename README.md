@@ -63,7 +63,7 @@ D Plus는 디자이너들의 이러한 고민을 줄여드리기 위해 만들�
 - [BLUE GREEN 무중단 배포](https://github.com/https-github-com-Allaccept12/D-Back/wiki/BLUE-GREEN-%EB%AC%B4%EC%A4%91%EB%8B%A8-%EB%B0%B0%ED%8F%AC)
 - [Jwt 토큰 방식의 로그인](https://github.com/https-github-com-Allaccept12/D-Back/wiki/Jwt-%ED%86%A0%ED%81%B0-%EB%B0%A9%EC%8B%9D%EC%9D%98-%EB%A1%9C%EA%B7%B8%EC%9D%B8)
 - [Batch Insert 최적화](https://github.com/https-github-com-Allaccept12/D-Back/wiki/Batch-Insert-%EC%B5%9C%EC%A0%81%ED%99%94)
-- [No OffSet을 사용한 페이징 처리] (https://github.com/https-github-com-Allaccept12/D-Back/wiki/No-OffSet%EC%9D%84-%EC%82%AC%EC%9A%A9%ED%95%9C-%ED%8E%98%EC%9D%B4%EC%A7%95-%EC%B2%98%EB%A6%AC)
+- [No OffSet을 사용한 페이징 처리](https://github.com/https-github-com-Allaccept12/D-Back/wiki/No-OffSet%EC%9D%84-%EC%82%AC%EC%9A%A9%ED%95%9C-%ED%8E%98%EC%9D%B4%EC%A7%95-%EC%B2%98%EB%A6%AC)
 - [성능 테스트(Redis 적용)](https://github.com/https-github-com-Allaccept12/D-Back/wiki/%EC%84%B1%EB%8A%A5-%ED%85%8C%EC%8A%A4%ED%8A%B8(Redis-%EC%A0%81%EC%9A%A9))
 
 ## 6. 설계
