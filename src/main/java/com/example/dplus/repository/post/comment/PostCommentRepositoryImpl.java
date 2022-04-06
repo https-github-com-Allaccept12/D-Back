@@ -59,6 +59,7 @@ public class PostCommentRepositoryImpl implements PostCommentRepositoryCustom{
                 .leftJoin(postCommentLikes).on(postComment.id.eq(postCommentLikes.postComment.id))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
+                .where(postComment.account.id.eq(accountId))
                 .groupBy(postComment.id)
                 .orderBy(postCommentLikes.count().desc())
                 .fetch();

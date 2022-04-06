@@ -63,6 +63,7 @@ public class PostAnswerRepositoryImpl implements PostAnswerRepositoryCustom {
                 .leftJoin(postAnswerLikes).on(postAnswer.id.eq(postAnswerLikes.postAnswer.id))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
+                .where(postAnswer.account.id.eq(accountId))
                 .groupBy(postAnswer.id)
                 .orderBy(postAnswerLikes.count().desc())
                 .fetch();
