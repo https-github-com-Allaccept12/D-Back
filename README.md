@@ -67,9 +67,8 @@ D Plus는 디자이너들의 이러한 고민을 줄여드리기 위해 만들�
 - [성능 테스트(Redis 적용)](https://github.com/https-github-com-Allaccept12/D-Back/wiki/%EC%84%B1%EB%8A%A5-%ED%85%8C%EC%8A%A4%ED%8A%B8(Redis-%EC%A0%81%EC%9A%A9))
 
 ## 6. 설계
-- API 설계 - [노션페이지]
+- [API 설계](https://www.notion.so/robinchoi11/API-d7d777c8aed8498b809fc0b5fe94d845)
 - [ERD 설계](https://github.com/https-github-com-Allaccept12/D-Back/wiki/ERD)
-- 
 
 
 
