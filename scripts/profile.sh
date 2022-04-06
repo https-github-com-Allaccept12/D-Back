@@ -5,7 +5,7 @@ function find_idle_profile()
     # curl 결과로 연결할 서비스 결정
     RESPONSE_CODE=$(curl -s -o /dev/null -w "%{http_code}" http://localhost/profile)
 
-    echo RESPONSE_CODE
+    echo "${RESPONSE_CODE}"
 
     if [ ${RESPONSE_CODE} -ge 400 ] # 400 보다 크면 (즉, 40x/50x 에러 모두 포함)
     then
