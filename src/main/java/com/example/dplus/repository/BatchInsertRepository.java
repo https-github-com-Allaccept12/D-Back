@@ -32,7 +32,6 @@ public class BatchInsertRepository {
                 artWorkImageBatchInsert(bowl);
             }
         }
-
         //배치 사이즈(500)를 못채우고 나오거나, 총데이터가 505개라 5개가 남으면 남은것 인서트
         if (!bowl.isEmpty()) {
             artWorkImageBatchInsert(bowl);
@@ -53,9 +52,6 @@ public class BatchInsertRepository {
             postImageBatchInsert(bowl);
         }
     }
-
-
-
     public void postTagImageSaveAll(List<PostTag> tagList) {
         List<PostTag> bowl = new ArrayList<>();
         for (int i = 0; i < tagList.size(); i++) {
@@ -75,7 +71,6 @@ public class BatchInsertRepository {
     private void postTagBatchInsert(List<PostTag> bowl) {
         jdbcTemplate.batchUpdate("insert into post_tag(`hash_tag`, `post_id`) VALUES (?, ?)",
                 new BatchPreparedStatementSetter() {
-                    // TODO 직접 insert 하기 때문에 재설정 필요
                     @Override
                     public void setValues(PreparedStatement ps, int i) throws SQLException {
                         ps.setString(1, bowl.get(i).getHashTag());
@@ -92,7 +87,7 @@ public class BatchInsertRepository {
     private void postImageBatchInsert(List<PostImage> bowl) {
         jdbcTemplate.batchUpdate("insert into post_image(`post_img`, `post_id`) VALUES (?, ?)",
                 new BatchPreparedStatementSetter() {
-                    // TODO 직접 insert 하기 때문에 재설정 필요
+
                     @Override
                     public void setValues(PreparedStatement ps, int i) throws SQLException {
                         ps.setString(1, bowl.get(i).getPostImg());
@@ -108,7 +103,7 @@ public class BatchInsertRepository {
     private void artWorkImageBatchInsert(List<ArtWorkImage> bowl) {
         jdbcTemplate.batchUpdate("insert into art_work_image(`artwork_img`, `artwork_id`) VALUES (?, ?)",
                 new BatchPreparedStatementSetter() {
-                    // TODO 직접 insert 하기 때문에 재설정 필요
+
                     @Override
                     public void setValues(PreparedStatement ps, int i) throws SQLException {
                         ps.setString(1, bowl.get(i).getArtworkImg());

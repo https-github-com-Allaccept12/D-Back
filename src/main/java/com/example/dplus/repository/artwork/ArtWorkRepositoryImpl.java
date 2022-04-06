@@ -203,14 +203,14 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
 
     @Override
     public List<ArtworkMain> findByFollowerArtWork(Long accountId,String category, Long lastArtWorkId) {
-         //accountId가 팔로우한 사람 아이디들이 나옴.
+
         List<Long> followingId = queryFactory
                 .select(follow.followingId)
                 .from(follow)
                 .join(account).on(account.id.eq(follow.followingId))
                 .where(follow.followerId.eq(accountId))
                 .fetch();
-        //현재 카테고리를 확인하고, in절을 이용해 팔로우한 아이디들의 artwork만 뽑아내기
+
         return queryFactory
                 .select(Projections.constructor(ArtworkMain.class,
                         artWorks.id,
