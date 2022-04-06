@@ -65,7 +65,7 @@ public class PostAnswerRepositoryImpl implements PostAnswerRepositoryCustom {
                 .limit(pageable.getPageSize())
                 .where(postAnswer.account.id.eq(accountId))
                 .groupBy(postAnswer.id)
-                .orderBy(postAnswerLikes.count().desc())
+                .orderBy(postAnswer.created.desc())
                 .fetch();
     }
 
