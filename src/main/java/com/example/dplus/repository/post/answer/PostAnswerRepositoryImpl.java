@@ -54,7 +54,8 @@ public class PostAnswerRepositoryImpl implements PostAnswerRepositoryCustom {
                         account.profileImg,
                         post.title,
                         postAnswer.isSelected,
-                        post.id
+                        post.id,
+                        post.isSelected
                 ))
                 .from(postAnswer)
                 .join(postAnswer.account, account).on(account.id.eq(accountId))

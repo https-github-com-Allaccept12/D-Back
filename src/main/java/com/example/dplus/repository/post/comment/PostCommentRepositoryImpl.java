@@ -50,7 +50,8 @@ public class PostCommentRepositoryImpl implements PostCommentRepositoryCustom{
                         postComment.created,
                         postComment.modified,
                         account.profileImg,
-                        post.id
+                        post.id,
+                        post.title
                 ))
                 .from(postComment)
                 .join(postComment.account, account).on(account.id.eq(accountId))

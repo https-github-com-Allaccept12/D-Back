@@ -188,11 +188,12 @@ public class AccountResponseDto {
         private String post_title;
         private Boolean is_selected;
         private Long post_id;
+        private Boolean post_is_selected;
 
         @Builder
         public MyAnswer(final Long post_answer_id, final String content, final Long like_count,
                         final Timestamp create_time, final Timestamp modify_time, final String profileImg,
-                        final String post_title, final Boolean is_selected,final Long post_id) {
+                        final String post_title, final Boolean is_selected,final Long post_id,final Boolean post_is_selected) {
             this.post_answer_id = post_answer_id;
             this.content = content;
             this.like_count = like_count;
@@ -202,6 +203,7 @@ public class AccountResponseDto {
             this.post_title = post_title;
             this.is_selected = is_selected;
             this.post_id = post_id;
+            this.post_is_selected = post_is_selected;
         }
 
     }
@@ -216,11 +218,12 @@ public class AccountResponseDto {
         private Timestamp modify_time;
         private String profileImg;
         private Long post_id;
+        private String post_title;
 
         @Builder
         public MyComment(final Long post_comment_id, final String content, final Long like_count,
                          final Timestamp create_time, final Timestamp modify_time, final String profileImg,
-                         final Long post_id) {
+                         final Long post_id,final String post_title) {
             this.post_comment_id = post_comment_id;
             this.content = content;
             this.like_count = like_count;
@@ -228,6 +231,7 @@ public class AccountResponseDto {
             this.modify_time = modify_time;
             this.profileImg = profileImg;
             this.post_id = post_id;
+            this.post_title =post_title;
         }
     }
 
