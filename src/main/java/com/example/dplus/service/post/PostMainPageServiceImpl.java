@@ -69,7 +69,7 @@ public class PostMainPageServiceImpl implements PostMainPageService{
     @Transactional(readOnly = true)
     public PostMainResponseDto showPostMain(Long lastPostId, String board, String category) {
         List<Post> postList = postRepository.findCategoryPostOrderByCreated(lastPostId, board, category);
-        return PostMainResponseDto.from(postList);
+        return PostMainResponseDto.from(postList,board);
     }
 
     // 디모페이지 카테고리별 좋아요
@@ -77,7 +77,7 @@ public class PostMainPageServiceImpl implements PostMainPageService{
     public PostMainResponseDto showPostMainLikeSort(int start, String board, String category) {
         Pageable pageable = PageRequest.of(start, 12);
         List<Post> postList = postRepository.findCategoryPostOrderByLikeDesc(pageable, board, category);
-        return PostMainResponseDto.from(postList);
+        return PostMainResponseDto.from(postList,board);
     }
 
     // 상세 게시글 (디플 - 정보공유)
