@@ -24,19 +24,19 @@ public class ArtWorkLikeController {
                                           @AuthenticationPrincipal UserDetailsImpl user) {
         if (user != null) {
             artworkLikeService.doLike(user.getUser(),artwork_id);
-            return new ResponseEntity<>(new Success("작품 좋아요 완료",""), HttpStatus.OK);
+            return new ResponseEntity<>(new Success("작품 좋아요/ 좋아요 취소 완료",""), HttpStatus.OK);
         }
         throw new ErrorCustomException(ErrorCode.NO_AUTHENTICATION_ERROR);
     }
-    @DeleteMapping("/{artwork_id}")
-    public ResponseEntity<Success> unLike(@PathVariable Long artwork_id,
-                                          @AuthenticationPrincipal UserDetailsImpl user) {
-        if (user != null) {
-            artworkLikeService.unLike(user.getUser(), artwork_id);
-            return new ResponseEntity<>(new Success("작품 좋아요 해지", ""), HttpStatus.OK);
-        }
-        throw new ErrorCustomException(ErrorCode.NO_AUTHENTICATION_ERROR);
-
-    }
+//    @DeleteMapping("/{artwork_id}")
+//    public ResponseEntity<Success> unLike(@PathVariable Long artwork_id,
+//                                          @AuthenticationPrincipal UserDetailsImpl user) {
+//        if (user != null) {
+//            artworkLikeService.unLike(user.getUser(), artwork_id);
+//            return new ResponseEntity<>(new Success("작품 좋아요 해지", ""), HttpStatus.OK);
+//        }
+//        throw new ErrorCustomException(ErrorCode.NO_AUTHENTICATION_ERROR);
+//
+//    }
 
 }

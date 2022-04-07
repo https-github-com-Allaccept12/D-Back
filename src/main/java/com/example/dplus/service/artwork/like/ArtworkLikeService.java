@@ -23,22 +23,23 @@ public class ArtworkLikeService {
     public void doLike(Account account, Long artWorkId) {
         ArtWorks artWorks = getArtWorks(artWorkId);
         if (artWorkLikesRepository.existByAccountIdAndArtWorkId(account.getId(), artWorkId)) {
-            throw new ErrorCustomException(ErrorCode.ALREADY_LIKE_ERROR);
+            artWorks.getAccount().getRank().downRankScore();
+            artWorkLikesRepository.deleteByArtWorksIdAndAccountId(artWorkId,account.getId());
         }
         artWorks.getAccount().getRank().upRankScore();
         ArtWorkLikes artWorkLikes = ArtWorkLikes.builder().artWorks(artWorks).account(account).build();
         artWorkLikesRepository.save(artWorkLikes);
     }
 
-    @Transactional
-    public void unLike(Account account, Long artWorkId) {
-        ArtWorks artWorks = getArtWorks(artWorkId);
-        if (!artWorkLikesRepository.existByAccountIdAndArtWorkId(account.getId(), artWorkId)) {
-            throw new ErrorCustomException(ErrorCode.ALREADY_LIKE_ERROR);
-        }
-        artWorks.getAccount().getRank().downRankScore();
-        artWorkLikesRepository.deleteByArtWorksIdAndAccountId(artWorkId,account.getId());
-    }
+//    @Transactional
+//    public void unLike(Account account, Long artWorkId) {
+//        ArtWorks artWorks = getArtWorks(artWorkId);
+//        if (!artWorkLikesRepository.existByAccountIdAndArtWorkId(account.getId(), artWorkId)) {
+//            throw new ErrorCustomException(ErrorCode.ALREADY_LIKE_ERROR);
+//        }
+//        artWorks.getAccount().getRank().downRankScore();
+//        artWorkLikesRepository.deleteByArtWorksIdAndAccountId(artWorkId,account.getId());
+//    }
 
     private ArtWorks getArtWorks(Long artWorkId) {
         return artWorkRepository.findById(artWorkId).orElseThrow(() -> new ErrorCustomException(ErrorCode.NONEXISTENT_ERROR));
