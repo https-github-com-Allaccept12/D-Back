@@ -14,19 +14,17 @@ import com.example.dplus.dto.response.ArtWorkResponseDto.ArtWorkDetail;
 import com.example.dplus.dto.response.ArtWorkResponseDto.ArtWorkSubDetail;
 import com.example.dplus.dto.response.ArtWorkResponseDto.ArtworkMain;
 import com.example.dplus.dto.response.MainResponseDto;
+import com.example.dplus.repository.BatchInsertRepository;
 import com.example.dplus.repository.account.AccountRepository;
 import com.example.dplus.repository.account.follow.FollowRepository;
 import com.example.dplus.repository.artwork.ArtWorkRepository;
 import com.example.dplus.repository.artwork.bookmark.ArtWorkBookMarkRepository;
 import com.example.dplus.repository.artwork.comment.ArtWorkCommentRepository;
 import com.example.dplus.repository.artwork.image.ArtWorkImageRepository;
-import com.example.dplus.repository.BatchInsertRepository;
 import com.example.dplus.repository.artwork.like.ArtWorkLikesRepository;
 import com.example.dplus.service.file.FileProcessService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -53,7 +51,6 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
     private final BatchInsertRepository batchInsertRepository;
 
     @Transactional(readOnly = true)
-    @Cacheable(value="mainByInterest", key="#interest",condition="#interest != null")
     public MainResponseDto mostPopularArtWork(Long accountId, String interest) {
         if (accountId != 0) {
             List<ArtworkMain> artWorkList = getArtworkList(interest);
@@ -122,7 +119,6 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
     }
 
     @Transactional
-    @CacheEvict(value="mainByInterest", key="#dto.category")
     public Long updateArtwork(Long accountId, Long artworkId, ArtWorkUpdate dto, List<MultipartFile> multipartFiles) {
         ArtWorks artWorks = artworkValidation(accountId, artworkId);
         updateImg(multipartFiles, artWorks, dto);
@@ -132,7 +128,6 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
     }
 
     @Transactional
-    @CacheEvict(value="mainByInterest", key="#category")
     public void deleteArtwork(Long accountId, Long artworkId, String category) {
         ArtWorks artWorks = artworkValidation(accountId, artworkId);
         List<ArtWorkImage> artWorkImages = artWorkImageRepository.findByArtWorksId(artWorks.getId());
