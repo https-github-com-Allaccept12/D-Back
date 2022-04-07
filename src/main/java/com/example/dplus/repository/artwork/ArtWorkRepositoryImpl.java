@@ -12,7 +12,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
-import java.util.Objects;
 
 import static com.example.dplus.domain.account.QAccount.account;
 import static com.example.dplus.domain.account.QFollow.follow;
@@ -317,7 +316,7 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
 
     //account의 interest를 확인하고 메인페이지에 뿌려줄 top10
     private BooleanExpression isInterest(String interest) {
-        return !Objects.equals(interest, "default") ? artWorks.category.eq(interest) : null;
+        return interest.equals("default") ?  null : artWorks.category.eq(interest);
     }
 
     private BooleanExpression isLastArtworkId(Long lastArtWorkId) {

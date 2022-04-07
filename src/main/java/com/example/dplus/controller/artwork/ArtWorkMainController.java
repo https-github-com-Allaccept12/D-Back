@@ -34,7 +34,9 @@ public class ArtWorkMainController {
         String interested = "default";
         if (user != null) {
             accountId = user;
-            interested = interest;
+            if (interest != null) {
+                interested = interest;
+            }
         }
         return new ResponseEntity<>(new Success("메인 페이지",
                 artworkMainService.mostPopularArtWork(accountId,interested)), HttpStatus.OK);
