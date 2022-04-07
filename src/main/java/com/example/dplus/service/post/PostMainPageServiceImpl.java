@@ -173,7 +173,7 @@ public class PostMainPageServiceImpl implements PostMainPageService{
     }
 
     // 디모 QnA 상세페이지
-    @Transactional(readOnly = true)
+    @Transactional
     public PostAnswerDetailPage detailAnswer(Long accountId, Long postId) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new ErrorCustomException(ErrorCode.NONEXISTENT_ERROR));
