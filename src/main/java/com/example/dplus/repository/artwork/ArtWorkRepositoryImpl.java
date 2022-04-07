@@ -312,7 +312,7 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
 
 
     private BooleanExpression isCategory(String category) {
-        return category.isEmpty() ? null : artWorks.category.eq(category);
+        return category.equals("all") ? null : artWorks.category.eq(category);
     }
 
     //account의 interest를 확인하고 메인페이지에 뿌려줄 top10
