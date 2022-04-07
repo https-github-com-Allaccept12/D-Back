@@ -81,7 +81,7 @@ public class PostMainPageServiceImpl implements PostMainPageService{
     }
 
     // 상세 게시글 (디플 - 정보공유)
-    @Transactional(readOnly = true)
+    @Transactional
     public PostResponseDto.PostDetailPage showPostDetail(Long accountId, Long postId){
         Post post = postRepository.findById(postId).orElseThrow(() -> new ErrorCustomException(ErrorCode.NONEXISTENT_ERROR));
         post.addViewCount();
