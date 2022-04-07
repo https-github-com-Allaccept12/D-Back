@@ -58,7 +58,7 @@ public class AccountMyPageServiceImpl implements AccountMyPageService {
         final Long follower = followRepository.countByFollowerId(findAccount.getId());
         final Long following = followRepository.countByFollowingId(findAccount.getId());
         final boolean isFollow= followRepository.existsByFollowerIdAndFollowingId(visitAccountId,accountId);
-        return AccountInfo.from(findAccount,follower,following, isFollow,visitAccountId.equals(accountId));
+        return AccountInfo.from(findAccount,following,follower, isFollow,visitAccountId.equals(accountId));
     }
     //연혁 조히
     @Transactional(readOnly = true)

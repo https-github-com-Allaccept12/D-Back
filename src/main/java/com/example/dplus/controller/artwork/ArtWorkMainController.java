@@ -43,7 +43,7 @@ public class ArtWorkMainController {
     @GetMapping("/api/artwork/{last_artwork_id}")
     public ResponseEntity<Success> artWorkMain(@PathVariable Long last_artwork_id) {
         return new ResponseEntity<>(new Success("모아보기",
-                artworkMainService.showArtworkMain(last_artwork_id,"")),HttpStatus.OK);
+                artworkMainService.showArtworkMain(last_artwork_id,"all")),HttpStatus.OK);
     }
 
     @GetMapping("/api/artwork/category/{category}/{last_artwork_id}")
