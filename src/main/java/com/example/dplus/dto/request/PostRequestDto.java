@@ -32,7 +32,6 @@ public class PostRequestDto {
 
         private List<PostTagDto> hash_tag;
 
-        private Boolean is_selected;
 
         private PostBoard board;
 
@@ -57,8 +56,6 @@ public class PostRequestDto {
         private List<PostTagDto> hash_tag;
 
         private Boolean is_selected;
-
-        private PostBoard board;
 
     }
 

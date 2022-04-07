@@ -54,7 +54,8 @@ public class PostAnswerRepositoryImpl implements PostAnswerRepositoryCustom {
                         account.profileImg,
                         post.title,
                         postAnswer.isSelected,
-                        post.id
+                        post.id,
+                        post.isSelected
                 ))
                 .from(postAnswer)
                 .join(postAnswer.account, account).on(account.id.eq(accountId))
@@ -62,8 +63,9 @@ public class PostAnswerRepositoryImpl implements PostAnswerRepositoryCustom {
                 .leftJoin(postAnswerLikes).on(postAnswer.id.eq(postAnswerLikes.postAnswer.id))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
+                .where(postAnswer.account.id.eq(accountId))
                 .groupBy(postAnswer.id)
-                .orderBy(postAnswerLikes.count().desc())
+                .orderBy(postAnswer.created.desc())
                 .fetch();
     }
 

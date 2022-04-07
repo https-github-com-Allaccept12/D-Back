@@ -1,8 +1,9 @@
 package com.example.dplus.controller.post;
 
+
+import com.example.dplus.advice.ErrorCode;
 import com.example.dplus.advice.ErrorCustomException;
 import com.example.dplus.dto.Success;
-import com.example.dplus.advice.ErrorCode;
 import com.example.dplus.dto.request.PostRequestDto;
 import com.example.dplus.jwt.UserDetailsImpl;
 import com.example.dplus.service.post.PostMainPageService;
@@ -14,7 +15,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -60,9 +60,8 @@ public class PostMainController {
     // 게시물 등록
     @PostMapping("")
     public ResponseEntity<Success> createPost(@AuthenticationPrincipal UserDetailsImpl user,
-                                              @Valid @RequestPart PostRequestDto.PostCreate data,
+                                              @RequestPart PostRequestDto.PostCreate data,
                                               @RequestPart(required = false) List<MultipartFile> imgFile) {
-
         if (user != null) {
             return new ResponseEntity<>(new Success("디플 게시물 등록",
                     postMainPageService.createPost(user.getUser().getId(), data, imgFile)), HttpStatus.OK);
@@ -74,7 +73,7 @@ public class PostMainController {
     @PatchMapping("/{post_id}")
     public ResponseEntity<Success> updatePost(@AuthenticationPrincipal UserDetailsImpl user,
                                               @PathVariable Long post_id,
-                                              @Valid @RequestPart PostRequestDto.PostUpdate data,
+                                              @RequestPart PostRequestDto.PostUpdate data,
                                               @RequestPart(required = false) List<MultipartFile> imgFile) {
 
         if (user != null) {
@@ -106,7 +105,7 @@ public class PostMainController {
             throw new ErrorCustomException(ErrorCode.NON_KEYWORD_ERROR);
         }
         return new ResponseEntity<>(new Success("게시물 검색 완료",
-                postMainPageService.findByPostSearchKeyWord(keyword, last_post_id, board)), HttpStatus.OK);
+                postMainPageService.findBySearchKeyWord(keyword, last_post_id, board)), HttpStatus.OK);
 
     }
 

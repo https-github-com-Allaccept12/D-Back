@@ -54,6 +54,9 @@ public class Post extends BaseEntity {
     @OneToMany(mappedBy = "post",orphanRemoval = true)
     private List<PostComment> postCommentList = new ArrayList<>();
 
+    @OneToMany(mappedBy = "post",orphanRemoval = true)
+    private List<PostAnswer> postAnswerList = new ArrayList<>();
+
     @Enumerated(EnumType.STRING)
     private PostBoard board;
 

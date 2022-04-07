@@ -37,6 +37,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
     // 카테고리별 좋아요순
     @Override
     public List<Post> findCategoryPostOrderByLikeDesc(Pageable pageable, String board, String category) {
+
         return queryFactory
                 .selectFrom(post)
                 .innerJoin(post.account,account)

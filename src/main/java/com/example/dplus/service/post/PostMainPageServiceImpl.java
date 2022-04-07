@@ -69,7 +69,7 @@ public class PostMainPageServiceImpl implements PostMainPageService{
     @Transactional(readOnly = true)
     public PostMainResponseDto showPostMain(Long lastPostId, String board, String category) {
         List<Post> postList = postRepository.findCategoryPostOrderByCreated(lastPostId, board, category);
-        return PostMainResponseDto.from(postList);
+        return PostMainResponseDto.from(postList,board);
     }
 
     // 디모페이지 카테고리별 좋아요
@@ -77,7 +77,7 @@ public class PostMainPageServiceImpl implements PostMainPageService{
     public PostMainResponseDto showPostMainLikeSort(int start, String board, String category) {
         Pageable pageable = PageRequest.of(start, 12);
         List<Post> postList = postRepository.findCategoryPostOrderByLikeDesc(pageable, board, category);
-        return PostMainResponseDto.from(postList);
+        return PostMainResponseDto.from(postList,board);
     }
 
     // 상세 게시글 (디플 - 정보공유)
@@ -125,15 +125,14 @@ public class PostMainPageServiceImpl implements PostMainPageService{
     public Long updatePost(Long accountId, Long postId, PostUpdate dto, List<MultipartFile> imgFile){
         Post post = postAuthValidation(accountId, postId);
         // 삭제할 이미지가 있다면, 이미지 주소를 직접 하나씩 지운다
-        if(dto.getDelete_img()!=null){
-            for(int i = 0; i < dto.getDelete_img().size(); i++){
-                String deleteImage = dto.getDelete_img().get(i).getFilename();
-                fileProcessService.deleteImage(deleteImage);
-                postImageRepository.deleteByPostImg(deleteImage);
-            }
+        if(dto.getDelete_img().size() != 0){
+            dto.getDelete_img().forEach(img -> {
+                fileProcessService.deleteImage(img.getFilename());
+                postImageRepository.deleteByPostImg(img.getFilename());
+            });
         }
         setPostImage(imgFile, post);
-        if(dto.getHash_tag()!=null){
+        if(dto.getHash_tag().size() != 0){
             postTagRepository.deleteAllByPostId(postId);
             setPostTag(dto.getHash_tag(), post);
         }

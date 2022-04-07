@@ -122,12 +122,12 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
     }
 
     @Transactional
-    @CacheEvict(value="mainByInterest", key="#category")
+    @CacheEvict(value="mainByInterest", key="#dto.category")
     public Long updateArtwork(Long accountId, Long artworkId, ArtWorkUpdate dto, List<MultipartFile> multipartFiles) {
         ArtWorks artWorks = artworkValidation(accountId, artworkId);
         updateImg(multipartFiles, artWorks, dto);
         artWorks.updateArtWork(dto);
-        artWorks.setThumbnail(dto.getThumbnail());
+        //artWorks.setThumbnail(dto.getThumbnail());
         return artWorks.getId();
     }
 
@@ -183,6 +183,7 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
         if (multipartFiles != null) {
             List<ArtWorkImage> imgList = new ArrayList<>();
             for (MultipartFile file : multipartFiles) {
+                log.info(file.getOriginalFilename());
                 boolean thumbnail = Objects.equals(file.getOriginalFilename(), dto.getThumbnail());
                 String imgUrl = fileProcessService.uploadImage(file);
                 if (thumbnail) {

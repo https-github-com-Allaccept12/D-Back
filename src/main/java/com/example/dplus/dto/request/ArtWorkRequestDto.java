@@ -71,7 +71,7 @@ public class ArtWorkRequestDto {
         @NotEmpty(message = "작품의 작업마무리 기간을 입력해주세요")
         private String work_end;
 
-        private Boolean master;
+        private Boolean is_master;
 
         private String specialty;
 
