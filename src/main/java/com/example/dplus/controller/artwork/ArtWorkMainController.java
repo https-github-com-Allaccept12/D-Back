@@ -98,7 +98,7 @@ public class ArtWorkMainController {
         throw new ErrorCustomException(ErrorCode.NO_AUTHENTICATION_ERROR);
     }
 
-    @DeleteMapping("/api/artwork/{artwork_id}/{category}")
+    @PatchMapping("/api/artwork/del/{artwork_id}/{category}")
     public ResponseEntity<Success> deleteArtWork(@AuthenticationPrincipal UserDetailsImpl user,
                                                  @PathVariable Long artwork_id,
                                                  @PathVariable String category) {

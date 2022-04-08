@@ -42,7 +42,7 @@ public class PostAnswerController {
         throw new ErrorCustomException(ErrorCode.NO_AUTHENTICATION_ERROR);
     }
 
-    @DeleteMapping("/answer/{answer_id}")
+    @PatchMapping("/del/answer/{answer_id}")
     public ResponseEntity<Success> deletePostAnswer(@AuthenticationPrincipal UserDetailsImpl user,
                                                     @PathVariable Long answer_id) {
         if (user != null) {

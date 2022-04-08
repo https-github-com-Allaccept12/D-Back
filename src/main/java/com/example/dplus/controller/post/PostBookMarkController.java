@@ -28,7 +28,7 @@ public class PostBookMarkController {
         throw new ErrorCustomException(ErrorCode.NO_AUTHENTICATION_ERROR);
     }
 
-    @DeleteMapping("/post/{post_id}")
+    @PatchMapping("/post/{post_id}")
     public ResponseEntity<Success> unBookmark(@PathVariable Long post_id,
                                               @AuthenticationPrincipal UserDetailsImpl user) {
         if (user != null) {

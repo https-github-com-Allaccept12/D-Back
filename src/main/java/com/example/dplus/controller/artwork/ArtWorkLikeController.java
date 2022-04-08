@@ -28,7 +28,7 @@ public class ArtWorkLikeController {
         }
         throw new ErrorCustomException(ErrorCode.NO_AUTHENTICATION_ERROR);
     }
-    @DeleteMapping("/{artwork_id}")
+    @PatchMapping("/{artwork_id}")
     public ResponseEntity<Success> unLike(@PathVariable Long artwork_id,
                                           @AuthenticationPrincipal UserDetailsImpl user) {
         if (user != null) {

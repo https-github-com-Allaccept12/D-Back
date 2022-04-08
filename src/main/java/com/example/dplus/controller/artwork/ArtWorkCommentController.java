@@ -21,7 +21,7 @@ import javax.validation.Valid;
 public class ArtWorkCommentController {
     private final ArtWorkCommentService artWorkCommentService;
 
-    @PostMapping("{artwork_id}")
+    @PostMapping("/{artwork_id}")
     public ResponseEntity<Success> createComment(@PathVariable Long artwork_id,
                                                  @Valid @RequestBody ArtWorkComment data,
                                                  @AuthenticationPrincipal UserDetailsImpl user) {
@@ -31,14 +31,14 @@ public class ArtWorkCommentController {
         }
         throw new ErrorCustomException(ErrorCode.NO_AUTHENTICATION_ERROR);
     }
-    @PatchMapping("{comment_id}")
+    @PatchMapping("/{comment_id}")
     public ResponseEntity<Success> updateComment(@PathVariable Long comment_id,
                                                  @Valid @RequestBody ArtWorkComment data,
                                                  @AuthenticationPrincipal UserDetailsImpl user) {
         artWorkCommentService.updateComment(comment_id,data,user.getUser().getId());
         return new ResponseEntity<>(new Success("코멘트 수정 완료","" ), HttpStatus.OK);
     }
-    @DeleteMapping("{comment_id}")
+    @PatchMapping("/del/{comment_id}")
     public ResponseEntity<Success> updateComment(@PathVariable Long comment_id,
                                                  @AuthenticationPrincipal UserDetailsImpl user) {
         artWorkCommentService.deleteComment(comment_id,user.getUser().getId());

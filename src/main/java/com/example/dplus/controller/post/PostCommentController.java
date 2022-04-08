@@ -43,7 +43,7 @@ public class PostCommentController {
         throw new ErrorCustomException(ErrorCode.NO_AUTHENTICATION_ERROR);
     }
 
-    @DeleteMapping("/comment/{post_comment_id}")
+    @PatchMapping("/comment/del/{post_comment_id}")
     public ResponseEntity<Success> deletePostComment(@AuthenticationPrincipal UserDetailsImpl user,
                                                      @PathVariable Long post_comment_id) {
         if (user != null) {

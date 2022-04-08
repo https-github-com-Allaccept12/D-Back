@@ -32,7 +32,7 @@ public class PostLikeController {
         throw new ErrorCustomException(ErrorCode.NO_AUTHENTICATION_ERROR);
     }
 
-    @DeleteMapping("/{post_id}")
+    @PatchMapping("/{post_id}")
     public ResponseEntity<Success> unLike(@PathVariable Long post_id,
                                           @AuthenticationPrincipal UserDetailsImpl user) {
         if (user != null) {
@@ -53,7 +53,7 @@ public class PostLikeController {
         throw new ErrorCustomException(ErrorCode.NO_AUTHENTICATION_ERROR);
     }
 
-    @DeleteMapping("/comment/{postComment_id}")
+    @PatchMapping("/comment/{postComment_id}")
     public ResponseEntity<Success> commentUnLike(@PathVariable Long postComment_id,
                                                  @AuthenticationPrincipal UserDetailsImpl user) {
         if (user != null) {
@@ -73,7 +73,7 @@ public class PostLikeController {
         throw new ErrorCustomException(ErrorCode.NO_AUTHENTICATION_ERROR);
     }
 
-    @DeleteMapping("/answer/{postAnswer_id}")
+    @PatchMapping("/answer/{postAnswer_id}")
     public ResponseEntity<Success> answerUnLike(@PathVariable Long postAnswer_id,
                                                 @AuthenticationPrincipal UserDetailsImpl user) {
         if (user != null) {

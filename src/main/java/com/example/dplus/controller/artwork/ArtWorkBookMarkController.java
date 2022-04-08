@@ -29,7 +29,7 @@ public class ArtWorkBookMarkController {
         throw new ErrorCustomException(ErrorCode.NO_AUTHENTICATION_ERROR);
 
     }
-    @DeleteMapping("/artwork/{artwork_id}")
+    @PatchMapping("/artwork/{artwork_id}")
     public ResponseEntity<Success> unBookmark(@PathVariable Long artwork_id,
                                               @AuthenticationPrincipal UserDetailsImpl user) {
         if (user != null) {
