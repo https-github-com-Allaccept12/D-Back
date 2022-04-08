@@ -26,7 +26,7 @@ public class FollowController {
         return new ResponseEntity<>(new Success("팔로우 했습니다.", ""), HttpStatus.OK);
     }
     //언팔로우
-    @DeleteMapping("")
+    @PatchMapping("")
     public ResponseEntity<Success> unFollow(@AuthenticationPrincipal UserDetailsImpl user,
                                             @RequestBody AccountVisit accountId) {
         followService.unFollow(accountId.getAccount_id(),user.getUser().getId());
