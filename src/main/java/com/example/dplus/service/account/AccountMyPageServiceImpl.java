@@ -52,7 +52,6 @@ public class AccountMyPageServiceImpl implements AccountMyPageService {
 
     //마이페이지 조회
     @Transactional(readOnly = true)
-    @Cacheable(value="accountInfo", key="#visitAccountId", condition="#visitAccountId != null")
     public AccountInfo showAccountInfo(Long visitAccountId, Long accountId) {
         final Account findAccount = getAccount(visitAccountId);
         final Long follower = followRepository.countByFollowerId(findAccount.getId());
