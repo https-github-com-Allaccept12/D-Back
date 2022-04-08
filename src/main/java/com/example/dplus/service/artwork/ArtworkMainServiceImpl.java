@@ -8,11 +8,7 @@ import com.example.dplus.domain.artwork.ArtWorks;
 import com.example.dplus.dto.request.ArtWorkRequestDto.ArtWorkCreate;
 import com.example.dplus.dto.request.ArtWorkRequestDto.ArtWorkUpdate;
 import com.example.dplus.dto.response.AccountResponseDto.TopArtist;
-import com.example.dplus.dto.response.ArtWorkResponseDto;
-import com.example.dplus.dto.response.ArtWorkResponseDto.ArtWorkComment;
-import com.example.dplus.dto.response.ArtWorkResponseDto.ArtWorkDetail;
-import com.example.dplus.dto.response.ArtWorkResponseDto.ArtWorkSubDetail;
-import com.example.dplus.dto.response.ArtWorkResponseDto.ArtworkMain;
+import com.example.dplus.dto.response.ArtWorkResponseDto.*;
 import com.example.dplus.dto.response.MainResponseDto;
 import com.example.dplus.repository.BatchInsertRepository;
 import com.example.dplus.repository.account.AccountRepository;
@@ -88,7 +84,7 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
         //작품 코멘트 가져오기
         List<ArtWorkComment> commentList = artWorkCommentRepository.findArtWorkCommentByArtWorksId(artWorksSub.getArtwork_id());
         //해당 유저의 다른 작품들 가져오기
-        List<ArtWorkResponseDto.ArtWorkSimilarWork> similarList = artWorkRepository
+        List<ArtWorkSimilarWork> similarList = artWorkRepository
                 .findSimilarArtWork(artWorks.getAccount().getId(),artWorks.getId());
         boolean isLike = false;
         boolean isBookmark = false;
