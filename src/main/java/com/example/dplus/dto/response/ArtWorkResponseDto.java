@@ -1,6 +1,7 @@
 package com.example.dplus.dto.response;
+
 import com.example.dplus.domain.artwork.ArtWorkImage;
-import com.example.dplus.dto.common.CommonDto;
+import com.example.dplus.dto.common.CommonDto.ImgUrlDto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -49,12 +50,12 @@ public class ArtWorkResponseDto {
         private Boolean is_bookmark;
         private Boolean is_follow ;
         private ArtWorkSubDetail artWorkSubDetail;
-        private List<CommonDto.ImgUrlDto> img;
+        private List<ImgUrlDto> img;
         private List<ArtWorkComment> comment;
         private List<ArtWorkSimilarWork> similar_Work;
 
         @Builder
-        public ArtWorkDetail(final List<CommonDto.ImgUrlDto> img,
+        public ArtWorkDetail(final List<ImgUrlDto> img,
                              final List<ArtWorkComment> comment,
                              final List<ArtWorkSimilarWork> similar_Work,
                              final ArtWorkSubDetail artWorkSubDetail,
@@ -73,7 +74,7 @@ public class ArtWorkResponseDto {
                                          final Boolean is_like, final Boolean is_bookmark, final Boolean is_follow) {
             return ArtWorkDetail.builder()
                     .img(imgList.stream()
-                            .map(i -> new CommonDto.ImgUrlDto(i.getArtworkImg())).collect(Collectors.toList()))
+                            .map(i -> new ImgUrlDto(i.getArtworkImg())).collect(Collectors.toList()))
                     .comment(commentList)
                     .similar_Work(similarList)
                     .artWorkSubDetail(artWorkSubDetail)

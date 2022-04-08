@@ -80,9 +80,9 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
         //작품 좋아요개수와 작품 기본정보 가져오기
         ArtWorkSubDetail artWorksSub = artWorkRepository.findByArtWorkSubDetail(artWorkId);
         //작품 이미지들 가져오기
-        List<ArtWorkImage> imgList = artWorkImageRepository.findByArtWorksId(artWorksSub.getArtwork_id());
+        List<ArtWorkImage> imgList = artWorkImageRepository.findByArtWorksId(artWorkId);
         //작품 코멘트 가져오기
-        List<ArtWorkComment> commentList = artWorkCommentRepository.findArtWorkCommentByArtWorksId(artWorksSub.getArtwork_id());
+        List<ArtWorkComment> commentList = artWorkCommentRepository.findArtWorkCommentByArtWorksId(artWorkId);
         //해당 유저의 다른 작품들 가져오기
         List<ArtWorkSimilarWork> similarList = artWorkRepository
                 .findSimilarArtWork(artWorks.getAccount().getId(),artWorks.getId());
@@ -95,7 +95,7 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
             //지금 상세페이지를 보고있는사람이 북마크를 했는지
             isBookmark = artWorkBookMarkRepository.existByAccountIdAndArtWorkId(accountId, artWorkId);
             //지금 상세페이지를 보고있는사람이 팔로우를 했는지
-            isFollow = followRepository.existsByFollowerIdAndFollowingId(accountId, artWorksSub.getAccount_id());
+            isFollow = followRepository.existsByFollowerIdAndFollowingId(accountId, artWorkId);
         }
         //상세페이지의 코멘트 개수
         artWorksSub.setComment_count((long) commentList.size());
@@ -151,10 +151,12 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
 
     private void s3ImageUpload(List<MultipartFile> multipartFiles,ArtWorkCreate dto, ArtWorks saveArtwork) {
         List<ArtWorkImage> imgList = new ArrayList<>();
+        boolean thumbnailCheck = true;
         for (MultipartFile file : multipartFiles) {
             boolean thumbnail = Objects.equals(file.getOriginalFilename(), dto.getThumbnail());
             String imgUrl = fileProcessService.uploadImage(file);
-            if (thumbnail) {
+            if (thumbnail && thumbnailCheck) {
+                thumbnailCheck = false;
                 saveArtwork.updateArtWorkThumbnail(imgUrl);
                 continue;
             }
