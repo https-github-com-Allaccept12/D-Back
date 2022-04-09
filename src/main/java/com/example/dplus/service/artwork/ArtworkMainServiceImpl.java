@@ -95,7 +95,7 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
             //지금 상세페이지를 보고있는사람이 북마크를 했는지
             isBookmark = artWorkBookMarkRepository.existByAccountIdAndArtWorkId(accountId, artWorkId);
             //지금 상세페이지를 보고있는사람이 팔로우를 했는지
-            isFollow = followRepository.existsByFollowerIdAndFollowingId(accountId, artWorkId);
+            isFollow = followRepository.existsByFollowerIdAndFollowingId(accountId, artWorks.getAccount().getId());
         }
         //상세페이지의 코멘트 개수
         artWorksSub.setComment_count((long) commentList.size());
