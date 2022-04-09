@@ -90,6 +90,13 @@ public class ArtWorkRequestDto {
 
     }
 
+    @Getter
+    @NoArgsConstructor
+    public static class ArtWorkId {
+        private Long artwork_id;
+    }
+
+
 
 
 
