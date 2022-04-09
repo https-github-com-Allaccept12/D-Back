@@ -57,7 +57,7 @@ D Plus는 디자이너들의 이러한 고민을 줄여드리기 위해 만들�
 
 ## 4. 아키텍쳐
 
-![아키텍쳐]("https://user-images.githubusercontent.com/91513499/162553206-79fca4bc-224b-4334-a62c-7214c6d52c8f.png")
+![아키텍쳐](https://user-images.githubusercontent.com/91513499/162553206-79fca4bc-224b-4334-a62c-7214c6d52c8f.png)
 
 ## 5. 개발 포인트
 - [QueryDsl 적용](https://github.com/https-github-com-Allaccept12/D-Back/wiki/QueryDsl-%EC%A0%81%EC%9A%A9)
