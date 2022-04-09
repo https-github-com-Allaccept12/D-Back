@@ -56,7 +56,8 @@ D Plus는 디자이너들의 이러한 고민을 줄여드리기 위해 만들�
 - AWS S3
 
 ## 4. 아키텍쳐
-![아키텍쳐](https://user-images.githubusercontent.com/79740505/162552102-8acc3bd7-da7b-4690-84f1-0f48f700d3a4.PNG)
+
+![아키텍쳐](https://user-images.githubusercontent.com/79740505/162552919-7a4f3f88-4fd2-49d3-9020-e94021d4ea9f.PNG)
 
 ## 5. 개발 포인트
 - [QueryDsl 적용](https://github.com/https-github-com-Allaccept12/D-Back/wiki/QueryDsl-%EC%A0%81%EC%9A%A9)
