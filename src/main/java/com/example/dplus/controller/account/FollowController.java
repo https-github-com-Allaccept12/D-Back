@@ -2,7 +2,7 @@ package com.example.dplus.controller.account;
 
 
 import com.example.dplus.dto.Success;
-import com.example.dplus.dto.request.AccountRequestDto.AccountVisit;
+import com.example.dplus.dto.common.CommonDto.Id;
 import com.example.dplus.jwt.UserDetailsImpl;
 import com.example.dplus.service.account.follow.FollowService;
 import lombok.RequiredArgsConstructor;
@@ -21,15 +21,15 @@ public class FollowController {
     //팔로우
     @PostMapping("")
     public ResponseEntity<Success> doFollow(@AuthenticationPrincipal UserDetailsImpl user,
-                                            @RequestBody AccountVisit accountId) {
-        followService.follow(accountId.getAccount_id(),user.getUser().getId());
+                                            @RequestBody Id accountId) {
+        followService.follow(accountId.getId(),user.getUser().getId());
         return new ResponseEntity<>(new Success("팔로우 했습니다.", ""), HttpStatus.OK);
     }
     //언팔로우
     @PatchMapping("")
     public ResponseEntity<Success> unFollow(@AuthenticationPrincipal UserDetailsImpl user,
-                                            @RequestBody AccountVisit accountId) {
-        followService.unFollow(accountId.getAccount_id(),user.getUser().getId());
+                                            @RequestBody Id accountId) {
+        followService.unFollow(accountId.getId(),user.getUser().getId());
         return new ResponseEntity<>(new Success("언 팔로우 했습니다.", ""), HttpStatus.OK);
     }
     //팔로잉리스트
