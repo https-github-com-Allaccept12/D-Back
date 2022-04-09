@@ -30,7 +30,8 @@ public class ArtWorkRepositoryImpl implements ArtWorkRepositoryCustom {
                 .select(Projections.constructor(ArtWorkFeed.class,
                         artWorks.id,
                         artWorks.thumbnail,
-                        artWorks.isMaster
+                        artWorks.isMaster,
+                        artWorks.scope
                 ))
                 .from(artWorks)
                 .limit(4)

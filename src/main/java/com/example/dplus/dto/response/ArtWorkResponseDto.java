@@ -139,12 +139,14 @@ public class ArtWorkResponseDto {
         private Long artwork_id;
         private String img;
         private Boolean is_master;
+        private Boolean scope;
 
         @Builder
-        public ArtWorkFeed(final Long artwork_id,final String img, final Boolean is_master) {
+        public ArtWorkFeed(final Long artwork_id,final String img, final Boolean is_master, final Boolean scope) {
             this.artwork_id = artwork_id;
             this.img = img;
             this.is_master = is_master;
+            this.scope = scope;
         }
     }
     @Getter
