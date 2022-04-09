@@ -79,4 +79,11 @@ public class CommonDto {
         private String keyword;
     }
 
+    @Getter
+    @NoArgsConstructor
+    public static class Id {
+        private Long id;
+    }
+
+
 }

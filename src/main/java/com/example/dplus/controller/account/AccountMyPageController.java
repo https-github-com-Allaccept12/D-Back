@@ -2,7 +2,7 @@ package com.example.dplus.controller.account;
 
 
 import com.example.dplus.dto.Success;
-import com.example.dplus.dto.request.AccountRequestDto.AccountMasterPiece;
+import com.example.dplus.dto.common.CommonDto.Id;
 import com.example.dplus.dto.request.AccountRequestDto.UpdateAccountIntro;
 import com.example.dplus.dto.request.AccountRequestDto.UpdateSpecialty;
 import com.example.dplus.dto.request.HistoryRequestDto.HistoryUpdateList;
@@ -85,25 +85,25 @@ public class AccountMyPageController {
                 accountMyPageService.showAccountArtWorkBookMark(last_artwork_id,user)),HttpStatus.OK);
     }
 
-    @PostMapping("/masterpiece/{artwork_id}")
-    public ResponseEntity<Success> masterpieceSelect(@PathVariable Long artwork_id,
+    @PostMapping("/masterpiece")
+    public ResponseEntity<Success> masterpieceSelect(@RequestBody Id artworkId,
                                                      @AuthenticationPrincipal UserDetailsImpl user) {
-        accountMyPageService.masterAccountCareerFeed(artwork_id,user.getUser());
+        accountMyPageService.masterAccountCareerFeed(artworkId.getId(),user.getUser());
         return new ResponseEntity<>(new Success("포트폴리오 작품 선택/해지",""),HttpStatus.OK);
     }
 
-    @PatchMapping("/masterpiece/{artwork_id}")
-    public ResponseEntity<Success> updateMasterpiece(@PathVariable Long artwork_id,
-                                                     @RequestBody AccountMasterPiece prev_artwork_id,
-                                                     @AuthenticationPrincipal UserDetailsImpl user) {
-        accountMyPageService.updateMasterAccountCareerFeed(artwork_id,prev_artwork_id.getPrev_artwork_id(),user.getUser());
-        return new ResponseEntity<>(new Success("포트폴리오 작품 수정",""),HttpStatus.OK);
-    }
+//    @PatchMapping("/masterpiece")
+//    public ResponseEntity<Success> updateMasterpiece(@RequestBody Id artworkId,
+//                                                     @RequestBody AccountMasterPiece prev_artwork_id,
+//                                                     @AuthenticationPrincipal UserDetailsImpl user) {
+//        accountMyPageService.updateMasterAccountCareerFeed(artworkId.getId(),prev_artwork_id.getPrev_artwork_id(),user.getUser());
+//        return new ResponseEntity<>(new Success("포트폴리오 작품 수정",""),HttpStatus.OK);
+//    }
 
-    @PostMapping("/hidepiece/{artwork_id}")
-    public ResponseEntity<Success> hidePieceClear(@PathVariable Long artwork_id,
+    @PostMapping("/hidepiece")
+    public ResponseEntity<Success> hidePieceClear(@RequestBody Id artworkId,
                                                    @AuthenticationPrincipal UserDetailsImpl user) {
-        accountMyPageService.hideArtWorkScope(artwork_id,user.getUser());
+        accountMyPageService.hideArtWorkScope(artworkId.getId(),user.getUser());
         return new ResponseEntity<>(new Success("작품 보이기/숨기기",""),HttpStatus.OK);
     }
 

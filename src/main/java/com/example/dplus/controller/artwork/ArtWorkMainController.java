@@ -4,8 +4,8 @@ package com.example.dplus.controller.artwork;
 import com.example.dplus.advice.ErrorCode;
 import com.example.dplus.advice.ErrorCustomException;
 import com.example.dplus.dto.Success;
+import com.example.dplus.dto.common.CommonDto.Id;
 import com.example.dplus.dto.request.ArtWorkRequestDto.ArtWorkCreate;
-import com.example.dplus.dto.request.ArtWorkRequestDto.ArtWorkId;
 import com.example.dplus.dto.request.ArtWorkRequestDto.ArtWorkUpdate;
 import com.example.dplus.jwt.UserDetailsImpl;
 import com.example.dplus.service.artwork.ArtworkMainService;
@@ -99,10 +99,10 @@ public class ArtWorkMainController {
 
     @PatchMapping("/api/artwork/del/{category}")
     public ResponseEntity<Success> deleteArtWork(@AuthenticationPrincipal UserDetailsImpl user,
-                                                 @RequestBody ArtWorkId artworkId,
+                                                 @RequestBody Id artworkId,
                                                  @PathVariable String category) {
         if (user != null) {
-            artworkMainService.deleteArtwork(user.getUser().getId(), artworkId.getArtwork_id(), category);
+            artworkMainService.deleteArtwork(user.getUser().getId(), artworkId.getId(), category);
             return new ResponseEntity<>(new Success("작품 삭제",""),HttpStatus.OK);
         }
         throw new ErrorCustomException(ErrorCode.NO_AUTHENTICATION_ERROR);

@@ -4,6 +4,7 @@ package com.example.dplus.controller.artwork;
 import com.example.dplus.advice.ErrorCode;
 import com.example.dplus.advice.ErrorCustomException;
 import com.example.dplus.dto.Success;
+import com.example.dplus.dto.common.CommonDto.Id;
 import com.example.dplus.jwt.UserDetailsImpl;
 import com.example.dplus.service.artwork.like.ArtworkLikeService;
 import lombok.RequiredArgsConstructor;
@@ -19,20 +20,20 @@ public class ArtWorkLikeController {
 
     private final ArtworkLikeService artworkLikeService;
 
-    @PostMapping("/{artwork_id}")
-    public ResponseEntity<Success> doLike(@PathVariable Long artwork_id,
+    @PostMapping("")
+    public ResponseEntity<Success> doLike(@RequestBody Id artworkId,
                                           @AuthenticationPrincipal UserDetailsImpl user) {
         if (user != null) {
-            artworkLikeService.doLike(user.getUser(),artwork_id);
+            artworkLikeService.doLike(user.getUser(),artworkId.getId());
             return new ResponseEntity<>(new Success("작품 좋아요 완료",""), HttpStatus.OK);
         }
         throw new ErrorCustomException(ErrorCode.NO_AUTHENTICATION_ERROR);
     }
-    @PatchMapping("/{artwork_id}")
-    public ResponseEntity<Success> unLike(@PathVariable Long artwork_id,
+    @PatchMapping("")
+    public ResponseEntity<Success> unLike(@RequestBody Id artworkId,
                                           @AuthenticationPrincipal UserDetailsImpl user) {
         if (user != null) {
-            artworkLikeService.unLike(user.getUser(), artwork_id);
+            artworkLikeService.unLike(user.getUser(), artworkId.getId());
             return new ResponseEntity<>(new Success("작품 좋아요 해지", ""), HttpStatus.OK);
         }
         throw new ErrorCustomException(ErrorCode.NO_AUTHENTICATION_ERROR);

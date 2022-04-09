@@ -3,6 +3,7 @@ package com.example.dplus.controller.post;
 import com.example.dplus.advice.ErrorCode;
 import com.example.dplus.advice.ErrorCustomException;
 import com.example.dplus.dto.Success;
+import com.example.dplus.dto.common.CommonDto.Id;
 import com.example.dplus.jwt.UserDetailsImpl;
 import com.example.dplus.service.post.comment.like.PostCommentLikeService;
 import com.example.dplus.service.post.like.PostAnswerLikeService;
@@ -22,62 +23,62 @@ public class PostLikeController {
     private final PostCommentLikeService postCommentLikeService;
     private final PostAnswerLikeService postAnswerLikeService;
 
-    @PostMapping("/{post_id}")
-    public ResponseEntity<Success> doLike(@PathVariable Long post_id,
+    @PostMapping("")
+    public ResponseEntity<Success> doLike(@RequestBody Id postId,
                                           @AuthenticationPrincipal UserDetailsImpl user) {
         if (user != null) {
-            postLikeService.doLike(user.getUser(), post_id);
+            postLikeService.doLike(user.getUser(), postId.getId());
             return new ResponseEntity<>(new Success("게시물 좋아요 완료", ""), HttpStatus.OK);
         }
         throw new ErrorCustomException(ErrorCode.NO_AUTHENTICATION_ERROR);
     }
 
-    @PatchMapping("/{post_id}")
-    public ResponseEntity<Success> unLike(@PathVariable Long post_id,
+    @PatchMapping("")
+    public ResponseEntity<Success> unLike(@RequestBody Id postId,
                                           @AuthenticationPrincipal UserDetailsImpl user) {
         if (user != null) {
-            postLikeService.unLike(user.getUser(), post_id);
+            postLikeService.unLike(user.getUser(), postId.getId());
             return new ResponseEntity<>(new Success("게시물 좋아요 취소", ""), HttpStatus.OK);
         }
         throw new ErrorCustomException(ErrorCode.NO_AUTHENTICATION_ERROR);
     }
 
     // 코멘트에 대한 like 처리.. postId를 따로 찾지 않아도 되지 않을까.. seq베이스면?
-    @PostMapping("/comment/{postComment_id}")
-    public ResponseEntity<Success> commentDoLike(@PathVariable Long postComment_id,
+    @PostMapping("/comment")
+    public ResponseEntity<Success> commentDoLike(@RequestBody Id postCommentId,
                                                  @AuthenticationPrincipal UserDetailsImpl user) {
         if (user != null) {
-            postCommentLikeService.doLike(user.getUser(), postComment_id);
+            postCommentLikeService.doLike(user.getUser(), postCommentId.getId());
             return new ResponseEntity<>(new Success("게시물 코멘트 좋아요 완료", ""), HttpStatus.OK);
         }
         throw new ErrorCustomException(ErrorCode.NO_AUTHENTICATION_ERROR);
     }
 
-    @PatchMapping("/comment/{postComment_id}")
-    public ResponseEntity<Success> commentUnLike(@PathVariable Long postComment_id,
+    @PatchMapping("/comment")
+    public ResponseEntity<Success> commentUnLike(@RequestBody Id postCommentId,
                                                  @AuthenticationPrincipal UserDetailsImpl user) {
         if (user != null) {
-            postCommentLikeService.unLike(user.getUser(), postComment_id);
+            postCommentLikeService.unLike(user.getUser(), postCommentId.getId());
             return new ResponseEntity<>(new Success("게시물 코멘트 좋아요 취소", ""), HttpStatus.OK);
         }
         throw new ErrorCustomException(ErrorCode.NO_AUTHENTICATION_ERROR);
     }
 
-    @PostMapping("/answer/{postAnswer_id}")
-    public ResponseEntity<Success> answerDoLike(@PathVariable Long postAnswer_id,
+    @PostMapping("/answer")
+    public ResponseEntity<Success> answerDoLike(@RequestBody Id postAnswerId,
                                                 @AuthenticationPrincipal UserDetailsImpl user) {
         if (user != null) {
-            postAnswerLikeService.answerDoLike(user.getUser(), postAnswer_id);
+            postAnswerLikeService.answerDoLike(user.getUser(), postAnswerId.getId());
             return new ResponseEntity<>(new Success("게시물 QnA 답글 좋아요 완료", ""), HttpStatus.OK);
         }
         throw new ErrorCustomException(ErrorCode.NO_AUTHENTICATION_ERROR);
     }
 
-    @PatchMapping("/answer/{postAnswer_id}")
-    public ResponseEntity<Success> answerUnLike(@PathVariable Long postAnswer_id,
+    @PatchMapping("/answer")
+    public ResponseEntity<Success> answerUnLike(@RequestBody Id postAnswerId,
                                                 @AuthenticationPrincipal UserDetailsImpl user) {
         if (user != null) {
-            postAnswerLikeService.answerUnLike(user.getUser(), postAnswer_id);
+            postAnswerLikeService.answerUnLike(user.getUser(), postAnswerId.getId());
             return new ResponseEntity<>(new Success("게시물 QnA 답글 좋아요 취소 완료", ""), HttpStatus.OK);
         }
         throw new ErrorCustomException(ErrorCode.NO_AUTHENTICATION_ERROR);

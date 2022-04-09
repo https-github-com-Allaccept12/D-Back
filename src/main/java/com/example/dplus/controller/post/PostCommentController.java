@@ -3,6 +3,7 @@ package com.example.dplus.controller.post;
 import com.example.dplus.advice.ErrorCode;
 import com.example.dplus.advice.ErrorCustomException;
 import com.example.dplus.dto.Success;
+import com.example.dplus.dto.common.CommonDto;
 import com.example.dplus.dto.request.PostRequestDto;
 import com.example.dplus.jwt.UserDetailsImpl;
 import com.example.dplus.service.post.comment.PostCommentService;
@@ -43,11 +44,11 @@ public class PostCommentController {
         throw new ErrorCustomException(ErrorCode.NO_AUTHENTICATION_ERROR);
     }
 
-    @PatchMapping("/comment/del/{post_comment_id}")
+    @PatchMapping("/comment/del")
     public ResponseEntity<Success> deletePostComment(@AuthenticationPrincipal UserDetailsImpl user,
-                                                     @PathVariable Long post_comment_id) {
+                                                     @RequestBody CommonDto.Id postCommentId) {
         if (user != null) {
-            postCommentService.deleteComment(user.getUser().getId(), post_comment_id);
+            postCommentService.deleteComment(user.getUser().getId(), postCommentId.getId());
             return new ResponseEntity<>(new Success("게시글 코멘트 삭제 완료",""), HttpStatus.OK);
         }
         throw new ErrorCustomException(ErrorCode.NO_AUTHENTICATION_ERROR);

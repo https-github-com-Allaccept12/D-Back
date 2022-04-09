@@ -4,7 +4,9 @@ package com.example.dplus.controller.post;
 import com.example.dplus.advice.ErrorCode;
 import com.example.dplus.advice.ErrorCustomException;
 import com.example.dplus.dto.Success;
-import com.example.dplus.dto.request.PostRequestDto;
+import com.example.dplus.dto.common.CommonDto;
+import com.example.dplus.dto.request.PostRequestDto.PostCreate;
+import com.example.dplus.dto.request.PostRequestDto.PostUpdate;
 import com.example.dplus.jwt.UserDetailsImpl;
 import com.example.dplus.service.post.PostMainPageService;
 import lombok.RequiredArgsConstructor;
@@ -60,7 +62,7 @@ public class PostMainController {
     // 게시물 등록
     @PostMapping("")
     public ResponseEntity<Success> createPost(@AuthenticationPrincipal UserDetailsImpl user,
-                                              @RequestPart PostRequestDto.PostCreate data,
+                                              @RequestPart PostCreate data,
                                               @RequestPart(required = false) List<MultipartFile> imgFile) {
         if (user != null) {
             return new ResponseEntity<>(new Success("디플 게시물 등록",
@@ -73,7 +75,7 @@ public class PostMainController {
     @PatchMapping("/{post_id}")
     public ResponseEntity<Success> updatePost(@AuthenticationPrincipal UserDetailsImpl user,
                                               @PathVariable Long post_id,
-                                              @RequestPart PostRequestDto.PostUpdate data,
+                                              @RequestPart PostUpdate data,
                                               @RequestPart(required = false) List<MultipartFile> imgFile) {
 
         if (user != null) {
@@ -84,12 +86,12 @@ public class PostMainController {
     }
 
     // 게시물 삭제
-    @PatchMapping("/del/{post_id}")
+    @PatchMapping("/del")
     public ResponseEntity<Success> deletePost(@AuthenticationPrincipal UserDetailsImpl user,
-                                              @PathVariable Long post_id,
+                                              @RequestBody CommonDto.Id postId,
                                               @RequestParam("board") String board) {
         if (user != null) {
-            postMainPageService.deletePost(user.getUser().getId(), post_id, board);
+            postMainPageService.deletePost(user.getUser().getId(), postId.getId(), board);
             return new ResponseEntity<>(new Success("디플 게시물 삭제", ""), HttpStatus.OK);
         }
         throw new ErrorCustomException(ErrorCode.NO_AUTHENTICATION_ERROR);

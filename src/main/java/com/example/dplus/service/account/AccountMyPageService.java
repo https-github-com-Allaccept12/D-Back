@@ -35,7 +35,7 @@ public interface AccountMyPageService {
 
     //void nonMasterAccountCareerFeed(Long artWorkId, Account account);
 
-    void updateMasterAccountCareerFeed(Long artWorkId, Long prevArtWorkId, Account account);
+    //void updateMasterAccountCareerFeed(Long artWorkId, Long prevArtWorkId, Account account);
 
     void hideArtWorkScope(Long artWorkId, Account account);
 
