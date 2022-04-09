@@ -25,8 +25,6 @@ public class ArtWorkResponseDto {
         private Long view_count;
         private Long like_count;
         private Timestamp create_time;
-        private Boolean is_like = false;
-        private Boolean is_bookmark = false;
 
         @Builder
         public ArtworkMain(final Long artwork_id,final Long account_id,final String account_nickname,final String account_profile,
@@ -41,13 +39,7 @@ public class ArtWorkResponseDto {
             this.category = category;
             this.account_nickname = account_nickname;
         }
-        public void setIsLike() {
-            this.is_like = true;
-        }
 
-        public void setIsBookmark() {
-            this.is_bookmark = true;
-        }
 
     }
 

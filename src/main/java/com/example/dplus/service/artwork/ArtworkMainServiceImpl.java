@@ -52,8 +52,6 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
             List<ArtworkMain> artWorkList = getArtworkList(interest);
             List<TopArtist> topArtist = getTopArtist();
             isFollow(accountId,topArtist);
-            isLike(accountId,artWorkList);
-            isBookmark(accountId,artWorkList);
             return MainResponseDto.builder().artwork(artWorkList).top_artist(topArtist).build();
         }
         List<ArtworkMain> artworkList = getArtworkList("");
@@ -216,21 +214,6 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
             boolean isFollow = followRepository.existsByFollowerIdAndFollowingId(accountId, artist.getAccount_id());
             if (isFollow)
                 artist.setIsFollow();
-        });
-    }
-    private void isBookmark(Long accountId, List<ArtworkMain> artWorkList) {
-        artWorkList.forEach((art) -> {
-            boolean isBookmark = artWorkBookMarkRepository.existByAccountIdAndArtWorkId(accountId, art.getArtwork_id());
-            if (isBookmark)
-                art.setIsBookmark();
-        });
-    }
-
-    private void isLike(Long accountId, List<ArtworkMain> artWorkList) {
-        artWorkList.forEach((art) -> {
-            boolean isLike = artWorkLikesRepository.existByAccountIdAndArtWorkId(accountId,art.getArtwork_id());
-            if (isLike)
-                art.setIsLike();
         });
     }
 }

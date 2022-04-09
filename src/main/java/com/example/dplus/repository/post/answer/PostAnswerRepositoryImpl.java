@@ -10,7 +10,6 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 import static com.example.dplus.domain.account.QAccount.account;
-import static com.example.dplus.domain.post.QPost.post;
 import static com.example.dplus.domain.post.QPostAnswer.postAnswer;
 import static com.example.dplus.domain.post.QPostAnswerLikes.postAnswerLikes;
 
@@ -52,14 +51,13 @@ public class PostAnswerRepositoryImpl implements PostAnswerRepositoryCustom {
                         postAnswer.created,
                         postAnswer.modified,
                         account.profileImg,
-                        post.title,
+                        postAnswer.post.title,
                         postAnswer.isSelected,
-                        post.id,
-                        post.isSelected
+                        postAnswer.post.id,
+                        postAnswer.post.isSelected
                 ))
                 .from(postAnswer)
                 .join(postAnswer.account, account).on(account.id.eq(accountId))
-                .join(postAnswer.post, post).on(post.account.id.eq(accountId))
                 .leftJoin(postAnswerLikes).on(postAnswer.id.eq(postAnswerLikes.postAnswer.id))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -68,5 +66,6 @@ public class PostAnswerRepositoryImpl implements PostAnswerRepositoryCustom {
                 .orderBy(postAnswer.created.desc())
                 .fetch();
     }
+
 
 }
