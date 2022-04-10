@@ -5,13 +5,13 @@
 
 디자이너 그들만의 커뮤니티 사이트, <br>
 **D+ 를 체험해보세요!<br><br/>
-[디플러스 바로가기](https:/링크.com/)**<br>
+[디플러스 바로가기](https://dplusday.com/)**<br>
 
 <br>
 <img width="905" alt="플러스하다" src="https://user-images.githubusercontent.com/79740505/161507027-ac3024b5-44cb-48e2-a1b8-f2f609336e97.png">
 
-📌 **시연 영상** : [시연영상](https:/시연영상 링크.com/) <br>
-📌 **발표 자료** : [구글 프레젠테이션으로 이동](https:/발표자료 링크.com/)
+<!-- 📌 **시연 영상** : [시연영상](https:/시연영상 링크.com/) <br>
+📌 **발표 자료** : [구글 프레젠테이션으로 이동](https:/발표자료 링크.com/) -->
 
 <br>
 
