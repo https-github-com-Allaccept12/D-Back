@@ -10,7 +10,6 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -18,7 +17,6 @@ import java.util.List;
 
 @Entity
 @Getter
-@DynamicInsert
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Account extends BaseEntity {
 
@@ -53,7 +51,6 @@ public class Account extends BaseEntity {
 
     private String tendency;
 
-    @Column(columnDefinition = "BIGINT default 0")
     private Long exp;
 
     private String linkedIn;
@@ -82,31 +79,20 @@ public class Account extends BaseEntity {
     private String other;
 
     @Builder
-    public Account(final String accountName, final String email, final String nickname, final String subContent, final String titleContent, final String profileImg,
-                   final int career, final String phoneNumber, final String workTime,
-                   final String workEmail, final String tendency, final Long exp,
-                   final String linkedIn, final String brunch, final String instagram,final String other,
-                   final String interest, final Rank rank, final String job, final String specialty)  {
+    public Account(final String accountName, final String email, final String nickname, final String profileImg,
+                   final String other, final Rank rank, final String specialty)  {
         this.accountName = accountName;
         this.email = email;
         this.nickname = nickname;
-        this.titleContent = titleContent;
-        this.subContent = subContent;
         this.profileImg = profileImg;
-        this.career = career;
-        this.phoneNumber = phoneNumber;
-        this.workTime = workTime;
-        this.workEmail = workEmail;
-        this.tendency = tendency;
-        this.exp = exp;
-        this.linkedIn = linkedIn;
-        this.brunch = brunch;
-        this.instagram = instagram;
-        this.interest = interest;
         this.rank = rank;
-        this.job = job;
         this.specialty = specialty;
         this.other = other;
+    }
+
+    @PrePersist
+    public void prePersist() {
+        this.exp = this.exp == null ? 0 : this.exp;
     }
 
     public void initTendency(final String requestTendency) {

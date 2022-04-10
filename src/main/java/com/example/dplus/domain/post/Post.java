@@ -8,7 +8,6 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -17,7 +16,6 @@ import java.util.List;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@DynamicInsert
 public class Post extends BaseEntity {
 
     @Id
@@ -39,11 +37,9 @@ public class Post extends BaseEntity {
     @JoinColumn(name = "account_id")
     private Account account;
 
-    @Column(columnDefinition = "BIGINT default 0")
     private Long view;
 
-    @Column(columnDefinition = "TINYINT default 0")
-    private boolean isSelected;
+    private Boolean isSelected;
 
     @OneToMany(mappedBy = "post",orphanRemoval = true)
     private List<PostTag> postTagList = new ArrayList<>();
@@ -62,14 +58,19 @@ public class Post extends BaseEntity {
 
     @Builder
     public Post(final String title, final String content, final String category,
-                final Account account, final Long view, final boolean isSelected, final PostBoard board) {
+                final Account account, final PostBoard board) {
         this.title = title;
         this.content = content;
         this.category = category;
         this.account = account;
-        this.view = view;
-        this.isSelected = isSelected;
         this.board = board;
+    }
+
+    @PrePersist
+    public void prePersist() {
+        this.view = this.view == null ? 0 : this.view;
+        this.isSelected = this.isSelected != null && this.isSelected;
+
     }
 
     public void addViewCount() {

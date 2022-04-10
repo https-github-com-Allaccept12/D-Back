@@ -9,13 +9,11 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
 
 @Entity
 @Getter
-@DynamicInsert
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ArtWorks extends BaseEntity {
 
@@ -40,14 +38,12 @@ public class ArtWorks extends BaseEntity {
     @Column(nullable = false)
     private String copyright;
 
-    @Column(columnDefinition = "BIGINT default 0")
     private Long view;
 
     private String workStart;
 
     private String workEnd;
 
-    @Column(columnDefinition = "TINYINT default 0")
     private Boolean isMaster;
 
     private String specialty;
@@ -61,13 +57,12 @@ public class ArtWorks extends BaseEntity {
 
     @Builder
     public ArtWorks(final Boolean scope, final String title, final String content, final String category,
-                    final Long view, final String workStart, final String workEnd, final Account account,
+                    final String workStart, final String workEnd, final Account account,
                     final Boolean isMaster, final String specialty, final String copyright, final String thumbnail) {
         this.scope = scope;
         this.title = title;
         this.content = content;
         this.category = category;
-        this.view = view;
         this.workStart = workStart;
         this.workEnd = workEnd;
         this.account = account;
@@ -75,7 +70,12 @@ public class ArtWorks extends BaseEntity {
         this.specialty = specialty;
         this.copyright = copyright;
         this.thumbnail = thumbnail;
-        //account.getArtWorksList().add(this);
+
+    }
+
+    @PrePersist
+    public void prePersist() {
+        this.view = this.view == null ? 0 : this.view;
     }
 
     public void addViewCount() {
@@ -101,10 +101,6 @@ public class ArtWorks extends BaseEntity {
         this.scope = isScope;
     }
 
-    public void setThumbnail(String thumbnail) {
-        this.thumbnail = thumbnail;
-    }
-
     public void updateArtWorkThumbnail(String thumbnail) {
         this.thumbnail = thumbnail;
     }
@@ -123,7 +119,6 @@ public class ArtWorks extends BaseEntity {
                 .specialty(dto.getSpecialty())
                 .copyright(dto.getCopyright())
                 .thumbnail(dto.getThumbnail())
-                .view(0L)
                 .build();
     }
 
