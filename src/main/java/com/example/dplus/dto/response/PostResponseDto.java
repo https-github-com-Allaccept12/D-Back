@@ -280,7 +280,7 @@ public class PostResponseDto {
                     .category(post.getCategory())
                     .create_time(post.getCreated())
                     .modify_time(post.getModified())
-                    .is_selected(post.isSelected())
+                    .is_selected(post.getIsSelected())
                     .build();
 
         }

@@ -30,7 +30,7 @@ public class PostMainReccomendationDto {
                                 post.getContent(),
                                 post.getCategory(),
                                 post.getCreated(),
-                                post.isSelected(),
+                                post.getIsSelected(),
                                 (long) post.getPostLikeList().size(),
                                 post.getPostTagList(),
                                 (long) post.getPostCommentList().size()))

@@ -32,7 +32,7 @@ public class PostMainResponseDto {
                                     post.getContent(),
                                     post.getCategory(),
                                     post.getCreated(),
-                                    post.isSelected(),
+                                    post.getIsSelected(),
                                     (long) post.getPostLikeList().size(),
                                     post.getPostTagList(),
                                     (long) post.getPostAnswerList().size()))
@@ -49,7 +49,7 @@ public class PostMainResponseDto {
                                 post.getContent(),
                                 post.getCategory(),
                                 post.getCreated(),
-                                post.isSelected(),
+                                post.getIsSelected(),
                                 (long) post.getPostLikeList().size(),
                                 post.getPostTagList(),
                                 (long) post.getPostCommentList().size()))
