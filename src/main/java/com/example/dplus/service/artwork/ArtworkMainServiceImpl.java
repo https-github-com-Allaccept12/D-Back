@@ -48,15 +48,13 @@ public class ArtworkMainServiceImpl implements ArtworkMainService {
 
     @Transactional(readOnly = true)
     public MainResponseDto mostPopularArtWork(Long accountId, String interest) {
-        if (accountId != 0) {
-            List<ArtworkMain> artWorkList = getArtworkList(interest);
-            List<TopArtist> topArtist = getTopArtist();
-            isFollow(accountId,topArtist);
-            return MainResponseDto.builder().artwork(artWorkList).top_artist(topArtist).build();
-        }
-        List<ArtworkMain> artworkList = getArtworkList("");
+        List<ArtworkMain> artWorkList = getArtworkList(interest);
         List<TopArtist> topArtist = getTopArtist();
-        return MainResponseDto.builder().artwork(artworkList).top_artist(topArtist).build();
+        if (accountId != 0) {
+            isFollow(accountId,topArtist);
+            return MainResponseDto.of(topArtist,artWorkList);
+        }
+        return MainResponseDto.of(topArtist,artWorkList);
     }
 
     //모아보기

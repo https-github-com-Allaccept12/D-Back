@@ -29,7 +29,7 @@ public class ArtWorkMainController {
     @GetMapping("/")
     public ResponseEntity<Success> main(@RequestParam(value = "visitor_account_id",required = false) Long user,
                                         @RequestParam(value = "interest",required = false) String interest) {
-        long accountId = 0L ;
+        long accountId = 0L;
         String interested = "default";
         if (user != null) {
             accountId = user;
