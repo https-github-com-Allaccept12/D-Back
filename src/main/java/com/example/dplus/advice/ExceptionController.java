@@ -20,39 +20,39 @@ public class ExceptionController {
     public ResponseEntity<Fail> customErrorException(ErrorCustomException ex) {
         Fail apiException = new Fail(ex.getErrorCode());
         log.error("에러발생 :" + ex.getErrorCode());
-        return new ResponseEntity<>(apiException, HttpStatus.OK);
+        return new ResponseEntity<>(apiException, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(value = {MethodArgumentNotValidException.class})
     public ResponseEntity<Fail> handleApiRequestErrorException(MethodArgumentNotValidException ex) {
         Fail restApiException = new Fail(ex + " " + ex.getLocalizedMessage() );
         log.error(ex.getMessage());
-        return new ResponseEntity<>(restApiException, HttpStatus.OK);
+        return new ResponseEntity<>(restApiException, HttpStatus.BAD_REQUEST);
     }
     @ExceptionHandler(value = {MissingServletRequestParameterException.class})
     public ResponseEntity<Fail> handleMissingRequestParameterErrorException(MissingServletRequestParameterException ex) {
         Fail restApiException = new Fail("API 파라미터값을 잘못입력했거나 입력하지 않았습니다.");
         log.error(ex.getMessage());
-        return new ResponseEntity<>(restApiException, HttpStatus.OK);
+        return new ResponseEntity<>(restApiException, HttpStatus.BAD_REQUEST);
     }
     @ExceptionHandler(value = {HttpRequestMethodNotSupportedException.class})
     public ResponseEntity<Fail> handleNotSupportedRequestErrorException(HttpRequestMethodNotSupportedException ex) {
         Fail restApiException = new Fail("Request 메서드 입력을 잘 못했습니다");
         log.error(ex.getMessage());
-        return new ResponseEntity<>(restApiException, HttpStatus.OK);
+        return new ResponseEntity<>(restApiException, HttpStatus.BAD_REQUEST);
     }
     @ExceptionHandler(value = {IllegalArgumentException.class})
     public ResponseEntity<Fail> handleRequestErrorException(IllegalArgumentException ex) {
         Fail restApiException = new Fail("파라미터 값을 확인해주세요.");
         log.error(ex.getMessage());
-        return new ResponseEntity<>(restApiException, HttpStatus.OK);
+        return new ResponseEntity<>(restApiException, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(value = {MissingServletRequestPartException.class})
     public ResponseEntity<Fail> handleMissingRequestParameterErrorException(MissingServletRequestPartException ex) {
         Fail restApiException = new Fail("이미지 파일이 첨부되지 않았습니다.");
         log.error(ex.getMessage());
-        return new ResponseEntity<>(restApiException, HttpStatus.OK);
+        return new ResponseEntity<>(restApiException, HttpStatus.BAD_REQUEST);
     }
 
 
@@ -63,3 +63,4 @@ public class ExceptionController {
 //        return new  ResponseEntity<>(apiException, HttpStatus.OK);
 //    }
 }
+

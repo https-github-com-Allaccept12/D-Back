@@ -57,3 +57,4 @@ jwt:
 logging.level:
   org.hibernate.SQL: debug
 
+batchSize: 500
