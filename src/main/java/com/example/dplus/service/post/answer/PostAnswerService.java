@@ -55,7 +55,7 @@ public class PostAnswerService {
         if (!postAnswer.getAccount().getId().equals(accountId)) {
             throw new ErrorCustomException(ErrorCode.NO_AUTHORIZATION_ERROR);
         }
-        postAnswerLikesRepository.deleteByPostAnswerIdAndAccountId(answerId,accountId);
+        postAnswerLikesRepository.deleteByPostAnswerIdAndAccountId(answerId, accountId);
         postAnswerRepository.deleteById(answerId);
     }
 
@@ -75,9 +75,9 @@ public class PostAnswerService {
         postAnswer.doIsSelected(true);
         postAnswer.getAccount().updateExp(20);
 
-        if (!postAnswer.getPost().isSelected()) {
+        if (!postAnswer.getPost().getIsSelected()) {
             postAnswer.getPost().doIsSelected(true);
         }
     }
-
 }
+
