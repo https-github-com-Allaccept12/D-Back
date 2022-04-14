@@ -6,7 +6,6 @@ import com.example.dplus.domain.post.PostImage;
 import com.example.dplus.domain.post.PostTag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -23,8 +22,8 @@ public class BatchInsertRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
-    @Value("batchSize")
-    private final int batchSize;
+//    @Value("batchSize")
+    private final int batchSize = 500;
 
     public void artWorkImageSaveAll(List<ArtWorkImage> imgList) {
         List<ArtWorkImage> bowl = new ArrayList<>();
