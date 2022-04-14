@@ -11,6 +11,7 @@ spring:
       maxFileSize: 50MB
       maxRequestSize: 50MB
 
+      
   datasource:
     #mysql setting
     driver-class-name: com.mysql.cj.jdbc.Driver
