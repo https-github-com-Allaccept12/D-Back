@@ -19,11 +19,11 @@ public class PostAnswerLikes {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "account_id")
+    @JoinColumn(name = "account_id",nullable = false)
     private Account account;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "post_answer_id")
+    @JoinColumn(name = "post_answer_id",nullable = false)
     private PostAnswer postAnswer;
 
     @Builder

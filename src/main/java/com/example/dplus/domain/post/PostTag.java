@@ -18,7 +18,7 @@ public class PostTag {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "post_id")
+    @JoinColumn(name = "post_id",nullable = false)
     private Post post;
 
     private String hashTag;

@@ -20,11 +20,11 @@ public class PostCommentLikes extends BaseEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "account_id")
+    @JoinColumn(name = "account_id",nullable = false)
     private Account account;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "post_comment_id")
+    @JoinColumn(name = "post_comment_id",nullable = false)
     private PostComment postComment;
 
     @Builder

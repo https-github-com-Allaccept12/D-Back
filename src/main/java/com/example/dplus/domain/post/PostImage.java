@@ -23,7 +23,7 @@ public class PostImage {
     private String postImg;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "post_id")
+    @JoinColumn(name = "post_id",nullable = false)
     private Post post;
 
     @Builder

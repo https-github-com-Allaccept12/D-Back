@@ -19,7 +19,7 @@ public class ArtWorkImage {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "artwork_id")
+    @JoinColumn(name = "artwork_id",nullable = false)
     private ArtWorks artWorks;
 
     @Column(nullable = false)
